@@ -74,6 +74,8 @@
       sanctuaireDone: false,
       duelDone: false,
       actICompleted: false,
+      actIICompleted: false,
+      actIIICompleted: false,
       keepLossApplied: false,
       cyanwrathDead: false,
       eggsDestroyed: false,
@@ -90,6 +92,9 @@
       fragileAlliance: false,
       fracturedAlliance: false,
       limitedMilitarySupport: false
+      eggsSaved: false,
+      portalDamaged: false,
+      portalIntact: false
     };
     const variables = {
       moraleGroupe: 0,
@@ -100,6 +105,12 @@
       allianceStrength: 'none',
       factionTrust: { harpers: 0, zhentarim: 0, cult: 0 },
       councilReputation: { harpers: 0, gauntlet: 0, enclave: 0, zhentarim: 0, lords: 0 }
+      factionTrust: {
+        harpers: 0,
+        zhentarim: 0,
+        cult: -3
+      },
+      castleAlertLevel: 0
     };
     const acts = { current: 'ACT_I', unlocked: ['ACT_I'] };
 
@@ -225,6 +236,11 @@
             requiresFlag: 'actIIICompleted',
             forbiddenFlag: 'actIVCompleted',
             onSuccess: { setAct: 'ACT_IV', unlockActs: ['ACT_IV'], gotoRoom: 'waterdeep_council_hall', checkpoint: 'Début Act IV — Conseil de Waterdeep' }
+            id: 'depart-nord',
+            label: 'Acte III — Rejoindre la caravane du Nord',
+            requiresFlag: 'actICompleted',
+            forbiddenFlag: 'actIIICompleted',
+            onSuccess: { unlockActs: ['ACT_III'], gotoRoom: 'northern_road', checkpoint: 'Départ pour l’Acte III' }
           }
         ]
       },
@@ -429,6 +445,201 @@
         exits: {},
         options: [
           { id: 'resolve-council-session', label: 'Scène 5 — Clore le Conseil et calculer le soutien', forbiddenFlag: 'actIVCompleted', onSelect: 'resolve_council' }
+      northern_road: {
+        id: 'northern_road',
+        title: 'Route du Nord — Caravane',
+        description: 'Le voyage s’étire sur des semaines. Sous les bâches, les alliances se nouent et se trahissent à voix basse.',
+        objects: ['marchands', 'gardes fatigués', 'caisses scellées'],
+        exits: {},
+        options: [
+          {
+            id: 'caravane-marchands',
+            label: 'Option – Se mêler aux marchands',
+            effects: { message: 'Vous partagez le feu et les comptes: les Harpistes notent votre prudence.' },
+            onSuccess: { variableDelta: { factionTrust: { harpers: 1, zhentarim: 0, cult: -1 } }, setFlags: { caravanMidpointDone: true }, checkpoint: 'Mi-parcours de la caravane' }
+          },
+          {
+            id: 'caravane-espionner',
+            label: 'Option – Espionner discrètement',
+            characterId: 'malar',
+            skill: 'stealth',
+            resolution: { difficulty: 2, skill: 'stealth', risk: 'capture', deathType: 'replaceable' },
+            effects: { message: 'Des lettres codées changent de mains. Les Zhentarim jugent votre efficacité.' },
+            onSuccess: { variableDelta: { factionTrust: { harpers: 0, zhentarim: 1, cult: -1 } }, setFlags: { caravanMidpointDone: true }, checkpoint: 'Mi-parcours de la caravane' },
+            onFailure: { variableDelta: { castleAlertLevel: 1, factionTrust: { cult: 1 } }, message: 'Un guetteur cultiste repère votre manège. Les rumeurs vous précèdent déjà.' },
+            onFailurePost: { setFlags: { caravanMidpointDone: true }, checkpoint: 'Mi-parcours de la caravane' }
+          },
+          {
+            id: 'caravane-confronter',
+            label: 'Option – Confronter un agent suspect',
+            characterId: 'bjolnir',
+            skill: 'diplomacy',
+            resolution: { difficulty: 3, skill: 'diplomacy', risk: 'injury', deathType: 'replaceable' },
+            effects: { message: 'L’agent plie sans bruit. Le Culte vous craint, mais ne vous oubliera pas.' },
+            onSuccess: { variableDelta: { factionTrust: { harpers: 1, cult: -2 }, castleAlertLevel: 1 }, setFlags: { caravanMidpointDone: true }, checkpoint: 'Mi-parcours de la caravane' },
+            onFailure: { variableDelta: { factionTrust: { cult: 2 }, castleAlertLevel: 2 }, message: 'La confrontation tourne au scandale. Les wagons bruissent de votre nom.' },
+            onFailurePost: { setFlags: { caravanMidpointDone: true }, checkpoint: 'Mi-parcours de la caravane' }
+          },
+          {
+            id: 'caravane-dragon',
+            label: 'Option – Accuser tout le monde d’être un dragon déguisé',
+            onSelect: 'silly_accuse_dragons'
+          },
+          {
+            id: 'caravane-arrivee',
+            label: 'Continuer vers les marais de Naerytar',
+            requiresFlag: 'caravanMidpointDone',
+            onSuccess: { gotoRoom: 'naerytar_swamp', checkpoint: 'Arrivée à Naerytar' }
+          }
+        ]
+      },
+      naerytar_swamp: {
+        id: 'naerytar_swamp',
+        title: 'Marais de Naerytar',
+        description: 'La brume avale les sentiers. Au loin, un château isolé se découpe comme une menace immobile.',
+        objects: ['eaux stagnantes', 'ruines noyées', 'silhouette du château'],
+        exits: {},
+        options: [
+          {
+            id: 'naerytar-reco',
+            label: 'Option – Observer les patrouilles dans les roseaux',
+            characterId: 'malar',
+            skill: 'stealth',
+            resolution: { difficulty: 3, skill: 'stealth', risk: 'injury', deathType: 'replaceable' },
+            effects: { message: 'Vous notez les relèves et les angles morts des tours.' },
+            onSuccess: { variableDelta: { castleAlertLevel: -1 }, checkpoint: 'Repérage de Naerytar' },
+            onFailure: { variableDelta: { castleAlertLevel: 1 }, message: 'Un cri de guetteur fend la brume. La paranoïa grimpe.' },
+            onFailurePost: { checkpoint: 'Repérage de Naerytar' }
+          },
+          {
+            id: 'naerytar-canard',
+            label: 'Option – Négocier avec un canard du marais',
+            onSelect: 'silly_swamp_duck'
+          },
+          {
+            id: 'naerytar-entree',
+            label: 'Entrer dans le château de Naerytar',
+            onSuccess: { gotoRoom: 'castle_naerytar', checkpoint: 'Entrée au château Naerytar' }
+          }
+        ]
+      },
+      castle_naerytar: {
+        id: 'castle_naerytar',
+        title: 'Château Naerytar — Hub',
+        description: 'Cour, tours, quartiers cultistes et trésor convergent vers un passage secret menant au portail.',
+        objects: ['cour', 'tours', 'quartiers cultistes', 'salle du trésor', 'passage secret'],
+        exits: {},
+        options: [
+          {
+            id: 'naerytar-allie',
+            label: 'Option – Se faire passer pour des alliés du Culte',
+            resolution: { difficulty: 2, skill: 'diplomacy', risk: 'injury', deathType: 'replaceable' },
+            characterId: 'bjolnir',
+            effects: { message: 'Vos sceaux volés et vos salutations froides suffisent à tromper la première ligne.' },
+            onSuccess: { variableDelta: { factionTrust: { cult: 2 }, castleAlertLevel: -1, moraleGroupe: -1 } },
+            onFailure: { variableDelta: { castleAlertLevel: 1 }, message: 'Un intendant hésite, puis ordonne une surveillance rapprochée.' }
+          },
+          {
+            id: 'naerytar-factions',
+            label: 'Option – Exploiter les réseaux des factions',
+            requiresTrust: { harpers: 2 },
+            effects: { message: 'Un contact harpiste ouvre une poterne et détourne deux patrouilles.' },
+            onSuccess: { variableDelta: { castleAlertLevel: -1 }, setFlags: { harpersAidReady: true } }
+          },
+          {
+            id: 'naerytar-saboter',
+            label: 'Option – Saboter le transport du trésor',
+            characterId: 'darrin',
+            skill: 'wild_magic',
+            resolution: { difficulty: 3, skill: 'wild_magic', risk: 'injury', deathType: 'replaceable' },
+            effects: { message: 'Les essieux se fendent dans un éclair bleuâtre; les convois sont retardés.' },
+            onSuccess: { variableDelta: { castleAlertLevel: 1, moraleGroupe: 1 }, setFlags: { treasureSabotaged: true } },
+            onFailure: { variableDelta: { castleAlertLevel: 2, chaos: 1 }, message: 'L’explosion arcane attire toute la garnison vers la cour.' }
+          },
+          {
+            id: 'naerytar-prisonniers',
+            label: 'Option – Libérer les prisonniers',
+            characterId: 'drekthar',
+            skill: 'might',
+            resolution: { difficulty: 2, skill: 'might', risk: 'death', deathType: 'replaceable' },
+            effects: { message: 'Les chaînes tombent. Les survivants jurent de témoigner contre le Culte.' },
+            onSuccess: { variableDelta: { moraleGroupe: 1, castleAlertLevel: 1 }, setFlags: { prisonersFreed: true } },
+            onFailure: { variableDelta: { castleAlertLevel: 2 }, message: 'Le fracas des grilles réveille les tours.' }
+          },
+          {
+            id: 'naerytar-bouffon',
+            label: 'Option – Déclarer une inspection fiscale draconique',
+            onSelect: 'silly_tax_inspection'
+          },
+          {
+            id: 'naerytar-escape',
+            label: 'Séquence forcée – Fuir vers le passage secret',
+            requiresAlertMin: 4,
+            onSuccess: { gotoRoom: 'portal_chamber', checkpoint: 'Fuite forcée vers le portail' }
+          },
+          {
+            id: 'naerytar-portal',
+            label: 'Rejoindre la chambre du portail',
+            onSuccess: { gotoRoom: 'portal_chamber', checkpoint: 'Approche du portail' }
+          }
+        ]
+      },
+      portal_chamber: {
+        id: 'portal_chamber',
+        title: 'Chambre du Portail',
+        description: 'Des runes pulsent dans la pierre noire. Le passage vers l’inconnu attend votre verdict.',
+        objects: ['cercle runique', 'caisses du culte', 'leviers anciens'],
+        exits: {},
+        options: [
+          {
+            id: 'portal-traverse',
+            label: 'Décision – Traverser immédiatement',
+            effects: { message: 'Le groupe franchit le seuil avant que le château ne referme ses mâchoires.' },
+            onSuccess: { setFlags: { portalIntact: true, portalDamaged: false }, gotoRoom: 'act3_epilogue', checkpoint: 'Décision du portail — Traversée' }
+          },
+          {
+            id: 'portal-saboter',
+            label: 'Décision – Saboter le portail',
+            characterId: 'darrin',
+            skill: 'wild_magic',
+            resolution: { difficulty: 3, skill: 'wild_magic', risk: 'injury', deathType: 'replaceable' },
+            effects: { message: 'Les glyphes se fissurent. Le portail survivra, mais affaibli pour la suite.' },
+            onSuccess: { setFlags: { portalDamaged: true, portalIntact: false }, gotoRoom: 'act3_epilogue', checkpoint: 'Décision du portail — Sabotage' },
+            onFailure: { variableDelta: { castleAlertLevel: 1 }, message: 'Le sabotage échoue partiellement; l’onde attire des renforts.' },
+            onFailurePost: { setFlags: { portalIntact: true, portalDamaged: false }, gotoRoom: 'act3_epilogue', checkpoint: 'Décision du portail — Échec sabotage' }
+          },
+          {
+            id: 'portal-observer',
+            label: 'Décision – Observer et consigner',
+            effects: { message: 'Vous mémorisez chaque rune et gardez l’option d’un retour stratégique.' },
+            onSuccess: { setFlags: { portalIntact: true, portalDamaged: false, portalObserved: true }, gotoRoom: 'act3_epilogue', checkpoint: 'Décision du portail — Observation' }
+          }
+        ]
+      },
+      act3_epilogue: {
+        id: 'act3_epilogue',
+        title: 'Fin de l’Acte III',
+        description: 'Le Nord retient son souffle. Vos choix sur les factions, Naerytar et le portail forgeront la suite.',
+        objects: ['journal de campagne', 'routes vers le Nord profond'],
+        exits: {},
+        options: [
+          {
+            id: 'act3-end',
+            label: 'Clore l’Acte III',
+            forbiddenFlag: 'actIIICompleted',
+            onSuccess: {
+              setFlags: { actIIICompleted: true },
+              setFlagFromState: {
+                factionTrustSnapshot: 'factionTrust',
+                cyanwrathDeadSnapshot: 'cyanwrathDead',
+                eggsOutcomeSnapshot: 'eggsOutcome',
+                castleAlertLevelSnapshot: 'castleAlertLevel'
+              },
+              unlockActs: ['ACT_IV'],
+              checkpoint: 'End Act III',
+              gotoRoom: 'act3_epilogue'
+            }
+          }
         ]
       }
     };
@@ -546,6 +757,11 @@
         if (option.requiresFlag && !flags[option.requiresFlag]) return false;
         if (option.forbiddenFlag && flags[option.forbiddenFlag]) return false;
         if (option.requiresAllFlags && !option.requiresAllFlags.every(flagName => flags[flagName])) return false;
+        if (typeof option.requiresAlertMin === 'number' && variables.castleAlertLevel < option.requiresAlertMin) return false;
+        if (option.requiresTrust) {
+          const trustChecks = Object.entries(option.requiresTrust);
+          if (!trustChecks.every(([faction, threshold]) => (variables.factionTrust?.[faction] ?? 0) >= threshold)) return false;
+        }
         return true;
       });
     }
@@ -762,6 +978,15 @@
         if (variables.moraleGroupe >= 2) writeContext('Les défenseurs reprennent souffle. Une lueur d’espoir parcourt les remparts.');
         if (variables.chaos >= 5) writeContext('La victoire a un goût de cendre: Greenest survivra, mais marquée à jamais.');
       }
+      if (['northern_road', 'naerytar_swamp', 'castle_naerytar', 'portal_chamber', 'act3_epilogue'].includes(room.id)) {
+        acts.current = 'ACT_III';
+      }
+      if (room.id === 'castle_naerytar') {
+        writeContext(flags.cyanwrathDead
+          ? 'Le lieutenant Rezmir supervise Naerytar depuis les tours, en l’absence de Cyanwrath.'
+          : 'Cyanwrath arpente la cour du château, vivant et vindicatif.');
+        if (variables.castleAlertLevel >= 4) writeContext('L’alerte du château est maximale: la fuite vers le portail devient prioritaire.');
+      }
       clampTrackedVariables();
       writeContext(`[${room.title}] ${room.description}`);
       const options = computeAvailableOptions(room.id);
@@ -801,6 +1026,21 @@
     function clampTrackedVariables() {
       variables.moraleGroupe = Math.max(-5, Math.min(5, variables.moraleGroupe));
       variables.chaos = Math.max(-5, Math.min(6, variables.chaos));
+      variables.castleAlertLevel = Math.max(0, Math.min(5, variables.castleAlertLevel ?? 0));
+    }
+
+    function applyVariableDelta(delta = {}) {
+      Object.entries(delta).forEach(([key, value]) => {
+        if (key === 'moraleGroupe' || key === 'chaos' || key === 'castleAlertLevel') {
+          variables[key] = (variables[key] ?? 0) + (Number(value) || 0);
+          return;
+        }
+        if (key === 'factionTrust' && value && typeof value === 'object') {
+          Object.entries(value).forEach(([faction, shift]) => {
+            variables.factionTrust[faction] = (variables.factionTrust[faction] ?? 0) + (Number(shift) || 0);
+          });
+        }
+      });
     }
 
     function canTransitionState(fromState, toState) {
@@ -853,6 +1093,11 @@
         Object.entries(branch.councilReputation).forEach(([key, value]) => {
           if (typeof value !== 'number') return;
           merged.variableDelta.councilReputation[key] = (merged.variableDelta.councilReputation[key] ?? 0) + value;
+      merged.variableDelta.castleAlertLevel = (merged.variableDelta.castleAlertLevel ?? 0) + (branch.variableDelta?.castleAlertLevel ?? 0);
+      if (branch.variableDelta?.factionTrust) {
+        merged.variableDelta.factionTrust = merged.variableDelta.factionTrust ?? {};
+        Object.entries(branch.variableDelta.factionTrust).forEach(([faction, shift]) => {
+          merged.variableDelta.factionTrust[faction] = (merged.variableDelta.factionTrust[faction] ?? 0) + (Number(shift) || 0);
         });
       }
       if (branch.message) merged.message = branch.message;
@@ -864,6 +1109,7 @@
         unlockActs: branch.unlockActs ?? [],
         setAct: branch.setAct ?? null,
         onSelect: branch.onSelect ?? null
+        setFlagFromState: branch.setFlagFromState ?? {}
       };
       return merged;
     }
@@ -871,6 +1117,7 @@
     function resolveOutcome(option, score) {
       if (!option?.resolution) {
         return mergeBranchEffects({ success: true, endedByGameOver: false, message: option.effects?.message ?? null, variableDelta: { moraleGroupe: option.effects?.moraleGroupe ?? 0, chaos: option.effects?.chaos ?? 0, publicTrust: option.effects?.publicTrust ?? 0, councilReputation: safeClone(option.effects?.councilReputation ?? {}) }, characterChanges: [] }, option.onSuccess);
+        return mergeBranchEffects({ success: true, endedByGameOver: false, message: option.effects?.message ?? null, variableDelta: { moraleGroupe: option.effects?.moraleGroupe ?? 0, chaos: option.effects?.chaos ?? 0, castleAlertLevel: 0, factionTrust: {} }, characterChanges: [] }, option.onSuccess);
       }
       const character = characters[option.characterId];
       if (!character) {
@@ -891,11 +1138,13 @@
             publicTrust: option.effects?.publicTrust ?? 0,
             councilReputation: safeClone(option.effects?.councilReputation ?? {})
           },
+          variableDelta: { moraleGroupe: option.effects?.moraleGroupe ?? 0, chaos: option.effects?.chaos ?? 0, castleAlertLevel: 0, factionTrust: {} },
           characterChanges: []
         }, option.onSuccess);
       }
 
       let baseOutcome = { success: false, endedByGameOver: false, message: 'Échec sans conséquence définie.', variableDelta: { moraleGroupe: 0, chaos: 0, publicTrust: 0, councilReputation: {} }, characterChanges: [] };
+      let baseOutcome = { success: false, endedByGameOver: false, message: 'Échec sans conséquence définie.', variableDelta: { moraleGroupe: 0, chaos: 0, castleAlertLevel: 0, factionTrust: {} }, characterChanges: [] };
       if (option.resolution.risk === 'injury') {
         if (character.state === 'active') baseOutcome = { ...baseOutcome, message: `${character.name} est blessé.`, characterChanges: [{ id: option.characterId, toState: 'injured' }] };
         else if (character.state === 'injured') baseOutcome = { ...baseOutcome, message: `${character.name} est à terre.`, characterChanges: [{ id: option.characterId, toState: 'down' }] };
@@ -914,6 +1163,12 @@
     function applyPostEffects(post = {}) {
       Object.entries(post.setFlags ?? {}).forEach(([key, value]) => {
         flags[key] = value;
+      });
+      Object.entries(post.setFlagFromState ?? {}).forEach(([targetFlag, source]) => {
+        if (source === 'cyanwrathDead') flags[targetFlag] = Boolean(flags.cyanwrathDead);
+        if (source === 'eggsOutcome') flags[targetFlag] = flags.eggsDestroyed ? 'destroyed' : (flags.eggsSaved ? 'saved' : 'unknown');
+        if (source === 'castleAlertLevel') flags[targetFlag] = variables.castleAlertLevel;
+        if (source === 'factionTrust') flags[targetFlag] = JSON.stringify(variables.factionTrust);
       });
       (post.unlockActs ?? []).forEach(actId => {
         if (!acts.unlocked.includes(actId)) acts.unlocked.push(actId);
@@ -946,6 +1201,7 @@
       variables.publicTrust += outcome.variableDelta.publicTrust ?? 0;
       applyCouncilReputationDelta(outcome.variableDelta.councilReputation ?? {});
       variables.publicTrust = Math.max(-10, Math.min(10, variables.publicTrust));
+      applyVariableDelta(outcome.variableDelta);
       clampTrackedVariables();
       if (outcome.message) writeContext(outcome.message);
       applyPostEffects(outcome.post);
@@ -961,6 +1217,9 @@
         silly_dance_cyanwrath: 'Vous lancez un pas de danse martial. Cyanwrath, offensé artistiquement, met fin au spectacle.',
         silly_king_waterdeep: 'Vous réclamez la couronne de Waterdeep. Le protocole vous couronne surtout d’un bannissement immédiat.',
         silly_dragon_selfie: 'Vous demandez un selfie en selle. Le dragon d’airain vous expédie dehors d’un souffle magistral.'
+        silly_accuse_dragons: 'Vous accusez toute la caravane d’être draconique. Les marchands votent votre exil immédiat.',
+        silly_swamp_duck: 'Le canard réclame un tribut impérial en pain sec. Votre refus déclenche une embuscade absurde.',
+        silly_tax_inspection: 'Votre inspection fiscale révèle zéro reçu. Les cultistes préfèrent vous jeter dehors.'
       };
       if (sillyMessages[selectionKey]) {
         triggerGameOver('silly', sillyMessages[selectionKey]);
