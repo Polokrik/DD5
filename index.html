@@ -30,7 +30,7 @@
   <script>
     const LOGICAL_WIDTH = 320;
     const LOGICAL_HEIGHT = 200;
-    const VERBS = ['look', 'l', 'examine', 'x', 'go', 'walk', 'help', '?', 'inventory', 'i', 'undo', 'choose', 'save', 'load', 'clear', 'sheet', 'party'];
+    const VERBS = ['look', 'l', 'examine', 'x', 'go', 'walk', 'help', '?', 'inventory', 'i', 'undo', 'choose', 'save', 'load', 'clear', 'sheet', 'party', 'export', 'import', 'debug', 'set', 'flag'];
     const SAVE_KEY = 'clanDestain.save.v1';
     const DIRECTION_ALIASES = {
       n: 'nord', nord: 'nord',
@@ -39,6 +39,7 @@
       w: 'ouest', ouest: 'ouest'
     };
     const PULSE_LUT = [0, 0, 1, 1, 2, 1, 1, 0, 0, -1, -1, -2, -1, -1, 0, 0];
+    const URL_PARAMS = new URLSearchParams(window.location.search);
 
     const DATA = {
       rosterTimeline: [
@@ -91,12 +92,14 @@
       strongAlliance: false,
       fragileAlliance: false,
       fracturedAlliance: false,
-      limitedMilitarySupport: false
+      limitedMilitarySupport: false,
       eggsSaved: false,
       eggsStolen: false,
       eggsLeft: false,
       portalDamaged: false,
       portalIntact: false,
+      actVCompleted: false,
+      campaignComplete: false
       strongAlliance: false,
       fragileAlliance: true,
       fracturedAlliance: false,
@@ -118,14 +121,14 @@
       publicTrust: 0,
       totalSupport: 0,
       allianceStrength: 'none',
-      factionTrust: { harpers: 0, zhentarim: 0, cult: 0 },
-      councilReputation: { harpers: 0, gauntlet: 0, enclave: 0, zhentarim: 0, lords: 0 }
+      councilReputation: { harpers: 0, gauntlet: 0, enclave: 0, zhentarim: 0, lords: 0 },
       factionTrust: {
         harpers: 0,
         zhentarim: 0,
         cult: -3
       },
       castleAlertLevel: 0,
+      ritualProgress: 0
       councilReputation: {
         waterdeep: 0,
         neverwinter: 0,
@@ -264,6 +267,8 @@
             requiresFlag: 'actIIICompleted',
             forbiddenFlag: 'actIVCompleted',
             onSuccess: { setAct: 'ACT_IV', unlockActs: ['ACT_IV'], gotoRoom: 'waterdeep_council_hall', checkpoint: 'Début Act IV — Conseil de Waterdeep' }
+          },
+          {
             id: 'depart-nord',
             label: 'Acte III — Rejoindre la caravane du Nord',
             requiresFlag: 'actICompleted',
@@ -473,6 +478,8 @@
         exits: {},
         options: [
           { id: 'resolve-council-session', label: 'Scène 5 — Clore le Conseil et calculer le soutien', forbiddenFlag: 'actIVCompleted', onSelect: 'resolve_council' }
+        ]
+      },
       northern_road: {
         id: 'northern_road',
         title: 'Route du Nord — Caravane',
@@ -494,7 +501,7 @@
             resolution: { difficulty: 2, skill: 'stealth', risk: 'capture', deathType: 'replaceable' },
             effects: { message: 'Des lettres codées changent de mains. Les Zhentarim jugent votre efficacité.' },
             onSuccess: { variableDelta: { factionTrust: { harpers: 0, zhentarim: 1, cult: -1 } }, setFlags: { caravanMidpointDone: true }, checkpoint: 'Mi-parcours de la caravane' },
-            onFailure: { variableDelta: { castleAlertLevel: 1, factionTrust: { cult: 1 } }, message: 'Un guetteur cultiste repère votre manège. Les rumeurs vous précèdent déjà.' },
+            onFailure: { variableDelta: { castleAlertLevel: 1, factionTrust: { cult: 0 } }, message: 'Un guetteur cultiste repère votre manège. Les rumeurs vous précèdent déjà.' },
             onFailurePost: { setFlags: { caravanMidpointDone: true }, checkpoint: 'Mi-parcours de la caravane' }
           },
           {
@@ -504,7 +511,7 @@
             skill: 'diplomacy',
             resolution: { difficulty: 3, skill: 'diplomacy', risk: 'injury', deathType: 'replaceable' },
             effects: { message: 'L’agent plie sans bruit. Le Culte vous craint, mais ne vous oubliera pas.' },
-            onSuccess: { variableDelta: { factionTrust: { harpers: 1, cult: -2 }, castleAlertLevel: 1 }, setFlags: { caravanMidpointDone: true }, checkpoint: 'Mi-parcours de la caravane' },
+            onSuccess: { variableDelta: { factionTrust: { harpers: 1, cult: -1 }, castleAlertLevel: 1 }, setFlags: { caravanMidpointDone: true }, checkpoint: 'Mi-parcours de la caravane' },
             onFailure: { variableDelta: { factionTrust: { cult: 2 }, castleAlertLevel: 2 }, message: 'La confrontation tourne au scandale. Les wagons bruissent de votre nom.' },
             onFailurePost: { setFlags: { caravanMidpointDone: true }, checkpoint: 'Mi-parcours de la caravane' }
           },
@@ -695,6 +702,54 @@
           }
         ]
       },
+      act_v_ritual: {
+        id: 'act_v_ritual',
+        title: 'Acte V — Rituel de Tiamat',
+        description: 'Les autels tremblent. Chaque décision scelle l’issue de la guerre.',
+        objects: ['autel', 'portail draconique', 'alliés'],
+        exits: {},
+        options: [
+          { id: 'ritual-saboter', label: 'Saboter les canaux rituels', characterId: 'darrin', skill: 'arcana', resolution: { difficulty: 2, skill: 'arcana', risk: 'injury', deathType: 'replaceable' }, effects: { message: 'Les runes vacillent et le rituel ralentit.', ritualProgress: -2 }, onFailure: { variableDelta: { ritualProgress: 1 }, message: 'Une onde infernale renforce le portail.' } },
+          { id: 'ritual-proteger', label: 'Protéger les alliés sur le flanc', characterId: 'drekthar', skill: 'might', resolution: { difficulty: 2, skill: 'might', risk: 'injury', deathType: 'replaceable' }, effects: { message: 'Le front tient; les prêtres perdent du terrain.', ritualProgress: -1 } },
+          { id: 'ritual-final', label: 'Clore l’Acte V', onSuccess: { setFlags: { actVCompleted: true }, gotoRoom: 'finale', checkpoint: 'End Act V' } }
+        ]
+      },
+      finale: {
+        id: 'finale',
+        title: 'Finale',
+        description: 'Le verdict de la campagne tombe dans les cendres et les hymnes de guerre.',
+        objects: ['bilan', 'alliés', 'survivants'],
+        exits: {},
+        options: [
+          { id: 'vers-epilogue', label: 'Voir l’épilogue', onSuccess: { setFlags: { campaignComplete: true }, gotoRoom: 'epilogue', checkpoint: 'Campaign Complete' } }
+        ]
+      },
+      epilogue: {
+        id: 'epilogue',
+        title: 'Épilogue',
+        description: 'Les bardes consignent la destinée du Clan et des Côtes de l’Épée.',
+        objects: ['chronique finale'],
+        exits: {},
+        options: [
+          { id: 'restart-campaign', label: 'Restart Campaign', onSelect: 'restart_campaign' },
+          { id: 'return-title', label: 'Return to Title', onSelect: 'return_title' }
+        ]
+      },
+      credits: {
+        id: 'credits',
+        title: 'Crédits',
+        description: 'Based on D&D 5e Tyranny of Dragons\nAdapted for Clan d’Estain\nMême les dragons signent en bas de page.',
+        objects: ['rideau'],
+        exits: {},
+        options: [
+          { id: 'credits-back', label: 'Return to Title', onSelect: 'return_title' }
+        ]
+      },
+      title_screen: {
+        id: 'title_screen',
+        title: 'Clan d’Estain — Tyranny of Dragons',
+        description: 'Choisissez une option pour commencer.',
+        objects: ['menu principal'],
       battle_plan_selection: {
         id: 'battle_plan_selection',
         title: 'Sélection du Plan',
@@ -927,14 +982,15 @@
     };
 
     const gameState = {
-      roomId: 'hill_overlook',
+      roomId: 'title_screen',
       inventory: ['torche'],
       checkpoints: [],
       gameOver: null,
       tick: 0,
       commandHistory: [],
       historyCursor: -1,
-      timelineApplied: []
+      timelineApplied: [],
+      debugMode: URL_PARAMS.get('debug') === '1'
     };
 
     const canvas = document.getElementById('gameCanvas');
@@ -947,6 +1003,86 @@
 
     function safeClone(value) {
       return typeof structuredClone === 'function' ? structuredClone(value) : JSON.parse(JSON.stringify(value));
+    }
+
+    const INITIAL_CHARACTERS = safeClone(characters);
+    const INITIAL_FLAGS = safeClone(flags);
+    const INITIAL_VARIABLES = safeClone(variables);
+    const INITIAL_ACTS = safeClone(acts);
+
+    function hasSaveData() {
+      try { return Boolean(localStorage.getItem(SAVE_KEY)); } catch { return false; }
+    }
+
+    function isValidSavePayload(parsed) {
+      if (!parsed || typeof parsed !== 'object') return false;
+      if (!parsed.gameState || !parsed.characters || !parsed.flags || !parsed.variables || !parsed.acts) return false;
+      return typeof parsed.gameState.roomId === 'string';
+    }
+
+    function configureTitleOptions() {
+      const canContinue = hasSaveData();
+      rooms.title_screen.options = [
+        { id: 'title-new', label: 'New Game', onSelect: 'title_new_game' },
+        ...(canContinue ? [{ id: 'title-continue', label: 'Continue', onSelect: 'title_continue' }] : []),
+        { id: 'title-clear', label: 'Clear Save', onSelect: 'title_clear_save' },
+        { id: 'title-export', label: 'Export Save', onSelect: 'title_export_save' },
+        { id: 'title-import', label: 'Import Save', onSelect: 'title_import_save' },
+        { id: 'title-credits', label: 'Credits', onSuccess: { gotoRoom: 'credits' } }
+      ];
+    }
+
+    function resetCampaignState() {
+      Object.keys(characters).forEach(id => delete characters[id]);
+      Object.assign(characters, safeClone(INITIAL_CHARACTERS));
+      Object.keys(flags).forEach(key => delete flags[key]);
+      Object.assign(flags, safeClone(INITIAL_FLAGS));
+      Object.keys(variables).forEach(key => delete variables[key]);
+      Object.assign(variables, safeClone(INITIAL_VARIABLES));
+      Object.keys(acts).forEach(key => delete acts[key]);
+      Object.assign(acts, safeClone(INITIAL_ACTS));
+      gameState.roomId = 'hill_overlook';
+      gameState.inventory = ['torche'];
+      gameState.checkpoints = [];
+      gameState.gameOver = null;
+      gameState.timelineApplied = [];
+    }
+
+    function exportSaveToClipboard() {
+      try {
+        const payload = localStorage.getItem(SAVE_KEY);
+        if (!payload) return writeContext('Aucune sauvegarde à exporter.');
+        if (navigator.clipboard?.writeText) navigator.clipboard.writeText(payload);
+        writeContext('Sauvegarde exportée (copiée dans le presse-papiers si autorisé).');
+      } catch {
+        writeContext('Export impossible pour le moment.');
+      }
+    }
+
+    function importSaveFromString(jsonString) {
+      try {
+        const parsed = JSON.parse(jsonString);
+        if (!isValidSavePayload(parsed)) {
+          writeContext('Import refusé: structure de sauvegarde invalide.');
+          return false;
+        }
+        localStorage.setItem(SAVE_KEY, JSON.stringify(parsed));
+        writeContext('Import réussi.');
+        return true;
+      } catch {
+        writeContext('Import refusé: JSON corrompu.');
+        return false;
+      }
+    }
+
+    function showDebugState() {
+      if (!gameState.debugMode) return;
+      writeContext(`[DEBUG] flags=${JSON.stringify(flags)}`);
+      writeContext(`[DEBUG] variables=${JSON.stringify(variables)}`);
+      writeContext(`[DEBUG] roster=${JSON.stringify(Object.fromEntries(Object.entries(characters).map(([k,v]) => [k, v.state])))}`);
+      writeContext(`[DEBUG] factionTrust=${JSON.stringify(variables.factionTrust ?? {})}`);
+      writeContext(`[DEBUG] councilReputation=${JSON.stringify(variables.councilReputation ?? {})}`);
+      writeContext(`[DEBUG] ritualProgress=${variables.ritualProgress ?? 0}`);
     }
 
     function writeContext(text) {
@@ -1096,7 +1232,8 @@
         createCheckpoint(`Roster update — ${trigger}`);
       });
       if (context.characterId && trigger === 'CHARACTER_DEATH') {
-        updateStatusStrip();
+        if (gameState.debugMode) showDebugState();
+      updateStatusStrip();
       }
     }
 
@@ -1135,9 +1272,7 @@
       }
       try {
         const parsed = JSON.parse(raw);
-        if (!parsed?.gameState || !parsed?.characters || !parsed?.flags || !parsed?.variables || !parsed?.acts) {
-          throw new Error('invalid');
-        }
+        if (!isValidSavePayload(parsed)) throw new Error('invalid');
 
         const restoredGameState = safeClone(parsed.gameState);
         gameState.roomId = restoredGameState.roomId ?? 'hill_overlook';
@@ -1335,7 +1470,7 @@
         acts.current = 'ACT_IV';
         initializeCouncilSessionIfNeeded();
       }
-      if (room.id === 'greenest_keep' && variables.chaos > 4 && !flags.keepLossApplied) {
+      if (room.id === 'greenest_keep' && variables.chaos > 5 && !flags.keepLossApplied) {
         flags.keepLossApplied = true;
         variables.moraleGroupe -= 1;
         writeContext('Des cris montent des faubourgs: trop de civils n’ont pas atteint la forteresse à temps.');
@@ -1345,7 +1480,7 @@
       }
       if (room.id === 'greenest_keep' && flags.actICompleted) {
         if (variables.moraleGroupe >= 2) writeContext('Les défenseurs reprennent souffle. Une lueur d’espoir parcourt les remparts.');
-        if (variables.chaos >= 5) writeContext('La victoire a un goût de cendre: Greenest survivra, mais marquée à jamais.');
+        if (variables.chaos >= 6) writeContext('La victoire a un goût de cendre: Greenest survivra, mais marquée à jamais.');
       }
       if (['northern_road', 'naerytar_swamp', 'castle_naerytar', 'portal_chamber', 'act3_epilogue'].includes(room.id)) {
         acts.current = 'ACT_III';
@@ -1357,7 +1492,27 @@
         writeContext(flags.cyanwrathDead
           ? 'Le lieutenant Rezmir supervise Naerytar depuis les tours, en l’absence de Cyanwrath.'
           : 'Cyanwrath arpente la cour du château, vivant et vindicatif.');
-        if (variables.castleAlertLevel >= 4) writeContext('L’alerte du château est maximale: la fuite vers le portail devient prioritaire.');
+        if (variables.castleAlertLevel >= 3) writeContext(`Alerte du château: ${variables.castleAlertLevel}/5. La fuite vers le portail devient prioritaire.`);
+      }
+
+      if (room.id === 'duel_field') {
+        writeContext('Le duel est un rite de domination, pas un simple spectacle.');
+      }
+      if (room.id === 'waterdeep_council_hall') {
+        writeContext('Chaque mot pèse comme un traité: Waterdeep écoute, juge et se souvient.');
+      }
+      if (room.id === 'act_v_ritual') {
+        writeContext(`Tension rituelle: ${variables.ritualProgress}/8.`);
+      }
+      if (room.id === 'finale' || room.id === 'epilogue') {
+        const dead = Object.values(characters).filter(c => c.state === 'dead').map(c => c.name);
+        const alive = Object.values(characters).filter(c => c.state !== 'dead').map(c => c.name);
+        writeContext(`Vivants: ${alive.join(', ') || 'aucun'}`);
+        writeContext(`Morts: ${dead.join(', ') || 'aucun'}`);
+        const metallic = flags.metallicAlliance ? 'engagés' : 'restés en retrait';
+        const eggsFate = flags.eggsDestroyed ? 'détruits' : (flags.eggsSaved ? 'sauvés' : 'incertain');
+        writeContext(`Alliance: ${variables.allianceStrength} | Dragons métalliques: ${metallic} | Œufs: ${eggsFate}`);
+        writeContext(`Waterdeep: ${flags.strongAlliance ? 'unie' : flags.fracturedAlliance ? 'divisée' : 'prudente'} | Greenest: chaos ${variables.chaos}`);
       }
       if (room.id === 'war_council_tent' && !flags.finalBattleInitialized) {
         computeFinalBattleBaseline();
@@ -1399,6 +1554,7 @@
       } else {
         options.forEach((option, index) => writeContext(`${index + 1}. ${option.label}`));
       }
+      if (gameState.debugMode) showDebugState();
       updateStatusStrip();
     }
 
@@ -1428,6 +1584,7 @@
       variables.moraleGroupe = Math.max(-5, Math.min(5, variables.moraleGroupe));
       variables.chaos = Math.max(-5, Math.min(6, variables.chaos));
       variables.castleAlertLevel = Math.max(0, Math.min(5, variables.castleAlertLevel ?? 0));
+      variables.ritualProgress = Math.max(-4, Math.min(8, variables.ritualProgress ?? 0));
       if (variables.finalBattle) {
         variables.finalBattle.ritualProgress = Math.max(0, Math.min(10, variables.finalBattle.ritualProgress ?? 0));
         variables.finalBattle.battlefieldChaos = Math.max(0, Math.min(10, variables.finalBattle.battlefieldChaos ?? 0));
@@ -1439,7 +1596,7 @@
 
     function applyVariableDelta(delta = {}) {
       Object.entries(delta).forEach(([key, value]) => {
-        if (key === 'moraleGroupe' || key === 'chaos' || key === 'castleAlertLevel') {
+        if (key === 'moraleGroupe' || key === 'chaos' || key === 'castleAlertLevel' || key === 'ritualProgress') {
           variables[key] = (variables[key] ?? 0) + (Number(value) || 0);
           return;
         }
@@ -1497,11 +1654,21 @@
       merged.variableDelta.moraleGroupe += branch.variableDelta?.moraleGroupe ?? 0;
       merged.variableDelta.chaos += branch.variableDelta?.chaos ?? 0;
       merged.variableDelta.publicTrust += branch.variableDelta?.publicTrust ?? branch.publicTrust ?? 0;
+      merged.variableDelta.castleAlertLevel = (merged.variableDelta.castleAlertLevel ?? 0) + (branch.variableDelta?.castleAlertLevel ?? 0);
+      merged.variableDelta.ritualProgress = (merged.variableDelta.ritualProgress ?? 0) + (branch.variableDelta?.ritualProgress ?? 0);
+
       if (branch.councilReputation) {
         Object.entries(branch.councilReputation).forEach(([key, value]) => {
           if (typeof value !== 'number') return;
           merged.variableDelta.councilReputation[key] = (merged.variableDelta.councilReputation[key] ?? 0) + value;
-      merged.variableDelta.castleAlertLevel = (merged.variableDelta.castleAlertLevel ?? 0) + (branch.variableDelta?.castleAlertLevel ?? 0);
+        });
+      }
+      if (branch.variableDelta?.councilReputation) {
+        Object.entries(branch.variableDelta.councilReputation).forEach(([key, value]) => {
+          if (typeof value !== 'number') return;
+          merged.variableDelta.councilReputation[key] = (merged.variableDelta.councilReputation[key] ?? 0) + value;
+        });
+      }
       if (branch.variableDelta?.factionTrust) {
         merged.variableDelta.factionTrust = merged.variableDelta.factionTrust ?? {};
         Object.entries(branch.variableDelta.factionTrust).forEach(([faction, shift]) => {
@@ -1516,7 +1683,7 @@
         checkpoint: branch.checkpoint ?? null,
         unlockActs: branch.unlockActs ?? [],
         setAct: branch.setAct ?? null,
-        onSelect: branch.onSelect ?? null
+        onSelect: branch.onSelect ?? null,
         setFlagFromState: branch.setFlagFromState ?? {}
       };
       return merged;
@@ -1524,15 +1691,28 @@
 
     function resolveOutcome(option, score) {
       if (!option?.resolution) {
-        return mergeBranchEffects({ success: true, endedByGameOver: false, message: option.effects?.message ?? null, variableDelta: { moraleGroupe: option.effects?.moraleGroupe ?? 0, chaos: option.effects?.chaos ?? 0, publicTrust: option.effects?.publicTrust ?? 0, councilReputation: safeClone(option.effects?.councilReputation ?? {}) }, characterChanges: [] }, option.onSuccess);
-        return mergeBranchEffects({ success: true, endedByGameOver: false, message: option.effects?.message ?? null, variableDelta: { moraleGroupe: option.effects?.moraleGroupe ?? 0, chaos: option.effects?.chaos ?? 0, castleAlertLevel: 0, factionTrust: {} }, characterChanges: [] }, option.onSuccess);
+        return mergeBranchEffects({
+          success: true,
+          endedByGameOver: false,
+          message: option.effects?.message ?? null,
+          variableDelta: {
+            moraleGroupe: option.effects?.moraleGroupe ?? 0,
+            chaos: option.effects?.chaos ?? 0,
+            publicTrust: option.effects?.publicTrust ?? 0,
+            councilReputation: safeClone(option.effects?.councilReputation ?? {}),
+            castleAlertLevel: option.effects?.castleAlertLevel ?? 0,
+            factionTrust: safeClone(option.effects?.factionTrust ?? {}),
+            ritualProgress: option.effects?.ritualProgress ?? 0
+          },
+          characterChanges: []
+        }, option.onSuccess);
       }
       const character = characters[option.characterId];
       if (!character) {
-        return { success: false, endedByGameOver: false, message: 'Aucun personnage valide pour cette action.', variableDelta: { moraleGroupe: 0, chaos: 0 }, characterChanges: [] };
+        return { success: false, endedByGameOver: false, message: 'Aucun personnage valide pour cette action.', variableDelta: { moraleGroupe: 0, chaos: 0, publicTrust: 0, councilReputation: {}, castleAlertLevel: 0, factionTrust: {}, ritualProgress: 0 }, characterChanges: [] };
       }
       if (score === null) {
-        return { success: false, endedByGameOver: false, message: `${character.name} ne peut pas agir.`, variableDelta: { moraleGroupe: 0, chaos: 0 }, characterChanges: [] };
+        return { success: false, endedByGameOver: false, message: `${character.name} ne peut pas agir.`, variableDelta: { moraleGroupe: 0, chaos: 0, publicTrust: 0, councilReputation: {}, castleAlertLevel: 0, factionTrust: {}, ritualProgress: 0 }, characterChanges: [] };
       }
 
       if (score >= option.resolution.difficulty) {
@@ -1544,15 +1724,16 @@
             moraleGroupe: option.effects?.moraleGroupe ?? 0,
             chaos: option.effects?.chaos ?? 0,
             publicTrust: option.effects?.publicTrust ?? 0,
-            councilReputation: safeClone(option.effects?.councilReputation ?? {})
+            councilReputation: safeClone(option.effects?.councilReputation ?? {}),
+            castleAlertLevel: option.effects?.castleAlertLevel ?? 0,
+            factionTrust: safeClone(option.effects?.factionTrust ?? {}),
+            ritualProgress: option.effects?.ritualProgress ?? 0
           },
-          variableDelta: { moraleGroupe: option.effects?.moraleGroupe ?? 0, chaos: option.effects?.chaos ?? 0, castleAlertLevel: 0, factionTrust: {} },
           characterChanges: []
         }, option.onSuccess);
       }
 
-      let baseOutcome = { success: false, endedByGameOver: false, message: 'Échec sans conséquence définie.', variableDelta: { moraleGroupe: 0, chaos: 0, publicTrust: 0, councilReputation: {} }, characterChanges: [] };
-      let baseOutcome = { success: false, endedByGameOver: false, message: 'Échec sans conséquence définie.', variableDelta: { moraleGroupe: 0, chaos: 0, castleAlertLevel: 0, factionTrust: {} }, characterChanges: [] };
+      let baseOutcome = { success: false, endedByGameOver: false, message: 'Échec sans conséquence définie.', variableDelta: { moraleGroupe: 0, chaos: 0, publicTrust: 0, councilReputation: {}, castleAlertLevel: 0, factionTrust: {}, ritualProgress: 0 }, characterChanges: [] };
       if (option.resolution.risk === 'injury') {
         if (character.state === 'active') baseOutcome = { ...baseOutcome, message: `${character.name} est blessé.`, characterChanges: [{ id: option.characterId, toState: 'injured' }] };
         else if (character.state === 'injured') baseOutcome = { ...baseOutcome, message: `${character.name} est à terre.`, characterChanges: [{ id: option.characterId, toState: 'down' }] };
@@ -1604,12 +1785,9 @@
       });
       if (endedByGameOver) return { endedByGameOver: true };
 
-      variables.moraleGroupe += outcome.variableDelta.moraleGroupe ?? 0;
-      variables.chaos += outcome.variableDelta.chaos ?? 0;
-      variables.publicTrust += outcome.variableDelta.publicTrust ?? 0;
+      applyVariableDelta(outcome.variableDelta);
       applyCouncilReputationDelta(outcome.variableDelta.councilReputation ?? {});
       variables.publicTrust = Math.max(-10, Math.min(10, variables.publicTrust));
-      applyVariableDelta(outcome.variableDelta);
       clampTrackedVariables();
       if (outcome.message) writeContext(outcome.message);
       applyPostEffects(outcome.post);
@@ -1624,7 +1802,7 @@
         silly_join_cult: 'Votre offre de service enthousiasme les kobolds: ils exigent d’abord un sacrifice. Vous.',
         silly_dance_cyanwrath: 'Vous lancez un pas de danse martial. Cyanwrath, offensé artistiquement, met fin au spectacle.',
         silly_king_waterdeep: 'Vous réclamez la couronne de Waterdeep. Le protocole vous couronne surtout d’un bannissement immédiat.',
-        silly_dragon_selfie: 'Vous demandez un selfie en selle. Le dragon d’airain vous expédie dehors d’un souffle magistral.'
+        silly_dragon_selfie: 'Vous demandez un selfie en selle. Le dragon d’airain vous expédie dehors d’un souffle magistral.',
         silly_accuse_dragons: 'Vous accusez toute la caravane d’être draconique. Les marchands votent votre exil immédiat.',
         silly_swamp_duck: 'Le canard réclame un tribut impérial en pain sec. Votre refus déclenche une embuscade absurde.',
         silly_tax_inspection: 'Votre inspection fiscale révèle zéro reçu. Les cultistes préfèrent vous jeter dehors.',
@@ -1679,7 +1857,38 @@
         flags.actIVCompleted = true;
         acts.current = 'ACT_V';
         if (!acts.unlocked.includes('ACT_V')) acts.unlocked.push('ACT_V');
+        gameState.roomId = 'act_v_ritual';
         createCheckpoint('End Act IV');
+        return { endedByGameOver: false, handled: true };
+      }
+
+      if (selectionKey === 'title_new_game' || selectionKey === 'restart_campaign') {
+        clearSave();
+        resetCampaignState();
+        createCheckpoint('Début de partie');
+        writeContext('Nouvelle campagne lancée.');
+        return { endedByGameOver: false, handled: true };
+      }
+      if (selectionKey === 'title_continue') {
+        if (!loadGame({ silent: true })) writeContext('Aucune sauvegarde à reprendre.');
+        return { endedByGameOver: false, handled: true };
+      }
+      if (selectionKey === 'title_clear_save') {
+        clearSave();
+        configureTitleOptions();
+        return { endedByGameOver: false, handled: true };
+      }
+      if (selectionKey === 'title_export_save') {
+        exportSaveToClipboard();
+        return { endedByGameOver: false, handled: true };
+      }
+      if (selectionKey === 'title_import_save') {
+        writeContext('Utilisez: import <json>');
+        return { endedByGameOver: false, handled: true };
+      }
+      if (selectionKey === 'return_title') {
+        gameState.roomId = 'title_screen';
+        configureTitleOptions();
         return { endedByGameOver: false, handled: true };
       }
       return { endedByGameOver: false, handled: false };
@@ -1861,11 +2070,19 @@
       pushHistory(input);
       writeContext(`> ${input.toLowerCase()}`);
 
+      if (input.toLowerCase().startsWith('import ')) {
+        const jsonString = input.slice(7).trim();
+        if (importSaveFromString(jsonString)) {
+          configureTitleOptions();
+        }
+        return;
+      }
+
       const parsed = parseCommand(input);
       const directionVerb = parsed.verb === 'go' && parsed.args[0] ? parsed.args[0] : '';
       const normalizedDirection = normalizeDirection(directionVerb);
       if (parsed.verb === 'help') {
-        writeContext('Commandes: help|?, look|l|examine|x, go|walk <direction>, n/s/e/w, inventory|i, choose <num>, undo, save, load, clear, sheet [nom], party');
+        writeContext('Commandes: help|?, look|l|examine|x, go|walk <direction>, n/s/e/w, inventory|i, choose <num>, undo, save, load, clear, export, import <json>, debug on/off, set <variable> <value>, flag <name> true/false, sheet [nom], party');
         return;
       }
       if (parsed.verb === 'look') {
@@ -1890,6 +2107,34 @@
       }
       if (parsed.verb === 'clear') {
         clearSave();
+        configureTitleOptions();
+        return;
+      }
+      if (parsed.verb === 'export') {
+        exportSaveToClipboard();
+        return;
+      }
+      if (parsed.verb === 'debug') {
+        gameState.debugMode = parsed.args[0] === 'on' ? true : parsed.args[0] === 'off' ? false : gameState.debugMode;
+        writeContext(`Debug mode: ${gameState.debugMode ? 'ON' : 'OFF'}`);
+        showDebugState();
+        return;
+      }
+      if (parsed.verb === 'set') {
+        const key = parsed.args[0];
+        const value = Number(parsed.args[1]);
+        if (!key || Number.isNaN(value) || !(key in variables)) return writeContext('Usage: set <variable> <value>');
+        variables[key] = value;
+        clampTrackedVariables();
+        showDebugState();
+        return;
+      }
+      if (parsed.verb === 'flag') {
+        const key = parsed.args[0];
+        const val = parsed.args[1];
+        if (!key || !['true','false'].includes(val) || !(key in flags)) return writeContext('Usage: flag <name> true/false');
+        flags[key] = val === 'true';
+        showDebugState();
         return;
       }
       if (parsed.verb === 'sheet') {
@@ -1969,9 +2214,15 @@
       }
     });
 
-    const loadedFromSave = loadGame({ silent: true });
-    if (!loadedFromSave) createCheckpoint('Début de partie');
-    writeContext(loadedFromSave ? 'Sauvegarde locale restaurée automatiquement.' : 'Chronique initialisée. Tapez "help" pour commencer.');
+    configureTitleOptions();
+    const shouldAutoload = hasSaveData() && URL_PARAMS.get('noautoload') !== '1';
+    if (shouldAutoload) {
+      loadGame({ silent: true });
+      writeContext('Sauvegarde locale restaurée automatiquement.');
+    } else {
+      gameState.roomId = 'title_screen';
+      writeContext('Écran titre initialisé. Tapez "help" pour commencer.');
+    }
     describeCurrentRoom();
     animationLoop();
   </script>
