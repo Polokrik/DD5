@@ -1,0 +1,198 @@
+# Clan d’Estain — Chronique Interactive
+## Master Prompt Context
+
+This file defines the narrative and structural goals of the project.
+
+Codex must follow AGENTS.md strictly.
+
+---
+
+# 🎯 PROJECT VISION
+
+Create a narrative point & click + parser adventure game adapting the real Tyranny of Dragons campaign played by the Clan d’Estain.
+
+The game must:
+- Be faithful to the real campaign logs.
+- Support canonical and “what if” divergences.
+- Use Mode A (unified group control).
+- Allow permanent death.
+- Support replacement characters.
+- Include serious and silly Game Over states.
+- Implement rollback to last decision checkpoint.
+
+The canonical timeline must always remain reachable.
+
+---
+
+# 📚 SOURCE MATERIAL
+
+Primary sources:
+- JDR DD5 2023 journal
+- Character sheets (Bjolnir, Darrin, Ellyjobell, Kairon, Malar, etc.)
+- Tyranny of Dragons official module
+
+Do NOT invent canonical names if present in logs.
+
+If data is missing, list assumptions explicitly.
+
+---
+
+# 🎮 CORE GAME STRUCTURE
+
+The game is divided into Acts:
+
+ACT I — Greenest in Flames  
+ACT II — Raider Camp & Hatchery  
+ACT III — Northern Journey  
+ACT IV — Naerytar / Lodge / Skyreach  
+ACT V — Rise of Tiamat & Council
+
+Each act must contain:
+- Rooms
+- Decision nodes
+- Conditional options based on party presence
+- Checkpoints
+- Variables impacted
+- Possible divergences
+
+---
+
+# 👥 GROUP SYSTEM
+
+Mode A — Unified Group
+
+The player controls the group as one entity.
+
+Each character:
+- Has skill tags
+- Has narrative abilities
+- Can be injured
+- Can die permanently
+- Can be absent
+- Can be replaced later
+
+Options appear conditionally:
+
+[Option – Bjolnir: Redemption]
+[Option – Malar: Stealth]
+[Option – Darrin: Wild Magic]
+
+If character not present → option not shown.
+
+---
+
+# ⚔️ RESOLUTION SYSTEM
+
+No visible dice.
+
+Resolution types:
+- Success
+- Success with cost
+- Failure
+- Critical failure
+- Death
+
+Combat is narrative-based, not mechanical RPG combat.
+
+Duel with Cyanwrath must:
+- Allow canonical defeat + survival.
+- Allow alternative outcomes.
+- Never force game over by default.
+
+---
+
+# 💀 GAME OVER SYSTEM
+
+Two types:
+
+1) Serious Game Over
+- Narrative collapse
+- Group death
+- Strategic failure
+
+2) Silly Game Over
+- Humorous failure
+- Overconfidence
+- Absurd decision
+
+After Game Over:
+- Restore last checkpoint.
+- Do NOT restart entire game.
+
+---
+
+# 🔁 CHECKPOINT SYSTEM
+
+Each major decision creates a snapshot of:
+- Characters states
+- Flags
+- Inventory
+- Variables
+- Act progression
+
+Rollback must restore all of these.
+
+---
+
+# 📊 GLOBAL VARIABLES
+
+Examples:
+- Reputation_Civilians
+- Reputation_Authorities
+- Chaos_Level
+- Group_Morale
+- Political_Trust
+- Dragon_Influence
+
+These must influence later acts.
+
+---
+
+# 🎨 VISUAL DIRECTION
+
+Pixel art, 32–48 color palette.
+Deterministic animation.
+No frame randomness.
+
+320x200 internal resolution scaled.
+
+---
+
+# ✍️ WRITING STYLE
+
+Language: French
+Tone: Epic, immersive, serious
+Dialogues: Short, character-driven
+No modern slang
+Silly Game Over allowed to include light irony
+
+---
+
+# 🧱 DATA-DRIVEN DESIGN
+
+All narrative and branching content must be structured in objects:
+
+- acts
+- rooms
+- characters
+- flags
+- variables
+- decisions
+- checkpoints
+
+Do NOT hard-code branching inside UI code.
+
+---
+
+# 🧪 BEFORE COMPLETION OF ANY FEATURE
+
+Codex must verify:
+
+- AGENTS.md respected
+- Deterministic rendering
+- Checkpoint integrity
+- No UI merging
+- Group logic respected
+- Writing consistent
+
+If any fail → revise before final output.
