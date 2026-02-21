@@ -58,9 +58,9 @@
     };
 
     const characters = {
-      bjolnir: { name: 'Bjolnir', state: 'active', mainStory: true, skills: ['redemption', 'leadership', 'diplomacy'], narrativeTags: ['ancien mercenaire', 'chef de fortune'] },
+      bjolnir: { name: 'Bjolnir', state: 'active', mainStory: true, skills: ['redemption', 'leadership', 'diplomacy', 'strategy'], narrativeTags: ['ancien mercenaire', 'chef de fortune'] },
       malar: { name: 'Malar', state: 'active', mainStory: true, skills: ['stealth'], narrativeTags: ['ombre urbaine', 'éclaireur'] },
-      darrin: { name: 'Darrin', state: 'active', mainStory: true, skills: ['wild_magic'], narrativeTags: ['arcaniste instable', 'provocateur'] },
+      darrin: { name: 'Darrin', state: 'active', mainStory: true, skills: ['wild_magic', 'arcana'], narrativeTags: ['arcaniste instable', 'provocateur'] },
       drekthar: { name: 'Drek’Thar', state: 'active', mainStory: true, skills: ['might', 'duel'], narrativeTags: ['vétéran taciturne', 'mur de fer'] },
       ellyjobell: { name: 'Ellyjobell', state: 'absent', mainStory: false, skills: ['arcana'], narrativeTags: ['érudite disparue'] },
       kairon: { name: 'Kairon', state: 'captured', mainStory: false, skills: ['strategy'], narrativeTags: ['stratège prisonnier'] },
@@ -75,9 +75,32 @@
       duelDone: false,
       actICompleted: false,
       keepLossApplied: false,
-      cyanwrathDead: false
+      cyanwrathDead: false,
+      eggsDestroyed: false,
+      actIIICompleted: false,
+      councilSessionInitialized: false,
+      councilConvocationDone: false,
+      councilDefenseDone: false,
+      councilProposalsDone: false,
+      metallicAudienceUnlocked: false,
+      metallicAudienceDone: false,
+      metallicAlliance: false,
+      actIVCompleted: false,
+      strongAlliance: false,
+      fragileAlliance: false,
+      fracturedAlliance: false,
+      limitedMilitarySupport: false
     };
-    const variables = { moraleGroupe: 0, chaos: 2 };
+    const variables = {
+      moraleGroupe: 0,
+      chaos: 2,
+      casualties: 0,
+      publicTrust: 0,
+      totalSupport: 0,
+      allianceStrength: 'none',
+      factionTrust: { harpers: 0, zhentarim: 0, cult: 0 },
+      councilReputation: { harpers: 0, gauntlet: 0, enclave: 0, zhentarim: 0, lords: 0 }
+    };
     const acts = { current: 'ACT_I', unlocked: ['ACT_I'] };
 
     const rooms = {
@@ -195,6 +218,13 @@
             requiresAllFlags: ['moulinDone', 'sanctuaireDone', 'duelDone'],
             forbiddenFlag: 'actICompleted',
             onSuccess: { setFlags: { actICompleted: true }, unlockActs: ['ACT_II'], checkpoint: 'End Act I', gotoRoom: 'greenest_keep' }
+          },
+          {
+            id: 'vers-conseil-waterdeep',
+            label: 'Acte IV — Convocation au Conseil de Waterdeep',
+            requiresFlag: 'actIIICompleted',
+            forbiddenFlag: 'actIVCompleted',
+            onSuccess: { setAct: 'ACT_IV', unlockActs: ['ACT_IV'], gotoRoom: 'waterdeep_council_hall', checkpoint: 'Début Act IV — Conseil de Waterdeep' }
           }
         ]
       },
@@ -290,6 +320,116 @@
             onSelect: 'silly_dance_cyanwrath'
           }
         ]
+      },
+      waterdeep_council_hall: {
+        id: 'waterdeep_council_hall',
+        title: 'Conseil de Waterdeep',
+        description: 'Sous les bannières des cités libres, Harpers, Gantelet, Enclave, Zhentarim et Alliance des Seigneurs attendent votre version des faits.',
+        objects: ['table du conseil', 'scribes', 'sceaux des factions'],
+        exits: {},
+        options: [
+          {
+            id: 'council-open-session',
+            label: 'Scène 1 — Ouvrir la convocation',
+            forbiddenFlag: 'councilConvocationDone',
+            effects: { message: 'Les regards se lèvent. Le Conseil exige des comptes sur les œufs, Cyanwrath et les pertes civiles.', publicTrust: 1 },
+            onSuccess: { setFlags: { councilConvocationDone: true }, gotoRoom: 'council_defense_floor', checkpoint: 'Scène 1 résolue — Convocation du Conseil' }
+          },
+          {
+            id: 'council-crown-self',
+            label: 'Option absurde — Se déclarer Roi de Waterdeep',
+            onSelect: 'silly_king_waterdeep'
+          }
+        ]
+      },
+      council_defense_floor: {
+        id: 'council_defense_floor',
+        title: 'Accusations et Défense',
+        description: 'On vous accuse d’avoir joué avec les œufs, le portail et les infiltrations. Chaque mot peut gagner des alliés — ou en perdre.',
+        objects: ['registre des pertes', 'scellés draconiques', 'protocole arcane'],
+        exits: {},
+        options: [
+          {
+            id: 'defense-honnete',
+            label: 'Ton honnête (Leadership)',
+            characterId: 'bjolnir',
+            skill: 'leadership',
+            resolution: { difficulty: 2, skill: 'leadership', risk: 'injury', deathType: 'replaceable' },
+            effects: { message: 'Vous assumez chaque décision et ses cicatrices. Le Conseil note une franchise rare.', councilReputation: { harpers: 2, gauntlet: 1, enclave: 1, zhentarim: -1, lords: 1 }, publicTrust: 2 },
+            onFailure: { message: 'Votre sincérité paraît maladroite. Les factions restent divisées.', councilReputation: { harpers: 1, gauntlet: 0, enclave: 0, zhentarim: 0, lords: 0 }, publicTrust: 0 },
+            onSuccess: { setFlags: { councilDefenseDone: true }, gotoRoom: 'council_strategy_floor', checkpoint: 'Scène 2 résolue — Défense honnête' },
+            onFailurePost: { setFlags: { councilDefenseDone: true }, gotoRoom: 'council_strategy_floor', checkpoint: 'Scène 2 résolue — Défense honnête' }
+          },
+          {
+            id: 'defense-pragmatique',
+            label: 'Ton pragmatique (Stratégie)',
+            characterId: 'bjolnir',
+            skill: 'strategy',
+            resolution: { difficulty: 3, skill: 'strategy', risk: 'injury', deathType: 'replaceable' },
+            effects: { message: 'Vous détaillez des choix froids mais efficaces. Les militaires approuvent, les idéalistes grincent.', councilReputation: { harpers: -1, gauntlet: 2, enclave: 0, zhentarim: 1, lords: 2 }, publicTrust: 0 },
+            onFailure: { message: 'Votre logique paraît sèche. Les objections s’accumulent.', councilReputation: { harpers: -1, gauntlet: 1, enclave: 0, zhentarim: 0, lords: 0 }, publicTrust: -1 },
+            onSuccess: { setFlags: { councilDefenseDone: true }, gotoRoom: 'council_strategy_floor', checkpoint: 'Scène 2 résolue — Défense pragmatique' },
+            onFailurePost: { setFlags: { councilDefenseDone: true }, gotoRoom: 'council_strategy_floor', checkpoint: 'Scène 2 résolue — Défense pragmatique' }
+          },
+          {
+            id: 'defense-manipulateur',
+            label: 'Ton manipulateur (Arcane)',
+            characterId: 'darrin',
+            skill: 'arcana',
+            resolution: { difficulty: 3, skill: 'arcana', risk: 'injury', deathType: 'replaceable' },
+            effects: { message: 'Vous présentez des preuves arcanes impeccables, orientées juste assez pour troubler vos rivaux.', councilReputation: { harpers: -1, gauntlet: 0, enclave: 1, zhentarim: 2, lords: -1 }, publicTrust: -1 },
+            onFailure: { message: 'Les mages du Conseil démontent vos artifices. La salle se refroidit.', councilReputation: { harpers: -1, gauntlet: -1, enclave: -1, zhentarim: 1, lords: -1 }, publicTrust: -2 },
+            onSuccess: { setFlags: { councilDefenseDone: true }, gotoRoom: 'council_strategy_floor', checkpoint: 'Scène 2 résolue — Défense manipulatrice' },
+            onFailurePost: { setFlags: { councilDefenseDone: true }, gotoRoom: 'council_strategy_floor', checkpoint: 'Scène 2 résolue — Défense manipulatrice' }
+          },
+          {
+            id: 'defense-arrogant',
+            label: 'Ton arrogant (Diplomatie)',
+            characterId: 'bjolnir',
+            skill: 'diplomacy',
+            resolution: { difficulty: 4, skill: 'diplomacy', risk: 'injury', deathType: 'replaceable' },
+            effects: { message: 'Votre assurance frôle l’insulte. Quelques puissants aiment, la plupart n’oublieront pas.', councilReputation: { harpers: -2, gauntlet: 0, enclave: -1, zhentarim: 2, lords: -2 }, publicTrust: -2 },
+            onFailure: { message: 'Le Conseil coupe votre tirade. Vous venez de perdre une partie de la salle.', councilReputation: { harpers: -2, gauntlet: -1, enclave: -1, zhentarim: 0, lords: -2 }, publicTrust: -3 },
+            onSuccess: { setFlags: { councilDefenseDone: true }, gotoRoom: 'council_strategy_floor', checkpoint: 'Scène 2 résolue — Défense arrogante' },
+            onFailurePost: { setFlags: { councilDefenseDone: true }, gotoRoom: 'council_strategy_floor', checkpoint: 'Scène 2 résolue — Défense arrogante' }
+          }
+        ]
+      },
+      council_strategy_floor: {
+        id: 'council_strategy_floor',
+        title: 'Propositions stratégiques',
+        description: 'Le Conseil exige un cap clair avant d’engager ses armées.',
+        objects: ['cartes de guerre', 'routes de ravitaillement', 'rapports d’espionnage'],
+        exits: {},
+        options: [
+          { id: 'strategy-metallic', label: 'Vote — Priorité aux dragons métalliques', effects: { message: 'Vous placez la diplomatie draconique au cœur de la campagne.', councilReputation: { harpers: 1, gauntlet: 0, enclave: 2, zhentarim: -1, lords: 1 }, publicTrust: 1 }, onSuccess: { setFlags: { councilProposalsDone: true }, onSelect: 'route_after_strategy', checkpoint: 'Scène 3 résolue — Vote stratégique' } },
+          { id: 'strategy-assault', label: 'Vote — Assaut frontal coordonné', effects: { message: 'Vous réclamez une frappe massive pour briser le culte sans attendre.', councilReputation: { harpers: -1, gauntlet: 2, enclave: -1, zhentarim: 0, lords: 2 }, publicTrust: 0 }, onSuccess: { setFlags: { councilProposalsDone: true }, onSelect: 'route_after_strategy', checkpoint: 'Scène 3 résolue — Vote stratégique' } },
+          { id: 'strategy-espionnage', label: 'Vote — Espionnage et infiltration', effects: { message: 'Vous privilégiez les réseaux, les doubles agents et les frappes ciblées.', councilReputation: { harpers: 2, gauntlet: -1, enclave: 0, zhentarim: 1, lords: 0 }, publicTrust: 1 }, onSuccess: { setFlags: { councilProposalsDone: true }, onSelect: 'route_after_strategy', checkpoint: 'Scène 3 résolue — Vote stratégique' } },
+          { id: 'strategy-sabotage', label: 'Vote — Sabotage des lignes du culte', effects: { message: 'Vous voulez ruiner la logistique ennemie avant toute bataille ouverte.', councilReputation: { harpers: 0, gauntlet: 1, enclave: 1, zhentarim: 2, lords: -1 }, publicTrust: -1 }, onSuccess: { setFlags: { councilProposalsDone: true }, onSelect: 'route_after_strategy', checkpoint: 'Scène 3 résolue — Vote stratégique' } }
+        ]
+      },
+      metallic_dragon_audience: {
+        id: 'metallic_dragon_audience',
+        title: 'Audience des dragons métalliques',
+        description: 'Argent, bronze et or observent vos gestes avec une patience millénaire.',
+        objects: ['trône draconique', 'serment ancien', 'écaille d’or'],
+        exits: {},
+        options: [
+          { id: 'dragons-persuade', label: 'Plaider pour l’alliance (Diplomatie)', characterId: 'bjolnir', skill: 'diplomacy', resolution: { difficulty: 3, skill: 'diplomacy', risk: 'injury', deathType: 'replaceable' }, effects: { message: 'Votre plaidoyer lie honneur et nécessité. Les anciens dragons acquiescent.', councilReputation: { harpers: 1, gauntlet: 1, enclave: 2, zhentarim: 0, lords: 2 }, publicTrust: 2 }, onSuccess: { setFlags: { metallicAlliance: true, metallicAudienceDone: true }, gotoRoom: 'council_resolution', checkpoint: 'Scène 4 résolue — Alliance métallique' }, onFailure: { message: 'Votre voix ne suffit pas. Les dragons restent neutres.', councilReputation: { enclave: -1, lords: -1 } }, onFailurePost: { setFlags: { metallicAlliance: false, metallicAudienceDone: true }, gotoRoom: 'council_resolution', checkpoint: 'Scène 4 résolue — Dragons neutres' } },
+          { id: 'dragons-offer-alliance', label: 'Offrir un pacte militaire (Leadership)', characterId: 'bjolnir', skill: 'leadership', resolution: { difficulty: 2, skill: 'leadership', risk: 'injury', deathType: 'replaceable' }, effects: { message: 'Votre serment de campagne convainc les dragons de soutenir la coalition.', councilReputation: { harpers: 1, gauntlet: 1, enclave: 1, zhentarim: 0, lords: 2 }, publicTrust: 1 }, onSuccess: { setFlags: { metallicAlliance: true, metallicAudienceDone: true }, gotoRoom: 'council_resolution', checkpoint: 'Scène 4 résolue — Alliance métallique' }, onFailure: { message: 'Le pacte est jugé prématuré. Les dragons diffèrent leur décision.', councilReputation: { lords: -1 } }, onFailurePost: { setFlags: { metallicAlliance: false, metallicAudienceDone: true }, gotoRoom: 'council_resolution', checkpoint: 'Scène 4 résolue — Dragons neutres' } },
+          { id: 'dragons-threaten-cult', label: 'Menacer le culte par démonstration (Stratégie)', characterId: 'bjolnir', skill: 'strategy', resolution: { difficulty: 3, skill: 'strategy', risk: 'injury', deathType: 'replaceable' }, effects: { message: 'Votre plan d’encerclement rassure les dragons quant au coût de leur engagement.', councilReputation: { gauntlet: 1, enclave: 1, zhentarim: 1, lords: 1 }, publicTrust: 0 }, onSuccess: { setFlags: { metallicAlliance: true, metallicAudienceDone: true }, gotoRoom: 'council_resolution', checkpoint: 'Scène 4 résolue — Alliance métallique' }, onFailure: { message: 'Les dragons rejettent toute pression. Ils resteront neutres pour l’instant.', councilReputation: { enclave: -1, lords: -1 } }, onFailurePost: { setFlags: { metallicAlliance: false, metallicAudienceDone: true }, gotoRoom: 'council_resolution', checkpoint: 'Scène 4 résolue — Dragons neutres' } },
+          { id: 'dragons-ride-selfie', label: 'Option absurde — Demander un selfie sur dragon', onSelect: 'silly_dragon_selfie' }
+        ]
+      },
+      council_resolution: {
+        id: 'council_resolution',
+        title: 'Résolution du Conseil',
+        description: 'Les factions votent l’effort de guerre final. Le poids de votre réputation décide de l’ampleur du soutien.',
+        objects: ['urne de vote', 'sceaux d’alliance', 'registre de campagne'],
+        exits: {},
+        options: [
+          { id: 'resolve-council-session', label: 'Scène 5 — Clore le Conseil et calculer le soutien', forbiddenFlag: 'actIVCompleted', onSelect: 'resolve_council' }
+        ]
       }
     };
 
@@ -335,6 +475,58 @@
       const room = rooms[gameState.roomId];
       const location = room?.title ?? 'Inconnu';
       statusEl.textContent = `Acte: ${acts.current} | Lieu: ${location} | Moral: ${variables.moraleGroupe} | Chaos: ${variables.chaos} | Checkpoints: ${checkpointSummary()}`;
+    }
+
+    function ensureCouncilVariables() {
+      if (!variables.factionTrust || typeof variables.factionTrust !== 'object') variables.factionTrust = { harpers: 0, zhentarim: 0, cult: 0 };
+      if (!variables.councilReputation || typeof variables.councilReputation !== 'object') variables.councilReputation = { harpers: 0, gauntlet: 0, enclave: 0, zhentarim: 0, lords: 0 };
+      ['harpers', 'gauntlet', 'enclave', 'zhentarim', 'lords'].forEach(key => {
+        if (typeof variables.councilReputation[key] !== 'number') variables.councilReputation[key] = 0;
+      });
+      if (typeof variables.casualties !== 'number') variables.casualties = 0;
+      if (typeof variables.publicTrust !== 'number') variables.publicTrust = 0;
+      if (typeof variables.totalSupport !== 'number') variables.totalSupport = 0;
+      if (typeof variables.allianceStrength !== 'string') variables.allianceStrength = 'none';
+    }
+
+    function applyCouncilReputationDelta(delta = {}) {
+      ensureCouncilVariables();
+      Object.entries(delta).forEach(([key, value]) => {
+        if (typeof value !== 'number') return;
+        if (typeof variables.councilReputation[key] !== 'number') variables.councilReputation[key] = 0;
+        variables.councilReputation[key] += value;
+      });
+    }
+
+    function initializeCouncilSessionIfNeeded() {
+      if (flags.councilSessionInitialized) return;
+      ensureCouncilVariables();
+      variables.councilReputation = { harpers: 0, gauntlet: 0, enclave: 0, zhentarim: 0, lords: 0 };
+      variables.casualties = Math.max(variables.casualties, Math.max(0, variables.chaos - 1));
+
+      const trust = variables.factionTrust;
+      applyCouncilReputationDelta({
+        harpers: trust.harpers ?? 0,
+        zhentarim: trust.zhentarim ?? 0,
+        gauntlet: Math.max(0, (trust.harpers ?? 0) - (trust.cult ?? 0)),
+        enclave: Math.max(0, (trust.harpers ?? 0) - 1),
+        lords: Math.max(-1, (trust.harpers ?? 0) - Math.max(0, trust.cult ?? 0))
+      });
+
+      if (flags.eggsDestroyed) applyCouncilReputationDelta({ harpers: 2, gauntlet: 1, enclave: 1, zhentarim: -2, lords: 1 });
+      else applyCouncilReputationDelta({ harpers: -1, gauntlet: -1, enclave: 1, zhentarim: 1, lords: -1 });
+      if (flags.cyanwrathDead) applyCouncilReputationDelta({ gauntlet: 1, lords: 1 });
+      if (variables.casualties >= 4) applyCouncilReputationDelta({ harpers: -1, gauntlet: -1, enclave: -2, zhentarim: 0, lords: -2 });
+      if (variables.moraleGroupe >= 2) applyCouncilReputationDelta({ harpers: 1, gauntlet: 1, enclave: 1, zhentarim: 0, lords: 1 });
+
+      variables.publicTrust = Math.max(-5, Math.min(5, variables.moraleGroupe - Math.floor(variables.casualties / 2) + (flags.cyanwrathDead ? 1 : 0)));
+      flags.councilSessionInitialized = true;
+      flags.councilConvocationDone = false;
+      flags.councilDefenseDone = false;
+      flags.councilProposalsDone = false;
+      flags.metallicAudienceDone = false;
+      flags.metallicAlliance = false;
+      writeContext('Le protocole du Conseil est ouvert. Les réputations de faction sont recalculées selon vos actes passés.');
     }
 
     function isSkillAvailable(characterId, requiredSkill) {
@@ -554,6 +746,10 @@
     function describeCurrentRoom() {
       const room = rooms[gameState.roomId];
       if (!room) return;
+      if (room.id === 'waterdeep_council_hall') {
+        acts.current = 'ACT_IV';
+        initializeCouncilSessionIfNeeded();
+      }
       if (room.id === 'greenest_keep' && variables.chaos > 4 && !flags.keepLossApplied) {
         flags.keepLossApplied = true;
         variables.moraleGroupe -= 1;
@@ -652,20 +848,29 @@
       const merged = safeClone(outcome);
       merged.variableDelta.moraleGroupe += branch.variableDelta?.moraleGroupe ?? 0;
       merged.variableDelta.chaos += branch.variableDelta?.chaos ?? 0;
+      merged.variableDelta.publicTrust += branch.variableDelta?.publicTrust ?? branch.publicTrust ?? 0;
+      if (branch.councilReputation) {
+        Object.entries(branch.councilReputation).forEach(([key, value]) => {
+          if (typeof value !== 'number') return;
+          merged.variableDelta.councilReputation[key] = (merged.variableDelta.councilReputation[key] ?? 0) + value;
+        });
+      }
       if (branch.message) merged.message = branch.message;
       if (branch.characterChanges?.length) merged.characterChanges.push(...branch.characterChanges);
       merged.post = {
         setFlags: branch.setFlags ?? {},
         gotoRoom: branch.gotoRoom ?? null,
         checkpoint: branch.checkpoint ?? null,
-        unlockActs: branch.unlockActs ?? []
+        unlockActs: branch.unlockActs ?? [],
+        setAct: branch.setAct ?? null,
+        onSelect: branch.onSelect ?? null
       };
       return merged;
     }
 
     function resolveOutcome(option, score) {
       if (!option?.resolution) {
-        return mergeBranchEffects({ success: true, endedByGameOver: false, message: option.effects?.message ?? null, variableDelta: { moraleGroupe: option.effects?.moraleGroupe ?? 0, chaos: option.effects?.chaos ?? 0 }, characterChanges: [] }, option.onSuccess);
+        return mergeBranchEffects({ success: true, endedByGameOver: false, message: option.effects?.message ?? null, variableDelta: { moraleGroupe: option.effects?.moraleGroupe ?? 0, chaos: option.effects?.chaos ?? 0, publicTrust: option.effects?.publicTrust ?? 0, councilReputation: safeClone(option.effects?.councilReputation ?? {}) }, characterChanges: [] }, option.onSuccess);
       }
       const character = characters[option.characterId];
       if (!character) {
@@ -682,13 +887,15 @@
           message: option.effects?.message ?? null,
           variableDelta: {
             moraleGroupe: option.effects?.moraleGroupe ?? 0,
-            chaos: option.effects?.chaos ?? 0
+            chaos: option.effects?.chaos ?? 0,
+            publicTrust: option.effects?.publicTrust ?? 0,
+            councilReputation: safeClone(option.effects?.councilReputation ?? {})
           },
           characterChanges: []
         }, option.onSuccess);
       }
 
-      let baseOutcome = { success: false, endedByGameOver: false, message: 'Échec sans conséquence définie.', variableDelta: { moraleGroupe: 0, chaos: 0 }, characterChanges: [] };
+      let baseOutcome = { success: false, endedByGameOver: false, message: 'Échec sans conséquence définie.', variableDelta: { moraleGroupe: 0, chaos: 0, publicTrust: 0, councilReputation: {} }, characterChanges: [] };
       if (option.resolution.risk === 'injury') {
         if (character.state === 'active') baseOutcome = { ...baseOutcome, message: `${character.name} est blessé.`, characterChanges: [{ id: option.characterId, toState: 'injured' }] };
         else if (character.state === 'injured') baseOutcome = { ...baseOutcome, message: `${character.name} est à terre.`, characterChanges: [{ id: option.characterId, toState: 'down' }] };
@@ -711,11 +918,13 @@
       (post.unlockActs ?? []).forEach(actId => {
         if (!acts.unlocked.includes(actId)) acts.unlocked.push(actId);
       });
+      if (post.setAct) acts.current = post.setAct;
       if (post.gotoRoom) gameState.roomId = post.gotoRoom;
       if (post.checkpoint) createCheckpoint(post.checkpoint);
       if (post.setFlags?.actICompleted) fireRosterTimelineTrigger('END_ACT_I');
       if (post.setFlags?.actIICompleted) fireRosterTimelineTrigger('END_ACT_II');
       if (post.timelineTrigger) fireRosterTimelineTrigger(post.timelineTrigger);
+      if (post.onSelect) handleSpecialSelection(post.onSelect);
     }
 
     function applyOutcome(outcome) {
@@ -734,6 +943,9 @@
 
       variables.moraleGroupe += outcome.variableDelta.moraleGroupe ?? 0;
       variables.chaos += outcome.variableDelta.chaos ?? 0;
+      variables.publicTrust += outcome.variableDelta.publicTrust ?? 0;
+      applyCouncilReputationDelta(outcome.variableDelta.councilReputation ?? {});
+      variables.publicTrust = Math.max(-10, Math.min(10, variables.publicTrust));
       clampTrackedVariables();
       if (outcome.message) writeContext(outcome.message);
       applyPostEffects(outcome.post);
@@ -741,18 +953,73 @@
       return { endedByGameOver: false, success: outcome.success };
     }
 
+
+    function handleSpecialSelection(selectionKey) {
+      const sillyMessages = {
+        silly_wave_lennithon: 'Vous saluez Lennithon. Il répond par un cône d’acide, protocolaire et terminal.',
+        silly_join_cult: 'Votre offre de service enthousiasme les kobolds: ils exigent d’abord un sacrifice. Vous.',
+        silly_dance_cyanwrath: 'Vous lancez un pas de danse martial. Cyanwrath, offensé artistiquement, met fin au spectacle.',
+        silly_king_waterdeep: 'Vous réclamez la couronne de Waterdeep. Le protocole vous couronne surtout d’un bannissement immédiat.',
+        silly_dragon_selfie: 'Vous demandez un selfie en selle. Le dragon d’airain vous expédie dehors d’un souffle magistral.'
+      };
+      if (sillyMessages[selectionKey]) {
+        triggerGameOver('silly', sillyMessages[selectionKey]);
+        return { endedByGameOver: true, handled: true };
+      }
+      if (selectionKey === 'route_after_strategy') {
+        ensureCouncilVariables();
+        const excessiveCasualties = variables.casualties > 3;
+        flags.metallicAudienceUnlocked = variables.moraleGroupe >= 2 && !excessiveCasualties;
+        if (flags.metallicAudienceUnlocked) {
+          gameState.roomId = 'metallic_dragon_audience';
+          writeContext('Le Conseil vous accorde une audience auprès des dragons métalliques.');
+        } else {
+          flags.metallicAudienceDone = true;
+          flags.metallicAlliance = false;
+          gameState.roomId = 'council_resolution';
+          writeContext('Les dragons métalliques refusent l’audience: moral insuffisant ou pertes civiles trop lourdes.');
+        }
+        return { endedByGameOver: false, handled: true };
+      }
+      if (selectionKey === 'resolve_council') {
+        ensureCouncilVariables();
+        const totalSupport = Object.values(variables.councilReputation).reduce((sum, value) => sum + value, 0);
+        variables.totalSupport = totalSupport;
+        flags.strongAlliance = false;
+        flags.fragileAlliance = false;
+        flags.fracturedAlliance = false;
+        flags.limitedMilitarySupport = false;
+
+        if (totalSupport >= 9) {
+          variables.allianceStrength = 'high';
+          flags.strongAlliance = true;
+          writeContext('Le Conseil vote un soutien massif. Les armées alliées convergeront en force pour l’Acte V.');
+        } else if (totalSupport >= 3) {
+          variables.allianceStrength = 'medium';
+          flags.fragileAlliance = true;
+          writeContext('Le Conseil accepte une coalition partielle. Le soutien sera réel mais inégal en Acte V.');
+        } else {
+          variables.allianceStrength = 'low';
+          flags.fracturedAlliance = true;
+          flags.limitedMilitarySupport = true;
+          writeContext('Le vote se fracture. L’alliance restera morcelée avec un appui militaire limité en Acte V.');
+        }
+        flags.actIVCompleted = true;
+        acts.current = 'ACT_V';
+        if (!acts.unlocked.includes('ACT_V')) acts.unlocked.push('ACT_V');
+        createCheckpoint('End Act IV');
+        return { endedByGameOver: false, handled: true };
+      }
+      return { endedByGameOver: false, handled: false };
+    }
+
     function applyOptionEffects(option) {
       if (gameState.roomId === 'greenest_keep') {
         variables.chaos += 1;
       }
-      const sillyMessages = {
-        silly_wave_lennithon: 'Vous saluez Lennithon. Il répond par un cône d’acide, protocolaire et terminal.',
-        silly_join_cult: 'Votre offre de service enthousiasme les kobolds: ils exigent d’abord un sacrifice. Vous.',
-        silly_dance_cyanwrath: 'Vous lancez un pas de danse martial. Cyanwrath, offensé artistiquement, met fin au spectacle.'
-      };
-      if (option.onSelect && sillyMessages[option.onSelect]) {
-        triggerGameOver('silly', sillyMessages[option.onSelect]);
-        return { endedByGameOver: true };
+      if (option.onSelect) {
+        const special = handleSpecialSelection(option.onSelect);
+        if (special.handled) return { endedByGameOver: special.endedByGameOver, success: !special.endedByGameOver };
       }
 
       const score = computeActionScore(option, option.characterId);
