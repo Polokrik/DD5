@@ -1,0 +1,549 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Clan d’Estain — Squelette moteur</title>
+  <style>
+    :root { color-scheme: dark; }
+    body { margin: 0; background: #111; color: #ddd; font-family: monospace; display: grid; place-items: center; min-height: 100vh; }
+    .game-shell { width: min(96vw, 980px); display: grid; gap: 10px; }
+    canvas { width: 100%; max-width: 960px; aspect-ratio: 16 / 10; border: 2px solid #444; background: #1f1f1f; image-rendering: pixelated; }
+    .window { border: 2px solid #444; background: #191919; padding: 10px; }
+    #statusStrip { font-size: 0.95rem; padding: 8px 10px; border: 2px solid #444; background: #151515; }
+    #context { min-height: 210px; max-height: 35vh; overflow-y: auto; white-space: pre-wrap; }
+    #promptLine { display: flex; gap: 8px; align-items: center; }
+    #commandInput { flex: 1; border: 1px solid #555; background: #101010; color: #ddd; padding: 8px; font: inherit; }
+  </style>
+</head>
+<body>
+  <main class="game-shell">
+    <canvas id="gameCanvas" width="320" height="200" aria-label="Vue du monde"></canvas>
+    <section id="statusStrip" aria-live="polite"></section>
+    <section class="window" id="context" aria-live="polite"></section>
+    <section class="window" id="promptLine">
+      <span>&gt;</span>
+      <input id="commandInput" type="text" autocomplete="off" placeholder="Entrez une commande (help pour l'aide)" />
+    </section>
+  </main>
+
+  <script>
+    const LOGICAL_WIDTH = 320;
+    const LOGICAL_HEIGHT = 200;
+    const VERBS = ['look', 'l', 'examine', 'x', 'go', 'walk', 'help', '?', 'inventory', 'i', 'undo', 'choose'];
+    const DIRECTION_ALIASES = {
+      n: 'nord', nord: 'nord',
+      s: 'sud', sud: 'sud',
+      e: 'est', est: 'est',
+      w: 'ouest', ouest: 'ouest'
+    };
+    const PULSE_LUT = [0, 0, 1, 1, 2, 1, 1, 0, 0, -1, -1, -2, -1, -1, 0, 0];
+
+    const characters = {
+      bjolnir: { name: 'Bjolnir', state: 'active', skills: ['redemption', 'leadership'] },
+      malar: { name: 'Malar', state: 'injured', skills: ['stealth'] },
+      darrin: { name: 'Darrin', state: 'active', skills: ['wild_magic'] },
+      ellyjobell: { name: 'Ellyjobell', state: 'absent', skills: ['arcana'] },
+      kairon: { name: 'Kairon', state: 'captured', skills: ['strategy'] }
+    };
+
+    const flags = { hasSeenSquare: false, lennithonInsulted: false };
+    const variables = { moraleGroupe: 0, chaos: 1 };
+    const acts = { current: 'ACT_I', unlocked: ['ACT_I'] };
+
+    const rooms = {
+      place: {
+        id: 'place',
+        title: 'Place de Greenest',
+        description: 'La ville brûle. Les cloches appellent à la résistance.',
+        objects: ['cloches', 'civils', 'fumée'],
+        exits: { nord: 'portes' },
+        options: [
+          {
+            id: 'rallier-civils',
+            label: 'Option – Bjolnir: Rallier les civils',
+            characterId: 'bjolnir',
+            skill: 'leadership',
+            resolution: { difficulty: 2, skill: 'leadership', risk: 'injury', deathType: 'replaceable' },
+            effects: { moraleGroupe: 1, chaos: -1, message: 'Les civils se reforment autour de vous.' }
+          },
+          {
+            id: 'passer-ombres',
+            label: 'Option – Malar: Passer par les ombres',
+            characterId: 'malar',
+            skill: 'stealth',
+            resolution: { difficulty: 2, skill: 'stealth', risk: 'capture', deathType: 'replaceable' },
+            effects: { chaos: -1, message: 'Votre groupe contourne discrètement les pillards.' }
+          },
+          {
+            id: 'insulter-lennithon',
+            label: 'Option – Darrin: Insulter Lennithon (très mauvaise idée)',
+            characterId: 'darrin',
+            skill: 'wild_magic',
+            onSelect: 'silly_lennithon'
+          }
+        ]
+      },
+      portes: {
+        id: 'portes',
+        title: 'Portes de Greenest',
+        description: 'Des silhouettes draconiques gardent la route nord.',
+        objects: ['palissade', 'drakônides'],
+        exits: { sud: 'place' },
+        options: [
+          {
+            id: 'canaliser-magie',
+            label: 'Option – Darrin: Canaliser la magie',
+            characterId: 'darrin',
+            skill: 'wild_magic',
+            resolution: { difficulty: 8, skill: 'wild_magic', risk: 'death', deathType: 'replaceable' },
+            effects: { moraleGroupe: 1, message: 'Une lueur bleue tient les assaillants à distance.' }
+          },
+          {
+            id: 'charge-desesperee',
+            label: 'Option – Bjolnir: Charge désespérée contre les drakônides',
+            characterId: 'bjolnir',
+            skill: 'leadership',
+            resolution: { difficulty: 9, skill: 'leadership', risk: 'death', deathType: 'definitive' },
+            effects: { message: 'Vous ouvrez une brèche héroïque.' }
+          }
+        ]
+      }
+    };
+
+    const gameState = {
+      roomId: 'place',
+      inventory: ['torche'],
+      checkpoints: [],
+      gameOver: null,
+      tick: 0,
+      commandHistory: [],
+      historyCursor: -1
+    };
+
+    const canvas = document.getElementById('gameCanvas');
+    const ctx = canvas.getContext('2d');
+    ctx.imageSmoothingEnabled = false;
+
+    const statusEl = document.getElementById('statusStrip');
+    const contextEl = document.getElementById('context');
+    const inputEl = document.getElementById('commandInput');
+
+    function safeClone(value) {
+      return typeof structuredClone === 'function' ? structuredClone(value) : JSON.parse(JSON.stringify(value));
+    }
+
+    function writeContext(text) {
+      const line = document.createElement('div');
+      line.textContent = text;
+      contextEl.appendChild(line);
+      contextEl.scrollTop = contextEl.scrollHeight;
+    }
+
+    function checkpointSummary() {
+      const count = gameState.checkpoints.length;
+      const latest = peekCheckpoint();
+      if (!latest) return 'Aucun';
+      const stamp = new Date(latest.timestamp).toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' });
+      return `${count} (${latest.reason}, ${stamp})`;
+    }
+
+    function updateStatusStrip() {
+      const room = rooms[gameState.roomId];
+      const location = room?.title ?? 'Inconnu';
+      statusEl.textContent = `Acte: ${acts.current} | Lieu: ${location} | Moral: ${variables.moraleGroupe} | Chaos: ${variables.chaos} | Checkpoints: ${checkpointSummary()}`;
+    }
+
+    function isSkillAvailable(characterId, requiredSkill) {
+      const character = characters[characterId];
+      if (!character) return false;
+      const allowedStates = new Set(['active', 'injured']);
+      return allowedStates.has(character.state) && character.skills.includes(requiredSkill);
+    }
+
+    function computeAvailableOptions(roomId) {
+      const room = rooms[roomId];
+      if (!room?.options) return [];
+      return room.options.filter(option => isSkillAvailable(option.characterId, option.skill));
+    }
+
+    function peekCheckpoint() {
+      return gameState.checkpoints.length > 0 ? gameState.checkpoints[gameState.checkpoints.length - 1] : null;
+    }
+
+    function createCheckpoint(reason = 'Décision majeure') {
+      const snapshot = {
+        reason,
+        timestamp: Date.now(),
+        gameState: safeClone({ ...gameState, checkpoints: [] }),
+        characters: safeClone(characters),
+        flags: safeClone(flags),
+        variables: safeClone(variables),
+        acts: safeClone(acts)
+      };
+      gameState.checkpoints.push(snapshot);
+      if (gameState.checkpoints.length > 20) {
+        gameState.checkpoints.splice(0, gameState.checkpoints.length - 20);
+      }
+      updateStatusStrip();
+      return snapshot;
+    }
+
+    function restoreCheckpoint(checkpoint = null) {
+      if (gameState.checkpoints.length === 0) return false;
+      let restoredEntry = checkpoint;
+      if (!restoredEntry) {
+        restoredEntry = gameState.checkpoints.pop();
+      } else {
+        const idx = gameState.checkpoints.indexOf(restoredEntry);
+        if (idx === -1) return false;
+        gameState.checkpoints.splice(idx, 1);
+      }
+      const restoredGameState = safeClone(restoredEntry.gameState);
+      gameState.roomId = restoredGameState.roomId;
+      gameState.inventory = restoredGameState.inventory;
+      gameState.gameOver = null;
+      gameState.tick = restoredGameState.tick;
+      gameState.commandHistory = restoredGameState.commandHistory || [];
+      gameState.historyCursor = gameState.commandHistory.length;
+
+      Object.keys(characters).forEach(id => delete characters[id]);
+      Object.assign(characters, safeClone(restoredEntry.characters));
+      Object.keys(flags).forEach(key => delete flags[key]);
+      Object.assign(flags, safeClone(restoredEntry.flags));
+      Object.keys(variables).forEach(key => delete variables[key]);
+      Object.assign(variables, safeClone(restoredEntry.variables));
+      Object.keys(acts).forEach(key => delete acts[key]);
+      Object.assign(acts, safeClone(restoredEntry.acts));
+      updateStatusStrip();
+      return true;
+    }
+
+    function triggerGameOver(type, message) {
+      gameState.gameOver = { type, message };
+      writeContext(`☠ GAME OVER (${type}) — ${message}`);
+      const restored = restoreCheckpoint();
+      writeContext(restored ? '↩ Retour au dernier checkpoint.' : 'Aucun checkpoint disponible.');
+      describeCurrentRoom();
+    }
+
+    function describeCurrentRoom() {
+      const room = rooms[gameState.roomId];
+      if (!room) return;
+      writeContext(`[${room.title}] ${room.description}`);
+      const options = computeAvailableOptions(room.id);
+      const exits = Object.keys(room.exits ?? {});
+      writeContext(`Sorties: ${exits.length ? exits.join(', ') : 'aucune'}`);
+      if (room.objects?.length) writeContext(`Éléments visibles: ${room.objects.join(', ')}`);
+      if (options.length === 0) {
+        writeContext('Aucune option de groupe disponible.');
+      } else {
+        options.forEach((option, index) => writeContext(`${index + 1}. ${option.label}`));
+      }
+      updateStatusStrip();
+    }
+
+    function normalizeDirection(token) {
+      return DIRECTION_ALIASES[token] || null;
+    }
+
+    function moveTo(directionToken) {
+      const direction = normalizeDirection(directionToken);
+      if (!direction) {
+        writeContext('Direction inconnue. Utilisez nord/sud/est/ouest.');
+        return;
+      }
+      if (direction === 'nord' && gameState.roomId === 'portes' && flags.lennithonInsulted) {
+        triggerGameOver('serious', 'Le chaos est total. Greenest tombe sans appel.');
+        return;
+      }
+      const room = rooms[gameState.roomId];
+      const destinationId = room?.exits?.[direction];
+      if (!destinationId) {
+        writeContext('Impossible d’aller par là.');
+        return;
+      }
+      createCheckpoint(`Move: ${gameState.roomId} -> ${destinationId}`);
+      gameState.roomId = destinationId;
+      variables.chaos += 1;
+      describeCurrentRoom();
+    }
+
+    function clampTrackedVariables() {
+      variables.moraleGroupe = Math.max(-5, Math.min(5, variables.moraleGroupe));
+      variables.chaos = Math.max(-5, Math.min(5, variables.chaos));
+    }
+
+    function canTransitionState(fromState, toState) {
+      const transitions = {
+        active: new Set(['injured', 'captured']),
+        injured: new Set(['down', 'captured']),
+        down: new Set(['dead'])
+      };
+      return transitions[fromState]?.has(toState) ?? false;
+    }
+
+    function applyTransition(character, toState) {
+      if (!character) return false;
+      if (character.state === toState) return true;
+      if (!canTransitionState(character.state, toState)) return false;
+      character.state = toState;
+      return true;
+    }
+
+    function resolveAction(option) {
+      if (!option.resolution) return { success: true, actionScore: null, endedByGameOver: false };
+      clampTrackedVariables();
+      const character = characters[option.characterId];
+      if (!character) {
+        return { success: false, actionScore: null, endedByGameOver: false, message: 'Aucun personnage valide pour cette action.' };
+      }
+      if (['dead', 'captured', 'absent'].includes(character.state)) {
+        return { success: false, actionScore: null, endedByGameOver: false, message: `${character.name} ne peut pas agir.` };
+      }
+
+      const stateModifierMap = { active: 1, injured: 0, down: -2 };
+      const stateModifier = stateModifierMap[character.state] ?? -2;
+      const actionScore = 2 + variables.moraleGroupe - variables.chaos + stateModifier;
+      if (actionScore >= option.resolution.difficulty) {
+        return { success: true, actionScore, endedByGameOver: false };
+      }
+
+      if (option.resolution.risk === 'injury') {
+        let message = `${character.name} tient sa position.`;
+        if (applyTransition(character, 'injured')) {
+          message = `${character.name} est blessé.`;
+        } else if (applyTransition(character, 'down')) {
+          message = `${character.name} est à terre.`;
+        } else if (applyTransition(character, 'dead')) {
+          message = `${character.name} meurt.`;
+        }
+        return { success: false, actionScore, endedByGameOver: false, message };
+      }
+
+      if (option.resolution.risk === 'capture') {
+        const captured = applyTransition(character, 'captured');
+        return { success: false, actionScore, endedByGameOver: false, message: captured ? `${character.name} est capturé.` : `${character.name} échappe de justesse à la capture.` };
+      }
+
+      if (option.resolution.risk === 'death') {
+        if (option.resolution.deathType === 'definitive') {
+          triggerGameOver('definitive', `${character.name} tombe et le destin du groupe se brise.`);
+          return { success: false, actionScore, endedByGameOver: true, message: null };
+        }
+        character.state = 'dead';
+        return { success: false, actionScore, endedByGameOver: false, message: `${character.name} meurt au combat.` };
+      }
+
+      return { success: false, actionScore, endedByGameOver: false, message: 'Échec sans conséquence définie.' };
+    }
+
+    function applyOptionEffects(option) {
+      const resolution = resolveAction(option);
+      if (!resolution.success) {
+        if (resolution.message) writeContext(resolution.message);
+        updateStatusStrip();
+        return { endedByGameOver: resolution.endedByGameOver };
+      }
+
+      if (option.onSelect === 'silly_lennithon') {
+        flags.lennithonInsulted = true;
+        triggerGameOver('silly', 'Vous insultez Lennithon. Le dragon apprécie peu votre éloquence.');
+        return { endedByGameOver: true };
+      }
+      if (option.effects) {
+        variables.moraleGroupe += option.effects.moraleGroupe ?? 0;
+        variables.chaos += option.effects.chaos ?? 0;
+        clampTrackedVariables();
+        if (option.effects.message) writeContext(option.effects.message);
+      }
+      updateStatusStrip();
+      return { endedByGameOver: false };
+    }
+
+    function chooseOption(indexToken) {
+      const index = Number.parseInt(indexToken, 10);
+      const options = computeAvailableOptions(gameState.roomId);
+      if (Number.isNaN(index) || index < 1 || index > options.length) {
+        writeContext('Choix invalide. Utilisez choose <numéro>.');
+        return;
+      }
+      createCheckpoint(`Décision risquée: ${options[index - 1].id}`);
+      const result = applyOptionEffects(options[index - 1]);
+      if (!result?.endedByGameOver) describeCurrentRoom();
+    }
+
+    function showInventory() {
+      writeContext(gameState.inventory.length ? `Inventaire: ${gameState.inventory.join(', ')}` : 'Inventaire vide.');
+    }
+
+    function undoToCheckpoint() {
+      const restored = restoreCheckpoint();
+      writeContext(restored ? '↩ Annulation: retour au dernier checkpoint.' : 'Aucun checkpoint à restaurer.');
+      if (restored) describeCurrentRoom();
+    }
+
+    function autocompleteTokens() {
+      const room = rooms[gameState.roomId];
+      const exits = Object.keys(room?.exits ?? {});
+      const objects = room?.objects ?? [];
+      const options = computeAvailableOptions(gameState.roomId).map((_, idx) => String(idx + 1));
+      const tokens = [...VERBS, ...Object.keys(DIRECTION_ALIASES), ...exits, ...objects, ...options, 'dragon'];
+      return Array.from(new Set(tokens));
+    }
+
+    function autocompleteInput() {
+      const raw = inputEl.value.trim().toLowerCase();
+      if (!raw) return;
+      const candidates = autocompleteTokens().filter(token => token.startsWith(raw));
+      if (candidates.length === 1) {
+        inputEl.value = candidates[0];
+      } else if (candidates.length > 1) {
+        writeContext(`Suggestions: ${candidates.slice(0, 8).join(', ')}`);
+      }
+    }
+
+    function pushHistory(command) {
+      gameState.commandHistory.push(command);
+      gameState.historyCursor = gameState.commandHistory.length;
+    }
+
+    function navigateHistory(direction) {
+      if (!gameState.commandHistory.length) return;
+      gameState.historyCursor += direction;
+      if (gameState.historyCursor < 0) gameState.historyCursor = 0;
+      if (gameState.historyCursor > gameState.commandHistory.length) gameState.historyCursor = gameState.commandHistory.length;
+      inputEl.value = gameState.historyCursor === gameState.commandHistory.length
+        ? ''
+        : gameState.commandHistory[gameState.historyCursor];
+    }
+
+    function parseCommand(rawInput) {
+      const input = rawInput.trim().toLowerCase();
+      if (!input) return { verb: '', args: [] };
+      const tokens = input.split(/\s+/);
+      const first = tokens[0];
+      const directionOnly = normalizeDirection(first);
+      if (directionOnly && tokens.length === 1) {
+        return { verb: 'go', args: [first] };
+      }
+      if (first === '?') return { verb: 'help', args: [] };
+      if (['l', 'examine', 'x'].includes(first)) return { verb: 'look', args: tokens.slice(1) };
+      if (first === 'walk') return { verb: 'go', args: tokens.slice(1) };
+      if (first === 'i') return { verb: 'inventory', args: [] };
+      return { verb: first, args: tokens.slice(1) };
+    }
+
+    function handleCommand(rawInput) {
+      const input = rawInput.trim();
+      if (!input) return;
+      pushHistory(input);
+      writeContext(`> ${input.toLowerCase()}`);
+
+      const parsed = parseCommand(input);
+      const directionVerb = parsed.verb === 'go' && parsed.args[0] ? parsed.args[0] : '';
+      const normalizedDirection = normalizeDirection(directionVerb);
+      if (parsed.verb === 'help') {
+        writeContext('Commandes: help|?, look|l|examine|x, go|walk <direction>, n/s/e/w, inventory|i, choose <num>, undo');
+        return;
+      }
+      if (parsed.verb === 'look') {
+        describeCurrentRoom();
+        return;
+      }
+      if (parsed.verb === 'inventory') {
+        showInventory();
+        return;
+      }
+      if (parsed.verb === 'undo') {
+        undoToCheckpoint();
+        return;
+      }
+      if (parsed.verb === 'choose') {
+        chooseOption(parsed.args[0]);
+        return;
+      }
+      if (parsed.verb === 'go') {
+        if (directionVerb === 'dragon') {
+          triggerGameOver('silly', 'Vous provoquez un dragon avec panache.');
+          return;
+        }
+        if (!normalizedDirection) {
+          writeContext('Usage: go <nord|sud|est|ouest>.');
+          return;
+        }
+        moveTo(directionVerb);
+        return;
+      }
+      writeContext('Commande non reconnue. Essayez "help".');
+    }
+
+    function render() {
+      const room = rooms[gameState.roomId];
+      const pulse = PULSE_LUT[gameState.tick % PULSE_LUT.length];
+      ctx.fillStyle = '#1d1d1d';
+      ctx.fillRect(0, 0, LOGICAL_WIDTH, LOGICAL_HEIGHT);
+      ctx.fillStyle = '#6b1f1f';
+      ctx.fillRect(0, 140, LOGICAL_WIDTH, 60);
+      ctx.fillStyle = '#d9b36c';
+      ctx.fillRect(24, 92, 40, 54);
+      ctx.fillStyle = '#893333';
+      ctx.fillRect(292, 8 + pulse, 14, 14);
+      ctx.fillStyle = '#dcdcdc';
+      ctx.font = '8px monospace';
+      ctx.fillText(`Acte: ${acts.current}`, 8, 12);
+      ctx.fillText(`Lieu: ${room?.title ?? 'Inconnu'}`, 8, 24);
+    }
+
+    function animationLoop() {
+      gameState.tick += 1;
+      render();
+      requestAnimationFrame(animationLoop);
+    }
+
+    inputEl.addEventListener('keydown', event => {
+      if (event.key === 'Enter') {
+        handleCommand(inputEl.value);
+        inputEl.value = '';
+        return;
+      }
+      if (event.key === 'ArrowUp') {
+        event.preventDefault();
+        navigateHistory(-1);
+        return;
+      }
+      if (event.key === 'ArrowDown') {
+        event.preventDefault();
+        navigateHistory(1);
+        return;
+      }
+      if (event.key === 'Tab') {
+        event.preventDefault();
+        autocompleteInput();
+        return;
+      }
+      if (event.key === 'Escape') {
+        inputEl.value = '';
+      }
+    });
+
+    createCheckpoint('Début de partie');
+    writeContext('Chronique initialisée. Tapez "help" pour commencer.');
+    describeCurrentRoom();
+    animationLoop();
+  </script>
+
+  <!--
+  MANUAL QA CHECKLIST
+  [ ] Le canvas est en haut, la barre de statut dessous, CONTEXT ensuite, PROMPT en bas.
+  [ ] Le texte narratif n'apparaît que dans CONTEXT.
+  [ ] Commandes reconnues: help, look, inventory, choose 1, undo, go nord, n/s/e/w.
+  [ ] Historique clavier: ↑/↓ fonctionne; Tab propose/complète; Échap vide la saisie.
+  [ ] Les options de groupe respectent l'état des personnages.
+  [ ] triggerGameOver(...) restaure le dernier checkpoint (go dragon + option Lennithon).
+  [ ] Aucun Math.random dans la boucle d'animation.
+  [ ] Pas de tremblement du monde; seulement un scintillement déterministe local.
+  [ ] imageSmoothingEnabled reste désactivé.
+  -->
+</body>
+</html>
