@@ -93,8 +93,23 @@
       fracturedAlliance: false,
       limitedMilitarySupport: false
       eggsSaved: false,
+      eggsStolen: false,
+      eggsLeft: false,
       portalDamaged: false,
-      portalIntact: false
+      portalIntact: false,
+      strongAlliance: false,
+      fragileAlliance: true,
+      fracturedAlliance: false,
+      metallicAlliance: false,
+      actIVCompleted: false,
+      finaleStartCheckpointed: false,
+      finalBattleInitialized: false,
+      sabotageSuccess: false,
+      lieutenantDefeated: false,
+      evacuationSuccess: false,
+      finalBattlePlan: '',
+      finalBattleEnding: '',
+      sealedForever: false
     };
     const variables = {
       moraleGroupe: 0,
@@ -110,7 +125,20 @@
         zhentarim: 0,
         cult: -3
       },
-      castleAlertLevel: 0
+      castleAlertLevel: 0,
+      councilReputation: {
+        waterdeep: 0,
+        neverwinter: 0,
+        elturel: 0
+      },
+      finalBattle: {
+        alliedStrength: 0,
+        cultMomentum: 0,
+        ritualProgress: 0,
+        battlefieldChaos: 0,
+        civilianRisk: 0,
+        decisiveActions: 0
+      }
     };
     const acts = { current: 'ACT_I', unlocked: ['ACT_I'] };
 
@@ -639,8 +667,262 @@
               checkpoint: 'End Act III',
               gotoRoom: 'act3_epilogue'
             }
+          },
+          {
+            id: 'act5-muster',
+            label: 'Convoquer le Conseil de guerre final (Acte V)',
+            requiresFlag: 'actIIICompleted',
+            onSuccess: {
+              setFlags: { actIVCompleted: true },
+              unlockActs: ['ACT_V'],
+              gotoRoom: 'war_council_tent',
+              checkpoint: 'Transition vers l’Acte V'
+            }
           }
         ]
+      },
+      war_council_tent: {
+        id: 'war_council_tent',
+        title: 'Tente du Conseil de Guerre',
+        description: 'Cartes déployées, bougies tremblantes et messagers haletants: la bataille finale se dessine.',
+        objects: ['table stratégique', 'messagers alliés', 'rapports du front'],
+        exits: {},
+        options: [
+          {
+            id: 'finale-plan-room',
+            label: 'Passer à la sélection du plan de bataille',
+            onSuccess: { gotoRoom: 'battle_plan_selection', checkpoint: 'Finale Start' }
+          }
+        ]
+      },
+      battle_plan_selection: {
+        id: 'battle_plan_selection',
+        title: 'Sélection du Plan',
+        description: 'Trois stratégies se disputent les dernières minutes avant le rituel.',
+        objects: ['officiers fatigués', 'sabliers de campagne', 'sceaux draconiques'],
+        exits: {},
+        options: [
+          {
+            id: 'plan-sabotage',
+            label: 'Plan — Saboter les composants du rituel',
+            onSuccess: { setFlags: { finalBattlePlan: 'sabotage' }, gotoRoom: 'supply_lines', checkpoint: 'Plan choisi — Sabotage' }
+          },
+          {
+            id: 'plan-decapitation',
+            label: 'Plan — Frappe de décapitation contre un lieutenant',
+            onSuccess: { setFlags: { finalBattlePlan: 'decapitation' }, gotoRoom: 'commander_tent', checkpoint: 'Plan choisi — Décapitation' }
+          },
+          {
+            id: 'plan-evacuation',
+            label: 'Plan — Défense et évacuation des civils',
+            onSuccess: { setFlags: { finalBattlePlan: 'evacuation' }, gotoRoom: 'refugee_corridor', checkpoint: 'Plan choisi — Évacuation' }
+          },
+          {
+            id: 'plan-riddles',
+            label: 'Option – Défier Tiamat à un duel d’énigmes',
+            onSelect: 'silly_riddle_duel'
+          }
+        ]
+      },
+      supply_lines: {
+        id: 'supply_lines',
+        title: 'Lignes de ravitaillement',
+        description: 'Des caisses runiques circulent sous escorte; un seul chariot alimente le cœur du rituel.',
+        objects: ['chariots glyphés', 'notes codées', 'patrouilles cultistes'],
+        exits: {},
+        options: [
+          {
+            id: 'sabotage-identify',
+            label: 'Option – Identifier le composant critique (Stratégie)',
+            characterId: 'kairon',
+            skill: 'strategy',
+            resolution: { difficulty: 2, skill: 'strategy', risk: 'injury', deathType: 'replaceable' },
+            effects: { message: 'Vous isolez la caisse portant les sceaux de transfert d’âmes.' },
+            onSuccess: { setFlags: { sabotageKeyKnown: true }, gotoRoom: 'warded_corridor', checkpoint: 'Sabotage — composant identifié' },
+            onFailure: { message: 'Faute de certitude, vous avancez à l’aveugle et perdez un temps précieux.' },
+            onFailurePost: { gotoRoom: 'warded_corridor', checkpoint: 'Sabotage — progression sous pression' }
+          },
+          {
+            id: 'sabotage-trial',
+            label: 'Option – Tenter un sabotage sans toutes les notes',
+            onSuccess: { gotoRoom: 'warded_corridor', checkpoint: 'Sabotage — tentative risquée' }
+          }
+        ]
+      },
+      warded_corridor: {
+        id: 'warded_corridor',
+        title: 'Corridor Gardé de Sceaux',
+        description: 'Des runes sentinelles vibrent au moindre souffle.',
+        objects: ['sceaux d’alarme', 'arches gravées'],
+        exits: {},
+        options: [
+          {
+            id: 'sabotage-stealth',
+            label: 'Option – Faufiler l’équipe entre les sentinelles (Furtivité)',
+            characterId: 'malar',
+            skill: 'stealth',
+            resolution: { difficulty: 3, skill: 'stealth', risk: 'injury', deathType: 'replaceable' },
+            effects: { message: 'Votre groupe glisse entre deux scans runiques sans déclencher l’alarme.' },
+            onSuccess: { gotoRoom: 'ritual_components', checkpoint: 'Sabotage — couloir franchi' },
+            onFailure: { message: 'Une rune claque comme un fouet et fracture votre timing.' },
+            onFailurePost: { gotoRoom: 'ritual_components', checkpoint: 'Sabotage — couloir forcé' }
+          }
+        ]
+      },
+      ritual_components: {
+        id: 'ritual_components',
+        title: 'Composants du Rituel',
+        description: 'Trois reliquaires battent à l’unisson du portail. Un seul sabotage les fera vaciller.',
+        objects: ['reliquaire d’obsidienne', 'cœur de braise', 'fiole d’âme'],
+        exits: {},
+        options: [
+          {
+            id: 'sabotage-arcana',
+            label: 'Option – Briser le bon relais rituel (Arcane)',
+            characterId: 'darrin',
+            skill: 'wild_magic',
+            resolution: { difficulty: 3, skill: 'wild_magic', risk: 'death', deathType: 'replaceable' },
+            effects: { message: 'Le relais principal explose en silence, et la cadence du rituel se casse.' },
+            onSuccess: { setFlags: { sabotageSuccess: true }, gotoRoom: 'ritual_chamber', checkpoint: 'Sabotage accompli' },
+            onFailure: { message: 'Le mauvais relais cède: le rituel vacille à peine et les cultistes hurlent.' },
+            onFailurePost: { setFlags: { sabotageSuccess: false }, gotoRoom: 'ritual_chamber', checkpoint: 'Sabotage compromis' }
+          }
+        ]
+      },
+      commander_tent: {
+        id: 'commander_tent',
+        title: 'Tente du Commandement Cultiste',
+        description: 'Le lieutenant final coordonne les vagues d’assaut à la lueur d’un brasero vert.',
+        objects: ['cartes tactiques', 'étendards du culte'],
+        exits: {},
+        options: [
+          {
+            id: 'decapitation-approach',
+            label: 'Option – Forcer une approche de commandement (Leadership)',
+            characterId: 'bjolnir',
+            skill: 'leadership',
+            resolution: { difficulty: 2, skill: 'leadership', risk: 'injury', deathType: 'replaceable' },
+            effects: { message: 'Vos ordres brefs ouvrent un corridor vers la tente centrale.' },
+            onSuccess: { gotoRoom: 'champion_confrontation', checkpoint: 'Décapitation — approche réussie' },
+            onFailure: { message: 'Les lignes se referment et l’ennemi gagne de précieuses minutes.' },
+            onFailurePost: { gotoRoom: 'champion_confrontation', checkpoint: 'Décapitation — approche coûteuse' }
+          }
+        ]
+      },
+      champion_confrontation: {
+        id: 'champion_confrontation',
+        title: 'Confrontation du Champion',
+        description: 'Le champion du culte vous attend entre les bannières noires et les flammes rituelles.',
+        objects: ['champion draconique', 'gardes d’élite'],
+        exits: {},
+        options: [
+          {
+            id: 'decapitation-strike',
+            label: 'Option – Neutraliser le lieutenant (Duel tactique)',
+            characterId: 'drekthar',
+            skill: 'duel',
+            resolution: { difficulty: 3, skill: 'duel', risk: 'death', deathType: 'replaceable' },
+            effects: { message: 'Le lieutenant tombe, et la chaîne de commandement cultiste se disloque.' },
+            onSuccess: { setFlags: { lieutenantDefeated: true }, gotoRoom: 'ritual_chamber', checkpoint: 'Décapitation réussie' },
+            onFailure: { message: 'Le lieutenant survit et relance la pression sur tous les fronts.' },
+            onFailurePost: { setFlags: { lieutenantDefeated: false }, gotoRoom: 'ritual_chamber', checkpoint: 'Décapitation échouée' }
+          }
+        ]
+      },
+      refugee_corridor: {
+        id: 'refugee_corridor',
+        title: 'Couloir des Réfugiés',
+        description: 'Les familles se serrent contre les murs tandis que les cloches d’alarme battent sans relâche.',
+        objects: ['blessés', 'escorte improvisée', 'issues bouchées'],
+        exits: {},
+        options: [
+          {
+            id: 'evacuation-bjolnir',
+            label: 'Option – Bjolnir organise une évacuation disciplinée',
+            characterId: 'bjolnir',
+            skill: 'redemption',
+            resolution: { difficulty: 2, skill: 'redemption', risk: 'injury', deathType: 'replaceable' },
+            effects: { message: 'Bjolnir tient la ligne et chaque groupe civil trouve une sortie viable.' },
+            onSuccess: { gotoRoom: 'burning_streets_finale', checkpoint: 'Évacuation — corridor sécurisé' },
+            onFailure: { message: 'La cohue vous ralentit; le rituel n’attendra pas.' },
+            onFailurePost: { gotoRoom: 'burning_streets_finale', checkpoint: 'Évacuation — corridor sous pression' }
+          }
+        ]
+      },
+      burning_streets_finale: {
+        id: 'burning_streets_finale',
+        title: 'Rues en Feu — Finale',
+        description: 'Un choix final s’impose: sauver davantage de vies ou foncer sur l’objectif rituel.',
+        objects: ['pont effondré', 'foule paniquée', 'éclairs pourpres du rituel'],
+        exits: {},
+        options: [
+          {
+            id: 'evacuation-save-more',
+            label: 'Choix – Sauver le plus de civils possible (retard stratégique)',
+            onSuccess: { setFlags: { evacuationSuccess: true }, gotoRoom: 'ritual_chamber', checkpoint: 'Évacuation prioritaire accomplie' }
+          },
+          {
+            id: 'evacuation-secure-objective',
+            label: 'Choix – Sécuriser l’objectif rituel immédiatement',
+            onSuccess: { setFlags: { evacuationSuccess: false }, gotoRoom: 'ritual_chamber', checkpoint: 'Objectif prioritaire sécurisé' }
+          },
+          {
+            id: 'evacuation-reckless',
+            label: 'Choix RECKLESS – Forcer un pont en flammes avec la foule',
+            onSelect: 'serious_reckless_bridge'
+          }
+        ]
+      },
+      ritual_chamber: {
+        id: 'ritual_chamber',
+        title: 'Chambre du Rituel Final',
+        description: 'Le portail de Tiamat pulse dans un grondement qui déforme la pierre.',
+        objects: ['ward seals', 'nexus draconique', 'alliés à bout de souffle'],
+        exits: {},
+        options: [
+          {
+            id: 'ritual-break-ward',
+            label: 'Action décisive – Briser un sceau de garde (Arcane)',
+            characterId: 'darrin',
+            skill: 'wild_magic',
+            resolution: { difficulty: 3, skill: 'wild_magic', risk: 'injury', deathType: 'replaceable' },
+            effects: { message: 'Un sceau éclate; la poussée du rituel ralentit enfin.' }
+          },
+          {
+            id: 'ritual-rally',
+            label: 'Action décisive – Rallier les alliés pour une poussée',
+            characterId: 'bjolnir',
+            skill: 'leadership',
+            resolution: { difficulty: 2, skill: 'leadership', risk: 'injury', deathType: 'replaceable' },
+            effects: { message: 'Les lignes alliées avancent en bloc et grignotent le cercle ennemi.' }
+          },
+          {
+            id: 'ritual-sacrifice-gear',
+            label: 'Action décisive – Sacrifier équipement et temps pour affaiblir le rituel',
+            characterId: 'kairon',
+            skill: 'strategy',
+            resolution: { difficulty: 2, skill: 'strategy', risk: 'death', deathType: 'replaceable' },
+            effects: { message: 'Vos ressources partent en cendres, mais les runes perdent en cohérence.' }
+          },
+          {
+            id: 'ritual-shout-stop',
+            label: 'Option – Crier « STOP ! » très fort au portail',
+            onSelect: 'silly_shout_stop'
+          },
+          {
+            id: 'ritual-resolve',
+            label: 'Conclure la bataille et juger l’issue',
+            onSuccess: { gotoRoom: 'campaign_end', checkpoint: 'Campaign End' }
+          }
+        ]
+      },
+      campaign_end: {
+        id: 'campaign_end',
+        title: 'Épilogue de Campagne',
+        description: 'La poussière retombe sur le dernier champ de bataille. Les chroniques se ferment.',
+        objects: ['étendards brisés', 'serments survivants'],
+        exits: {},
+        options: []
       }
     };
 
@@ -959,6 +1241,93 @@
       describeCurrentRoom();
     }
 
+    function councilReputationTotal() {
+      return Object.values(variables.councilReputation ?? {}).reduce((sum, value) => sum + (Number(value) || 0), 0)
+        + Object.values(variables.factionTrust ?? {}).reduce((sum, value) => sum + (Number(value) || 0), 0);
+    }
+
+    function computeFinalBattleBaseline() {
+      const finalBattle = variables.finalBattle;
+      let alliedStrength = 0;
+      if (flags.strongAlliance) alliedStrength += 4;
+      if (flags.fragileAlliance) alliedStrength += 2;
+      if (flags.metallicAlliance) alliedStrength += 2;
+      let cultMomentum = 2;
+      if (flags.eggsDestroyed) cultMomentum -= 2;
+      if (flags.eggsStolen) cultMomentum -= 1;
+      if (flags.eggsLeft || flags.eggsSaved) cultMomentum += 1;
+      if (flags.portalDamaged) cultMomentum -= 1;
+      if (flags.cyanwrathDead) cultMomentum -= 1;
+      const councilBonus = Math.max(-1, Math.min(2, Math.floor(councilReputationTotal() / 3)));
+      alliedStrength += councilBonus;
+
+      finalBattle.alliedStrength = Math.max(0, alliedStrength);
+      finalBattle.cultMomentum = Math.max(0, cultMomentum);
+      finalBattle.ritualProgress = Math.max(0, Math.min(10, 2 + Math.max(0, cultMomentum)));
+      finalBattle.battlefieldChaos = Math.max(0, Math.min(10, 3 + Math.max(0, variables.chaos)));
+      finalBattle.civilianRisk = Math.max(0, Math.min(10, 4 - Math.min(2, variables.moraleGroupe)));
+      finalBattle.decisiveActions = 0;
+      flags.finalBattleInitialized = true;
+    }
+
+    function applyFinalBattlePlanImpact(planId) {
+      const finalBattle = variables.finalBattle;
+      if (planId === 'plan-sabotage') {
+        finalBattle.ritualProgress = Math.max(0, finalBattle.ritualProgress - 1);
+        finalBattle.battlefieldChaos = Math.min(10, finalBattle.battlefieldChaos + 1);
+        variables.moraleGroupe = Math.max(-5, variables.moraleGroupe + 1);
+      } else if (planId === 'plan-decapitation') {
+        finalBattle.ritualProgress = Math.min(10, finalBattle.ritualProgress + 1);
+        finalBattle.battlefieldChaos = Math.min(10, finalBattle.battlefieldChaos + 2);
+        finalBattle.alliedStrength = Math.max(0, finalBattle.alliedStrength + 1);
+      } else if (planId === 'plan-evacuation') {
+        finalBattle.civilianRisk = Math.max(0, finalBattle.civilianRisk - 3);
+        finalBattle.alliedStrength = Math.max(0, finalBattle.alliedStrength - 1);
+        finalBattle.ritualProgress = Math.min(10, finalBattle.ritualProgress + 1);
+        variables.moraleGroupe = Math.max(-5, variables.moraleGroupe + 1);
+      }
+    }
+
+    function applyRitualTick() {
+      const finalBattle = variables.finalBattle;
+      const tickGain = 1 + Math.floor((finalBattle.cultMomentum + finalBattle.battlefieldChaos) / 5);
+      finalBattle.ritualProgress = Math.min(10, finalBattle.ritualProgress + tickGain);
+    }
+
+    function applyDecisiveAction(optionId, success) {
+      const finalBattle = variables.finalBattle;
+      finalBattle.decisiveActions += 1;
+      if (optionId === 'ritual-break-ward') {
+        finalBattle.ritualProgress = Math.max(0, finalBattle.ritualProgress - (success ? 3 : 1));
+      } else if (optionId === 'ritual-rally') {
+        finalBattle.alliedStrength = Math.max(0, finalBattle.alliedStrength + (success ? 2 : 0));
+        finalBattle.battlefieldChaos = Math.max(0, finalBattle.battlefieldChaos - (success ? 2 : 0));
+      } else if (optionId === 'ritual-sacrifice-gear') {
+        finalBattle.ritualProgress = Math.max(0, finalBattle.ritualProgress - (success ? 2 : 1));
+        finalBattle.battlefieldChaos = Math.max(0, finalBattle.battlefieldChaos - 1);
+      }
+      applyRitualTick();
+    }
+
+    function resolveFinalEnding() {
+      const finalBattle = variables.finalBattle;
+      if (flags.sabotageSuccess && flags.strongAlliance && flags.metallicAlliance && finalBattle.ritualProgress <= 5) {
+        flags.sealedForever = true;
+        flags.finalBattleEnding = 'what_if';
+        return 'Les dragons métalliques plongent depuis les nuées et scellent le portail pour toujours. Victoire majeure, improbable et définitive.';
+      }
+      if (finalBattle.ritualProgress <= 4 && finalBattle.alliedStrength >= 5) {
+        flags.finalBattleEnding = 'canonical_victory';
+        return 'Victoire canonique: le rituel est interrompu avant l’émergence de Tiamat.';
+      }
+      if (finalBattle.ritualProgress <= 8) {
+        flags.finalBattleEnding = 'partial_victory';
+        return 'Victoire partielle: une manifestation de Tiamat franchit le voile avant d’être repoussée au prix du sang.';
+      }
+      flags.finalBattleEnding = 'failure';
+      return 'Échec: Tiamat émerge pleinement. Le monde chancelle sous la catastrophe draconique.';
+    }
+
     function describeCurrentRoom() {
       const room = rooms[gameState.roomId];
       if (!room) return;
@@ -981,11 +1350,43 @@
       if (['northern_road', 'naerytar_swamp', 'castle_naerytar', 'portal_chamber', 'act3_epilogue'].includes(room.id)) {
         acts.current = 'ACT_III';
       }
+      if (['war_council_tent', 'battle_plan_selection', 'supply_lines', 'warded_corridor', 'ritual_components', 'commander_tent', 'champion_confrontation', 'refugee_corridor', 'burning_streets_finale', 'ritual_chamber', 'campaign_end'].includes(room.id)) {
+        acts.current = 'ACT_V';
+      }
       if (room.id === 'castle_naerytar') {
         writeContext(flags.cyanwrathDead
           ? 'Le lieutenant Rezmir supervise Naerytar depuis les tours, en l’absence de Cyanwrath.'
           : 'Cyanwrath arpente la cour du château, vivant et vindicatif.');
         if (variables.castleAlertLevel >= 4) writeContext('L’alerte du château est maximale: la fuite vers le portail devient prioritaire.');
+      }
+      if (room.id === 'war_council_tent' && !flags.finalBattleInitialized) {
+        computeFinalBattleBaseline();
+      }
+      if (room.id === 'war_council_tent') {
+        writeContext(`Rapport stratégique — Force alliée: ${variables.finalBattle.alliedStrength}, Élan cultiste: ${variables.finalBattle.cultMomentum}, Réputation du Conseil: ${councilReputationTotal()}.`);
+        if (!flags.finaleStartCheckpointed) {
+          createCheckpoint('Finale Start');
+          flags.finaleStartCheckpointed = true;
+        }
+      }
+      if (room.id === 'battle_plan_selection') {
+        writeContext('Trois plans: sabotage précis, frappe de décapitation, ou évacuation défensive.');
+      }
+      if (room.id === 'champion_confrontation') {
+        writeContext(flags.cyanwrathDead
+          ? 'Cyanwrath est tombé: Severin dépêche son nouveau Champion pour tenir le front.'
+          : 'Cyanwrath, encore vivant, observe la scène avec un rictus prédateur.');
+      }
+      if (room.id === 'ritual_chamber') {
+        writeContext(`État du rituel — Progression: ${variables.finalBattle.ritualProgress}/10 | Force alliée: ${variables.finalBattle.alliedStrength} | Élan cultiste: ${variables.finalBattle.cultMomentum} | Chaos: ${variables.finalBattle.battlefieldChaos} | Risque civil: ${variables.finalBattle.civilianRisk}.`);
+      }
+      if (room.id === 'campaign_end') {
+        writeContext(resolveFinalEnding());
+        const fallen = Object.values(characters).filter(character => character.state === 'dead').map(character => character.name);
+        writeContext(`Pertes du groupe: ${fallen.length ? fallen.join(', ') : 'aucune perte définitive recensée'}.`);
+        writeContext(`Bilan moral: risque civil ${variables.finalBattle.civilianRisk}/10, moral du groupe ${variables.moraleGroupe}.`);
+        if (flags.sealedForever) writeContext('Le sceau des dragons métalliques tient: le portail est fermé pour les ères à venir.');
+        if (!gameState.checkpoints.some(cp => cp.reason === 'Campaign End')) createCheckpoint('Campaign End');
       }
       clampTrackedVariables();
       writeContext(`[${room.title}] ${room.description}`);
@@ -1027,6 +1428,13 @@
       variables.moraleGroupe = Math.max(-5, Math.min(5, variables.moraleGroupe));
       variables.chaos = Math.max(-5, Math.min(6, variables.chaos));
       variables.castleAlertLevel = Math.max(0, Math.min(5, variables.castleAlertLevel ?? 0));
+      if (variables.finalBattle) {
+        variables.finalBattle.ritualProgress = Math.max(0, Math.min(10, variables.finalBattle.ritualProgress ?? 0));
+        variables.finalBattle.battlefieldChaos = Math.max(0, Math.min(10, variables.finalBattle.battlefieldChaos ?? 0));
+        variables.finalBattle.civilianRisk = Math.max(0, Math.min(10, variables.finalBattle.civilianRisk ?? 0));
+        variables.finalBattle.alliedStrength = Math.max(0, variables.finalBattle.alliedStrength ?? 0);
+        variables.finalBattle.cultMomentum = Math.max(0, variables.finalBattle.cultMomentum ?? 0);
+      }
     }
 
     function applyVariableDelta(delta = {}) {
@@ -1219,7 +1627,12 @@
         silly_dragon_selfie: 'Vous demandez un selfie en selle. Le dragon d’airain vous expédie dehors d’un souffle magistral.'
         silly_accuse_dragons: 'Vous accusez toute la caravane d’être draconique. Les marchands votent votre exil immédiat.',
         silly_swamp_duck: 'Le canard réclame un tribut impérial en pain sec. Votre refus déclenche une embuscade absurde.',
-        silly_tax_inspection: 'Votre inspection fiscale révèle zéro reçu. Les cultistes préfèrent vous jeter dehors.'
+        silly_tax_inspection: 'Votre inspection fiscale révèle zéro reçu. Les cultistes préfèrent vous jeter dehors.',
+        silly_riddle_duel: 'Tiamat accepte une seule énigme: « Combien de vies sacrifieras-tu? » Votre silence vaut défaite immédiate.',
+        silly_shout_stop: 'Vous criez STOP. Le portail répond par un écho moqueur, puis vous souffle hors du cercle.'
+      };
+      const seriousMessages = {
+        serious_reckless_bridge: 'Le pont cède sous la foule. Catastrophe stratégique: la manœuvre était explicitement insensée.'
       };
       if (sillyMessages[selectionKey]) {
         triggerGameOver('silly', sillyMessages[selectionKey]);
@@ -1280,10 +1693,53 @@
         const special = handleSpecialSelection(option.onSelect);
         if (special.handled) return { endedByGameOver: special.endedByGameOver, success: !special.endedByGameOver };
       }
+      if (option.onSelect && seriousMessages[option.onSelect]) {
+        triggerGameOver('definitive', seriousMessages[option.onSelect]);
+        return { endedByGameOver: true };
+      }
 
       const score = computeActionScore(option, option.characterId);
       const outcome = resolveOutcome(option, score);
       const result = applyOutcome(outcome);
+      if (!result?.endedByGameOver) {
+        if (['plan-sabotage', 'plan-decapitation', 'plan-evacuation'].includes(option.id)) {
+          applyFinalBattlePlanImpact(option.id);
+        }
+        if (option.id === 'sabotage-identify' && !outcome.success) {
+          variables.finalBattle.ritualProgress = Math.min(10, variables.finalBattle.ritualProgress + 1);
+        }
+        if (option.id === 'sabotage-stealth' && !outcome.success) {
+          variables.finalBattle.battlefieldChaos = Math.min(10, variables.finalBattle.battlefieldChaos + 1);
+        }
+        if (option.id === 'sabotage-arcana' && !outcome.success) {
+          variables.finalBattle.ritualProgress = Math.min(10, variables.finalBattle.ritualProgress + 2);
+        }
+        if (option.id === 'decapitation-strike') {
+          if (outcome.success) {
+            variables.finalBattle.cultMomentum = Math.max(0, variables.finalBattle.cultMomentum - 2);
+            variables.finalBattle.alliedStrength = Math.max(0, variables.finalBattle.alliedStrength + 1);
+          } else {
+            variables.finalBattle.battlefieldChaos = Math.min(10, variables.finalBattle.battlefieldChaos + 2);
+            variables.finalBattle.ritualProgress = Math.min(10, variables.finalBattle.ritualProgress + 1);
+          }
+        }
+        if (option.id === 'evacuation-save-more') {
+          variables.finalBattle.civilianRisk = Math.max(0, variables.finalBattle.civilianRisk - 3);
+          variables.finalBattle.alliedStrength = Math.max(0, variables.finalBattle.alliedStrength - 1);
+          variables.finalBattle.ritualProgress = Math.min(10, variables.finalBattle.ritualProgress + 2);
+        }
+        if (option.id === 'evacuation-secure-objective') {
+          variables.finalBattle.civilianRisk = Math.min(10, variables.finalBattle.civilianRisk + 2);
+          variables.finalBattle.ritualProgress = Math.max(0, variables.finalBattle.ritualProgress - 1);
+        }
+        if (['ritual-break-ward', 'ritual-rally', 'ritual-sacrifice-gear'].includes(option.id)) {
+          applyDecisiveAction(option.id, Boolean(outcome.success));
+        }
+        if (option.id === 'ritual-resolve' && variables.finalBattle.decisiveActions < 3) {
+          writeContext('Le cercle tient encore: prenez au moins trois actions décisives avant de conclure.');
+          gameState.roomId = 'ritual_chamber';
+        }
+      }
       if (!result.endedByGameOver && !result.success && option.onFailurePost) {
         applyPostEffects(option.onFailurePost);
       }
