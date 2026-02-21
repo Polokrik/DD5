@@ -30,7 +30,7 @@
   <script>
     const LOGICAL_WIDTH = 320;
     const LOGICAL_HEIGHT = 200;
-    const VERBS = ['look', 'l', 'examine', 'x', 'go', 'walk', 'help', '?', 'inventory', 'i', 'undo', 'choose', 'save', 'load', 'clear', 'sheet'];
+    const VERBS = ['look', 'l', 'examine', 'x', 'go', 'walk', 'help', '?', 'inventory', 'i', 'undo', 'choose', 'save', 'load', 'clear', 'sheet', 'party'];
     const SAVE_KEY = 'clanDestain.save.v1';
     const DIRECTION_ALIASES = {
       n: 'nord', nord: 'nord',
@@ -40,13 +40,31 @@
     };
     const PULSE_LUT = [0, 0, 1, 1, 2, 1, 1, 0, 0, -1, -1, -2, -1, -1, 0, 0];
 
+    const DATA = {
+      rosterTimeline: [
+        {
+          trigger: 'END_ACT_I',
+          add: ['kairon'],
+          remove: [],
+          message: 'Kairon rejoint officiellement le Clan.'
+        },
+        {
+          trigger: 'HATCHERY_ESCAPE',
+          conditional: 'if eggsDestroyed',
+          remove: ['malrond'],
+          message: 'Malrond quitte le groupe en désaccord.'
+        }
+      ]
+    };
+
     const characters = {
-      bjolnir: { name: 'Bjolnir', state: 'active', skills: ['redemption', 'leadership', 'diplomacy'], narrativeTags: ['ancien mercenaire', 'chef de fortune'] },
-      malar: { name: 'Malar', state: 'active', skills: ['stealth'], narrativeTags: ['ombre urbaine', 'éclaireur'] },
-      darrin: { name: 'Darrin', state: 'active', skills: ['wild_magic'], narrativeTags: ['arcaniste instable', 'provocateur'] },
-      drekthar: { name: 'Drek’Thar', state: 'active', skills: ['might', 'duel'], narrativeTags: ['vétéran taciturne', 'mur de fer'] },
-      ellyjobell: { name: 'Ellyjobell', state: 'absent', skills: ['arcana'], narrativeTags: ['érudite disparue'] },
-      kairon: { name: 'Kairon', state: 'captured', skills: ['strategy'], narrativeTags: ['stratège prisonnier'] }
+      bjolnir: { name: 'Bjolnir', state: 'active', mainStory: true, skills: ['redemption', 'leadership', 'diplomacy'], narrativeTags: ['ancien mercenaire', 'chef de fortune'] },
+      malar: { name: 'Malar', state: 'active', mainStory: true, skills: ['stealth'], narrativeTags: ['ombre urbaine', 'éclaireur'] },
+      darrin: { name: 'Darrin', state: 'active', mainStory: true, skills: ['wild_magic'], narrativeTags: ['arcaniste instable', 'provocateur'] },
+      drekthar: { name: 'Drek’Thar', state: 'active', mainStory: true, skills: ['might', 'duel'], narrativeTags: ['vétéran taciturne', 'mur de fer'] },
+      ellyjobell: { name: 'Ellyjobell', state: 'absent', mainStory: false, skills: ['arcana'], narrativeTags: ['érudite disparue'] },
+      kairon: { name: 'Kairon', state: 'captured', mainStory: false, skills: ['strategy'], narrativeTags: ['stratège prisonnier'] },
+      malrond: { name: 'Malrond', state: 'active', mainStory: false, skills: ['commandement'], narrativeTags: ['vétéran inflexible'] }
     };
 
     const flags = {
@@ -282,7 +300,8 @@
       gameOver: null,
       tick: 0,
       commandHistory: [],
-      historyCursor: -1
+      historyCursor: -1,
+      timelineApplied: []
     };
 
     const canvas = document.getElementById('gameCanvas');
@@ -339,6 +358,58 @@
       });
     }
 
+    function addCharacterToParty(characterId) {
+      const character = characters[characterId];
+      if (!character) return false;
+      if (['active', 'injured'].includes(character.state)) return false;
+      character.state = 'active';
+      return true;
+    }
+
+    function removeCharacterFromParty(characterId, state = 'absent') {
+      const character = characters[characterId];
+      if (!character) return false;
+      const allowedStates = new Set(['absent', 'captured', 'retired', 'dead']);
+      const nextState = allowedStates.has(state) ? state : 'absent';
+      if (character.state === nextState) return false;
+      character.state = nextState;
+      return true;
+    }
+
+    function evaluateConditionalExpression(conditional = '') {
+      const trimmed = conditional.trim();
+      if (!trimmed) return true;
+      if (!trimmed.startsWith('if ')) return false;
+      const flagKey = trimmed.slice(3).trim();
+      return Boolean(flags[flagKey]);
+    }
+
+    function fireRosterTimelineTrigger(trigger, context = {}) {
+      const events = DATA.rosterTimeline.filter(entry => entry.trigger === trigger);
+      events.forEach((entry, index) => {
+        const timelineKey = `${trigger}:${index}`;
+        if (gameState.timelineApplied.includes(timelineKey)) return;
+        if (entry.conditional && !evaluateConditionalExpression(entry.conditional)) return;
+
+        const changedCharacters = [];
+        (entry.add ?? []).forEach(characterId => {
+          if (addCharacterToParty(characterId)) changedCharacters.push(characters[characterId]?.name || characterId);
+        });
+        (entry.remove ?? []).forEach(characterId => {
+          if (removeCharacterFromParty(characterId, entry.removeState ?? 'absent')) changedCharacters.push(characters[characterId]?.name || characterId);
+        });
+
+        gameState.timelineApplied.push(timelineKey);
+        if (!changedCharacters.length && !entry.message) return;
+        const narrativeMessage = entry.message || `Le groupe évolue (${changedCharacters.join(', ')}).`;
+        writeContext(entry.narrativeHook || narrativeMessage);
+        createCheckpoint(`Roster update — ${trigger}`);
+      });
+      if (context.characterId && trigger === 'CHARACTER_DEATH') {
+        updateStatusStrip();
+      }
+    }
+
     function peekCheckpoint() {
       return gameState.checkpoints.length > 0 ? gameState.checkpoints[gameState.checkpoints.length - 1] : null;
     }
@@ -386,6 +457,7 @@
         gameState.tick = restoredGameState.tick ?? 0;
         gameState.commandHistory = restoredGameState.commandHistory ?? [];
         gameState.historyCursor = gameState.commandHistory.length;
+        gameState.timelineApplied = restoredGameState.timelineApplied ?? [];
 
         Object.keys(characters).forEach(id => delete characters[id]);
         Object.assign(characters, safeClone(parsed.characters));
@@ -455,6 +527,7 @@
       gameState.tick = restoredGameState.tick;
       gameState.commandHistory = restoredGameState.commandHistory || [];
       gameState.historyCursor = gameState.commandHistory.length;
+      gameState.timelineApplied = restoredGameState.timelineApplied || [];
       gameState.checkpoints = remainingStack;
 
       Object.keys(characters).forEach(id => delete characters[id]);
@@ -565,11 +638,12 @@
     function handleDeath(characterId, deathType) {
       const character = characters[characterId];
       if (!character) return { message: 'Personnage introuvable.', endedByGameOver: false };
-      if (deathType === 'definitive') {
+      if (deathType === 'definitive' && character.mainStory) {
         triggerGameOver('definitive', `${character.name} tombe et le destin du groupe se brise.`);
         return { message: null, endedByGameOver: true };
       }
       character.state = 'dead';
+      fireRosterTimelineTrigger('CHARACTER_DEATH', { characterId, deathType });
       return { message: `${character.name} meurt au combat.`, endedByGameOver: false };
     }
 
@@ -639,6 +713,9 @@
       });
       if (post.gotoRoom) gameState.roomId = post.gotoRoom;
       if (post.checkpoint) createCheckpoint(post.checkpoint);
+      if (post.setFlags?.actICompleted) fireRosterTimelineTrigger('END_ACT_I');
+      if (post.setFlags?.actIICompleted) fireRosterTimelineTrigger('END_ACT_II');
+      if (post.timelineTrigger) fireRosterTimelineTrigger(post.timelineTrigger);
     }
 
     function applyOutcome(outcome) {
@@ -729,6 +806,22 @@
       writeContext(`Tags narratifs: ${character.narrativeTags?.join(', ') || 'aucun'}`);
     }
 
+    function showParty() {
+      const groups = {
+        active: 'Actifs',
+        injured: 'Blessés',
+        dead: 'Morts',
+        absent: 'Absents'
+      };
+      writeContext('État de la compagnie:');
+      Object.entries(groups).forEach(([stateKey, label]) => {
+        const members = Object.values(characters)
+          .filter(character => character.state === stateKey)
+          .map(character => character.name);
+        writeContext(`- ${label}: ${members.length ? members.join(', ') : 'aucun'}`);
+      });
+    }
+
     function autocompleteTokens() {
       const room = rooms[gameState.roomId];
       const exits = Object.keys(room?.exits ?? {});
@@ -790,7 +883,7 @@
       const directionVerb = parsed.verb === 'go' && parsed.args[0] ? parsed.args[0] : '';
       const normalizedDirection = normalizeDirection(directionVerb);
       if (parsed.verb === 'help') {
-        writeContext('Commandes: help|?, look|l|examine|x, go|walk <direction>, n/s/e/w, inventory|i, choose <num>, undo, save, load, clear, sheet [nom]');
+        writeContext('Commandes: help|?, look|l|examine|x, go|walk <direction>, n/s/e/w, inventory|i, choose <num>, undo, save, load, clear, sheet [nom], party');
         return;
       }
       if (parsed.verb === 'look') {
@@ -819,6 +912,10 @@
       }
       if (parsed.verb === 'sheet') {
         showSheet(parsed.args.join(' '));
+        return;
+      }
+      if (parsed.verb === 'party') {
+        showParty();
         return;
       }
       if (parsed.verb === 'choose') {
