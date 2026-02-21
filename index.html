@@ -30,7 +30,8 @@
   <script>
     const LOGICAL_WIDTH = 320;
     const LOGICAL_HEIGHT = 200;
-    const VERBS = ['look', 'l', 'examine', 'x', 'go', 'walk', 'help', '?', 'inventory', 'i', 'undo', 'choose'];
+    const VERBS = ['look', 'l', 'examine', 'x', 'go', 'walk', 'help', '?', 'inventory', 'i', 'undo', 'choose', 'save', 'load', 'clear', 'sheet'];
+    const SAVE_KEY = 'clanDestain.save.v1';
     const DIRECTION_ALIASES = {
       n: 'nord', nord: 'nord',
       s: 'sud', sud: 'sud',
@@ -45,6 +46,19 @@
         unlocked: ['ACT_I']
       },
       rooms: {
+    const characters = {
+      bjolnir: { name: 'Bjolnir', state: 'active', skills: ['redemption', 'leadership'], narrativeTags: ['ancien mercenaire', 'chef de fortune'] },
+      malar: { name: 'Malar', state: 'injured', skills: ['stealth'], narrativeTags: ['ombre urbaine', 'éclaireur'] },
+      darrin: { name: 'Darrin', state: 'active', skills: ['wild_magic'], narrativeTags: ['arcaniste instable', 'provocateur'] },
+      ellyjobell: { name: 'Ellyjobell', state: 'absent', skills: ['arcana'], narrativeTags: ['érudite disparue'] },
+      kairon: { name: 'Kairon', state: 'captured', skills: ['strategy'], narrativeTags: ['stratège prisonnier'] }
+    };
+
+    const flags = { hasSeenSquare: false, lennithonInsulted: false };
+    const variables = { moraleGroupe: 0, chaos: 1 };
+    const acts = { current: 'ACT_I', unlocked: ['ACT_I'] };
+
+    const rooms = {
       place: {
         id: 'place',
         scene: 'GREENEST_SIEGE',
@@ -241,6 +255,81 @@
       return gameState.checkpoints.length > 0 ? gameState.checkpoints[gameState.checkpoints.length - 1] : null;
     }
 
+    function saveGame() {
+      try {
+        const payload = {
+          gameState: safeClone(gameState),
+          characters: safeClone(characters),
+          flags: safeClone(flags),
+          variables: safeClone(variables),
+          acts: safeClone(acts)
+        };
+        localStorage.setItem(SAVE_KEY, JSON.stringify(payload));
+        return true;
+      } catch {
+        writeContext('Sauvegarde impossible pour le moment.');
+        return false;
+      }
+    }
+
+    function loadGame({ silent = false } = {}) {
+      let raw;
+      try {
+        raw = localStorage.getItem(SAVE_KEY);
+      } catch {
+        if (!silent) writeContext('Chargement impossible pour le moment.');
+        return false;
+      }
+      if (!raw) {
+        if (!silent) writeContext('Aucune sauvegarde locale trouvée.');
+        return false;
+      }
+      try {
+        const parsed = JSON.parse(raw);
+        if (!parsed?.gameState || !parsed?.characters || !parsed?.flags || !parsed?.variables || !parsed?.acts) {
+          throw new Error('invalid');
+        }
+
+        const restoredGameState = safeClone(parsed.gameState);
+        gameState.roomId = restoredGameState.roomId ?? 'place';
+        gameState.inventory = restoredGameState.inventory ?? [];
+        gameState.checkpoints = restoredGameState.checkpoints ?? [];
+        gameState.gameOver = null;
+        gameState.tick = restoredGameState.tick ?? 0;
+        gameState.commandHistory = restoredGameState.commandHistory ?? [];
+        gameState.historyCursor = gameState.commandHistory.length;
+
+        Object.keys(characters).forEach(id => delete characters[id]);
+        Object.assign(characters, safeClone(parsed.characters));
+        Object.keys(flags).forEach(key => delete flags[key]);
+        Object.assign(flags, safeClone(parsed.flags));
+        Object.keys(variables).forEach(key => delete variables[key]);
+        Object.assign(variables, safeClone(parsed.variables));
+        Object.keys(acts).forEach(key => delete acts[key]);
+        Object.assign(acts, safeClone(parsed.acts));
+        updateStatusStrip();
+        if (!silent) {
+          writeContext('Sauvegarde chargée.');
+          describeCurrentRoom();
+        }
+        return true;
+      } catch {
+        if (!silent) writeContext('Sauvegarde corrompue ou illisible.');
+        return false;
+      }
+    }
+
+    function clearSave() {
+      try {
+        localStorage.removeItem(SAVE_KEY);
+        writeContext('Sauvegarde locale supprimée.');
+        return true;
+      } catch {
+        writeContext('Impossible de supprimer la sauvegarde locale.');
+        return false;
+      }
+    }
+
     function createCheckpoint(reason = 'Décision majeure') {
       const snapshot = {
         reason,
@@ -252,14 +341,15 @@
         acts: safeClone(acts)
       };
       gameState.checkpoints.push(snapshot);
-      if (gameState.checkpoints.length > 20) {
-        gameState.checkpoints.splice(0, gameState.checkpoints.length - 20);
+      if (gameState.checkpoints.length > 30) {
+        gameState.checkpoints.splice(0, gameState.checkpoints.length - 30);
       }
       updateStatusStrip();
+      saveGame();
       return snapshot;
     }
 
-    function restoreCheckpoint(checkpoint = null) {
+    function rollbackToLastCheckpoint(checkpoint = null) {
       if (gameState.checkpoints.length === 0) return false;
       let restoredEntry = checkpoint;
       if (!restoredEntry) {
@@ -269,6 +359,7 @@
         if (idx === -1) return false;
         gameState.checkpoints.splice(idx, 1);
       }
+      const remainingStack = safeClone(gameState.checkpoints);
       const restoredGameState = safeClone(restoredEntry.gameState);
       enterRoom(restoredGameState.roomId, restoredEntry.reason, {
         skipCheckpoint: true,
@@ -281,6 +372,7 @@
       gameState.tick = restoredGameState.tick;
       gameState.commandHistory = restoredGameState.commandHistory || [];
       gameState.historyCursor = gameState.commandHistory.length;
+      gameState.checkpoints = remainingStack;
 
       Object.keys(DATA.characters).forEach(id => delete DATA.characters[id]);
       Object.assign(DATA.characters, safeClone(restoredEntry.characters));
@@ -291,13 +383,14 @@
       Object.keys(acts).forEach(key => delete acts[key]);
       Object.assign(acts, safeClone(restoredEntry.acts));
       updateStatusStrip();
+      saveGame();
       return true;
     }
 
     function triggerGameOver(type, message) {
       gameState.gameOver = { type, message };
       writeContext(`☠ GAME OVER (${type}) — ${message}`);
-      const restored = restoreCheckpoint();
+      const restored = rollbackToLastCheckpoint();
       writeContext(restored ? '↩ Retour au dernier checkpoint.' : 'Aucun checkpoint disponible.');
       describeCurrentRoom();
     }
@@ -364,74 +457,103 @@
       return true;
     }
 
-    function resolveAction(option) {
-      if (!option.resolution) return { success: true, actionScore: null, endedByGameOver: false };
+    function computeActionScore(option, actorId) {
+      if (!option?.resolution) return null;
       clampTrackedVariables();
       const character = getCharacter(option.characterId);
       if (!character) {
-        return { success: false, actionScore: null, endedByGameOver: false, message: 'Aucun personnage valide pour cette action.' };
+        return { success: false, endedByGameOver: false, message: 'Aucun personnage valide pour cette action.', variableDelta: {}, characterChanges: [] };
       }
-      if (['dead', 'captured', 'absent'].includes(character.state)) {
-        return { success: false, actionScore: null, endedByGameOver: false, message: `${character.name} ne peut pas agir.` };
+      if (score === null) {
+        return { success: false, endedByGameOver: false, message: `${character.name} ne peut pas agir.`, variableDelta: {}, characterChanges: [] };
       }
 
-      const stateModifierMap = { active: 1, injured: 0, down: -2 };
-      const stateModifier = stateModifierMap[character.state] ?? -2;
-      const actionScore = 2 + variables.moraleGroupe - variables.chaos + stateModifier;
-      if (actionScore >= option.resolution.difficulty) {
-        return { success: true, actionScore, endedByGameOver: false };
+      if (score >= option.resolution.difficulty) {
+        return {
+          success: true,
+          endedByGameOver: false,
+          message: option.effects?.message ?? null,
+          variableDelta: {
+            moraleGroupe: option.effects?.moraleGroupe ?? 0,
+            chaos: option.effects?.chaos ?? 0
+          },
+          characterChanges: []
+        };
       }
 
       if (option.resolution.risk === 'injury') {
-        let message = `${character.name} tient sa position.`;
-        if (applyTransition(character, 'injured')) {
-          message = `${character.name} est blessé.`;
-        } else if (applyTransition(character, 'down')) {
-          message = `${character.name} est à terre.`;
-        } else if (applyTransition(character, 'dead')) {
-          message = `${character.name} meurt.`;
+        if (character.state === 'active') {
+          return { success: false, endedByGameOver: false, message: `${character.name} est blessé.`, variableDelta: {}, characterChanges: [{ id: option.characterId, toState: 'injured' }] };
         }
-        return { success: false, actionScore, endedByGameOver: false, message };
+        if (character.state === 'injured') {
+          return { success: false, endedByGameOver: false, message: `${character.name} est à terre.`, variableDelta: {}, characterChanges: [{ id: option.characterId, toState: 'down' }] };
+        }
+        return {
+          success: false,
+          endedByGameOver: false,
+          message: `${character.name} succombe à ses blessures.`,
+          variableDelta: {},
+          characterChanges: [{ id: option.characterId, toState: 'dead', deathType: option.resolution.deathType ?? 'replaceable' }]
+        };
       }
 
       if (option.resolution.risk === 'capture') {
-        const captured = applyTransition(character, 'captured');
-        return { success: false, actionScore, endedByGameOver: false, message: captured ? `${character.name} est capturé.` : `${character.name} échappe de justesse à la capture.` };
+        return { success: false, endedByGameOver: false, message: `${character.name} est capturé.`, variableDelta: {}, characterChanges: [{ id: option.characterId, toState: 'captured' }] };
       }
 
       if (option.resolution.risk === 'death') {
-        if (option.resolution.deathType === 'definitive') {
-          triggerGameOver('definitive', `${character.name} tombe et le destin du groupe se brise.`);
-          return { success: false, actionScore, endedByGameOver: true, message: null };
+        if (character.state === 'active') {
+          return { success: false, endedByGameOver: false, message: `${character.name} est grièvement blessé.`, variableDelta: {}, characterChanges: [{ id: option.characterId, toState: 'injured' }] };
         }
-        character.state = 'dead';
-        return { success: false, actionScore, endedByGameOver: false, message: `${character.name} meurt au combat.` };
+        if (character.state === 'injured') {
+          return { success: false, endedByGameOver: false, message: `${character.name} s'effondre au sol.`, variableDelta: {}, characterChanges: [{ id: option.characterId, toState: 'down' }] };
+        }
+        return {
+          success: false,
+          endedByGameOver: false,
+          message: `${character.name} affronte un risque mortel.`,
+          variableDelta: {},
+          characterChanges: [{ id: option.characterId, toState: 'dead', deathType: option.resolution.deathType ?? 'replaceable' }]
+        };
       }
 
-      return { success: false, actionScore, endedByGameOver: false, message: 'Échec sans conséquence définie.' };
+      return { success: false, endedByGameOver: false, message: 'Échec sans conséquence définie.', variableDelta: {}, characterChanges: [] };
+    }
+
+    function applyOutcome(outcome) {
+      let endedByGameOver = false;
+      outcome.characterChanges.forEach(change => {
+        const character = characters[change.id];
+        if (!character) return;
+        if (change.toState === 'dead') {
+          const deathResult = handleDeath(change.id, change.deathType ?? 'replaceable');
+          if (deathResult.endedByGameOver) endedByGameOver = true;
+          return;
+        }
+        applyTransition(character, change.toState);
+      });
+      if (endedByGameOver) return { endedByGameOver: true };
+
+      variables.moraleGroupe += outcome.variableDelta.moraleGroupe ?? 0;
+      variables.chaos += outcome.variableDelta.chaos ?? 0;
+      clampTrackedVariables();
+
+      if (outcome.message) writeContext(outcome.message);
+      updateStatusStrip();
+      return { endedByGameOver: false };
     }
 
     function applyOptionEffects(option) {
-      const resolution = resolveAction(option);
-      if (!resolution.success) {
-        if (resolution.message) writeContext(resolution.message);
-        updateStatusStrip();
-        return { endedByGameOver: resolution.endedByGameOver };
-      }
+      const score = computeActionScore(option, option.characterId);
+      const outcome = resolveOutcome(option, score);
 
       if (option.onSelect === 'silly_lennithon') {
         flags.lennithonInsulted = true;
         triggerGameOver('silly', 'Vous insultez Lennithon. Le dragon apprécie peu votre éloquence.');
         return { endedByGameOver: true };
       }
-      if (option.effects) {
-        variables.moraleGroupe += option.effects.moraleGroupe ?? 0;
-        variables.chaos += option.effects.chaos ?? 0;
-        clampTrackedVariables();
-        if (option.effects.message) writeContext(option.effects.message);
-      }
-      updateStatusStrip();
-      return { endedByGameOver: false };
+
+      return applyOutcome(outcome);
     }
 
     function chooseOption(indexToken) {
@@ -443,6 +565,7 @@
       }
       createCheckpoint(`Décision risquée: ${options[index - 1].id}`);
       const result = applyOptionEffects(options[index - 1]);
+      saveGame();
       if (!result?.endedByGameOver) describeCurrentRoom();
     }
 
@@ -451,9 +574,28 @@
     }
 
     function undoToCheckpoint() {
-      const restored = restoreCheckpoint();
+      const restored = rollbackToLastCheckpoint();
       writeContext(restored ? '↩ Annulation: retour au dernier checkpoint.' : 'Aucun checkpoint à restaurer.');
       if (restored) describeCurrentRoom();
+    }
+
+    function showSheet(targetName = '') {
+      const normalized = targetName.trim().toLowerCase();
+      const entries = Object.entries(characters);
+      if (!normalized) {
+        writeContext('Feuille du groupe:');
+        entries.forEach(([, character]) => writeContext(`- ${character.name}: ${character.state}`));
+        return;
+      }
+      const found = entries.find(([, character]) => character.name.toLowerCase() === normalized || character.name.toLowerCase().includes(normalized));
+      if (!found) {
+        writeContext('Personnage introuvable pour sheet.');
+        return;
+      }
+      const [, character] = found;
+      writeContext(`${character.name} — état: ${character.state}`);
+      writeContext(`Compétences: ${character.skills.join(', ') || 'aucune'}`);
+      writeContext(`Tags narratifs: ${character.narrativeTags?.join(', ') || 'aucun'}`);
     }
 
     function autocompleteTokens() {
@@ -517,7 +659,7 @@
       const directionVerb = parsed.verb === 'go' && parsed.args[0] ? parsed.args[0] : '';
       const normalizedDirection = normalizeDirection(directionVerb);
       if (parsed.verb === 'help') {
-        writeContext('Commandes: help|?, look|l|examine|x, go|walk <direction>, n/s/e/w, inventory|i, choose <num>, undo');
+        writeContext('Commandes: help|?, look|l|examine|x, go|walk <direction>, n/s/e/w, inventory|i, choose <num>, undo, save, load, clear, sheet [nom]');
         return;
       }
       if (parsed.verb === 'look') {
@@ -530,6 +672,22 @@
       }
       if (parsed.verb === 'undo') {
         undoToCheckpoint();
+        return;
+      }
+      if (parsed.verb === 'save') {
+        if (saveGame()) writeContext('Sauvegarde locale enregistrée.');
+        return;
+      }
+      if (parsed.verb === 'load') {
+        loadGame();
+        return;
+      }
+      if (parsed.verb === 'clear') {
+        clearSave();
+        return;
+      }
+      if (parsed.verb === 'sheet') {
+        showSheet(parsed.args.join(' '));
         return;
       }
       if (parsed.verb === 'choose') {
@@ -546,6 +704,7 @@
           return;
         }
         moveTo(directionVerb);
+        saveGame();
         return;
       }
       writeContext('Commande non reconnue. Essayez "help".');
@@ -602,8 +761,9 @@
       }
     });
 
-    createCheckpoint('Début de partie');
-    writeContext('Chronique initialisée. Tapez "help" pour commencer.');
+    const loadedFromSave = loadGame({ silent: true });
+    if (!loadedFromSave) createCheckpoint('Début de partie');
+    writeContext(loadedFromSave ? 'Sauvegarde locale restaurée automatiquement.' : 'Chronique initialisée. Tapez "help" pour commencer.');
     describeCurrentRoom();
     animationLoop();
   </script>
