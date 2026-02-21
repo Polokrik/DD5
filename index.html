@@ -144,7 +144,47 @@
       }
     };
     const acts = { current: 'ACT_I', unlocked: ['ACT_I'] };
+      title_screen: {
+        id: 'title_screen',
+        title: 'Clan d’Estain — Tyranny of Dragons',
+        description: 'Choisissez une option pour commencer.',
+        objects: ['menu principal'],
+        exits: {},
+        options: [
+          { id: 'start', label: 'Commencer', onSuccess: { gotoRoom: 'battle_plan_selection', checkpoint: 'Start' } },
+          { id: 'credits', label: 'Crédits', onSuccess: { gotoRoom: 'credits', checkpoint: 'Credits' } }
+        ]
+      },
 
+      battle_plan_selection: {
+        id: 'battle_plan_selection',
+        title: 'Sélection du Plan',
+        description: 'Trois stratégies se disputent les dernières minutes avant le rituel.',
+        objects: ['officiers fatigués', 'sabliers de campagne', 'sceaux draconiques'],
+        exits: {},
+        options: [
+          {
+            id: 'plan-sabotage',
+            label: 'Plan — Saboter les composants du rituel',
+            onSuccess: { setFlags: { finalBattlePlan: 'sabotage' }, gotoRoom: 'supply_lines', checkpoint: 'Plan choisi — Sabotage' }
+          },
+          {
+            id: 'plan-decapitation',
+            label: 'Plan — Frappe de décapitation contre un lieutenant',
+            onSuccess: { setFlags: { finalBattlePlan: 'decapitation' }, gotoRoom: 'commander_tent', checkpoint: 'Plan choisi — Décapitation' }
+          },
+          {
+            id: 'plan-evacuation',
+            label: 'Plan — Défense et évacuation des civils',
+            onSuccess: { setFlags: { finalBattlePlan: 'evacuation' }, gotoRoom: 'refugee_corridor', checkpoint: 'Plan choisi — Évacuation' }
+          },
+          {
+            id: 'plan-riddles',
+            label: 'Option – Défier Tiamat à un duel d’énigmes',
+            onSelect: 'silly_riddle_duel'
+          }
+        ]
+      },
     const rooms = {
       hill_overlook: {
         id: 'hill_overlook',
