@@ -50,6 +50,288 @@
     };
 
     const flags = {
+      hasSeenSquare: true,
+      lennithonInsulted: false,
+      cyanwrathDead: false,
+      leosinSaved: false,
+      eggsDestroyed: false,
+      eggsStolen: false,
+      eggsLeft: false,
+      heavyCasualties: false,
+      moraleHigh: false,
+      WHAT_IF_CYANWRATH_DEAD: false
+    };
+    const variables = { moraleGroupe: 1, chaos: 0, suspicionCamp: 0 };
+    const acts = { current: 'ACT_II', unlocked: ['ACT_I', 'ACT_II'] };
+
+    const rooms = {
+      cult_trail: {
+        id: 'cult_trail',
+        title: 'Traque vers le camp',
+        description: 'Des pistes fraîches, des chariots lourds et des prisonniers entravés marquent la route des pillards.',
+        objects: ['pistes', 'chariots', 'prisonniers'],
+        exits: { nord: 'cult_camp_exterior' },
+        options: [
+          {
+            id: 'suivre-discretement',
+            label: 'Option – Malar: Suivre discrètement la colonne',
+            characterId: 'malar',
+            skill: 'stealth',
+            resolution: { difficulty: 3, skill: 'stealth', risk: 'capture', deathType: 'replaceable' },
+            effects: { chaos: -1, message: 'Vous gardez la colonne en vue sans révéler votre présence.' }
+          },
+          {
+            id: 'attaquer-arriere-garde',
+            label: 'Option – Bjolnir: Attaquer l’arrière-garde',
+            characterId: 'bjolnir',
+            skill: 'leadership',
+            resolution: { difficulty: 4, skill: 'leadership', risk: 'injury', deathType: 'replaceable' },
+            effects: { moraleGroupe: 1, chaos: 1, message: 'L’arrière-garde cède, mais l’alerte monte dans les collines.' }
+          },
+          {
+            id: 'deguisement-kobold',
+            label: 'Option – Darrin: Se déguiser en kobold sans costume',
+            characterId: 'darrin',
+            skill: 'wild_magic',
+            onSelect: 'silly_lennithon'
+          }
+        ]
+      },
+      cult_camp_exterior: {
+        id: 'cult_camp_exterior',
+        title: 'Abords du camp',
+        description: 'Au-delà des pins noirs, des feux de garde tracent le périmètre du camp du Culte.',
+        objects: ['sentinelles', 'palissades', 'fumées de bivouac'],
+        exits: { sud: 'cult_trail', nord: 'cult_camp' },
+        options: [
+          {
+            id: 'sonder-patrouilles',
+            label: 'Option – Kairon: Lire la cadence des patrouilles',
+            characterId: 'kairon',
+            skill: 'strategy',
+            resolution: { difficulty: 4, skill: 'strategy', risk: 'capture', deathType: 'replaceable' },
+            effects: { chaos: -1, message: 'Les relèves deviennent lisibles: vous trouvez une fenêtre vers la palissade.' }
+          },
+          {
+            id: 'briser-ligne-garde',
+            label: 'Option – Bjolnir: Briser une ligne de garde',
+            characterId: 'bjolnir',
+            skill: 'leadership',
+            resolution: { difficulty: 5, skill: 'leadership', risk: 'injury', deathType: 'replaceable' },
+            effects: { moraleGroupe: 1, chaos: 1, message: 'Le passage est ouvert, mais les alarmes grondent derrière vous.' }
+          }
+        ]
+      },
+      cult_camp: {
+        id: 'cult_camp',
+        title: 'Camp du Culte',
+        description: 'Tentes cultistes, enclos de prisonniers et grande tente se partagent un terrain boueux et surveillé.',
+        objects: ['tentes cultistes', 'enclos prisonniers', 'grande tente', 'passage hatchery'],
+        exits: { sud: 'cult_camp_exterior', nord: 'hatchery_entry' },
+        options: [
+          {
+            id: 'liberer-leosin',
+            label: 'Option – Malar: Libérer Leosin en silence',
+            characterId: 'malar',
+            skill: 'stealth',
+            resolution: { difficulty: 5, skill: 'stealth', risk: 'capture', deathType: 'replaceable' },
+            effects: { moraleGroupe: 1, chaos: -1, message: 'Leosin rejoint votre colonne et murmure un plan de retraite.' }
+          },
+          {
+            id: 'observer-leaders',
+            label: 'Option – Kairon: Observer les meneurs du Culte',
+            characterId: 'kairon',
+            skill: 'strategy',
+            resolution: { difficulty: 5, skill: 'strategy', risk: 'injury', deathType: 'replaceable' },
+            effects: { chaos: -1, message: 'Vous relevez les ordres et les sceaux des chefs sous la grande tente.' }
+          },
+          {
+            id: 'voler-informations',
+            label: 'Option – Darrin: Voler des informations rituelles',
+            characterId: 'darrin',
+            skill: 'wild_magic',
+            resolution: { difficulty: 6, skill: 'wild_magic', risk: 'injury', deathType: 'replaceable' },
+            effects: { moraleGroupe: 1, chaos: 1, message: 'Des cartes et un codex passent dans vos sacs.' }
+          },
+          {
+            id: 'tiamat-reincarnee',
+            label: 'Option – Darrin: Proclamer être Tiamat réincarné',
+            characterId: 'darrin',
+            skill: 'wild_magic',
+            onSelect: 'silly_lennithon'
+          }
+        ]
+      },
+      hatchery_entry: {
+        id: 'hatchery_entry',
+        title: 'Entrée de la hatchery',
+        description: 'Une faille sombre souffle un air humide. Sans torches, chaque pas devient un pari aveugle.',
+        objects: ['caverne obscure', 'torches', 'rampe glissante'],
+        exits: { sud: 'cult_camp', nord: 'fungal_chamber' },
+        options: [
+          {
+            id: 'descendre-discretement',
+            label: 'Option – Malar: Descendre discrètement',
+            characterId: 'malar',
+            skill: 'stealth',
+            resolution: { difficulty: 6, skill: 'stealth', risk: 'injury', deathType: 'replaceable' },
+            effects: { chaos: -1, message: 'La colonne s’enfonce sans bruit dans les galeries.' }
+          },
+          {
+            id: 'forcer-entree',
+            label: 'Option – Bjolnir: Forcer l’entrée',
+            characterId: 'bjolnir',
+            skill: 'leadership',
+            resolution: { difficulty: 6, skill: 'leadership', risk: 'injury', deathType: 'replaceable' },
+            effects: { moraleGroupe: 1, chaos: 1, message: 'Le verrou cède dans un fracas qui réveille la hatchery.' }
+          }
+        ]
+      },
+      fungal_chamber: {
+        id: 'fungal_chamber',
+        title: 'Chambre fongique',
+        description: 'Des champignons géants exhalent des spores laiteuses à chaque vibration.',
+        objects: ['spores', 'mycélium', 'passages latéraux'],
+        exits: { sud: 'hatchery_entry', nord: 'roper_lair', est: 'egg_chamber' },
+        options: [
+          {
+            id: 'traversee-prudente',
+            label: 'Option – Kairon: Traversée lente et calculée',
+            characterId: 'kairon',
+            skill: 'strategy',
+            resolution: { difficulty: 6, skill: 'strategy', risk: 'injury', deathType: 'replaceable' },
+            effects: { chaos: -1, message: 'Vous contournez les nappes de spores dans un silence d’église.' }
+          },
+          {
+            id: 'bruler-fonges',
+            label: 'Option – Darrin: Brûler les fonges pour ouvrir un couloir',
+            characterId: 'darrin',
+            skill: 'wild_magic',
+            resolution: { difficulty: 6, skill: 'wild_magic', risk: 'injury', deathType: 'replaceable' },
+            effects: { chaos: 1, message: 'Les spores flambent; la voie est nette, et l’alerte aussi.' }
+          },
+          {
+            id: 'adopter-oeuf-maintenant',
+            label: 'Option – Darrin: Adopter immédiatement un œuf',
+            characterId: 'darrin',
+            skill: 'wild_magic',
+            onSelect: 'silly_lennithon'
+          }
+        ]
+      },
+      roper_lair: {
+        id: 'roper_lair',
+        title: 'Antre du tentaculeur',
+        description: 'Une masse pierreuse s’anime: le tentaculeur tend ses vrilles dans la pénombre.',
+        objects: ['tentacules', 'stalagmites', 'ossements'],
+        exits: { sud: 'fungal_chamber', est: 'egg_chamber' },
+        options: [
+          {
+            id: 'strategie-kairon',
+            label: 'Option – Kairon: Neutraliser les vrilles par la stratégie',
+            characterId: 'kairon',
+            skill: 'strategy',
+            resolution: { difficulty: 7, skill: 'strategy', risk: 'injury', deathType: 'replaceable' },
+            effects: { moraleGroupe: 1, message: 'Le tentaculeur est pris à contre-rythme et recule.' }
+          },
+          {
+            id: 'force-brute-roper',
+            label: 'Option – Bjolnir: Forcer le passage en force brute',
+            characterId: 'bjolnir',
+            skill: 'leadership',
+            resolution: { difficulty: 7, skill: 'leadership', risk: 'death', deathType: 'replaceable' },
+            effects: { chaos: 1, message: 'Le combat secoue la grotte, mais une brèche s’ouvre.' }
+          },
+          {
+            id: 'sacrifice-calculé',
+            label: 'Option – Malar: Sacrifice calculé pour couvrir la retraite',
+            characterId: 'malar',
+            skill: 'stealth',
+            resolution: { difficulty: 7, skill: 'stealth', risk: 'death', deathType: 'replaceable' },
+            effects: { chaos: -1, message: 'Le groupe passe pendant que Malar détourne les vrilles.' }
+          }
+        ]
+      },
+      egg_chamber: {
+        id: 'egg_chamber',
+        title: 'Chambre des œufs',
+        description: 'Des œufs de dragon reposent au cœur d’un nid rituel, entourés de marques profanées.',
+        objects: ['œufs', 'autel', 'chaînes'],
+        exits: { ouest: 'fungal_chamber', nord: 'hatchery_exit' },
+        options: [
+          {
+            id: 'detruire-oeufs',
+            label: 'Option – Bjolnir: Détruire les œufs',
+            characterId: 'bjolnir',
+            skill: 'leadership',
+            resolution: { difficulty: 7, skill: 'leadership', risk: 'injury', deathType: 'replaceable' },
+            effects: { moraleGroupe: 1, chaos: 1, message: 'Les coquilles éclatent; un cri rituel résonne dans tout le repaire.' }
+          },
+          {
+            id: 'voler-oeufs',
+            label: 'Option – Malar: Voler les œufs',
+            characterId: 'malar',
+            skill: 'stealth',
+            resolution: { difficulty: 7, skill: 'stealth', risk: 'capture', deathType: 'replaceable' },
+            effects: { chaos: 1, message: 'Vous emportez des œufs sous des toiles, au prix d’une fuite compliquée.' }
+          },
+          {
+            id: 'laisser-oeufs',
+            label: 'Option – Kairon: Les laisser pour préserver la discrétion',
+            characterId: 'kairon',
+            skill: 'strategy',
+            resolution: { difficulty: 6, skill: 'strategy', risk: 'injury', deathType: 'replaceable' },
+            effects: { chaos: -1, message: 'Vous mémorisez le lieu et quittez le nid sans le toucher.' }
+          }
+        ]
+      },
+      hatchery_exit: {
+        id: 'hatchery_exit',
+        title: 'Fuite de la hatchery',
+        description: 'L’air libre est proche. Derrière vous, les tunnels vomissent des poursuivants et des ordres fanatiques.',
+        objects: ['issue rocheuse', 'poursuivants', 'falaise forestière'],
+        exits: { sud: 'egg_chamber', est: 'act2_confrontation' },
+        options: [
+          {
+            id: 'retraite-ordonnee',
+            label: 'Option – Kairon: Ordonner la retraite finale',
+            characterId: 'kairon',
+            skill: 'strategy',
+            resolution: { difficulty: 7, skill: 'strategy', risk: 'injury', deathType: 'replaceable' },
+            effects: { moraleGroupe: 1, chaos: -1, message: 'La fuite se transforme en extraction nette. L’Acte III est à portée.' }
+          },
+          {
+            id: 'fuite-sauvage',
+            label: 'Option – Bjolnir: Percer la poursuite au choc',
+            characterId: 'bjolnir',
+            skill: 'leadership',
+            resolution: { difficulty: 7, skill: 'leadership', risk: 'death', deathType: 'replaceable' },
+            effects: { moraleGroupe: 1, chaos: 1, message: 'La colonne survit dans le tumulte et disparaît dans les bois.' }
+          }
+        ]
+      },
+      act2_confrontation: {
+        id: 'act2_confrontation',
+        title: 'Confrontation des tunnels',
+        description: 'Une silhouette d’élite du Culte vous barre la sortie: Cyanwrath, ou un remplaçant fanatique si son destin a changé.',
+        objects: ['champion cultiste', 'garde rapprochée', 'passage étroit'],
+        exits: { ouest: 'hatchery_exit' },
+        options: [
+          {
+            id: 'duel-bjolnir',
+            label: 'Option – Bjolnir: Accepter un duel bref et rompre le contact',
+            characterId: 'bjolnir',
+            skill: 'leadership',
+            resolution: { difficulty: 8, skill: 'leadership', risk: 'death', deathType: 'replaceable' },
+            effects: { moraleGroupe: 1, message: 'Le champion recule d’un pas: assez pour offrir une issue au groupe.' }
+          },
+          {
+            id: 'repli-furtif',
+            label: 'Option – Malar: Repli furtif par une faille secondaire',
+            characterId: 'malar',
+            skill: 'stealth',
+            resolution: { difficulty: 8, skill: 'stealth', risk: 'capture', deathType: 'replaceable' },
+            effects: { chaos: -1, message: 'Vous glissez hors de portée et laissez les fanatiques se quereller.' }
       scene1Done: false,
       scene2Done: false,
       moulinDone: false,
@@ -276,6 +558,7 @@
     };
 
     const gameState = {
+      roomId: 'cult_trail',
       roomId: 'hill_overlook',
       inventory: ['torche'],
       checkpoints: [],
