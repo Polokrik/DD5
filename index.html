@@ -41,9 +41,10 @@
     const PULSE_LUT = [0, 0, 1, 1, 2, 1, 1, 0, 0, -1, -1, -2, -1, -1, 0, 0];
 
     const characters = {
-      bjolnir: { name: 'Bjolnir', state: 'active', skills: ['redemption', 'leadership'], narrativeTags: ['ancien mercenaire', 'chef de fortune'] },
-      malar: { name: 'Malar', state: 'injured', skills: ['stealth'], narrativeTags: ['ombre urbaine', 'éclaireur'] },
+      bjolnir: { name: 'Bjolnir', state: 'active', skills: ['redemption', 'leadership', 'diplomacy'], narrativeTags: ['ancien mercenaire', 'chef de fortune'] },
+      malar: { name: 'Malar', state: 'active', skills: ['stealth'], narrativeTags: ['ombre urbaine', 'éclaireur'] },
       darrin: { name: 'Darrin', state: 'active', skills: ['wild_magic'], narrativeTags: ['arcaniste instable', 'provocateur'] },
+      drekthar: { name: 'Drek’Thar', state: 'active', skills: ['might', 'duel'], narrativeTags: ['vétéran taciturne', 'mur de fer'] },
       ellyjobell: { name: 'Ellyjobell', state: 'absent', skills: ['arcana'], narrativeTags: ['érudite disparue'] },
       kairon: { name: 'Kairon', state: 'captured', skills: ['strategy'], narrativeTags: ['stratège prisonnier'] }
     };
@@ -331,6 +332,226 @@
             skill: 'stealth',
             resolution: { difficulty: 8, skill: 'stealth', risk: 'capture', deathType: 'replaceable' },
             effects: { chaos: -1, message: 'Vous glissez hors de portée et laissez les fanatiques se quereller.' }
+      scene1Done: false,
+      scene2Done: false,
+      moulinDone: false,
+      sanctuaireDone: false,
+      duelDone: false,
+      actICompleted: false,
+      keepLossApplied: false,
+      cyanwrathDead: false
+    };
+    const variables = { moraleGroupe: 0, chaos: 2 };
+    const acts = { current: 'ACT_I', unlocked: ['ACT_I'] };
+
+    const rooms = {
+      hill_overlook: {
+        id: 'hill_overlook',
+        title: 'Approche de Greenest',
+        description: 'Du promontoire, Greenest n’est qu’un brasier. Lennithon fend le ciel, et les survivants appellent au secours.',
+        objects: ['ville en flammes', 'Lennithon', 'groupe actif'],
+        exits: {},
+        options: [
+          {
+            id: 'charge-civils',
+            label: 'Option – Charge directe vers les civils',
+            characterId: 'bjolnir',
+            skill: 'leadership',
+            resolution: { difficulty: 2, skill: 'leadership', risk: 'injury', deathType: 'replaceable' },
+            effects: { moraleGroupe: 1, chaos: -1, message: 'Votre charge ouvre une trouée; des civils se replient derrière vos boucliers.' },
+            onSuccess: { setFlags: { scene1Done: true }, gotoRoom: 'swift_street', checkpoint: 'Scène 1 résolue — Approche de Greenest' }
+          },
+          {
+            id: 'approche-riviere',
+            label: 'Option – Approche furtive par la rivière',
+            characterId: 'malar',
+            skill: 'stealth',
+            resolution: { difficulty: 3, skill: 'stealth', risk: 'injury', deathType: 'replaceable' },
+            effects: { chaos: -1, message: 'L’eau noire étouffe vos pas; vous atteignez les ruelles sans alerter la horde.' },
+            onFailure: { variableDelta: { chaos: 1 }, message: 'Une torche accroche votre silhouette. L’alarme éclate dans la nuit.' },
+            onSuccess: { setFlags: { scene1Done: true }, gotoRoom: 'swift_street', checkpoint: 'Scène 1 résolue — Approche de Greenest' },
+            onFailurePost: { setFlags: { scene1Done: true }, gotoRoom: 'swift_street', checkpoint: 'Scène 1 résolue — Approche de Greenest' }
+          },
+          {
+            id: 'signe-dragon',
+            label: 'Option – Faire un signe au dragon',
+            onSelect: 'silly_wave_lennithon'
+          }
+        ]
+      },
+      swift_street: {
+        id: 'swift_street',
+        title: 'Rue de la Famille Swift',
+        description: 'Huit kobolds encerclent la famille Swift devant une porte fracassée.',
+        objects: ['famille Swift', '8 kobolds', 'toits en feu'],
+        exits: {},
+        options: [
+          {
+            id: 'swift-diplomatie',
+            label: 'Option – Bjolnir: Diplomatie sous pression',
+            characterId: 'bjolnir',
+            skill: 'diplomacy',
+            resolution: { difficulty: 2, skill: 'diplomacy', risk: 'capture', deathType: 'replaceable' },
+            effects: { moraleGroupe: 1, message: 'Bjolnir impose une trêve d’une voix de guerre. Les kobolds hésitent, puis refluent.' },
+            onSuccess: { setFlags: { scene2Done: true }, gotoRoom: 'greenest_keep', checkpoint: 'Scène 2 résolue — Famille Swift' },
+            onFailurePost: { setFlags: { scene2Done: true }, gotoRoom: 'greenest_keep', checkpoint: 'Scène 2 résolue — Famille Swift' }
+          },
+          {
+            id: 'swift-magie',
+            label: 'Option – Darrin: Magie sauvage',
+            characterId: 'darrin',
+            skill: 'wild_magic',
+            resolution: { difficulty: 3, skill: 'wild_magic', risk: 'injury', deathType: 'replaceable' },
+            effects: { moraleGroupe: 1, message: 'Un arc fulgurant éclate; les kobolds rompent la ligne dans un cri.' },
+            onFailure: { variableDelta: { chaos: 1 }, message: 'L’onde magique ricoche et la rue bascule dans la confusion.' },
+            onSuccess: { setFlags: { scene2Done: true }, gotoRoom: 'greenest_keep', checkpoint: 'Scène 2 résolue — Famille Swift' },
+            onFailurePost: { setFlags: { scene2Done: true }, gotoRoom: 'greenest_keep', checkpoint: 'Scène 2 résolue — Famille Swift' }
+          },
+          {
+            id: 'swift-force',
+            label: 'Option – Drek’Thar: Force brute',
+            characterId: 'drekthar',
+            skill: 'might',
+            resolution: { difficulty: 2, skill: 'might', risk: 'injury', deathType: 'replaceable' },
+            effects: { moraleGroupe: 1, message: 'Drek’Thar traverse les assaillants comme un bélier vivant.' },
+            onSuccess: { setFlags: { scene2Done: true }, gotoRoom: 'greenest_keep', checkpoint: 'Scène 2 résolue — Famille Swift' },
+            onFailurePost: { setFlags: { scene2Done: true }, gotoRoom: 'greenest_keep', checkpoint: 'Scène 2 résolue — Famille Swift' }
+          },
+          {
+            id: 'swift-culte',
+            label: 'Option – Négocier avec les kobolds pour rejoindre le culte',
+            onSelect: 'silly_join_cult'
+          }
+        ]
+      },
+      greenest_keep: {
+        id: 'greenest_keep',
+        title: 'Forteresse de Greenest',
+        description: 'Le gouverneur Nighthill vous reçoit au pas de course: « Le moulin et le sanctuaire tombent. Choisissez vite. »',
+        objects: ['Nighthill', 'moulin', 'sanctuaire'],
+        exits: {},
+        options: [
+          {
+            id: 'mission-moulin',
+            label: 'Mission – Sécuriser le moulin',
+            requiresFlag: 'scene2Done',
+            forbiddenFlag: 'moulinDone',
+            onSuccess: { gotoRoom: 'mill_approach', checkpoint: 'Mission engagée — Moulin' }
+          },
+          {
+            id: 'mission-sanctuaire',
+            label: 'Mission – Renforcer le sanctuaire',
+            requiresFlag: 'scene2Done',
+            forbiddenFlag: 'sanctuaireDone',
+            onSuccess: { gotoRoom: 'sanctuary_approach', checkpoint: 'Mission engagée — Sanctuaire' }
+          },
+          {
+            id: 'vers-duel',
+            label: 'Mission – Répondre au défi de Cyanwrath',
+            requiresFlag: 'moulinDone',
+            requiresAllFlags: ['moulinDone', 'sanctuaireDone'],
+            forbiddenFlag: 'duelDone',
+            onSuccess: { gotoRoom: 'duel_field', checkpoint: 'Scène 5 engagée — Duel de Cyanwrath' }
+          },
+          {
+            id: 'fin-acte',
+            label: 'Clore l’Acte I',
+            requiresAllFlags: ['moulinDone', 'sanctuaireDone', 'duelDone'],
+            forbiddenFlag: 'actICompleted',
+            onSuccess: { setFlags: { actICompleted: true }, unlockActs: ['ACT_II'], checkpoint: 'End Act I', gotoRoom: 'greenest_keep' }
+          }
+        ]
+      },
+      mill_approach: {
+        id: 'mill_approach',
+        title: 'Moulin de Greenest',
+        description: 'Les réserves brûlent; un souffle de suie recouvre les meules.',
+        objects: ['foyer d’incendie', 'pillards', 'sacs de grain'],
+        exits: {},
+        options: [
+          {
+            id: 'moulin-furtif',
+            label: 'Option – Approche furtive du moulin',
+            characterId: 'malar',
+            skill: 'stealth',
+            resolution: { difficulty: 3, skill: 'stealth', risk: 'injury', deathType: 'replaceable' },
+            effects: { message: 'Vous coupez les sentinelles et gagnez l’accès aux pompes à eau.' },
+            onFailure: { variableDelta: { chaos: 2 }, message: 'Le feu bondit entre les poutres. Le quartier entier hurle.' },
+            onSuccess: { setFlags: { moulinDone: true }, gotoRoom: 'greenest_keep', checkpoint: 'Scène 4A résolue — Moulin' },
+            onFailurePost: { setFlags: { moulinDone: true }, gotoRoom: 'greenest_keep', checkpoint: 'Scène 4A résolue — Moulin' }
+          },
+          {
+            id: 'moulin-assaut',
+            label: 'Option – Assaut direct du moulin',
+            characterId: 'drekthar',
+            skill: 'might',
+            resolution: { difficulty: 2, skill: 'might', risk: 'death', deathType: 'replaceable' },
+            effects: { message: 'L’assaut fracasse la ligne ennemie; les meuniers reprennent le contrôle.' },
+            onFailure: { variableDelta: { chaos: 2 }, message: 'Le combat disperse les seaux d’eau; les flammes gagnent les toits.' },
+            onSuccess: { setFlags: { moulinDone: true }, gotoRoom: 'greenest_keep', checkpoint: 'Scène 4A résolue — Moulin' },
+            onFailurePost: { setFlags: { moulinDone: true }, gotoRoom: 'greenest_keep', checkpoint: 'Scène 4A résolue — Moulin' }
+          }
+        ]
+      },
+      sanctuary_approach: {
+        id: 'sanctuary_approach',
+        title: 'Sanctuaire assiégé',
+        description: 'Le temple tient derrière des barricades. Un bélier résonne contre les portes sacrées.',
+        objects: ['barricades', 'bélier', 'fidèles terrifiés'],
+        exits: {},
+        options: [
+          {
+            id: 'sanctuaire-tunnel',
+            label: 'Option – Infiltration par les tunnels',
+            characterId: 'malar',
+            skill: 'stealth',
+            resolution: { difficulty: 3, skill: 'stealth', risk: 'capture', deathType: 'replaceable' },
+            effects: { message: 'Vous ouvrez les verrous de l’intérieur et brisez l’élan du bélier.' },
+            onFailure: { variableDelta: { chaos: 3, moraleGroupe: -2 }, message: 'Le tunnel s’effondre; le bélier frappe encore, implacable.' },
+            onSuccess: { setFlags: { sanctuaireDone: true }, gotoRoom: 'greenest_keep', checkpoint: 'Scène 4B résolue — Sanctuaire' },
+            onFailurePost: { setFlags: { sanctuaireDone: true }, gotoRoom: 'greenest_keep', checkpoint: 'Scène 4B résolue — Sanctuaire' }
+          },
+          {
+            id: 'sanctuaire-assaut',
+            label: 'Option – Assaut frontal pour briser le bélier',
+            characterId: 'bjolnir',
+            skill: 'leadership',
+            resolution: { difficulty: 2, skill: 'leadership', risk: 'injury', deathType: 'replaceable' },
+            effects: { message: 'Votre cri rallie la ligne; les assaillants reculent du portail.' },
+            onFailure: { variableDelta: { chaos: 3, moraleGroupe: -2 }, message: 'L’assaut se brise et la foule panique autour du temple.' },
+            onSuccess: { setFlags: { sanctuaireDone: true }, gotoRoom: 'greenest_keep', checkpoint: 'Scène 4B résolue — Sanctuaire' },
+            onFailurePost: { setFlags: { sanctuaireDone: true }, gotoRoom: 'greenest_keep', checkpoint: 'Scène 4B résolue — Sanctuaire' }
+          }
+        ]
+      },
+      duel_field: {
+        id: 'duel_field',
+        title: 'Champ du Duel',
+        description: 'Langdedrosa Cyanwrath plante sa lame dans la boue et exige un champion.',
+        objects: ['Cyanwrath', 'otages', 'culte du dragon'],
+        exits: {},
+        options: [
+          {
+            id: 'duel-accept',
+            label: 'Option – Accepter le duel (Drek’Thar)',
+            characterId: 'drekthar',
+            skill: 'duel',
+            resolution: { difficulty: 2, skill: 'duel', risk: 'death', deathType: 'replaceable' },
+            effects: { moraleGroupe: 2, message: 'Le duel tourne à votre avantage; les otages sont relâchés sous les huées.' },
+            onSuccess: { setFlags: { duelDone: true, cyanwrathDead: true }, gotoRoom: 'greenest_keep', checkpoint: 'Scène 5 résolue — Duel de Cyanwrath' },
+            onFailure: { message: 'Votre champion plie, mais survit. Cyanwrath ordonne malgré tout la libération des otages.' },
+            onFailurePost: { setFlags: { duelDone: true }, gotoRoom: 'greenest_keep', checkpoint: 'Scène 5 résolue — Duel de Cyanwrath' }
+          },
+          {
+            id: 'duel-refus',
+            label: 'Option – Refuser le duel',
+            effects: { chaos: 2, moraleGroupe: -2, message: 'Le refus glace la foule. Cyanwrath ricane et marque Greenest au fer rouge.' },
+            onSuccess: { setFlags: { duelDone: true }, gotoRoom: 'greenest_keep', checkpoint: 'Scène 5 résolue — Duel de Cyanwrath' }
+          },
+          {
+            id: 'duel-danse',
+            label: 'Option – Proposer une danse',
+            onSelect: 'silly_dance_cyanwrath'
           }
         ]
       }
@@ -338,6 +559,7 @@
 
     const gameState = {
       roomId: 'cult_trail',
+      roomId: 'hill_overlook',
       inventory: ['torche'],
       checkpoints: [],
       gameOver: null,
@@ -380,16 +602,24 @@
     }
 
     function isSkillAvailable(characterId, requiredSkill) {
+      if (!characterId) return true;
       const character = characters[characterId];
       if (!character) return false;
       const allowedStates = new Set(['active', 'injured']);
-      return allowedStates.has(character.state) && character.skills.includes(requiredSkill);
+      if (!allowedStates.has(character.state)) return false;
+      return requiredSkill ? character.skills.includes(requiredSkill) : true;
     }
 
     function computeAvailableOptions(roomId) {
       const room = rooms[roomId];
       if (!room?.options) return [];
-      return room.options.filter(option => isSkillAvailable(option.characterId, option.skill));
+      return room.options.filter(option => {
+        if (!isSkillAvailable(option.characterId, option.skill)) return false;
+        if (option.requiresFlag && !flags[option.requiresFlag]) return false;
+        if (option.forbiddenFlag && flags[option.forbiddenFlag]) return false;
+        if (option.requiresAllFlags && !option.requiresAllFlags.every(flagName => flags[flagName])) return false;
+        return true;
+      });
     }
 
     function peekCheckpoint() {
@@ -432,7 +662,7 @@
         }
 
         const restoredGameState = safeClone(parsed.gameState);
-        gameState.roomId = restoredGameState.roomId ?? 'place';
+        gameState.roomId = restoredGameState.roomId ?? 'hill_overlook';
         gameState.inventory = restoredGameState.inventory ?? [];
         gameState.checkpoints = restoredGameState.checkpoints ?? [];
         gameState.gameOver = null;
@@ -534,6 +764,19 @@
     function describeCurrentRoom() {
       const room = rooms[gameState.roomId];
       if (!room) return;
+      if (room.id === 'greenest_keep' && variables.chaos > 4 && !flags.keepLossApplied) {
+        flags.keepLossApplied = true;
+        variables.moraleGroupe -= 1;
+        writeContext('Des cris montent des faubourgs: trop de civils n’ont pas atteint la forteresse à temps.');
+      }
+      if (room.id === 'greenest_keep' && flags.cyanwrathDead) {
+        writeContext('La nouvelle court: Cyanwrath est tombé. Les vétérans murmurent qu’un avenir différent vient de naître.');
+      }
+      if (room.id === 'greenest_keep' && flags.actICompleted) {
+        if (variables.moraleGroupe >= 2) writeContext('Les défenseurs reprennent souffle. Une lueur d’espoir parcourt les remparts.');
+        if (variables.chaos >= 5) writeContext('La victoire a un goût de cendre: Greenest survivra, mais marquée à jamais.');
+      }
+      clampTrackedVariables();
       writeContext(`[${room.title}] ${room.description}`);
       const options = computeAvailableOptions(room.id);
       const exits = Object.keys(room.exits ?? {});
@@ -557,10 +800,6 @@
         writeContext('Direction inconnue. Utilisez nord/sud/est/ouest.');
         return;
       }
-      if (direction === 'nord' && gameState.roomId === 'portes' && flags.lennithonInsulted) {
-        triggerGameOver('serious', 'Le chaos est total. Greenest tombe sans appel.');
-        return;
-      }
       const room = rooms[gameState.roomId];
       const destinationId = room?.exits?.[direction];
       if (!destinationId) {
@@ -575,7 +814,7 @@
 
     function clampTrackedVariables() {
       variables.moraleGroupe = Math.max(-5, Math.min(5, variables.moraleGroupe));
-      variables.chaos = Math.max(-5, Math.min(5, variables.chaos));
+      variables.chaos = Math.max(-5, Math.min(6, variables.chaos));
     }
 
     function canTransitionState(fromState, toState) {
@@ -617,20 +856,36 @@
       return { message: `${character.name} meurt au combat.`, endedByGameOver: false };
     }
 
+    function mergeBranchEffects(outcome, branch = {}) {
+      if (!branch) return outcome;
+      const merged = safeClone(outcome);
+      merged.variableDelta.moraleGroupe += branch.variableDelta?.moraleGroupe ?? 0;
+      merged.variableDelta.chaos += branch.variableDelta?.chaos ?? 0;
+      if (branch.message) merged.message = branch.message;
+      if (branch.characterChanges?.length) merged.characterChanges.push(...branch.characterChanges);
+      merged.post = {
+        setFlags: branch.setFlags ?? {},
+        gotoRoom: branch.gotoRoom ?? null,
+        checkpoint: branch.checkpoint ?? null,
+        unlockActs: branch.unlockActs ?? []
+      };
+      return merged;
+    }
+
     function resolveOutcome(option, score) {
       if (!option?.resolution) {
-        return { success: true, endedByGameOver: false, message: null, variableDelta: {}, characterChanges: [] };
+        return mergeBranchEffects({ success: true, endedByGameOver: false, message: option.effects?.message ?? null, variableDelta: { moraleGroupe: option.effects?.moraleGroupe ?? 0, chaos: option.effects?.chaos ?? 0 }, characterChanges: [] }, option.onSuccess);
       }
       const character = characters[option.characterId];
       if (!character) {
-        return { success: false, endedByGameOver: false, message: 'Aucun personnage valide pour cette action.', variableDelta: {}, characterChanges: [] };
+        return { success: false, endedByGameOver: false, message: 'Aucun personnage valide pour cette action.', variableDelta: { moraleGroupe: 0, chaos: 0 }, characterChanges: [] };
       }
       if (score === null) {
-        return { success: false, endedByGameOver: false, message: `${character.name} ne peut pas agir.`, variableDelta: {}, characterChanges: [] };
+        return { success: false, endedByGameOver: false, message: `${character.name} ne peut pas agir.`, variableDelta: { moraleGroupe: 0, chaos: 0 }, characterChanges: [] };
       }
 
       if (score >= option.resolution.difficulty) {
-        return {
+        return mergeBranchEffects({
           success: true,
           endedByGameOver: false,
           message: option.effects?.message ?? null,
@@ -639,46 +894,34 @@
             chaos: option.effects?.chaos ?? 0
           },
           characterChanges: []
-        };
+        }, option.onSuccess);
       }
 
+      let baseOutcome = { success: false, endedByGameOver: false, message: 'Échec sans conséquence définie.', variableDelta: { moraleGroupe: 0, chaos: 0 }, characterChanges: [] };
       if (option.resolution.risk === 'injury') {
-        if (character.state === 'active') {
-          return { success: false, endedByGameOver: false, message: `${character.name} est blessé.`, variableDelta: {}, characterChanges: [{ id: option.characterId, toState: 'injured' }] };
-        }
-        if (character.state === 'injured') {
-          return { success: false, endedByGameOver: false, message: `${character.name} est à terre.`, variableDelta: {}, characterChanges: [{ id: option.characterId, toState: 'down' }] };
-        }
-        return {
-          success: false,
-          endedByGameOver: false,
-          message: `${character.name} succombe à ses blessures.`,
-          variableDelta: {},
-          characterChanges: [{ id: option.characterId, toState: 'dead', deathType: option.resolution.deathType ?? 'replaceable' }]
-        };
+        if (character.state === 'active') baseOutcome = { ...baseOutcome, message: `${character.name} est blessé.`, characterChanges: [{ id: option.characterId, toState: 'injured' }] };
+        else if (character.state === 'injured') baseOutcome = { ...baseOutcome, message: `${character.name} est à terre.`, characterChanges: [{ id: option.characterId, toState: 'down' }] };
+        else baseOutcome = { ...baseOutcome, message: `${character.name} succombe à ses blessures.`, characterChanges: [{ id: option.characterId, toState: 'dead', deathType: option.resolution.deathType ?? 'replaceable' }] };
+      } else if (option.resolution.risk === 'capture') {
+        baseOutcome = { ...baseOutcome, message: `${character.name} est capturé.`, characterChanges: [{ id: option.characterId, toState: 'captured' }] };
+      } else if (option.resolution.risk === 'death') {
+        if (character.state === 'active') baseOutcome = { ...baseOutcome, message: `${character.name} est grièvement blessé.`, characterChanges: [{ id: option.characterId, toState: 'injured' }] };
+        else if (character.state === 'injured') baseOutcome = { ...baseOutcome, message: `${character.name} s'effondre au sol.`, characterChanges: [{ id: option.characterId, toState: 'down' }] };
+        else baseOutcome = { ...baseOutcome, message: `${character.name} affronte un risque mortel.`, characterChanges: [{ id: option.characterId, toState: 'dead', deathType: option.resolution.deathType ?? 'replaceable' }] };
       }
 
-      if (option.resolution.risk === 'capture') {
-        return { success: false, endedByGameOver: false, message: `${character.name} est capturé.`, variableDelta: {}, characterChanges: [{ id: option.characterId, toState: 'captured' }] };
-      }
+      return mergeBranchEffects(baseOutcome, option.onFailure);
+    }
 
-      if (option.resolution.risk === 'death') {
-        if (character.state === 'active') {
-          return { success: false, endedByGameOver: false, message: `${character.name} est grièvement blessé.`, variableDelta: {}, characterChanges: [{ id: option.characterId, toState: 'injured' }] };
-        }
-        if (character.state === 'injured') {
-          return { success: false, endedByGameOver: false, message: `${character.name} s'effondre au sol.`, variableDelta: {}, characterChanges: [{ id: option.characterId, toState: 'down' }] };
-        }
-        return {
-          success: false,
-          endedByGameOver: false,
-          message: `${character.name} affronte un risque mortel.`,
-          variableDelta: {},
-          characterChanges: [{ id: option.characterId, toState: 'dead', deathType: option.resolution.deathType ?? 'replaceable' }]
-        };
-      }
-
-      return { success: false, endedByGameOver: false, message: 'Échec sans conséquence définie.', variableDelta: {}, characterChanges: [] };
+    function applyPostEffects(post = {}) {
+      Object.entries(post.setFlags ?? {}).forEach(([key, value]) => {
+        flags[key] = value;
+      });
+      (post.unlockActs ?? []).forEach(actId => {
+        if (!acts.unlocked.includes(actId)) acts.unlocked.push(actId);
+      });
+      if (post.gotoRoom) gameState.roomId = post.gotoRoom;
+      if (post.checkpoint) createCheckpoint(post.checkpoint);
     }
 
     function applyOutcome(outcome) {
@@ -698,23 +941,33 @@
       variables.moraleGroupe += outcome.variableDelta.moraleGroupe ?? 0;
       variables.chaos += outcome.variableDelta.chaos ?? 0;
       clampTrackedVariables();
-
       if (outcome.message) writeContext(outcome.message);
+      applyPostEffects(outcome.post);
       updateStatusStrip();
-      return { endedByGameOver: false };
+      return { endedByGameOver: false, success: outcome.success };
     }
 
     function applyOptionEffects(option) {
-      const score = computeActionScore(option, option.characterId);
-      const outcome = resolveOutcome(option, score);
-
-      if (option.onSelect === 'silly_lennithon') {
-        flags.lennithonInsulted = true;
-        triggerGameOver('silly', 'Vous insultez Lennithon. Le dragon apprécie peu votre éloquence.');
+      if (gameState.roomId === 'greenest_keep') {
+        variables.chaos += 1;
+      }
+      const sillyMessages = {
+        silly_wave_lennithon: 'Vous saluez Lennithon. Il répond par un cône d’acide, protocolaire et terminal.',
+        silly_join_cult: 'Votre offre de service enthousiasme les kobolds: ils exigent d’abord un sacrifice. Vous.',
+        silly_dance_cyanwrath: 'Vous lancez un pas de danse martial. Cyanwrath, offensé artistiquement, met fin au spectacle.'
+      };
+      if (option.onSelect && sillyMessages[option.onSelect]) {
+        triggerGameOver('silly', sillyMessages[option.onSelect]);
         return { endedByGameOver: true };
       }
 
-      return applyOutcome(outcome);
+      const score = computeActionScore(option, option.characterId);
+      const outcome = resolveOutcome(option, score);
+      const result = applyOutcome(outcome);
+      if (!result.endedByGameOver && !result.success && option.onFailurePost) {
+        applyPostEffects(option.onFailurePost);
+      }
+      return result;
     }
 
     function chooseOption(indexToken) {
