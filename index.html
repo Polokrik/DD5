@@ -40,6 +40,12 @@
     };
     const PULSE_LUT = [0, 0, 1, 1, 2, 1, 1, 0, 0, -1, -1, -2, -1, -1, 0, 0];
 
+    const DATA = {
+      acts: {
+        current: 'ACT_I',
+        unlocked: ['ACT_I']
+      },
+      rooms: {
     const characters = {
       bjolnir: { name: 'Bjolnir', state: 'active', skills: ['redemption', 'leadership'], narrativeTags: ['ancien mercenaire', 'chef de fortune'] },
       malar: { name: 'Malar', state: 'injured', skills: ['stealth'], narrativeTags: ['ombre urbaine', 'éclaireur'] },
@@ -55,6 +61,7 @@
     const rooms = {
       place: {
         id: 'place',
+        scene: 'GREENEST_SIEGE',
         title: 'Place de Greenest',
         description: 'La ville brûle. Les cloches appellent à la résistance.',
         objects: ['cloches', 'civils', 'fumée'],
@@ -87,6 +94,7 @@
       },
       portes: {
         id: 'portes',
+        scene: 'GREENEST_SIEGE',
         title: 'Portes de Greenest',
         description: 'Des silhouettes draconiques gardent la route nord.',
         objects: ['palissade', 'drakônides'],
@@ -110,10 +118,35 @@
           }
         ]
       }
+      },
+      scenes: {
+        GREENEST_SIEGE: {
+          onEnter: () => {},
+          onExit: () => {},
+          onTurn: () => {}
+        }
+      },
+      characters: {
+        bjolnir: { name: 'Bjolnir', state: 'active', skills: ['redemption', 'leadership'] },
+        malar: { name: 'Malar', state: 'injured', skills: ['stealth'] },
+        darrin: { name: 'Darrin', state: 'active', skills: ['wild_magic'] },
+        ellyjobell: { name: 'Ellyjobell', state: 'absent', skills: ['arcana'] },
+        kairon: { name: 'Kairon', state: 'captured', skills: ['strategy'] }
+      },
+      globalVariables: {
+        flags: { hasSeenSquare: false, lennithonInsulted: false },
+        variables: { moraleGroupe: 0, chaos: 1 },
+        roomIds: { place: 'place', portes: 'portes' }
+      }
     };
 
+    const acts = DATA.acts;
+    const flags = DATA.globalVariables.flags;
+    const variables = DATA.globalVariables.variables;
+    const ROOM_IDS = DATA.globalVariables.roomIds;
+
     const gameState = {
-      roomId: 'place',
+      roomId: ROOM_IDS.place,
       inventory: ['torche'],
       checkpoints: [],
       gameOver: null,
@@ -134,6 +167,62 @@
       return typeof structuredClone === 'function' ? structuredClone(value) : JSON.parse(JSON.stringify(value));
     }
 
+    function getRoom(roomId) {
+      return DATA.rooms[roomId] || null;
+    }
+
+    function getCharacter(characterId) {
+      return DATA.characters[characterId] || null;
+    }
+
+    function getCurrentRoom() {
+      return getRoom(gameState.roomId);
+    }
+
+    function getAvailableOptions(roomId = gameState.roomId) {
+      const room = getRoom(roomId);
+      if (!room?.options) return [];
+      return room.options.filter(option => isSkillAvailable(option.characterId, option.skill));
+    }
+
+    function getScene(sceneId) {
+      if (!sceneId) return null;
+      return DATA.scenes[sceneId] || null;
+    }
+
+    function callSceneTurn() {
+      const scene = getScene(getCurrentRoom()?.scene);
+      scene?.onTurn?.(gameState);
+    }
+
+    function autoSave() {
+      try {
+        localStorage.setItem('clanDestain_autosave', JSON.stringify({
+          gameState,
+          characters: DATA.characters,
+          flags,
+          variables,
+          acts
+        }));
+      } catch (_error) {
+        // Ignore autosave failures to preserve gameplay flow.
+      }
+    }
+
+    function enterRoom(roomId, reason = 'Déplacement', options = {}) {
+      const room = getRoom(roomId);
+      if (!room) return false;
+      const currentScene = getScene(getCurrentRoom()?.scene);
+      if (!options.skipScene) currentScene?.onExit?.(gameState);
+      if (!options.skipCheckpoint) createCheckpoint(reason);
+      gameState.roomId = roomId;
+      const nextScene = getScene(room.scene);
+      if (!options.skipScene) nextScene?.onEnter?.(gameState);
+      if (!options.skipDescribe) describeCurrentRoom();
+      if (!options.skipAutoSave) autoSave();
+      return true;
+    }
+
     function writeContext(text) {
       const line = document.createElement('div');
       line.textContent = text;
@@ -150,22 +239,16 @@
     }
 
     function updateStatusStrip() {
-      const room = rooms[gameState.roomId];
+      const room = getCurrentRoom();
       const location = room?.title ?? 'Inconnu';
       statusEl.textContent = `Acte: ${acts.current} | Lieu: ${location} | Moral: ${variables.moraleGroupe} | Chaos: ${variables.chaos} | Checkpoints: ${checkpointSummary()}`;
     }
 
     function isSkillAvailable(characterId, requiredSkill) {
-      const character = characters[characterId];
+      const character = getCharacter(characterId);
       if (!character) return false;
       const allowedStates = new Set(['active', 'injured']);
       return allowedStates.has(character.state) && character.skills.includes(requiredSkill);
-    }
-
-    function computeAvailableOptions(roomId) {
-      const room = rooms[roomId];
-      if (!room?.options) return [];
-      return room.options.filter(option => isSkillAvailable(option.characterId, option.skill));
     }
 
     function peekCheckpoint() {
@@ -252,7 +335,7 @@
         reason,
         timestamp: Date.now(),
         gameState: safeClone({ ...gameState, checkpoints: [] }),
-        characters: safeClone(characters),
+        characters: safeClone(DATA.characters),
         flags: safeClone(flags),
         variables: safeClone(variables),
         acts: safeClone(acts)
@@ -278,7 +361,12 @@
       }
       const remainingStack = safeClone(gameState.checkpoints);
       const restoredGameState = safeClone(restoredEntry.gameState);
-      gameState.roomId = restoredGameState.roomId;
+      enterRoom(restoredGameState.roomId, restoredEntry.reason, {
+        skipCheckpoint: true,
+        skipDescribe: true,
+        skipAutoSave: true,
+        skipScene: true
+      });
       gameState.inventory = restoredGameState.inventory;
       gameState.gameOver = null;
       gameState.tick = restoredGameState.tick;
@@ -286,8 +374,8 @@
       gameState.historyCursor = gameState.commandHistory.length;
       gameState.checkpoints = remainingStack;
 
-      Object.keys(characters).forEach(id => delete characters[id]);
-      Object.assign(characters, safeClone(restoredEntry.characters));
+      Object.keys(DATA.characters).forEach(id => delete DATA.characters[id]);
+      Object.assign(DATA.characters, safeClone(restoredEntry.characters));
       Object.keys(flags).forEach(key => delete flags[key]);
       Object.assign(flags, safeClone(restoredEntry.flags));
       Object.keys(variables).forEach(key => delete variables[key]);
@@ -308,10 +396,10 @@
     }
 
     function describeCurrentRoom() {
-      const room = rooms[gameState.roomId];
+      const room = getCurrentRoom();
       if (!room) return;
       writeContext(`[${room.title}] ${room.description}`);
-      const options = computeAvailableOptions(room.id);
+      const options = getAvailableOptions(room.id);
       const exits = Object.keys(room.exits ?? {});
       writeContext(`Sorties: ${exits.length ? exits.join(', ') : 'aucune'}`);
       if (room.objects?.length) writeContext(`Éléments visibles: ${room.objects.join(', ')}`);
@@ -333,20 +421,18 @@
         writeContext('Direction inconnue. Utilisez nord/sud/est/ouest.');
         return;
       }
-      if (direction === 'nord' && gameState.roomId === 'portes' && flags.lennithonInsulted) {
+      if (direction === 'nord' && gameState.roomId === ROOM_IDS.portes && flags.lennithonInsulted) {
         triggerGameOver('serious', 'Le chaos est total. Greenest tombe sans appel.');
         return;
       }
-      const room = rooms[gameState.roomId];
+      const room = getCurrentRoom();
       const destinationId = room?.exits?.[direction];
       if (!destinationId) {
         writeContext('Impossible d’aller par là.');
         return;
       }
-      createCheckpoint(`Move: ${gameState.roomId} -> ${destinationId}`);
-      gameState.roomId = destinationId;
       variables.chaos += 1;
-      describeCurrentRoom();
+      enterRoom(destinationId, `Move: ${gameState.roomId} -> ${destinationId}`);
     }
 
     function clampTrackedVariables() {
@@ -374,30 +460,7 @@
     function computeActionScore(option, actorId) {
       if (!option?.resolution) return null;
       clampTrackedVariables();
-      const character = characters[actorId];
-      if (!character || ['dead', 'captured', 'absent'].includes(character.state)) return null;
-
-      const stateModifierMap = { active: 1, injured: 0, down: -2 };
-      const stateModifier = stateModifierMap[character.state] ?? -2;
-      return 2 + variables.moraleGroupe - variables.chaos + stateModifier;
-    }
-
-    function handleDeath(characterId, deathType) {
-      const character = characters[characterId];
-      if (!character) return { message: 'Personnage introuvable.', endedByGameOver: false };
-      if (deathType === 'definitive') {
-        triggerGameOver('definitive', `${character.name} tombe et le destin du groupe se brise.`);
-        return { message: null, endedByGameOver: true };
-      }
-      character.state = 'dead';
-      return { message: `${character.name} meurt au combat.`, endedByGameOver: false };
-    }
-
-    function resolveOutcome(option, score) {
-      if (!option?.resolution) {
-        return { success: true, endedByGameOver: false, message: null, variableDelta: {}, characterChanges: [] };
-      }
-      const character = characters[option.characterId];
+      const character = getCharacter(option.characterId);
       if (!character) {
         return { success: false, endedByGameOver: false, message: 'Aucun personnage valide pour cette action.', variableDelta: {}, characterChanges: [] };
       }
@@ -495,7 +558,7 @@
 
     function chooseOption(indexToken) {
       const index = Number.parseInt(indexToken, 10);
-      const options = computeAvailableOptions(gameState.roomId);
+      const options = getAvailableOptions(gameState.roomId);
       if (Number.isNaN(index) || index < 1 || index > options.length) {
         writeContext('Choix invalide. Utilisez choose <numéro>.');
         return;
@@ -536,10 +599,10 @@
     }
 
     function autocompleteTokens() {
-      const room = rooms[gameState.roomId];
+      const room = getCurrentRoom();
       const exits = Object.keys(room?.exits ?? {});
       const objects = room?.objects ?? [];
-      const options = computeAvailableOptions(gameState.roomId).map((_, idx) => String(idx + 1));
+      const options = getAvailableOptions(gameState.roomId).map((_, idx) => String(idx + 1));
       const tokens = [...VERBS, ...Object.keys(DIRECTION_ALIASES), ...exits, ...objects, ...options, 'dragon'];
       return Array.from(new Set(tokens));
     }
@@ -645,10 +708,11 @@
         return;
       }
       writeContext('Commande non reconnue. Essayez "help".');
+
     }
 
     function render() {
-      const room = rooms[gameState.roomId];
+      const room = getCurrentRoom();
       const pulse = PULSE_LUT[gameState.tick % PULSE_LUT.length];
       ctx.fillStyle = '#1d1d1d';
       ctx.fillRect(0, 0, LOGICAL_WIDTH, LOGICAL_HEIGHT);
@@ -673,6 +737,7 @@
     inputEl.addEventListener('keydown', event => {
       if (event.key === 'Enter') {
         handleCommand(inputEl.value);
+        callSceneTurn();
         inputEl.value = '';
         return;
       }
