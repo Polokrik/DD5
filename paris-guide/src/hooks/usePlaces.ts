@@ -14,6 +14,7 @@ import {
   castVote as dbCastVote,
   createPlace as dbCreatePlace,
   deletePlace as dbDeletePlace,
+  enrichPlace as dbEnrichPlace,
   listPlacesWithRelations,
   setPlaceStatus as dbSetStatus,
   upsertReview as dbUpsertReview,
@@ -94,6 +95,15 @@ export function usePlaces(roomId: string | undefined) {
     [afterMutation],
   );
 
+  /** Complète un brouillon avec les données Google Places (nécessite le réseau). */
+  const enrich = useCallback(
+    async (placeId: string, data: Parameters<typeof dbEnrichPlace>[1]) => {
+      await dbEnrichPlace(placeId, data);
+      await afterMutation();
+    },
+    [afterMutation],
+  );
+
   const vote = useCallback(
     async (placeId: string, userId: string, intent: VoteIntent) => {
       if (!roomId) return;
@@ -124,6 +134,7 @@ export function usePlaces(roomId: string | undefined) {
     addPlace,
     setStatus,
     removePlace,
+    enrich,
     vote,
     review,
   };

@@ -23,6 +23,13 @@ import type {
 const now = () => new Date().toISOString();
 const uuid = () => Crypto.randomUUID();
 
+/**
+ * Id déterministe des votes/avis (1 par utilisateur et par lieu). Deux appareils
+ * du même utilisateur produisent donc la même clé : jamais de doublon, et le
+ * Last-Write-Wins s'applique directement sur la ligne.
+ */
+const pairId = (placeId: string, userId: string) => `${placeId}_${userId}`;
+
 // ---------------------------------------------------------------------------
 // PLACES
 // ---------------------------------------------------------------------------
@@ -183,7 +190,15 @@ export async function castVote(args: {
         deleted = 0,
         updated_at = excluded.updated_at,
         sync_status = 'pending'`,
-    [uuid(), args.roomId, args.placeId, args.userId, args.intent, ts, ts],
+    [
+      pairId(args.placeId, args.userId),
+      args.roomId,
+      args.placeId,
+      args.userId,
+      args.intent,
+      ts,
+      ts,
+    ],
   );
 }
 
@@ -210,7 +225,7 @@ export async function upsertReview(args: {
         updated_at = excluded.updated_at,
         sync_status = 'pending'`,
     [
-      uuid(),
+      pairId(args.placeId, args.userId),
       args.roomId,
       args.placeId,
       args.userId,

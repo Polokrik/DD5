@@ -2,9 +2,10 @@
  * Authentification du binôme.
  *
  * Modèle : une room unique partagée par 2 utilisateurs fixes. Chacun se
- * connecte avec son propre compte Supabase (email/mot de passe) mais tous
- * deux sont membres de la même `room_id`. On met en cache l'identité
- * localement (SecureStore) pour que l'app démarre et fonctionne hors-ligne.
+ * connecte avec son propre compte Supabase (email/mot de passe, inscriptions
+ * publiques désactivées) mais tous deux sont membres de la même `room_id`.
+ * On met en cache l'identité (id, email, room : quelques octets, donc OK pour
+ * SecureStore) pour que l'app démarre et fonctionne hors-ligne.
  */
 import * as SecureStore from "expo-secure-store";
 import { supabase } from "@/sync/supabaseClient";
@@ -35,11 +36,8 @@ export async function signIn(
     roomId: config.roomId,
   };
 
-  // Idempotent : enregistre le membre dans la room (RLS l'autorise).
-  await supabase
-    .from("room_members")
-    .upsert({ room_id: user.roomId, user_id: user.id });
-
+  // L'appartenance à la room est créée UNE FOIS côté serveur (voir le seed dans
+  // supabase/schema.sql) : le client ne peut pas s'y inscrire lui-même.
   await SecureStore.setItemAsync(CACHED_USER_KEY, JSON.stringify(user));
   return user;
 }

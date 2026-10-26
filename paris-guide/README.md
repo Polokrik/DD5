@@ -57,6 +57,7 @@ paris-guide/
 │   │   ├── StatusBadge.tsx
 │   │   ├── VoteButtons.tsx
 │   │   ├── StarRating.tsx
+│   │   ├── DraftEnrichment.tsx  # brouillon offline -> lieu Google Places
 │   │   └── SyncIndicator.tsx
 │   ├── context/
 │   │   └── AppContext.tsx   # Utilisateur courant + room
@@ -106,7 +107,10 @@ Implémenté dans [`src/sync/syncEngine.ts`](src/sync/syncEngine.ts) :
 2. **PUSH** — les lignes `pending` sont `upsert`ées vers Supabase, puis
    marquées `synced` (sauf si modifiées entre-temps).
 3. **PULL** — récupération des lignes distantes modifiées depuis le curseur
-   (`sync_state.last_pulled_at`), appliquées en **Last-Write-Wins**.
+   (`sync_state.last_pulled_at`) sur `synced_at`, un horodatage **posé par le
+   serveur** (trigger) : l'horloge des téléphones n'est pas fiable, et une
+   modification faite hors-ligne puis poussée tard serait sinon manquée par l'autre
+   appareil. Application en **Last-Write-Wins** sur `updated_at`.
 4. **Conflits** — le plus récent (`updated_at`) gagne ; une mutation locale
    non encore poussée n'est jamais écrasée.
 
@@ -123,18 +127,57 @@ filtre de statut, pull-to-refresh, et actions optimistes (toggle statut, votes).
 
 ## 🚀 Démarrage
 
+Stack validée : **Expo SDK 54** (React Native 0.81, React 19, Reanimated 4).
+Vérifié : `npx tsc --noEmit` sans erreur et `npx expo export --platform android`
+qui produit un bundle. **Non testé sur appareil** (pas de simulateur dans l'environnement
+de développement) : le premier lancement réel reste à faire.
+
 ```bash
 cd paris-guide
-npm install
-
-# 1. Créez un projet Supabase, exécutez supabase/schema.sql.
-# 2. Renseignez les clés dans app.json > expo.extra (ou .env, cf .env.example) :
-#    - supabaseUrl, supabaseAnonKey
-#    - googlePlacesApiKey (+ clés Google Maps natives dans app.json)
-# 3. Créez la room et 2 comptes utilisateurs dans Supabase.
-
-npx expo start
+npm install            # si un postinstall natif échoue : npm install --ignore-scripts
+cp .env.example .env   # puis renseigner les valeurs
 ```
 
-> ⚠️ `react-native-maps` et `expo-sqlite` nécessitent un **development build**
-> (ou EAS Build) — ils ne fonctionnent pas dans Expo Go sur toutes les plateformes.
+### Backend Supabase (une seule fois)
+
+1. Créer un projet Supabase et exécuter [`supabase/schema.sql`](supabase/schema.sql).
+2. *Authentication > Providers > Email* : **désactiver les inscriptions publiques**.
+3. *Authentication > Users* : créer les **2 comptes** du binôme.
+4. Exécuter le bloc **SEED** en bas du fichier SQL avec les 2 UUID (crée la room
+   et ses 2 membres). Le client ne peut pas s'y ajouter lui-même.
+
+### Clés Google
+
+- **Places API (New)** : `EXPO_PUBLIC_GOOGLE_PLACES_API_KEY` (restreindre la clé aux
+  apps Android/iOS dans Google Cloud, et plafonner le budget).
+- **Maps SDK** Android et iOS : clés dans `app.json` (`ios.config.googleMapsApiKey`,
+  `android.config.googleMaps.apiKey`).
+
+> ⚠️ Les variables `EXPO_PUBLIC_*` sont **embarquées dans l'app** : ne jamais y mettre
+> de clé secrète (service role Supabase). La clé `anon` est faite pour être publique,
+> c'est la RLS qui protège les données.
+
+## 🧪 Tester
+
+```bash
+npx expo start                 # puis scanner le QR avec Expo Go (test rapide)
+npx expo run:android           # build de développement local (SDK Android requis)
+```
+
+Scénario de recette minimal à faire à deux téléphones :
+
+1. Les deux se connectent, ajoutent un lieu via recherche Google → apparaît chez l'autre.
+2. Passer un téléphone en **mode avion**, ajouter un brouillon, voter, marquer « Fait ».
+3. Couper puis rétablir le réseau → les changements arrivent chez l'autre.
+4. Modifier le **même lieu** sur les deux téléphones hors-ligne → le plus récent gagne.
+5. Ouvrir le brouillon, « Enrichir avec Google Places » → le marqueur apparaît sur la carte.
+
+## 📦 Distribuer à 2 personnes
+
+Pas besoin de store. Avec **EAS Build** (`npm i -g eas-cli && eas build`) :
+
+- **Android** : profil `preview` (`"distribution": "internal"`) → un APK à installer par lien.
+- **iOS** : exige un compte Apple Developer (99 $/an) pour TestFlight ou l'ad hoc.
+
+Le backend (Supabase) et les API Google restent dans leurs offres gratuites pour
+un usage à deux.

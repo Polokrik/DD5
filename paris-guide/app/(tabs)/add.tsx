@@ -114,8 +114,8 @@ export default function AddScreen() {
         {!online && (
           <View className="mb-3 rounded-lg bg-amber-50 px-3 py-2">
             <Text className="text-xs text-amber-700">
-              Hors-ligne : ajout en brouillon (nom seul). Il sera enrichi
-              automatiquement au retour du réseau.
+              Hors-ligne : ajout en brouillon (nom seul). Au retour du réseau,
+              ouvrez le lieu pour l'associer à Google Places (adresse, carte).
             </Text>
           </View>
         )}

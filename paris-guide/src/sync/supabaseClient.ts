@@ -1,23 +1,17 @@
 /**
  * Client Supabase configuré pour React Native.
- * - Stockage de session sécurisé via expo-secure-store.
+ * - Session persistée dans AsyncStorage : expo-secure-store est limité à ~2 Ko
+ *   par valeur, ce que dépasse une session Supabase (access + refresh token + user).
  * - `detectSessionInUrl: false` (pas de redirection web en natif).
  */
 import "react-native-url-polyfill/auto";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import { createClient } from "@supabase/supabase-js";
-import * as SecureStore from "expo-secure-store";
 import { config } from "@/lib/config";
-
-/** Adaptateur de stockage SecureStore pour la persistance de session. */
-const SecureStoreAdapter = {
-  getItem: (key: string) => SecureStore.getItemAsync(key),
-  setItem: (key: string, value: string) => SecureStore.setItemAsync(key, value),
-  removeItem: (key: string) => SecureStore.deleteItemAsync(key),
-};
 
 export const supabase = createClient(config.supabaseUrl, config.supabaseAnonKey, {
   auth: {
-    storage: SecureStoreAdapter,
+    storage: AsyncStorage,
     autoRefreshToken: true,
     persistSession: true,
     detectSessionInUrl: false,

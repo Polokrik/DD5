@@ -136,23 +136,27 @@ async function pullTable(table: SyncTable): Promise<void> {
   const db = await getDatabase();
   const cursor = await getCursor(table);
 
+  // Le curseur porte sur `synced_at` (horodatage SERVEUR posé par trigger) et
+  // non sur `updated_at` (horloge de l'appareil) : une modification faite
+  // hors-ligne puis poussée tard a un `updated_at` ancien mais un `synced_at`
+  // récent, et ne doit pas être manquée par l'autre appareil.
   const { data, error } = await supabase
     .from(table)
     .select("*")
-    .gt("updated_at", cursor)
-    .order("updated_at", { ascending: true });
+    .gt("synced_at", cursor)
+    .order("synced_at", { ascending: true });
 
   if (error) throw new Error(`Pull ${table}: ${error.message}`);
   if (!data || data.length === 0) return;
 
-  let maxUpdatedAt = cursor;
+  let maxSyncedAt = cursor;
   for (const remote of data as Record<string, unknown>[]) {
     await applyRemoteRow(table, remote);
-    const updatedAt = String(remote.updated_at);
-    if (updatedAt > maxUpdatedAt) maxUpdatedAt = updatedAt;
+    const syncedAt = String(remote.synced_at);
+    if (syncedAt > maxSyncedAt) maxSyncedAt = syncedAt;
   }
 
-  await setCursor(table, maxUpdatedAt);
+  await setCursor(table, maxSyncedAt);
 }
 
 /**
@@ -175,7 +179,10 @@ async function applyRemoteRow(
 
   if (local) {
     // Conflit : le plus récent gagne. À égalité, on garde le local.
-    if (String(remote.updated_at) <= local.updated_at) return;
+    // Date.parse car Postgres renvoie "+00:00" là où le local stocke "Z".
+    if (Date.parse(String(remote.updated_at)) <= Date.parse(local.updated_at)) {
+      return;
+    }
     // Ne pas écraser une mutation locale non encore synchronisée.
     if (local.sync_status === "pending") return;
   }
@@ -199,6 +206,7 @@ function normalizeRemote(
   remote: Record<string, unknown>,
 ): Record<string, unknown> {
   const out: Record<string, unknown> = { ...remote };
+  delete out.synced_at; // colonne serveur uniquement (curseur de pull)
   if ("deleted" in out) out.deleted = out.deleted ? 1 : 0;
   if (table === "places" && "is_draft" in out) {
     out.is_draft = out.is_draft ? 1 : 0;

@@ -14,6 +14,8 @@ import {
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { useApp } from "@/context/AppContext";
 import { usePlaces } from "@/hooks/usePlaces";
+import { useNetworkStatus } from "@/hooks/useNetworkStatus";
+import { DraftEnrichment } from "@/components/DraftEnrichment";
 import { StatusBadge } from "@/components/StatusBadge";
 import { VoteButtons } from "@/components/VoteButtons";
 import { StarRating } from "@/components/StarRating";
@@ -23,7 +25,8 @@ export default function PlaceDetailScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
   const router = useRouter();
   const { user } = useApp();
-  const { places, setStatus, vote, review, removePlace } = usePlaces(
+  const online = useNetworkStatus();
+  const { places, setStatus, vote, review, removePlace, enrich } = usePlaces(
     user?.roomId,
   );
 
@@ -87,9 +90,20 @@ export default function PlaceDetailScreen() {
       {place.address ? (
         <Text className="mb-4 text-sm text-gray-500">{place.address}</Text>
       ) : place.is_draft ? (
-        <Text className="mb-4 text-sm italic text-amber-600">
-          Brouillon — sera enrichi via Google Places au prochain passage en ligne.
-        </Text>
+        <DraftEnrichment
+          name={place.name}
+          online={online}
+          onEnriched={(d) =>
+            enrich(place.id, {
+              name: d.name,
+              category: d.suggestedCategory,
+              google_place_id: d.googlePlaceId,
+              address: d.address,
+              lat: d.lat,
+              lng: d.lng,
+            })
+          }
+        />
       ) : null}
 
       {/* Votes */}
