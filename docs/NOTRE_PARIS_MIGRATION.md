@@ -18,11 +18,23 @@ configuration et ses besoins externes. Ses sources, son lockfile, son exemple
 d'environnement et son schéma Supabase sont conservés tels quels. DD5 ne charge
 aucun de ces fichiers et les tests DD5 n'installent aucun de leurs paquets.
 
-## Séparation proposée
+## Branche indépendante préparée
 
-1. Après le commit de conservation, extraire l'historique du seul sous-dossier:
-   `git subtree split --prefix=paris-guide -b migration/notre-paris`.
-   Cette commande prépare une branche distincte dont la racine est Notre Paris.
+La branche locale `migration/notre-paris` est prête. Sa racine contient uniquement
+Notre Paris et son arbre est identique à celui du dossier restauré:
+`bcfd637c69682e1ec26de27bdff9463100eb6ac2`.
+Son commit racine est `e66940e88d24eefbd1dfc4e46941107ba013a605`.
+
+Cette branche est un snapshot indépendant, sans parent DD5: elle ne transfère ni
+documents de campagne ni historique mêlant les deux applications. L'historique
+original reste intégralement conservé dans DD5 et sa branche de sauvegarde.
+`git subtree` n'est pas installé dans cette machine; si l'historique détaillé de
+Notre Paris doit aussi être transféré, effectuer un `subtree split` dans une
+machine équipée de cet outil, sur une autre branche, avant le transfert.
+
+## Transfert proposé
+
+1. Conserver la branche indépendante `migration/notre-paris` déjà préparée.
    Elle ne change pas la branche de travail et n'en retire aucun fichier.
 2. Vérifier que l'arbre de cette branche correspond à l'arbre du dossier:
    `git rev-parse migration/notre-paris^{tree}` et
