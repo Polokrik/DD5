@@ -58,6 +58,12 @@
       ]
     };
 
+    const DATA = {
+      acts: {
+        current: 'ACT_I',
+        unlocked: ['ACT_I']
+      },
+      rooms: {
     const characters = {
       bjolnir: { name: 'Bjolnir', state: 'active', mainStory: true, skills: ['redemption', 'leadership', 'diplomacy', 'strategy'], narrativeTags: ['ancien mercenaire', 'chef de fortune'] },
       malar: { name: 'Malar', state: 'active', mainStory: true, skills: ['stealth'], narrativeTags: ['ombre urbaine', 'éclaireur'] },
@@ -979,7 +985,32 @@
         exits: {},
         options: []
       }
+      },
+      scenes: {
+        GREENEST_SIEGE: {
+          onEnter: () => {},
+          onExit: () => {},
+          onTurn: () => {}
+        }
+      },
+      characters: {
+        bjolnir: { name: 'Bjolnir', state: 'active', skills: ['redemption', 'leadership'] },
+        malar: { name: 'Malar', state: 'injured', skills: ['stealth'] },
+        darrin: { name: 'Darrin', state: 'active', skills: ['wild_magic'] },
+        ellyjobell: { name: 'Ellyjobell', state: 'absent', skills: ['arcana'] },
+        kairon: { name: 'Kairon', state: 'captured', skills: ['strategy'] }
+      },
+      globalVariables: {
+        flags: { hasSeenSquare: false, lennithonInsulted: false },
+        variables: { moraleGroupe: 0, chaos: 1 },
+        roomIds: { place: 'place', portes: 'portes' }
+      }
     };
+
+    const acts = DATA.acts;
+    const flags = DATA.globalVariables.flags;
+    const variables = DATA.globalVariables.variables;
+    const ROOM_IDS = DATA.globalVariables.roomIds;
 
     const gameState = {
       roomId: 'title_screen',
@@ -1101,7 +1132,7 @@
     }
 
     function updateStatusStrip() {
-      const room = rooms[gameState.roomId];
+      const room = getCurrentRoom();
       const location = room?.title ?? 'Inconnu';
       statusEl.textContent = `Acte: ${acts.current} | Lieu: ${location} | Moral: ${variables.moraleGroupe} | Chaos: ${variables.chaos} | Checkpoints: ${checkpointSummary()}`;
     }
@@ -1320,7 +1351,7 @@
         reason,
         timestamp: Date.now(),
         gameState: safeClone({ ...gameState, checkpoints: [] }),
-        characters: safeClone(characters),
+        characters: safeClone(DATA.characters),
         flags: safeClone(flags),
         variables: safeClone(variables),
         acts: safeClone(acts)
@@ -1346,7 +1377,12 @@
       }
       const remainingStack = safeClone(gameState.checkpoints);
       const restoredGameState = safeClone(restoredEntry.gameState);
-      gameState.roomId = restoredGameState.roomId;
+      enterRoom(restoredGameState.roomId, restoredEntry.reason, {
+        skipCheckpoint: true,
+        skipDescribe: true,
+        skipAutoSave: true,
+        skipScene: true
+      });
       gameState.inventory = restoredGameState.inventory;
       gameState.gameOver = null;
       gameState.tick = restoredGameState.tick;
@@ -1355,8 +1391,8 @@
       gameState.timelineApplied = restoredGameState.timelineApplied || [];
       gameState.checkpoints = remainingStack;
 
-      Object.keys(characters).forEach(id => delete characters[id]);
-      Object.assign(characters, safeClone(restoredEntry.characters));
+      Object.keys(DATA.characters).forEach(id => delete DATA.characters[id]);
+      Object.assign(DATA.characters, safeClone(restoredEntry.characters));
       Object.keys(flags).forEach(key => delete flags[key]);
       Object.assign(flags, safeClone(restoredEntry.flags));
       Object.keys(variables).forEach(key => delete variables[key]);
@@ -1464,7 +1500,7 @@
     }
 
     function describeCurrentRoom() {
-      const room = rooms[gameState.roomId];
+      const room = getCurrentRoom();
       if (!room) return;
       if (room.id === 'waterdeep_council_hall') {
         acts.current = 'ACT_IV';
@@ -1545,7 +1581,7 @@
       }
       clampTrackedVariables();
       writeContext(`[${room.title}] ${room.description}`);
-      const options = computeAvailableOptions(room.id);
+      const options = getAvailableOptions(room.id);
       const exits = Object.keys(room.exits ?? {});
       writeContext(`Sorties: ${exits.length ? exits.join(', ') : 'aucune'}`);
       if (room.objects?.length) writeContext(`Éléments visibles: ${room.objects.join(', ')}`);
@@ -1574,10 +1610,8 @@
         writeContext('Impossible d’aller par là.');
         return;
       }
-      createCheckpoint(`Move: ${gameState.roomId} -> ${destinationId}`);
-      gameState.roomId = destinationId;
       variables.chaos += 1;
-      describeCurrentRoom();
+      enterRoom(destinationId, `Move: ${gameState.roomId} -> ${destinationId}`);
     }
 
     function clampTrackedVariables() {
@@ -1957,7 +1991,7 @@
 
     function chooseOption(indexToken) {
       const index = Number.parseInt(indexToken, 10);
-      const options = computeAvailableOptions(gameState.roomId);
+      const options = getAvailableOptions(gameState.roomId);
       if (Number.isNaN(index) || index < 1 || index > options.length) {
         writeContext('Choix invalide. Utilisez choose <numéro>.');
         return;
@@ -2014,10 +2048,10 @@
     }
 
     function autocompleteTokens() {
-      const room = rooms[gameState.roomId];
+      const room = getCurrentRoom();
       const exits = Object.keys(room?.exits ?? {});
       const objects = room?.objects ?? [];
-      const options = computeAvailableOptions(gameState.roomId).map((_, idx) => String(idx + 1));
+      const options = getAvailableOptions(gameState.roomId).map((_, idx) => String(idx + 1));
       const tokens = [...VERBS, ...Object.keys(DIRECTION_ALIASES), ...exits, ...objects, ...options, 'dragon'];
       return Array.from(new Set(tokens));
     }
@@ -2163,10 +2197,11 @@
         return;
       }
       writeContext('Commande non reconnue. Essayez "help".');
+
     }
 
     function render() {
-      const room = rooms[gameState.roomId];
+      const room = getCurrentRoom();
       const pulse = PULSE_LUT[gameState.tick % PULSE_LUT.length];
       ctx.fillStyle = '#1d1d1d';
       ctx.fillRect(0, 0, LOGICAL_WIDTH, LOGICAL_HEIGHT);
@@ -2191,6 +2226,7 @@
     inputEl.addEventListener('keydown', event => {
       if (event.key === 'Enter') {
         handleCommand(inputEl.value);
+        callSceneTurn();
         inputEl.value = '';
         return;
       }
