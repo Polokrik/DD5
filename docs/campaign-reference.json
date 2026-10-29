@@ -70,7 +70,8 @@
         "sheets:Feuille 1!6"
       ],
       "death": null,
-      "notes": "Aucune mort permanente attestée dans ce journal. Parent adoptif des dragonnets noirs. Le MJ précise qu'il refuse de tuer et obtient la reddition des kobolds survivants par son charisme (gmConfirmations.verdureInterview)."
+      "notes": "Aucune mort permanente attestée dans ce journal. Parent adoptif des dragonnets noirs. Le MJ précise qu'il refuse de tuer et obtient la reddition des kobolds survivants par son charisme (gmConfirmations.verdureInterview).",
+      "personality": { "traits": ["refuse de tuer", "protecteur", "charismatique"], "source": "gmConfirmations.verdureInterview" }
     },
     {
       "id": "darrin",
@@ -86,7 +87,8 @@
         "darrin.pdf:page1"
       ],
       "death": null,
-      "notes": "Le classeur visuel dit « Mage »; la fiche est plus précise."
+      "notes": "Le classeur visuel et le MJ disent « Mage »; la fiche précise ensorceleur de magie sauvage. Le MJ lie Kloumsihande à clumsy et à sa tendance à faire exploser les choses.",
+      "personality": { "traits": ["puissant", "nombreux sorts", "tendance à faire exploser les choses"], "source": "gmConfirmations.personalityInterview" }
     },
     {
       "id": "drekthar",
@@ -105,7 +107,8 @@
         "drekthar.pdf:page1"
       ],
       "death": null,
-      "notes": "Défaite au premier duel, revanche mortelle pour Cyanwrath; départ ultérieur, pas une mort."
+      "notes": "Défaite au premier duel, revanche mortelle pour Cyanwrath; départ ultérieur, pas une mort. La formule du MJ « un vrai orc » est enregistrée comme description du tempérament; la race demi-orc reste celle de la fiche.",
+      "personality": { "traits": ["tempérament très orc", "aime se battre", "combattant compétent"], "source": "gmConfirmations.personalityInterview" }
     },
     {
       "id": "ellyjobell",
@@ -122,7 +125,8 @@
         "Ellyjobell.pdf:page1"
       ],
       "death": null,
-      "notes": "Active dès Verdure. Ni absente ni érudite disparue."
+      "notes": "Active dès Verdure. Ni absente ni érudite disparue.",
+      "personality": { "traits": ["intelligente", "gentille", "ingénieuse", "très naïve", "premier degré"], "source": "gmConfirmations.personalityInterview" }
     },
     {
       "id": "sislay",
@@ -138,7 +142,8 @@
         "sislay.pdf:page1"
       ],
       "death": null,
-      "notes": "Le MJ confirme que Lunaaz/Luunaz est la joueuse de Sislay. Ce n'est pas un personnage supplémentaire."
+      "notes": "Le MJ confirme que Lunaaz/Luunaz est la joueuse de Sislay. Ce n'est pas un personnage supplémentaire.",
+      "personality": { "traits": ["discrète", "peu bavarde", "efficace", "pleine de ressources"], "source": "gmConfirmations.personalityInterview" }
     },
     {
       "id": "kairon",
@@ -153,7 +158,8 @@
         "Fiche_KAIRON_echec_critique.docx:table1"
       ],
       "death": null,
-      "notes": "Présent dans l'ancienne campagne de Phandelver, ce qui ne prouve pas sa présence à Greenest. Sa table d'échec critique définit des possibilités, pas des événements subis."
+      "notes": "Présent dans l'ancienne campagne de Phandelver, ce qui ne prouve pas sa présence à Greenest. Sa table d'échec critique définit des possibilités, pas des événements subis.",
+      "personality": { "traits": ["sournois", "intelligent", "un peu froid", "sarcastique", "bon fond"], "source": "gmConfirmations.personalityInterview" }
     },
     {
       "id": "malar",
@@ -171,7 +177,8 @@
         "DD5 Persos.xlsx:Feuille 1!5"
       ],
       "death": null,
-      "notes": "Le MJ confirme que Malaar et Malar sont le même personnage. Sa biographie décrit un membre secret des Bardes. Les prompts qui le placent dans la caravane contredisent le journal."
+      "notes": "Le MJ confirme que Malaar et Malar sont le même personnage. Sa biographie décrit un membre secret des Bardes. Les prompts qui le placent dans la caravane contredisent le journal.",
+      "personality": { "traits": ["vrai roublard", "sournois"], "source": "gmConfirmations.personalityInterview" }
     }
   ],
   "events": [
@@ -557,8 +564,28 @@
       "bjolnir": "Refuse de tuer et utilise son charisme pour faire abandonner le combat aux kobolds survivants.",
       "alternatives": "Le MJ est ouvert aux approches expliquées et jouées en RP. Aucun coût ou résultat alternatif précis n'est encore fixé."
     },
+    "personalityInterview": {
+      "drekthar": "Un vrai orc, aime se battre et le fait bien.",
+      "malar": "Un vrai roublard, sournois.",
+      "ellyjobell": "Intelligente, gentille et ingénieuse, mais très naïve et premier degré.",
+      "darrin": "Puissant, dispose de nombreux sorts, tend à faire exploser les choses. Kloumsihande joue sur clumsy.",
+      "kairon": "Assez sournois, intelligent, un peu froid et sarcastique, mais a un bon fond.",
+      "sislay": "Discrète et peu bavarde, efficace et pleine de ressources."
+    },
     "source": "Réponses explicites du MJ dans cette conversation, 29 octobre 2026"
   },
+  "gmMemories": [
+    {
+      "id": "brouillard-verdure",
+      "memory": "Darrin aurait créé une nappe de brouillard pour approcher discrètement d'un lieu et libérer des prisonniers, en empêchant les kobolds d'incendier les lieux.",
+      "casterRecalled": "darrin",
+      "locationUncertain": ["temple", "moulin"],
+      "journalAccount": "Le groupe gagne le temple par le tunnel; une illusion détourne les incendiaires à la porte sud. Bjolnir fait sortir le prêtre et les paysans; Ellyjobell couvre leur mise à l'abri d'une nappe de brouillard.",
+      "journalSources": ["Tyranny of dragons!23:30"],
+      "status": "Attribution et phase à réconcilier. Deux usages distincts de magie restent possibles; ne pas les fusionner ou réattribuer automatiquement.",
+      "source": "Souvenir du MJ dans cette conversation, avec hésitation explicite sur le lieu."
+    }
+  ],
   "unresolved": [
     "Aucune mort permanente des sept PJ n'est établie dans les feuilles Tyranny/Rise; absence de mention n'est pas une preuve d'immortalité.",
     "Talis est décrite avec des pronoms variables; aucune réécriture de son identité sur la seule base du module.",

@@ -75,6 +75,52 @@ donne déjà la défaite survivable puis la revanche. Approfondir ce que cette
 défaite représente pour Drek'Thar, la réaction du groupe et les marges de choix,
 sans redemander le résultat connu des combats.
 
+## Personnalités précisées par le MJ
+
+| Personnage | Traits confirmés | Direction pour les scènes et options proposées |
+| --- | --- | --- |
+| Bjolnir | Refuse de tuer; protège et convainc. | Ouvrir des issues de protection, reddition et désarmement. |
+| Drek'Thar | Tempérament très orc; aime se battre et combat bien. | Donner de la place à l'affrontement et à son savoir-faire. Ne pas confondre goût du combat et manque d'intelligence. |
+| Malar | Roublard sournois. | Proposer des ruses, détours et actions discrètes. Aucune cruauté supplémentaire n'est déduite. |
+| Ellyjobell | Intelligente, gentille, ingénieuse; très naïve et premier degré. | Favoriser les solutions inventives et bienveillantes, et une lecture littérale des situations. Sa naïveté n'efface pas son intelligence. |
+| Darrin | Puissant, nombreux sorts, tendance à faire exploser les choses; lien avec clumsy/Kloumsihande. | Faire varier ses usages de la magie; réserver les explosions aux choix ou résultats qui les justifient. Aucun accident aléatoire automatique n'est ajouté. |
+| Kairon | Sournois, intelligent, un peu froid et sarcastique; bon fond. | Travailler la finesse des approches et la distance du ton, sans en déduire qu'il est malveillant. |
+| Sislay | Discrète, peu bavarde, efficace et pleine de ressources. | Montrer son efficacité par ses actes et ses solutions; garder une voix peu bavarde. |
+
+Ces directions sont des propositions d'écriture dérivées des traits. Elles
+n'ajoutent pas de réplique ou d'événement à la campagne. « Un vrai orc » est
+compris ici comme tempérament de Drek'Thar; sa fiche indique toujours demi-orc.
+Les descriptions sont visibles dans le panneau de compagnie et les fiches du
+jeu, indépendamment des états stockés dans une ancienne sauvegarde.
+
+## Exemple proposé par le MJ — le brouillard à Verdure
+
+Le MJ se souvient de Darrin utilisant une nappe de brouillard pour approcher
+discrètement et libérer des prisonniers, en évitant que les kobolds incendient
+les lieux. Il hésite entre le temple et le moulin.
+
+Le journal (`Tyranny of dragons!23:30`) situe l'approche au temple: tunnel,
+illusion pour détourner les incendiaires de la porte sud, persuasion de Bjolnir
+pour faire sortir les occupants, brouillard d'Ellyjobell pour couvrir leur mise
+à l'abri. Ce pourrait être une autre phase de la scène. Conserver les deux
+témoignages dans le référentiel, sans remplacer automatiquement le lanceur ou
+inventer un second sort.
+
+### Mise en scène envisagée, à réaliser
+
+1. L'observation du lieu fait comprendre la menace de l'incendie et la présence
+   des occupants; le joueur choisit l'intention et le moyen.
+2. Le brouillard envahit l'illustration par nappes, masque une partie des
+   silhouettes et rend plus perceptible l'ouverture d'un passage.
+3. Les sons lointains sont étouffés; pas, mouvement de porte et échanges proches
+   guident la progression. Le texte et les boutons restent stables.
+4. L'effet se termine par un changement concret de situation: déplacement du
+   groupe, protection d'une sortie ou mise à l'abri, selon le choix retenu.
+
+Le lanceur exact, le découpage des phases et les coûts restent à rapprocher du
+récit du MJ avant de fixer cette scène. Aucun effet de brouillard, piste sonore
+ou nouvelle option de sort n'est déclaré livré par cette fiche.
+
 ## Fiche de scène réutilisable
 
 | Élément | À préciser |

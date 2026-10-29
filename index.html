@@ -479,13 +479,13 @@
       skills: { leadership: 'Commandement', redemption: 'Rédemption', diplomacy: 'Persuasion', strategy: 'Stratégie', stealth: 'Discrétion', wild_magic: 'Magie sauvage', arcana: 'Arcanes', might: 'Force', duel: 'Duel', nature: 'Nature', tracking: 'Pistage' },
       states: { active: 'Prêt à agir', injured: 'Blessé', down: 'À terre', absent: 'Absent', captured: 'Capturé', dead: 'Décédé', retired: 'Retiré' },
       people: {
-        bjolnir: { short: 'Bjolnir', role: 'Paladin · Rédemption', hair: '#a55e42', skin: '#dab18a', coat: '#637674' },
-        drekthar: { short: 'Drek’Thar', role: 'Guerrier · Champion', hair: '#212e37', skin: '#839080', coat: '#5c6a78' },
-        ellyjobell: { short: 'Ellyjobell', role: 'Druidesse · Forêts', hair: '#c7a16c', skin: '#e4bc92', coat: '#617c61' },
-        darrin: { short: 'Darrin', role: 'Ensorceleur · Magie sauvage', hair: '#725449', skin: '#dab18a', coat: '#6c617c' },
-        sislay: { short: 'Sislay', role: 'Rôdeuse · Chasseur', hair: '#343c3e', skin: '#839080', coat: '#797858' },
-        kairon: { short: 'Kairon', role: 'Occultiste · Fiélon', hair: '#212e37', skin: '#a55e42', coat: '#584c65' },
-        malar: { short: 'Malar', role: 'Roublard · Voleur', hair: '#725449', skin: '#dab18a', coat: '#3f5356' }
+        bjolnir: { short: 'Bjolnir', role: 'Paladin · Rédemption', personality: 'Il se porte au secours des autres, refuse de tuer et use de son charisme pour faire cesser les combats.', hair: '#a55e42', skin: '#dab18a', coat: '#637674' },
+        drekthar: { short: 'Drek’Thar', role: 'Guerrier · Champion', personality: 'Un tempérament très orc: il aime se battre et sait se battre.', hair: '#212e37', skin: '#839080', coat: '#5c6a78' },
+        ellyjobell: { short: 'Ellyjobell', role: 'Druidesse · Forêts', personality: 'Intelligente, gentille et ingénieuse, elle reste très naïve et prend les choses au premier degré.', hair: '#c7a16c', skin: '#e4bc92', coat: '#617c61' },
+        darrin: { short: 'Darrin', role: 'Ensorceleur · Magie sauvage', personality: 'Puissant et riche de nombreux sorts, il a une tendance marquée à faire exploser les choses. Kloumsihande porte bien son nom.', hair: '#725449', skin: '#dab18a', coat: '#6c617c' },
+        sislay: { short: 'Sislay', role: 'Rôdeuse · Chasseur', personality: 'Discrète et peu bavarde, elle est efficace et pleine de ressources.', hair: '#343c3e', skin: '#839080', coat: '#797858' },
+        kairon: { short: 'Kairon', role: 'Occultiste · Fiélon', personality: 'Sournois et intelligent, un peu froid et sarcastique, il garde pourtant un bon fond.', hair: '#212e37', skin: '#a55e42', coat: '#584c65' },
+        malar: { short: 'Malar', role: 'Roublard · Voleur', personality: 'Un véritable roublard, sournois dans sa manière d’aborder les situations.', hair: '#725449', skin: '#dab18a', coat: '#3f5356' }
       }
     };
 
@@ -505,13 +505,13 @@
         }
     ];
     const characters = {
-      bjolnir: { name: 'Bjolnir', state: 'active', mainStory: true, skills: ['redemption', 'leadership', 'diplomacy', 'strategy'], narrativeTags: ['ancien mercenaire', 'chef de fortune'] },
-      malar: { name: 'Malar', state: 'absent', mainStory: true, skills: ['stealth'], narrativeTags: ['voleur semi-elfe'] },
-      darrin: { name: 'Darrin', state: 'active', mainStory: true, skills: ['wild_magic', 'arcana'], narrativeTags: ['arcaniste instable', 'provocateur'] },
-      drekthar: { name: 'Drek’Thar', state: 'active', mainStory: true, skills: ['might', 'duel'], narrativeTags: ['vétéran taciturne', 'mur de fer'] },
-      ellyjobell: { name: 'Ellyjobell Folkor', state: 'active', mainStory: false, skills: ['arcana', 'stealth', 'nature'], narrativeTags: ['druidesse gnome des forêts'] },
-      kairon: { name: 'Kairon Erudit', state: 'absent', mainStory: false, skills: ['strategy', 'arcana'], narrativeTags: ['occultiste tieffelin'] },
-      sislay: { name: 'Sislay Baite', state: 'active', mainStory: false, skills: ['stealth', 'tracking'], narrativeTags: ['rôdeuse demi-orque', 'joueuse: Lunaaz (table PJ)'] }
+      bjolnir: { name: 'Bjolnir', state: 'active', mainStory: true, skills: ['redemption', 'leadership', 'diplomacy', 'strategy'], narrativeTags: ['refuse de tuer', 'protège les autres', 'charismatique'] },
+      malar: { name: 'Malar', state: 'absent', mainStory: true, skills: ['stealth'], narrativeTags: ['voleur semi-elfe', 'sournois'] },
+      darrin: { name: 'Darrin', state: 'active', mainStory: true, skills: ['wild_magic', 'arcana'], narrativeTags: ['magie puissante', 'nombreux sorts', 'tendance à faire exploser les choses'] },
+      drekthar: { name: 'Drek’Thar', state: 'active', mainStory: true, skills: ['might', 'duel'], narrativeTags: ['tempérament orc', 'aime le combat', 'combattant compétent'] },
+      ellyjobell: { name: 'Ellyjobell Folkor', state: 'active', mainStory: false, skills: ['arcana', 'stealth', 'nature'], narrativeTags: ['intelligente', 'gentille', 'ingénieuse', 'naïve', 'premier degré'] },
+      kairon: { name: 'Kairon Erudit', state: 'absent', mainStory: false, skills: ['strategy', 'arcana'], narrativeTags: ['sournois', 'intelligent', 'un peu froid', 'sarcastique', 'bon fond'] },
+      sislay: { name: 'Sislay Baite', state: 'active', mainStory: false, skills: ['stealth', 'tracking'], narrativeTags: ['discrète', 'peu bavarde', 'efficace', 'pleine de ressources'] }
     };
 
     const ACT_II_ROOMS = {
@@ -2074,7 +2074,12 @@
         const content = document.createElement('div'), name = document.createElement('h3'), role = document.createElement('p'), state = document.createElement('p');
         name.textContent = c.name; role.textContent = PRESENTATION.people[id]?.role ?? '';
         state.textContent = `${PRESENTATION.states[c.state]} · ${c.skills.map(s => PRESENTATION.skills[s] ?? s).join(', ')}`;
-        content.append(name, role, state); row.appendChild(content); list.appendChild(row);
+        content.append(name, role, state);
+        if (PRESENTATION.people[id]?.personality) {
+          const personality = document.createElement('p'); personality.textContent = PRESENTATION.people[id].personality;
+          content.appendChild(personality);
+        }
+        row.appendChild(content); list.appendChild(row);
       });
       showDialog('companyDialog');
     }
@@ -2970,7 +2975,9 @@
       const [, character] = found;
       writeContext(`${character.name} — état: ${character.state}`);
       writeContext(`Compétences: ${character.skills.join(', ') || 'aucune'}`);
-      writeContext(`Tags narratifs: ${character.narrativeTags?.join(', ') || 'aucun'}`);
+      const personality = PRESENTATION.people[found[0]]?.personality;
+      if (personality) writeContext(personality);
+      else writeContext(`Tags narratifs: ${character.narrativeTags?.join(', ') || 'aucun'}`);
     }
 
     function showParty() {
