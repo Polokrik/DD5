@@ -3,6 +3,7 @@
 Branche: `feat/dd5-illustrated-interface`. Cette révision prolonge l’audit initial
 et l’interface illustrée. Elle conserve le moteur mono-fichier et le dessin au
 canvas; elle ne touche pas à Notre Paris.
+La tranche suivante est documentée dans [VERDURE_VIVANTE.md](VERDURE_VIVANTE.md).
 
 ## Diagnostic du point de vue du joueur
 

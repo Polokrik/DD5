@@ -6,13 +6,14 @@ const vm = require('node:vm');
 const html = fs.readFileSync(require('node:path').join(__dirname, '../index.html'), 'utf8');
 const source = html.match(/<script>([\s\S]*?)<\/script>/)[1];
 
-function boot(saved = null) {
+function boot(saved = null, preferences = null) {
   const storage = new Map(saved ? [['clanDestain.save.v1', saved]] : []);
+  if (preferences !== null) storage.set('clanDestain.preferences.v1', preferences);
   function element() {
     return { children: [], dataset: {}, value: '', classList: { toggle() {} },
       appendChild(child) { this.children.push(child); }, append(...children) { this.children.push(...children); },
       replaceChildren(...children) { this.children = children; }, addEventListener() {}, setAttribute() {},
-      getContext: () => ({ fillRect() {}, fillText() {}, drawImage() {} }), toDataURL: () => 'data:image/png;base64,',
+      getContext: () => ({ fillRect() {}, fillText() {}, drawImage() {}, clearRect() {} }), toDataURL: () => 'data:image/png;base64,',
       showModal() { this.open = true; }, close() { this.open = false; }
     };
   }
@@ -50,6 +51,7 @@ test('toutes les salles et références des options sont valides', () => {
     for (const target of Object.values(room.exits)) assert.ok(rooms[target], `${id} -> ${target}`);
     for (const option of room.options) {
       if (option.characterId) assert.ok(g.run(`Boolean(characters[${JSON.stringify(option.characterId)}])`), option.id);
+      if (option.resolution?.risk === 'death') assert.match(option.riskText ?? '', /mort|mourir/i, `Le risque mortel doit être annoncé: ${option.id}`);
       for (const id of option.requiresCharacters ?? []) assert.ok(g.run(`Boolean(characters[${JSON.stringify(id)}])`), option.id);
       for (const branch of ['onSuccess', 'onFailure', 'onFailurePost']) {
         if (option[branch]?.gotoRoom) assert.ok(rooms[option[branch].gotoRoom], `${option.id} -> ${option[branch].gotoRoom}`);
@@ -421,4 +423,47 @@ test('les variantes ne ressuscitent pas Cyanwrath et ne font pas éclore les œu
   assert.equal(g.run('flags.dragonetsHatched'),false);
   assert.equal(g.json('gameState.inventory').includes('Boule'),false);
   assert.match(g.json('getScenePresentation(getCurrentRoom()).paragraphs').join(' '), /sans les dragonnets/);
+});
+
+test('le tunnel attend l’action et rejouer sa mise en scène ne change pas la campagne', () => {
+  const g=boot();
+  for(const id of ['title-new','charge-civils','swift-diplomatie','mission-sanctuaire']) choose(g,id);
+  assert.equal(g.run('Boolean(gameState.lastReport)'),false);
+  assert.match(g.json('getScenePresentation(getCurrentRoom()).paragraphs').join(' '),/rats encombrent/);
+  choose(g,'tunnel-temple');
+  assert.equal(g.run('gameState.lastReport.optionId'),'tunnel-temple');
+  assert.match(g.json('gameState.lastReport.paragraphs').join(' '),/Ellyjobell.*Darrin/s);
+  const before=g.json('({gameState,flags,characters,variables,acts})'),saved=g.storage.get('clanDestain.save.v1');
+  g.run('startSceneEffect(); render()');
+  assert.deepEqual(g.json('({gameState,flags,characters,variables,acts})'),before);
+  assert.equal(g.storage.get('clanDestain.save.v1'),saved);
+  g.run('undoToCheckpoint()');
+  assert.equal(g.run('uiState.effect'),null);
+  assert.equal(g.run('gameState.roomId'),'old_tunnel');
+});
+
+test('les réglages sont séparés de la sauvegarde et les résultats anciens restent lisibles', () => {
+  const g=boot();choose(g,'title-new');choose(g,'charge-civils');
+  const saved=g.storage.get('clanDestain.save.v1');
+  g.run('uiState.preferences.effects=false;uiState.preferences.motion="reduced";applyAmbiancePreferences()');
+  assert.equal(g.storage.get('clanDestain.save.v1'),saved);
+  const loaded=boot(saved,g.storage.get('clanDestain.preferences.v1'));
+  assert.equal(loaded.run('uiState.reducedMotion'),true);
+  assert.equal(loaded.run('uiState.preferences.effects'),false);
+  assert.equal(loaded.run('uiState.effect'),null,'La reprise montre l’image finale sans relancer une animation.');
+  const legacy=JSON.parse(saved);delete legacy.gameState.lastReport.optionId;
+  const compatible=boot(JSON.stringify(legacy));
+  assert.equal(compatible.run('gameState.roomId'),'swift_street');
+  assert.equal(compatible.run('getActionDirection()'),null);
+  assert.equal(boot(null,'{bad}').run('uiState.preferences.sound'),false);
+});
+
+test('le récit d’un duel mortel respecte la mort réelle du personnage', () => {
+  const g=boot();choose(g,'title-new');
+  g.run('gameState.roomId="duel_field";characters.drekthar.state="injured";variables.moraleGroupe=-5;variables.chaos=6');
+  choose(g,'duel-accept');
+  assert.equal(g.run('characters.drekthar.state'),'dead');
+  assert.match(g.run('gameState.lastReport.title'),/ne survit pas/);
+  assert.doesNotMatch(g.json('gameState.lastReport.paragraphs').join(' '),/vivant et blessé/);
+  assert.equal(g.run('getActionDirection().fallen'),'hero');
 });

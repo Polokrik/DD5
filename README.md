@@ -35,6 +35,11 @@ dans le [rapport de lecture et de jeu](docs/REVISION_JOUEUR.md). Les étapes all
 du camp du Culte à l’invitation de Thay suivent désormais l’ordre du journal,
 avec plusieurs épisodes encore traités sous forme de résumés.
 
+La tranche [Verdure vivante](docs/VERDURE_VIVANTE.md) ajoute cinq décors, des
+vignettes de résolution et des effets liés aux décisions. Le bouton **Ambiance**
+permet de régler les mouvements et d’activer des sons facultatifs, coupés par
+défaut. **Revoir l’action** rejoue uniquement la mise en scène.
+
 ## Vérification
 
 Node.js 24, sans installation de dépendance:
@@ -56,6 +61,7 @@ ont été utilisés dans l'environnement cloud. Ces outils sont réservés aux t
 
 ```sh
 DD5_CHROMIUM_PATH=/usr/bin/chromium node tests/browser-smoke.cjs
+DD5_CHROMIUM_PATH=/usr/bin/chromium node tests/verdure-browser.cjs
 ```
 
 Ce test vérifie aussi les clics, les fenêtres du journal et du groupe, l'import,

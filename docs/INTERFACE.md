@@ -4,6 +4,9 @@ La présentation adopte un livre d'aventure: fond ardoise, papier ivoire,
 accents cuivrés, titres en sérif et récit distinct des actions. La révision
 suivante de la lecture et des embranchements est détaillée dans
 [REVISION_JOUEUR.md](REVISION_JOUEUR.md).
+La mise en scène des décisions est décrite dans
+[VERDURE_VIVANTE.md](VERDURE_VIVANTE.md): cinq nouveaux décors, vignettes de
+résolution et réglages d’ambiance.
 
 [Aperçu sur ordinateur](previews/title.png) · [Aperçu mobile](previews/mobile.png)
 
@@ -21,7 +24,7 @@ suivante de la lecture et des embranchements est détaillée dans
   les sept personnages, y compris les absents: race, classe, personnalité,
   biographie, équipement et sources des PDF. Une fiche est ouverte à la fois.
 - Résultats d’action lisibles avant de poursuivre, sauvegardés avec la partie;
-  vingt décisions ont un récit spécifique. Les choix indiquent leur intention
+  vingt-deux décisions ont un récit spécifique. Les choix indiquent leur intention
   et leur risque, puis un bilan explique les changements effectifs.
 - Lecteur hors ligne des 18 chapitres complets. Le journal de session reste
   accessible dans un onglet séparé. Ce dernier retrace la session courante;
@@ -56,7 +59,7 @@ node tools/verify_paris.cjs
 git diff --check
 ```
 
-27 tests du moteur réussissent. Chromium valide les cinq actes, l'undo,
+30 tests du moteur réussissent. Chromium valide les cinq actes, l'undo,
 les sauvegardes et les interactions de la nouvelle interface. Le parcours au clic
 va de l'écran titre à une fin simulée; un second parcours vérifie les échecs
 de la rivière, de la magie, du temple et du moulin. Les tests couvrent aussi les
@@ -67,7 +70,9 @@ mode mouvements réduits et une palette réelle de canvas inférieure à 49 coul
 
 ## Portée
 
-Les autres salles bénéficient des choix cliquables, portraits et panneaux, mais
+Les scènes du tunnel, du temple, du moulin et des deux duels ont désormais leurs
+propres décors et des effets associés aux actions. Les autres salles bénéficient
+des choix cliquables, portraits et panneaux, mais
 leurs illustrations restent un décor d'ambiance générique. Elles n'ont pas encore
 reçu la direction artistique détaillée de Verdure. Le contenu narratif, les
 branches What If et la frontière entre campagne jouée et finale hypothétique

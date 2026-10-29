@@ -106,7 +106,13 @@ pour faire sortir les occupants, brouillard d'Ellyjobell pour couvrir leur mise
 témoignages dans le référentiel, sans remplacer automatiquement le lanceur ou
 inventer un second sort.
 
-### Mise en scène envisagée, à réaliser
+### Mise en scène: proposition et prototype
+
+Le prototype est maintenant décrit dans [VERDURE_VIVANTE.md](VERDURE_VIVANTE.md).
+Il utilise l’attribution du journal pour le brouillard, sans trancher le souvenir
+distinct concernant Darrin. Les nappes visuelles, vignettes et sons synthétiques
+sont intégrés; les voix humaines enregistrées et les pas détaillés ci-dessous
+restent des pistes.
 
 1. L'observation du lieu fait comprendre la menace de l'incendie et la présence
    des occupants; le joueur choisit l'intention et le moyen.
@@ -118,8 +124,15 @@ inventer un second sort.
    groupe, protection d'une sortie ou mise à l'abri, selon le choix retenu.
 
 Le lanceur exact, le découpage des phases et les coûts restent à rapprocher du
-récit du MJ avant de fixer cette scène. Aucun effet de brouillard, piste sonore
-ou nouvelle option de sort n'est déclaré livré par cette fiche.
+récit du MJ pour rapprocher les deux témoignages. Aucune nouvelle option de sort
+attribuée à Darrin n’est déduite de ce souvenir.
+
+### Entretien suivant — le premier duel
+
+Question envoyée au MJ: quelle fut la réaction de Drek’Thar et de ses compagnons
+après la défaite, et le groupe avait-il envisagé d’intervenir pendant le duel?
+Les faits déjà connus — défaite survivable puis revanche — ne sont pas remis en
+question. La rédaction avance sur ces faits en attendant les précisions.
 
 ## Fiche de scène réutilisable
 

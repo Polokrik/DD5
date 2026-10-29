@@ -36,6 +36,7 @@
     .save-options button:hover { background: #ffffff0d; }
     .stage { position: relative; height: clamp(340px, 39vw, 480px); overflow: hidden; border-radius: 12px 12px 0 0; background: #263340; isolation: isolate; }
     #gameCanvas { width: 100%; height: 100%; object-fit: cover; object-position: center 49%; image-rendering: pixelated; display: block; }
+    #gameCanvas[data-scene='duel'], #gameCanvas[data-scene='cave_duel'] { object-position: center 85%; }
     .stage::after { content: ''; position: absolute; inset: 0; background: linear-gradient(90deg, #101e2deb, #101e2d99 35%, transparent 75%), linear-gradient(0deg, #101b2a77, transparent 40%); pointer-events: none; }
     .hero-copy { position: absolute; z-index: 1; left: 54px; top: 54px; max-width: 540px; pointer-events: none; }
     .hero-copy .eyebrow { color: #e1bd89; display: flex; align-items: center; gap: 12px; }
@@ -128,6 +129,17 @@
     .choice-risk { display: block; margin-top: 7px; font-size: 11px; color: #8b553d; line-height: 1.6; }
     .report-changes { padding: 16px 20px 16px 34px; margin: 24px 0 0; background: #e5e8dd; font-size: 13px; line-height: 1.8; }
     .report-changes.failure { background: #ead9cf; }
+    .action-scene { margin: 0 0 24px; background: #1c2a33; color: #ede6d9; border-radius: 4px; overflow: hidden; }
+    .action-scene canvas { width: 100%; max-height: 240px; object-fit: cover; image-rendering: pixelated; display: block; }
+    .action-scene figcaption { padding: 10px 14px; display: flex; align-items: center; justify-content: space-between; gap: 16px; font-size: 11px; line-height: 1.6; }
+    .action-scene button { border: 0; background: transparent; color: #e1bd89; padding: 6px 0; white-space: nowrap; }
+    .ambiance-body { padding: 24px 30px; color: var(--ink); }
+    .ambiance-body p { font: 15px/1.7 Georgia,serif; max-width: 52ch; }
+    .ambiance-setting { display: grid; grid-template-columns: 1fr auto; align-items: center; gap: 18px; padding: 17px 0; border-top: 1px solid #d6cebf; font-size: 14px; }
+    .ambiance-setting input { accent-color: #79644c; min-width: 20px; min-height: 24px; }
+    .ambiance-setting select { background: #f7f3eb; color: var(--ink); border: 1px solid #c5baa6; padding: 9px; max-width: 160px; }
+    .ambiance-setting input[type='range'] { width: 130px; }
+    .ambiance-notice { font: 12px/1.7 system-ui,sans-serif !important; color: #62695f; }
     .prose { max-width: 68ch; }
     .prose p { margin-bottom: 21px; }
     .choice-card:not(.primary) { border-radius: 3px; }
@@ -203,6 +215,7 @@
         <button class="nav-button current" id="adventureButton">L’aventure</button>
         <button class="nav-button" id="journalButton" aria-label="Ouvrir le journal"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5c-3-2-6-2-9-1v15c3-1 6-1 9 1 3-2 6-2 9-1V4c-3-1-6-1-9 1Zm0 0v15"/></svg><span>Le journal</span></button>
         <button class="nav-button" id="companyButton" aria-label="Voir la compagnie"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="9" cy="7" r="3"/><path d="M3 20v-4a6 6 0 0 1 12 0v4m1-16a3 3 0 0 1 0 6m2 4a5 5 0 0 1 3 5"/></svg><span>La compagnie</span></button>
+        <button class="nav-button" id="ambianceButton" aria-label="Régler l’ambiance et les mouvements"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 8v8h4l5 4V4L8 8H4Zm13 1a5 5 0 0 1 0 6m3-9a9 9 0 0 1 0 12"/></svg><span>Ambiance</span></button>
         <details class="save-menu" id="saveMenu"><summary>Sauvegarde <span aria-hidden="true">⌄</span></summary><div class="save-options">
           <button data-command="save">Enregistrer ma progression</button><button data-command="load">Reprendre la sauvegarde</button>
           <button data-command="export">Exporter la sauvegarde</button><button id="openImportButton">Importer une sauvegarde</button>
@@ -219,7 +232,7 @@
     <section class="journal-sheet" id="context" aria-label="Récit et décisions">
       <div class="chapter-rule eyebrow"><span class="page-number" id="pageNumber">I</span><span id="chapterLabel">Le commencement d’une chronique</span></div>
       <div class="story-grid">
-        <article><h2 id="sceneTitle">Sur la route de Verdure</h2><div id="sceneNarrative" class="prose"></div><ul id="reportChanges" class="report-changes" hidden></ul><div id="feedback" class="feedback" role="status" hidden></div></article>
+        <article><h2 id="sceneTitle">Sur la route de Verdure</h2><figure id="actionScene" class="action-scene" hidden><canvas id="actionCanvas" width="320" height="200" aria-label="Illustration du résultat de votre action"></canvas><figcaption><span id="actionCaption"></span><button id="replayActionButton" type="button">Revoir l’action ↻</button></figcaption></figure><div id="sceneNarrative" class="prose"></div><ul id="reportChanges" class="report-changes" hidden></ul><div id="feedback" class="feedback" role="status" hidden></div></article>
         <section aria-labelledby="decisionTitle"><h3 id="decisionTitle" class="decision-title eyebrow">Votre prochaine aventure</h3><div id="choiceList" class="choice-list"></div><p class="choice-hint">Cliquez sur un choix ou utilisez les touches <kbd>1</kbd>, <kbd>2</kbd>, <kbd>3</kbd>.</p></section>
       </div>
       <div class="sheet-footer"><div id="statusStrip" aria-live="polite"></div><button id="undoButton" class="quiet-button">↶ Revenir sur ma décision</button></div>
@@ -229,6 +242,7 @@
   </main>
   <dialog id="journalDialog" aria-labelledby="journalTitle"><div class="dialog-header"><h2 id="journalTitle">Les chroniques du Clan</h2><button class="close-dialog" data-close="journalDialog" aria-label="Fermer le journal">×</button></div><div class="journal-tabs"><button id="chronicleTab" aria-pressed="true">La campagne · 18 chapitres</button><button id="historyTab" aria-pressed="false">Votre aventure</button></div><div id="chroniclePanel" class="chronicle-layout"><nav id="chapterList" class="chapter-list" aria-label="Chapitres de la chronique"></nav><article id="chapterReader" class="chapter-reader"></article></div><div id="eventLog" hidden></div></dialog>
   <dialog id="companyDialog" aria-labelledby="companyTitle"><div class="dialog-header"><h2 id="companyTitle">La compagnie</h2><button class="close-dialog" data-close="companyDialog" aria-label="Fermer la compagnie">×</button></div><div class="company-layout"><nav id="companyRoster" class="company-roster" aria-label="Choisir un personnage"></nav><article id="companyDetails" class="party-detail-list"></article></div></dialog>
+  <dialog id="ambianceDialog" aria-labelledby="ambianceTitle"><div class="dialog-header"><h2 id="ambianceTitle">L’ambiance du récit</h2><button class="close-dialog" data-close="ambianceDialog" aria-label="Fermer les réglages d’ambiance">×</button></div><div class="ambiance-body"><p>Les illustrations accompagnent les gestes des compagnons. Vous pouvez garder une lecture calme ou ajouter une ambiance sonore discrète.</p><label class="ambiance-setting" for="effectsSetting">Effets liés aux actions<input id="effectsSetting" type="checkbox" /></label><label class="ambiance-setting" for="motionSetting">Mouvements<select id="motionSetting"><option value="auto">Selon l’appareil</option><option value="reduced">Réduits</option></select></label><p class="ambiance-notice" id="motionNotice"></p><label class="ambiance-setting" for="soundSetting">Sons d’ambiance et d’action<input id="soundSetting" type="checkbox" /></label><label class="ambiance-setting" for="volumeSetting">Volume<input id="volumeSetting" type="range" min="0" max="100" step="5" aria-valuetext="25 %" /></label><p id="soundNotice" class="ambiance-notice" role="status">Le son est désactivé au départ. Le récit reste entièrement compréhensible sans lui.</p></div></dialog>
   <dialog id="importDialog" aria-labelledby="importTitle"><div class="dialog-header"><h2 id="importTitle">Reprendre une autre chronique</h2><button class="close-dialog" data-close="importDialog" aria-label="Fermer l’import">×</button></div><div class="import-body"><p>Collez le contenu de votre sauvegarde exportée. Votre partie actuelle sera remplacée uniquement si cette sauvegarde est valide.</p><label for="importPayload" class="eyebrow">Votre sauvegarde</label><textarea id="importPayload" spellcheck="false"></textarea><p id="importResult" role="status"></p><button id="importButton" class="choice-card primary">Importer et reprendre l’aventure <span aria-hidden="true">→</span></button></div></dialog>
 
   <script>
@@ -236,6 +250,7 @@
     const LOGICAL_HEIGHT = 200;
     const VERBS = ['look', 'l', 'examine', 'x', 'go', 'walk', 'help', '?', 'inventory', 'i', 'undo', 'choose', 'save', 'load', 'clear', 'sheet', 'party', 'export', 'import', 'debug', 'set', 'flag'];
     const SAVE_KEY = 'clanDestain.save.v1';
+    const PREFERENCES_KEY = 'clanDestain.preferences.v1';
     const DIRECTION_ALIASES = {
       n: 'nord', nord: 'nord',
       s: 'sud', sud: 'sud',
@@ -524,6 +539,92 @@
     "chapterNumber": 2,
     "location": "La forteresse de Verdure",
     "paragraphs": []
+  },
+  "old_tunnel": {
+    "art": "tunnel",
+    "hero": "Le tunnel\nsous les remparts",
+    "eyebrow": "Acte I · La nuit de Verdure",
+    "tagline": "",
+    "heading": "Le passage sous les remparts",
+    "chapterNumber": 2,
+    "location": "Sous la forteresse de Verdure",
+    "paragraphs": [
+      "Escobert a indiqué aux aventuriers un ancien tunnel qui relie la forteresse à la rivière. Après un court repos, le Clan s’y engage pour gagner les abords du temple sans traverser les rues occupées par les pillards. Derrière les murs qu’ils viennent de quitter, les habitants secourus attendent avec les défenseurs; d’autres sont encore enfermés dans le sanctuaire.",
+      "Des rats encombrent le passage et obligent la compagnie à interrompre son avancée. Ellyjobell peut tenter de les éloigner en leur parlant et en s’aidant d’une illusion, avant que Darrin s’occupe de la porte rouillée qui ferme l’autre extrémité du tunnel. Il faut dégager ce chemin pour rejoindre la rivière, puis reconnaître les accès du temple."
+    ],
+    "source": "JDR DD5 2023.xlsx — Tyranny of dragons!A17:A18; A23:A25"
+  },
+  "sanctuary_approach": {
+    "art": "temple",
+    "hero": "Le temple\nassiégé",
+    "eyebrow": "Acte I · La nuit de Verdure",
+    "tagline": "",
+    "heading": "Les pillards encerclent le temple",
+    "chapterNumber": 2,
+    "location": "Le temple de Verdure",
+    "paragraphs": [
+      "À l’approche du temple, les aventuriers découvrent les groupes de pillards qui en surveillent les accès. Près de la porte sud, certains se préparent à mettre le feu au bâtiment. Le prêtre et les paysans réfugiés à l’intérieur ne pourront pas attendre que les assaillants se lassent; leur abri risque de brûler avant qu’ils puissent rejoindre la forteresse.",
+      "Le Clan doit dégager une sortie et la maintenir ouverte pendant que les occupants quittent le sanctuaire. Une illusion pourrait détourner les incendiaires et laisser à Bjolnir le temps de convaincre les habitants de sortir. Ellyjobell dispose du brouillard nécessaire pour dissimuler leur fuite. Une approche discrète ou une attaque de diversion pourrait aussi ouvrir un passage, mais ferait courir un autre risque à celui qui s’en charge.",
+      "Le chemin du tunnel est reconnu. Une fois les habitants hors du temple, les aventuriers devront les y conduire ensemble et les accompagner jusqu’aux remparts. Tant que les pillards conservent leurs positions, personne n’est encore à l’abri."
+    ],
+    "source": "JDR DD5 2023.xlsx — Tyranny of dragons!A23:A28; les approches discrète et d’assaut restent des variantes du jeu"
+  },
+  "mill_approach": {
+    "art": "mill",
+    "hero": "Le moulin\nde Verdure",
+    "eyebrow": "Acte I · La nuit de Verdure",
+    "tagline": "",
+    "heading": "Empêcher l’incendie du moulin",
+    "chapterNumber": 2,
+    "location": "Au bord de la rivière",
+    "paragraphs": [
+      "Un garde a rejoint Nighthill pour lui annoncer que les pillards tentent maintenant de mettre le feu au moulin. Les habitants du temple viennent à peine de retrouver la sécurité des remparts et le Clan doit déjà repartir. Si le bâtiment est détruit, Verdure perdra une part des réserves de nourriture dont elle aura besoin au lendemain de l’attaque.",
+      "Les aventuriers approchent du moulin en cherchant les assaillants parmi ses abords. Une troupe qui vient secourir le bâtiment peut elle-même être prise au piège; avant d’engager le combat, le groupe doit choisir entre reconnaître les positions des guetteurs et forcer le passage. Ellyjobell peut ouvrir la marche à couvert, tandis que Drek’Thar peut mener l’assaut avec le soutien de ses compagnons.",
+      "L’objectif est de chasser les pillards et de sécuriser le moulin. Un repli préserverait les aventuriers d’un combat devenu trop dangereux, mais laisserait le bâtiment menacé et obligerait la compagnie à préparer une nouvelle intervention."
+    ],
+    "source": "JDR DD5 2023.xlsx — Tyranny of dragons!A29:A30; le choix de méthode et ses risques sont l’adaptation interactive"
+  },
+  "duel_field": {
+    "art": "duel",
+    "hero": "Le défi\nde Cyanwrath",
+    "eyebrow": "Acte I · La nuit de Verdure",
+    "tagline": "",
+    "heading": "Un champion contre la liberté des otages",
+    "chapterNumber": 2,
+    "location": "Devant la forteresse, à l’aube",
+    "paragraphs": [
+      "Au petit matin, alors que Verdure porte encore les traces des combats de la nuit, Langdedrosa Cyanwrath se présente avec des otages. La créature draconique réclame un adversaire pour un duel. Les prisonniers demeurent sous sa garde pendant que le défi est adressé aux défenseurs de la ville.",
+      "Le Clan a combattu jusqu’ici en réunissant les forces de ses membres. Cyanwrath demande maintenant qu’un seul adversaire s’avance pour obtenir la libération des captifs. Drek’Thar sait se battre et peut représenter la compagnie, mais il devra affronter la créature qui les attend au-dehors. Le groupe doit décider s’il relève le défi ou refuse les conditions imposées, sans garantie pour les prisonniers."
+    ],
+    "source": "JDR DD5 2023.xlsx — Tyranny of dragons!A33:A35; conditions détaillées d’intervention du groupe encore à confirmer par le MJ"
+  },
+  "dragon_assault": {
+    "art": "wall",
+    "hero": "Le dragon\nsur les remparts",
+    "eyebrow": "Acte I · La nuit de Verdure",
+    "tagline": "",
+    "heading": "Le dragon revient sur la forteresse",
+    "chapterNumber": 2,
+    "location": "Les remparts de Verdure",
+    "paragraphs": [
+      "Le temple a été évacué et le moulin sécurisé. Les aventuriers regagnent la forteresse en espérant pouvoir enfin s’y reposer, lorsque le dragon qui survolait Verdure revient attaquer. Les défenseurs sont rappelés sur les remparts, au-dessus des habitants qu’ils ont rassemblés derrière les murs.",
+      "Le Clan doit les rejoindre et concentrer ses efforts contre la créature. Les assauts menés dans les rues n’ont pas suffi à mettre fin au siège: tant que le dragon maintient sa pression sur la place forte, les réfugiés restent menacés dans leur dernier abri. Les compagnons disposent de leurs armes, de leurs sorts et de l’appui des gardes pour tenter de le contraindre à s’éloigner."
+    ],
+    "source": "JDR DD5 2023.xlsx — Tyranny of dragons!A28:A32"
+  },
+  "act2_confrontation": {
+    "art": "cave_duel",
+    "hero": "La revanche\nde Drek’Thar",
+    "eyebrow": "Acte II · La grotte des pillards",
+    "tagline": "",
+    "heading": "Cyanwrath attend dans la grotte",
+    "chapterNumber": 4,
+    "location": "La salle de Cyanwrath",
+    "paragraphs": [
+      "Après les passages piégés et les gardes de la grotte, les aventuriers retrouvent Langdedrosa Cyanwrath accompagné de deux berserkers. Le demi-dragon qui avait défié les défenseurs de Verdure leur barre de nouveau la route. Pour poursuivre vers les salles voisines, le Clan doit lui faire face ou trouver un moyen de le contourner.",
+      "Drek’Thar peut demander sa revanche pendant que les autres compagnons affrontent les berserkers. Bjolnir peut aussi tenter d’obtenir un passage sans tuer, tandis que Sislay peut chercher un détour. Ces approches engagent des personnages et des risques différents; une négociation ou un contournement laisserait Cyanwrath vivant."
+    ],
+    "source": "JDR DD5 2023.xlsx — Tyranny of dragons!71:72; négociation et contournement: What If du jeu"
   }
 },
       choices: {
@@ -749,6 +850,182 @@
 }
     };
 
+    const SCENE_DIRECTIONS = {
+  "scenes": {
+    "verdure": {
+      "fires": [
+        [
+          141,
+          102
+        ],
+        [
+          203,
+          115
+        ],
+        [
+          224,
+          95
+        ],
+        [
+          294,
+          111
+        ],
+        [
+          180,
+          125
+        ]
+      ],
+      "dragon": true
+    },
+    "street": {
+      "fires": [
+        [
+          31,
+          95
+        ],
+        [
+          284,
+          95
+        ],
+        [
+          66,
+          113
+        ]
+      ]
+    },
+    "keep": {
+      "fires": []
+    },
+    "wall": {
+      "fires": [],
+      "dragon": true
+    },
+    "tunnel": {
+      "fires": [
+        [
+          178,
+          105
+        ]
+      ]
+    },
+    "temple": {
+      "fires": [
+        [
+          283,
+          145
+        ]
+      ]
+    },
+    "mill": {
+      "fires": [
+        [
+          166,
+          144
+        ]
+      ]
+    },
+    "duel": {
+      "fires": []
+    },
+    "cave_duel": {
+      "fires": [
+        [
+          149,
+          119
+        ],
+        [
+          277,
+          119
+        ]
+      ]
+    }
+  },
+  "actions": {
+    "charge-civils": {
+      "kind": "advance",
+      "actor": "bjolnir",
+      "caption": "Le Clan rejoint les civils."
+    },
+    "approche-riviere": {
+      "kind": "advance",
+      "actor": "ellyjobell",
+      "caption": "Le passage par la rivière."
+    },
+    "swift-diplomatie": {
+      "kind": "hammer",
+      "actor": "bjolnir",
+      "caption": "Bjolnir obtient la reddition des survivants."
+    },
+    "swift-magie": {
+      "kind": "magic",
+      "actor": "darrin",
+      "caption": "Darrin disperse les assaillants."
+    },
+    "swift-force": {
+      "kind": "clash",
+      "actor": "drekthar",
+      "caption": "Drek’Thar ouvre le passage."
+    },
+    "tunnel-temple": {
+      "kind": "door",
+      "actor": "darrin",
+      "caption": "Le chemin vers la rivière est dégagé."
+    },
+    "temple-evacuation": {
+      "kind": "fog",
+      "actor": "ellyjobell",
+      "caption": "Le brouillard couvre la sortie des habitants."
+    },
+    "sanctuaire-tunnel": {
+      "kind": "advance",
+      "actor": "sislay",
+      "caption": "Un passage est ouvert pour les occupants."
+    },
+    "sanctuaire-assaut": {
+      "kind": "clash",
+      "actor": "bjolnir",
+      "caption": "La diversion éloigne les assaillants."
+    },
+    "moulin-furtif": {
+      "kind": "advance",
+      "actor": "ellyjobell",
+      "caption": "Les guetteurs du moulin sont surpris."
+    },
+    "moulin-assaut": {
+      "kind": "clash",
+      "actor": "drekthar",
+      "caption": "Le moulin est dégagé."
+    },
+    "dragon-defendre": {
+      "kind": "dragon",
+      "actor": "bjolnir",
+      "caption": "Les défenseurs repoussent le dragon."
+    },
+    "duel-campagne": {
+      "kind": "duel",
+      "actor": "drekthar",
+      "caption": "Les compagnons récupèrent Drek’Thar vivant.",
+      "fallen": "hero"
+    },
+    "duel-accept": {
+      "kind": "duel",
+      "actor": "drekthar",
+      "caption": "Le duel décide du sort des otages.",
+      "fallen": "enemy"
+    },
+    "duel-refus": {
+      "kind": "retreat",
+      "caption": "Le Clan renonce au duel."
+    },
+    "revanche-drekthar": {
+      "kind": "duel",
+      "actor": "drekthar",
+      "caption": "Drek’Thar a remporté sa revanche. Le Clan peut poursuivre.",
+      "fallen": "enemy"
+    }
+  }
+};
+
     const ACTION_NARRATION = {
   "swift-diplomatie": {
     "successTitle": "Les kobolds déposent leurs armes",
@@ -840,7 +1117,7 @@
     "failureTitle": "Drek’Thar couvre un repli difficile",
     "failure": [
       "Les kobolds résistent à l’attaque de Drek’Thar et le blessent avant qu’il puisse rompre leur ligne. Ses compagnons entrent à leur tour dans le combat pour empêcher les assaillants de rejoindre la famille.",
-      "Linan et les siens finissent par être dégagés et gagnent la forteresse avec le Clan. Drek’Thar revient blessé de cette tentative; il peut encore agir, mais supportera moins bien les prochains coups."
+      "Linan et les siens finissent par être dégagés et gagnent la forteresse avec le Clan. Les compagnons doivent s’occuper des blessures de Drek’Thar et tenir compte de son état avant de le solliciter de nouveau."
     ]
   },
   "sanctuaire-tunnel": {
@@ -934,6 +1211,36 @@
       "Les gardiens vaincus, les aventuriers s’approchent des œufs de dragon noir et en récupèrent deux. Ils les protègent pour pouvoir les transporter hors de la grotte, en veillant à ne pas briser les coquilles.",
       "Le groupe doit encore examiner les appartements de Frulam Mondath avant de rentrer à Verdure. Les œufs seront ensuite chargés sur des chariots pour le voyage; leur naissance fera de Bjolnir le parent adoptif de Boule et Bill, comme dans le récit de la campagne."
     ]
+  },
+  "tunnel-temple": {
+    "successTitle": "Le passage vers la rivière est dégagé",
+    "success": [
+      "Ellyjobell s’adresse aux rats qui encombrent le tunnel et accompagne ses paroles d’une illusion. Les bêtes finissent par s’écarter, laissant aux aventuriers la place de poursuivre sans avoir à les combattre. Le Clan avance alors jusqu’à la porte rouillée qui ferme l’autre extrémité du passage.",
+      "Darrin vient à bout de la porte et l’ouvre pour ses compagnons. Le groupe rejoint la rivière, puis gagne les abords du temple. Les pillards y occupent encore les accès; la compagnie doit maintenant reconnaître leurs positions et préparer la sortie des habitants."
+    ],
+    "source": "JDR DD5 2023.xlsx — Tyranny of dragons!A24:A26"
+  },
+  "duel-accept": {
+    "successTitle": "Drek’Thar abat Cyanwrath",
+    "success": [
+      "Drek’Thar engage le duel et soutient les attaques du demi-dragon sans lui laisser imposer le combat. Le guerrier profite des ouvertures qui se présentent pour riposter, jusqu’à porter les coups qui font tomber Cyanwrath. Son adversaire ne se relève pas.",
+      "Les otages sont libérés et rejoignent les défenseurs de la forteresse. Drek’Thar revient auprès du Clan, vainqueur d’un affrontement qui se terminait autrement dans la campagne. Dans cette variante, Cyanwrath est mort à Verdure; le groupe ne pourra pas le retrouver vivant dans la grotte des pillards."
+    ],
+    "failureTitle": "Drek’Thar tombe sous les coups de Cyanwrath",
+    "failure": [
+      "Drek’Thar tente de prendre l’avantage sur le demi-dragon, mais Cyanwrath reprend l’initiative et finit par le jeter à terre. Le guerrier ne peut plus poursuivre le duel. Ses compagnons attendent que l’affrontement soit terminé pour venir le dégager.",
+      "Cyanwrath ordonne la libération des otages. Le Clan ramène Drek’Thar vivant et blessé derrière les remparts, avec ceux pour lesquels il s’était avancé. Le groupe devra tenir compte de son état avant de l’exposer à un nouveau combat."
+    ],
+    "failureByState": {
+      "dead": {
+        "title": "Drek’Thar ne survit pas au duel",
+        "paragraphs": [
+          "Déjà blessé, Drek’Thar s’avance néanmoins contre Cyanwrath. Le guerrier tente de lui tenir tête, mais les coups du demi-dragon aggravent ses blessures jusqu’à l’abattre. Lorsque ses compagnons peuvent enfin le rejoindre, il est mort.",
+          "Cyanwrath ordonne la libération des otages, que le Clan reconduit à la forteresse. Cette variante a coûté la vie à Drek’Thar: il ne pourra plus participer aux décisions suivantes. Le retour au checkpoint permet de reprendre avant le choix qui l’a exposé à ce risque mortel."
+        ]
+      }
+    },
+    "source": "What If du jeu, non attesté: respecter le résultat effectif des états, duelDone et cyanwrathDead. Ne sélectionner death que si characters.drekthar.state === 'dead'."
   }
 };
 
@@ -2079,7 +2386,7 @@
   "mill_approach": {
     "id": "mill_approach",
     "title": "L'embuscade du moulin",
-    "description": "À peine le groupe revenu du temple, un garde annonce que les pillards menacent le moulin. Sa destruction priverait Verdure d'une part de ses réserves. En approchant du bâtiment, les aventuriers doivent se garder d'une embuscade avant de pouvoir éloigner les assaillants.",
+    "description": "Un garde a rejoint Nighthill pour lui annoncer que les pillards tentent maintenant de mettre le feu au moulin. Les habitants du temple viennent à peine de retrouver la sécurité des remparts et le Clan doit déjà repartir. Si le bâtiment est détruit, Verdure perdra une part des réserves de nourriture dont elle aura besoin au lendemain de l’attaque.\n\nLes aventuriers approchent du moulin en cherchant les assaillants parmi ses abords. Une troupe qui vient secourir le bâtiment peut elle-même être prise au piège; avant d’engager le combat, le groupe doit choisir entre reconnaître les positions des guetteurs et forcer le passage. Ellyjobell peut ouvrir la marche à couvert, tandis que Drek’Thar peut mener l’assaut avec le soutien de ses compagnons.\n\nL’objectif est de chasser les pillards et de sécuriser le moulin. Un repli préserverait les aventuriers d’un combat devenu trop dangereux, mais laisserait le bâtiment menacé et obligerait la compagnie à préparer une nouvelle intervention.",
     "objects": [
       "foyer d’incendie",
       "pillards",
@@ -2154,16 +2461,22 @@
           "gotoRoom": "greenest_keep",
           "message": "L'assaut n'a pas sécurisé le moulin. Les défenseurs ont encore besoin d'aide; une autre approche reste possible."
         },
-        "riskText": "L'intervenant s'expose aux coups; un échec oblige à revenir préparer l'assaut.",
+        "riskText": "Un échec peut blesser Drek’Thar. S’il est déjà blessé, il peut mourir. Le moulin reste alors menacé.",
         "intent": "Drek’Thar engage les pillards avec le soutien du Clan pour sécuriser le bâtiment. Un échec impose un repli."
       }
     ],
-    "chapter": 2
+    "chapter": 2,
+    "paragraphs": [
+      "Un garde a rejoint Nighthill pour lui annoncer que les pillards tentent maintenant de mettre le feu au moulin. Les habitants du temple viennent à peine de retrouver la sécurité des remparts et le Clan doit déjà repartir. Si le bâtiment est détruit, Verdure perdra une part des réserves de nourriture dont elle aura besoin au lendemain de l’attaque.",
+      "Les aventuriers approchent du moulin en cherchant les assaillants parmi ses abords. Une troupe qui vient secourir le bâtiment peut elle-même être prise au piège; avant d’engager le combat, le groupe doit choisir entre reconnaître les positions des guetteurs et forcer le passage. Ellyjobell peut ouvrir la marche à couvert, tandis que Drek’Thar peut mener l’assaut avec le soutien de ses compagnons.",
+      "L’objectif est de chasser les pillards et de sécuriser le moulin. Un repli préserverait les aventuriers d’un combat devenu trop dangereux, mais laisserait le bâtiment menacé et obligerait la compagnie à préparer une nouvelle intervention."
+    ],
+    "source": "JDR DD5 2023.xlsx — Tyranny of dragons!A29:A30; le choix de méthode et ses risques sont l’adaptation interactive"
   },
   "sanctuary_approach": {
     "id": "sanctuary_approach",
     "title": "Les occupants du temple",
-    "description": "Des pillards entourent le temple et un groupe s'apprête à mettre le feu à sa porte sud. À l'intérieur, le prêtre et les habitants attendent de pouvoir fuir. Il faut ouvrir un passage et couvrir leur évacuation vers le tunnel, puis les accompagner jusqu'à la forteresse.",
+    "description": "À l’approche du temple, les aventuriers découvrent les groupes de pillards qui en surveillent les accès. Près de la porte sud, certains se préparent à mettre le feu au bâtiment. Le prêtre et les paysans réfugiés à l’intérieur ne pourront pas attendre que les assaillants se lassent; leur abri risque de brûler avant qu’ils puissent rejoindre la forteresse.\n\nLe Clan doit dégager une sortie et la maintenir ouverte pendant que les occupants quittent le sanctuaire. Une illusion pourrait détourner les incendiaires et laisser à Bjolnir le temps de convaincre les habitants de sortir. Ellyjobell dispose du brouillard nécessaire pour dissimuler leur fuite. Une approche discrète ou une attaque de diversion pourrait aussi ouvrir un passage, mais ferait courir un autre risque à celui qui s’en charge.\n\nLe chemin du tunnel est reconnu. Une fois les habitants hors du temple, les aventuriers devront les y conduire ensemble et les accompagner jusqu’aux remparts. Tant que les pillards conservent leurs positions, personne n’est encore à l’abri.",
     "objects": [
       "barricades",
       "bélier",
@@ -2174,7 +2487,10 @@
       {
         "id": "temple-evacuation",
         "intent": "Suivre le journal: une illusion détourne les incendiaires, Bjolnir conduit les habitants et Ellyjobell couvre leur fuite.",
-        "requiresCharacters": ["bjolnir", "ellyjobell"],
+        "requiresCharacters": [
+          "bjolnir",
+          "ellyjobell"
+        ],
         "label": "Détourner les incendiaires et évacuer les habitants sous le brouillard",
         "source": "Tyranny of dragons!26:28",
         "effects": {
@@ -2263,12 +2579,18 @@
         "intent": "Variante: Bjolnir attire les assaillants loin de la porte. Un échec impose un repli avant une nouvelle tentative."
       }
     ],
-    "chapter": 2
+    "chapter": 2,
+    "paragraphs": [
+      "À l’approche du temple, les aventuriers découvrent les groupes de pillards qui en surveillent les accès. Près de la porte sud, certains se préparent à mettre le feu au bâtiment. Le prêtre et les paysans réfugiés à l’intérieur ne pourront pas attendre que les assaillants se lassent; leur abri risque de brûler avant qu’ils puissent rejoindre la forteresse.",
+      "Le Clan doit dégager une sortie et la maintenir ouverte pendant que les occupants quittent le sanctuaire. Une illusion pourrait détourner les incendiaires et laisser à Bjolnir le temps de convaincre les habitants de sortir. Ellyjobell dispose du brouillard nécessaire pour dissimuler leur fuite. Une approche discrète ou une attaque de diversion pourrait aussi ouvrir un passage, mais ferait courir un autre risque à celui qui s’en charge.",
+      "Le chemin du tunnel est reconnu. Une fois les habitants hors du temple, les aventuriers devront les y conduire ensemble et les accompagner jusqu’aux remparts. Tant que les pillards conservent leurs positions, personne n’est encore à l’abri."
+    ],
+    "source": "JDR DD5 2023.xlsx — Tyranny of dragons!A23:A28; les approches discrète et d’assaut restent des variantes du jeu"
   },
   "duel_field": {
     "id": "duel_field",
     "title": "Le défi de Cyanwrath",
-    "description": "Langdedrosa Cyanwrath plante sa lame dans la boue et exige un champion.",
+    "description": "Au petit matin, alors que Verdure porte encore les traces des combats de la nuit, Langdedrosa Cyanwrath se présente avec des otages. La créature draconique réclame un adversaire pour un duel. Les prisonniers demeurent sous sa garde pendant que le défi est adressé aux défenseurs de la ville.\n\nLe Clan a combattu jusqu’ici en réunissant les forces de ses membres. Cyanwrath demande maintenant qu’un seul adversaire s’avance pour obtenir la libération des captifs. Drek’Thar sait se battre et peut représenter la compagnie, mais il devra affronter la créature qui les attend au-dehors. Le groupe doit décider s’il relève le défi ou refuse les conditions imposées, sans garantie pour les prisonniers.",
     "objects": [
       "Cyanwrath",
       "otages",
@@ -2323,7 +2645,7 @@
           "checkpoint": "Scène 5 résolue — Duel de Cyanwrath"
         },
         "onFailure": {
-          "message": "Votre champion plie, mais survit. Cyanwrath ordonne malgré tout la libération des otages."
+          "message": "Drek’Thar est vaincu et ne peut poursuivre le duel. Cyanwrath ordonne la libération des otages."
         },
         "onFailurePost": {
           "setFlags": {
@@ -2357,7 +2679,12 @@
         "riskText": "Provocation dangereuse: cette variante peut interrompre la tentative. Retour possible avant le choix."
       }
     ],
-    "chapter": 2
+    "chapter": 2,
+    "paragraphs": [
+      "Au petit matin, alors que Verdure porte encore les traces des combats de la nuit, Langdedrosa Cyanwrath se présente avec des otages. La créature draconique réclame un adversaire pour un duel. Les prisonniers demeurent sous sa garde pendant que le défi est adressé aux défenseurs de la ville.",
+      "Le Clan a combattu jusqu’ici en réunissant les forces de ses membres. Cyanwrath demande maintenant qu’un seul adversaire s’avance pour obtenir la libération des captifs. Drek’Thar sait se battre et peut représenter la compagnie, mais il devra affronter la créature qui les attend au-dehors. Le groupe doit décider s’il relève le défi ou refuse les conditions imposées, sans garantie pour les prisonniers."
+    ],
+    "source": "JDR DD5 2023.xlsx — Tyranny of dragons!A33:A35; conditions détaillées d’intervention du groupe encore à confirmer par le MJ"
   },
   "waterdeep_council_hall": {
     "id": "waterdeep_council_hall",
@@ -4012,33 +4339,38 @@
     "id": "old_tunnel",
     "title": "Le tunnel vers la rivière",
     "chapter": 2,
-    "description": "Nighthill a reçu des nouvelles du temple. Des habitants s'y sont réfugiés avec le prêtre, mais les pillards encerclent le bâtiment et tentent d'en incendier les accès. Escobert indique au Clan un ancien tunnel reliant la forteresse à la rivière; le groupe l'emprunte pour éviter les rues occupées.\n\nDes rats encombrent le passage. Ellyjobell les éloigne en leur parlant et en s'aidant d'une illusion, puis Darrin vient à bout de la porte rouillée qui ferme l'autre extrémité. Les aventuriers peuvent gagner les abords du temple.",
+    "description": "Escobert a indiqué aux aventuriers un ancien tunnel qui relie la forteresse à la rivière. Après un court repos, le Clan s’y engage pour gagner les abords du temple sans traverser les rues occupées par les pillards. Derrière les murs qu’ils viennent de quitter, les habitants secourus attendent avec les défenseurs; d’autres sont encore enfermés dans le sanctuaire.\n\nDes rats encombrent le passage et obligent la compagnie à interrompre son avancée. Ellyjobell peut tenter de les éloigner en leur parlant et en s’aidant d’une illusion, avant que Darrin s’occupe de la porte rouillée qui ferme l’autre extrémité du tunnel. Il faut dégager ce chemin pour rejoindre la rivière, puis reconnaître les accès du temple.",
     "paragraphs": [
-      "Nighthill a reçu des nouvelles du temple. Des habitants s'y sont réfugiés avec le prêtre, mais les pillards encerclent le bâtiment et tentent d'en incendier les accès. Escobert indique au Clan un ancien tunnel reliant la forteresse à la rivière; le groupe l'emprunte pour éviter les rues occupées.",
-      "Des rats encombrent le passage. Ellyjobell les éloigne en leur parlant et en s'aidant d'une illusion, puis Darrin vient à bout de la porte rouillée qui ferme l'autre extrémité. Les aventuriers peuvent gagner les abords du temple."
+      "Escobert a indiqué aux aventuriers un ancien tunnel qui relie la forteresse à la rivière. Après un court repos, le Clan s’y engage pour gagner les abords du temple sans traverser les rues occupées par les pillards. Derrière les murs qu’ils viennent de quitter, les habitants secourus attendent avec les défenseurs; d’autres sont encore enfermés dans le sanctuaire.",
+      "Des rats encombrent le passage et obligent la compagnie à interrompre son avancée. Ellyjobell peut tenter de les éloigner en leur parlant et en s’aidant d’une illusion, avant que Darrin s’occupe de la porte rouillée qui ferme l’autre extrémité du tunnel. Il faut dégager ce chemin pour rejoindre la rivière, puis reconnaître les accès du temple."
     ],
     "objects": [],
     "exits": {},
     "options": [
       {
         "id": "tunnel-temple",
-        "label": "Sortir du tunnel et repérer les incendiaires du temple",
+        "label": "Éloigner les rats et ouvrir la porte vers la rivière",
         "repeatable": true,
         "onSuccess": {
           "gotoRoom": "sanctuary_approach"
-        }
+        },
+        "intent": "Ellyjobell écarte les rats avec une illusion, puis Darrin dégage la porte rouillée pour permettre le passage du Clan.",
+        "requiresCharacters": [
+          "ellyjobell",
+          "darrin"
+        ]
       }
     ],
-    "source": "Tyranny of dragons!23:26"
+    "source": "JDR DD5 2023.xlsx — Tyranny of dragons!A17:A18; A23:A25"
   },
   "dragon_assault": {
     "id": "dragon_assault",
     "title": "Le dragon attaque la forteresse",
     "chapter": 2,
-    "description": "Le temple a été évacué et le moulin tient encore lorsque le dragon revient menacer les défenseurs. Le Clan est de nouveau appelé sur les remparts. Il faut soutenir les gardes et concentrer les efforts du groupe pour obliger la créature à s'éloigner.\n\nLe journal rapporte un assaut combiné des aventuriers qui finit par chasser le dragon. La ville obtient un répit avant le défi que Cyanwrath lancera au petit matin.",
+    "description": "Le temple a été évacué et le moulin sécurisé. Les aventuriers regagnent la forteresse en espérant pouvoir enfin s’y reposer, lorsque le dragon qui survolait Verdure revient attaquer. Les défenseurs sont rappelés sur les remparts, au-dessus des habitants qu’ils ont rassemblés derrière les murs.\n\nLe Clan doit les rejoindre et concentrer ses efforts contre la créature. Les assauts menés dans les rues n’ont pas suffi à mettre fin au siège: tant que le dragon maintient sa pression sur la place forte, les réfugiés restent menacés dans leur dernier abri. Les compagnons disposent de leurs armes, de leurs sorts et de l’appui des gardes pour tenter de le contraindre à s’éloigner.",
     "paragraphs": [
-      "Le temple a été évacué et le moulin tient encore lorsque le dragon revient menacer les défenseurs. Le Clan est de nouveau appelé sur les remparts. Il faut soutenir les gardes et concentrer les efforts du groupe pour obliger la créature à s'éloigner.",
-      "Le journal rapporte un assaut combiné des aventuriers qui finit par chasser le dragon. La ville obtient un répit avant le défi que Cyanwrath lancera au petit matin."
+      "Le temple a été évacué et le moulin sécurisé. Les aventuriers regagnent la forteresse en espérant pouvoir enfin s’y reposer, lorsque le dragon qui survolait Verdure revient attaquer. Les défenseurs sont rappelés sur les remparts, au-dessus des habitants qu’ils ont rassemblés derrière les murs.",
+      "Le Clan doit les rejoindre et concentrer ses efforts contre la créature. Les assauts menés dans les rues n’ont pas suffi à mettre fin au siège: tant que le dragon maintient sa pression sur la place forte, les réfugiés restent menacés dans leur dernier abri. Les compagnons disposent de leurs armes, de leurs sorts et de l’appui des gardes pour tenter de le contraindre à s’éloigner."
     ],
     "objects": [],
     "exits": {},
@@ -4058,7 +4390,7 @@
         "intent": "Suivre le récit: le Clan unit ses attaques à celles des défenseurs pour contraindre le dragon à s’éloigner."
       }
     ],
-    "source": "Tyranny of dragons!31:35"
+    "source": "JDR DD5 2023.xlsx — Tyranny of dragons!A28:A32"
   },
   "elturel_road": {
     "id": "elturel_road",
@@ -4341,7 +4673,21 @@
 
     const statusEl = document.getElementById('statusStrip');
     const inputEl = document.getElementById('commandInput');
-    const uiState = { feedback: '', log: [], chapter: 0, portraits: {}, art: {}, reducedMotion: window.matchMedia?.('(prefers-reduced-motion: reduce)').matches ?? false };
+    const uiState = { feedback: '', log: [], chapter: 0, portraits: {}, art: {}, effect: null, framePending: false,
+      systemReducedMotion: window.matchMedia?.('(prefers-reduced-motion: reduce)').matches ?? false,
+      reducedMotion: false, preferences: readPreferences() };
+    uiState.reducedMotion = uiState.systemReducedMotion || uiState.preferences.motion === 'reduced';
+
+    function readPreferences() {
+      const defaults = { effects: true, motion: 'auto', sound: false, volume: 0.25 };
+      try {
+        const saved = JSON.parse(localStorage.getItem(PREFERENCES_KEY));
+        if (!saved || typeof saved !== 'object') return defaults;
+        return { effects: typeof saved.effects === 'boolean' ? saved.effects : true,
+          motion: saved.motion === 'reduced' ? 'reduced' : 'auto', sound: saved.sound === true,
+          volume: typeof saved.volume === 'number' && Number.isFinite(saved.volume) ? Math.max(0, Math.min(1,saved.volume)) : 0.25 };
+      } catch { return defaults; }
+    }
 
     function safeClone(value) {
       return typeof structuredClone === 'function' ? structuredClone(value) : JSON.parse(JSON.stringify(value));
@@ -4369,6 +4715,7 @@
       if (!options.skipScene) callSceneHook('onExit');
       gameState.roomId = roomId;
       gameState.lastReport = null;
+      uiState.effect = null;
       if (!options.skipScene) prepareCurrentRoom();
       if (!options.skipScene) callSceneHook('onEnter');
       if (!options.skipDescribe) describeCurrentRoom();
@@ -4403,7 +4750,8 @@
         if (state.resolvedOptions !== undefined && !strings(state.resolvedOptions)) return false;
         if (state.lastReport != null && (!record(state.lastReport) || !Object.hasOwn(rooms, state.lastReport.roomId)
           || typeof state.lastReport.title !== 'string' || !strings(state.lastReport.paragraphs)
-          || !strings(state.lastReport.changes) || typeof state.lastReport.failed !== 'boolean')) return false;
+          || !strings(state.lastReport.changes) || typeof state.lastReport.failed !== 'boolean'
+          || (state.lastReport.optionId !== undefined && typeof state.lastReport.optionId !== 'string'))) return false;
         if (!Number.isFinite(state.tick) || !Array.isArray(state.checkpoints)) return false;
         if (!record(payload.characters) || Object.keys(payload.characters).length !== Object.keys(INITIAL_CHARACTERS).length || !Object.keys(INITIAL_CHARACTERS).every(id => {
           const c = payload.characters[id];
@@ -4447,6 +4795,7 @@
       gameState.timelineApplied = [];
       gameState.resolvedOptions = [];
       gameState.lastReport = null;
+      uiState.effect = null;
     }
 
     function exportSaveToClipboard() {
@@ -4547,7 +4896,7 @@
     function executePresentedChoice(shortcut) {
       const choice = getPresentedChoices().find(c => c.shortcut === Number(shortcut));
       if (!choice || choice.index === -1) return;
-      if (choice.continuation) { gameState.lastReport = null; uiState.feedback = ''; refreshInterface(); saveGame(); focusNarrative(); return; }
+      if (choice.continuation) { gameState.lastReport = null; uiState.effect = null; uiState.feedback = ''; refreshInterface(); saveGame(); focusNarrative(); return; }
       if (choice.journal) { openJournal('chronicle'); return; }
       chooseOption(String(choice.index + 1));
     }
@@ -4590,7 +4939,7 @@
 
     function getScenePresentation(room) {
       const view = PRESENTATION.scenes[room.id];
-      if (room.id === 'act2_confrontation' && flags.WHAT_IF_CYANWRATH_DEAD) return { heading: 'Le passage gardé dans la grotte', paragraphs: ['Dans cette variante, Cyanwrath est mort lors du duel de Verdure. Il ne peut donc pas attendre les aventuriers dans la grotte. Le Clan poursuit son exploration au-delà de la salle gardée, en direction des œufs.'], chapterNumber: 4 };
+      if (room.id === 'act2_confrontation' && flags.WHAT_IF_CYANWRATH_DEAD) return { ...view, hero: 'Le passage\nvers les œufs', heading: 'Le passage gardé dans la grotte', paragraphs: ['Dans cette variante, Cyanwrath est mort lors du duel de Verdure. Il ne peut donc pas attendre les aventuriers dans la grotte. Le Clan poursuit son exploration au-delà de la salle gardée, en direction des œufs.'], chapterNumber: 4 };
       if (room.id === 'elturel_road' && !flags.eggsStolen) return { heading: room.title, paragraphs: ['Le Clan quitte Verdure après avoir transmis les renseignements trouvés dans la grotte. Un message de Leosin oriente les aventuriers vers Elturel, où ils doivent retrouver le moine et rencontrer Ontharr Frume.', flags.eggsDestroyed ? 'Dans cette variante, les œufs ont été détruits. Aucun dragonnet ne naît pendant le voyage.' : 'Dans cette variante, les œufs sont restés dans la grotte. Le voyage se poursuit sans les dragonnets Boule et Bill.'], chapterNumber: 5 };
       if (room.id === 'campaign_end') {
         const conclusions = {
@@ -4636,6 +4985,12 @@
       (report?.changes ?? []).forEach(change => { const li = document.createElement('li'); li.textContent = change; changes.appendChild(li); });
       document.getElementById('undoButton').hidden = ['title_screen', 'credits'].includes(room.id);
       canvas.setAttribute('aria-label', view?.location ? `Illustration en pixel art: ${view.location}` : `Illustration d’ambiance: ${shownRoom.title}`);
+      canvas.dataset.scene = PRESENTATION.scenes[shownRoom.id]?.art ?? 'keep';
+      const direction = getActionDirection();
+      document.getElementById('actionScene').hidden = !direction || !uiState.preferences.effects;
+      text('actionCaption', direction?.caption ?? '');
+      document.getElementById('actionCanvas').setAttribute('aria-label', direction?.caption ?? 'Illustration du résultat de votre action');
+      soundscape.setScene((view?.art === 'wall' ? 'verdure' : view?.art) ?? 'keep');
       renderChoices(); renderParty(); renderFeedback(); updateStatusStrip(); render();
     }
 
@@ -4878,6 +5233,7 @@
         gameState.timelineApplied = restoredGameState.timelineApplied ?? [];
         gameState.resolvedOptions = restoredGameState.resolvedOptions ?? [];
         gameState.lastReport = restoredGameState.lastReport ?? null;
+        uiState.effect = null;
 
         Object.keys(characters).forEach(id => delete characters[id]);
         Object.assign(characters, safeClone(parsed.characters));
@@ -4955,6 +5311,7 @@
       gameState.timelineApplied = restoredGameState.timelineApplied || [];
       gameState.resolvedOptions = restoredGameState.resolvedOptions || [];
       gameState.lastReport = null;
+      uiState.effect = null;
       gameState.checkpoints = remainingStack;
 
       Object.keys(DATA.characters).forEach(id => delete DATA.characters[id]);
@@ -5115,9 +5472,6 @@
         if (variables.castleAlertLevel >= 3) writeContext(`Alerte du château: ${variables.castleAlertLevel}/5. La fuite vers le portail devient prioritaire.`);
       }
 
-      if (room.id === 'duel_field') {
-        writeContext('Le duel est un rite de domination, pas un simple spectacle.');
-      }
       if (room.id === 'waterdeep_council_hall') {
         writeContext('Chaque mot pèse comme un traité: Waterdeep écoute, juge et se souvient.');
       }
@@ -5478,6 +5832,7 @@
       }
       if (selectionKey === 'return_title') {
         gameState.lastReport = null;
+        uiState.effect = null;
         gameState.roomId = 'title_screen';
         configureTitleOptions();
         return { endedByGameOver: false, handled: true };
@@ -5547,6 +5902,7 @@
     function chooseOption(indexToken) {
       uiState.feedback = '';
       gameState.lastReport = null;
+      uiState.effect = null;
       const index = Number.parseInt(indexToken, 10);
       const options = getAvailableOptions(gameState.roomId);
       if (Number.isNaN(index) || index < 1 || index > options.length) {
@@ -5565,6 +5921,7 @@
       if (!result?.endedByGameOver) describeCurrentRoom();
       if (!menu && !result?.endedByGameOver && (options[index - 1].resolution || options[index - 1].effects?.message || options[index - 1].onSuccess?.message || ACTION_NARRATION[options[index - 1].id])) {
         gameState.lastReport = buildActionReport(options[index - 1], origin, result, before, message);
+        startSceneEffect();
         refreshInterface();
       }
       if (!menu) saveGame();
@@ -5573,7 +5930,9 @@
 
     function buildActionReport(option, roomId, result, before, message) {
       const success = Boolean(result?.success), story = ACTION_NARRATION[option.id];
-      const paragraphs = story?.[success ? 'success' : 'failure'] ?? [message || (success ? 'Le groupe accomplit cette action.' : 'La tentative échoue; le groupe doit choisir une autre approche.')];
+      const actor = characters[option.characterId];
+      const stateStory = success ? null : story?.failureByState?.[actor?.state] ?? (actor?.state === 'dead' ? {title: `${actor.name} ne survit pas à cette tentative`, paragraphs: [`${actor.name} ne parvient pas à mener son action à bien. Déjà blessé, il reçoit des coups auxquels il ne survit pas.`, 'Le groupe doit désormais compter avec sa mort: il ne pourra plus participer aux actions suivantes. Le retour à la décision précédente permet de reprendre avant cette tentative.']} : null);
+      const paragraphs = stateStory?.paragraphs ?? story?.[success ? 'success' : 'failure'] ?? [message || (success ? 'Le groupe accomplit cette action.' : 'La tentative échoue; le groupe doit choisir une autre approche.')];
       const changes = [];
       Object.entries(characters).forEach(([id, c]) => {
         if (before.characters[id]?.state !== c.state) changes.push(`${c.name}: ${PRESENTATION.states[c.state]}.`);
@@ -5592,7 +5951,7 @@
       });
       if (gameState.roomId !== roomId) changes.push(`Suite du parcours: ${rooms[gameState.roomId].title}.`);
       if (!changes.length) changes.push(success ? 'L’action est accomplie. Le groupe peut poursuivre.' : 'L’objectif n’est pas encore atteint. Une autre approche ou un retour au checkpoint reste possible.');
-      return { roomId, title: story?.[success ? 'successTitle' : 'failureTitle'] ?? (success ? 'Le résultat de votre action' : 'La tentative rencontre un obstacle'), paragraphs, changes, failed: !success };
+      return { roomId, optionId: option.id, title: stateStory?.title ?? story?.[success ? 'successTitle' : 'failureTitle'] ?? (success ? 'Le résultat de votre action' : 'La tentative rencontre un obstacle'), paragraphs, changes, failed: !success };
     }
 
     function showInventory() {
@@ -5949,11 +6308,181 @@
       paint(g, ART.hot, 249, 63, 1, 1);
     }
 
+    // Décors fixes: géométrie entière et couleurs prises exclusivement dans ART.
+    function drawTunnel(g) {
+      paint(g, ART.night, 0, 0, 320, 200);
+      pixelPolygon(g, [[0,0],[182,0],[206,47],[183,152],[0,200]], ART.shadow);
+      pixelPolygon(g, [[0,0],[320,0],[291,53],[211,53],[186,23]], ART.ridge);
+      for (let row = 0; row < 8; row++) for (let col = 0; col < 8; col++) {
+        const x = col * 29 - row % 2 * 14, y = row * 21;
+        paint(g, (row + col) % 4 ? ART.ridge : ART.stoneDark, x, y, 27, 18);
+        paint(g, ART.shadow, x + 2, y + 17, 24, 1);
+      }
+      pixelPolygon(g, [[182,154],[195,68],[208,45],[228,33],[255,34],[279,49],[295,72],[304,159]], ART.stoneDark);
+      pixelPolygon(g, [[195,154],[207,72],[218,55],[234,47],[252,48],[271,61],[283,81],[290,154]], ART.stone);
+      pixelPolygon(g, [[206,154],[216,77],[225,63],[237,57],[251,58],[266,69],[274,86],[279,154]], ART.sky);
+      paint(g, ART.haze, 221, 83, 50, 26);
+      pixelPolygon(g, [[215,107],[230,94],[246,100],[260,89],[276,109],[279,151],[207,153]], ART.ridge);
+      pixelPolygon(g, [[209,128],[229,113],[244,115],[253,122],[276,116],[280,155],[207,155]], ART.river);
+      for (let i = 0; i < 7; i++) paint(g, ART.waterLight, 216 + i * 8, 129 + i % 3 * 6, 7, 1);
+      pixelPolygon(g, [[0,200],[186,150],[214,144],[272,146],[320,185],[320,200]], ART.soil);
+      pixelPolygon(g, [[68,200],[195,151],[238,145],[272,154],[223,171],[185,200]], ART.path);
+      pixelPolygon(g, [[120,200],[218,159],[248,151],[271,155],[232,171],[196,200]], ART.pathLight);
+      for (let i = 0; i < 7; i++) pixelLine(g, 83 + i * 17, 199, 213 + i * 5, 151, ART.wallDark);
+      [[192,116,12,5],[197,88,12,5],[207,65,12,5],[221,45,9,6],[240,36,8,9],[260,42,8,8],[277,58,9,6],[287,82,8,6],[292,112,8,6]].forEach(([x,y,w,h]) => paint(g, ART.wallDark, x,y,w,h));
+      pixelLine(g, 200, 148, 214, 75, ART.stoneLight);
+      pixelLine(g, 216, 63, 231, 49, ART.stoneLight);
+      paint(g, ART.timber, 280, 85, 4, 70); paint(g, ART.stoneDark, 273, 81, 3, 71);
+      for (let i = 0; i < 5; i++) pixelLine(g, 275 + i * 2, 87, 282 + i, 151, ART.wallDark);
+      pixelLine(g, 274, 113, 287, 118, ART.stoneLight);
+      pixelPolygon(g, [[0,200],[0,184],[114,169],[175,157],[195,155],[140,177],[94,200]], ART.river);
+      for (let i = 0; i < 14; i++) paint(g, ART.blueDark, 8 + i * 11, 190 - Math.floor(i / 2) * 3, 9 - i % 4, 1);
+      for (let i = 0; i < 23; i++) paint(g, i % 2 ? ART.grass : ART.grassLight, 167 + i * 6, 169 + i * 11 % 31, 3, 1);
+      paint(g, ART.bark, 178, 107, 2, 30); paint(g, ART.ember, 176, 105, 6, 6);
+      pixelPolygon(g, [[176,107],[175,99],[178,102],[180,94],[182,104],[181,109]], ART.flame);
+      paint(g, ART.hot, 178, 102, 2, 6);
+      pixelPolygon(g, [[0,0],[57,0],[38,132],[0,185]], ART.night);
+      paint(g, ART.shadow, 0, 196, 320, 4);
+    }
+
+    function drawTemple(g) {
+      paint(g, ART.night, 0, 0, 320, 200); drawNightSky(g); paint(g, ART.soil, 0, 133, 320, 67);
+      for (let i = 0; i < 5; i++) drawHouse(g, 59 + i * 29, 134, 23, 23 + i % 2 * 7, i);
+      for (let i = 0; i < 6; i++) pixelDisc(g, 93 + i * 8, 83 - i * 9, 7 + i, i % 2 ? ART.smoke : ART.smokeLight);
+      pixelPolygon(g, [[177,109],[220,88],[286,103],[286,151],[175,150]], ART.stoneDark);
+      pixelPolygon(g, [[169,112],[221,77],[285,99],[280,111],[222,91],[177,124]], ART.roofDark);
+      pixelPolygon(g, [[219,79],[285,100],[279,109],[220,91]], ART.roof);
+      paint(g, ART.stone, 219, 87, 65, 66);
+      pixelPolygon(g, [[215,88],[249,56],[288,89]], ART.stoneDark);
+      pixelPolygon(g, [[219,88],[249,61],[282,88]], ART.stone);
+      pixelLine(g, 217, 88, 249, 58, ART.stoneLight);
+      pixelLine(g, 249, 58, 287, 88, ART.stoneLight);
+      drawTower(g, 278, 151, 102, 20);
+      pixelPolygon(g, [[273,49],[287,24],[302,49]], ART.roofDark);
+      pixelLine(g, 278, 48, 287, 29, ART.roofLight);
+      paint(g, ART.shadow, 283, 58, 9, 12); paint(g, ART.accent, 285, 61, 5, 6);
+      for (let row = 0; row < 8; row++) for (let col = 0; col < 6; col++) {
+        paint(g, ART.wallDark, 223 + col * 10 + row % 2 * 4, 94 + row * 7, 8, 1);
+      }
+      pixelPolygon(g, [[236,151],[236,124],[249,111],[263,124],[263,151]], ART.shadow);
+      pixelPolygon(g, [[241,150],[241,126],[249,118],[257,126],[257,150]], ART.window);
+      paint(g, ART.timber, 258, 125, 3, 26);
+      paint(g, ART.shadow, 248, 98, 4, 9); paint(g, ART.blueLight, 249, 99, 2, 4);
+      paint(g, ART.stoneLight, 232, 152, 35, 3); paint(g, ART.stoneDark, 227, 155, 45, 4);
+      paint(g, ART.stone, 221, 159, 56, 4);
+      pixelPolygon(g, [[178,200],[218,164],[275,164],[314,200]], ART.path);
+      for (let i = 0; i < 21; i++) paint(g, ART.wallDark, 188 + i * 6, 172 + i * 9 % 25, 5, 1);
+      paint(g, ART.timber, 189, 151, 30, 4); paint(g, ART.bark, 191, 144, 3, 18);
+      pixelLine(g, 195, 143, 215, 157, ART.wallDark); pixelLine(g, 208, 143, 196, 160, ART.wallDark);
+      for (let i = 0; i < 4; i++) {
+        const x = 182 + i * 13, y = 165 + i % 2 * 6;
+        paint(g, ART.roofDark, x, y, 5, 8); paint(g, ART.ember, x + 1, y - 3, 4, 4);
+        pixelLine(g, x + 4, y + 1, x + 9, y - 4, ART.stoneLight);
+      }
+      paint(g, ART.bark, 283, 145, 2, 19); paint(g, ART.flame, 281, 143, 5, 7);
+      paint(g, ART.hot, 283, 144, 2, 4);
+      drawPine(g, 31, 183, 64); drawPine(g, 72, 174, 40);
+      pixelPolygon(g, [[0,189],[61,175],[119,186],[157,178],[178,200],[0,200]], ART.tree);
+    }
+
+    function drawMill(g) {
+      paint(g, ART.night, 0, 0, 320, 200); drawNightSky(g); paint(g, ART.soil, 0, 130, 320, 70);
+      drawHouse(g, 91, 137, 26, 26, 1); drawHouse(g, 129, 139, 24, 32, 3);
+      for (let i = 0; i < 4; i++) pixelDisc(g, 119 + i * 4, 95 - i * 10, 7 + i * 2, ART.smoke);
+      pixelPolygon(g, [[278,114],[320,111],[320,200],[225,200],[253,169],[272,152]], ART.river);
+      for (let i = 0; i < 25; i++) paint(g, i % 3 ? ART.waterLight : ART.blueDark, 252 + i * 13 % 67, 122 + i * 11 % 77, 5 + i % 7, 1);
+      paint(g, ART.stoneDark, 175, 132, 78, 29);
+      for (let row = 0; row < 4; row++) for (let col = 0; col < 8; col++) paint(g, ART.wallDark, 177 + col * 10 + row % 2 * 4, 134 + row * 7, 8, 1);
+      paint(g, ART.wall, 178, 92, 75, 42);
+      pixelPolygon(g, [[170,94],[210,63],[258,93]], ART.roofDark);
+      pixelPolygon(g, [[211,64],[258,93],[252,97],[210,73]], ART.roof);
+      pixelLine(g, 175, 93, 211, 65, ART.roofLight);
+      paint(g, ART.timber, 179, 94, 4, 42); paint(g, ART.timber, 210, 93, 4, 42); paint(g, ART.timber, 249, 93, 4, 42);
+      paint(g, ART.timber, 179, 115, 73, 3);
+      pixelLine(g, 183, 96, 209, 114, ART.timber); pixelLine(g, 214, 115, 248, 96, ART.timber);
+      paint(g, ART.shadow, 188, 101, 12, 10); paint(g, ART.window, 190, 103, 7, 6);
+      paint(g, ART.timber, 193, 102, 1, 8);
+      paint(g, ART.shadow, 218, 123, 17, 37); paint(g, ART.timber, 220, 126, 13, 34);
+      for (let i = 0; i < 3; i++) paint(g, ART.wallDark, 222 + i * 4, 127, 1, 30);
+      paint(g, ART.timber, 243, 112, 77, 5); paint(g, ART.pathLight, 243, 112, 77, 1);
+      paint(g, ART.bark, 301, 114, 5, 47);
+      pixelDisc(g, 267, 145, 27, ART.timber); pixelDisc(g, 267, 145, 24, ART.wallDark);
+      pixelDisc(g, 267, 145, 20, ART.shadow);
+      [[267,121],[284,128],[291,145],[284,162],[267,169],[250,162],[243,145],[250,128]].forEach(([x,y]) => {
+        pixelLine(g, 267, 145, x,y, ART.pathLight); pixelLine(g, 268, 145, x + 1,y, ART.timber);
+      });
+      pixelDisc(g, 267, 145, 4, ART.stoneDark); paint(g, ART.stoneLight, 266, 143, 2, 3);
+      for (let i = 0; i < 5; i++) {
+        const x = 180 + i * 6, y = 149 - i % 2 * 4;
+        pixelPolygon(g, [[x,y],[x + 2,y - 5],[x + 6,y - 5],[x + 8,y],[x + 8,y + 8],[x,y + 8]], ART.cloak);
+        paint(g, ART.wallDark, x + 2,y - 4, 4,1);
+      }
+      paint(g, ART.bark, 206, 181, 112, 6); paint(g, ART.pathLight, 207, 181, 110, 2);
+      for (let i = 0; i < 13; i++) paint(g, ART.timber, 210 + i * 8, 182, 1, 5);
+      paint(g, ART.bark, 222, 181, 4, 19); paint(g, ART.bark, 305, 181, 4, 19);
+      for (let i = 0; i < 2; i++) {
+        const x = 159 + i * 31, y = 161 + i * 9;
+        paint(g, ART.roofDark, x, y, 5, 11); paint(g, ART.wallDark, x + 1, y - 3, 4, 3);
+        pixelLine(g, x + 5, y + 2, x + 9, y - 6, ART.stoneLight);
+      }
+      paint(g, ART.bark, 166, 144, 2, 15); paint(g, ART.flame, 164, 141, 5, 6); paint(g, ART.hot, 166, 142, 2, 4);
+      drawPine(g, 15, 194, 80); drawPine(g, 54, 186, 60);
+      for (let i = 0; i < 28; i++) paint(g, i % 3 ? ART.grass : ART.grassLight, i * 17 % 234, 168 + i * 7 % 31, 3, 1);
+    }
+
+    function drawDuel(g) {
+      paint(g, ART.sky, 0, 0, 320, 200);
+      [ART.sky, ART.dusk, ART.haze, ART.glow, ART.moon].forEach((c,i) => paint(g, c, 0, i * 24, 320, 24));
+      pixelDisc(g, 228, 95, 16, ART.hot);
+      pixelPolygon(g, [[0,111],[0,92],[38,72],[66,91],[110,75],[145,96],[184,82],[226,99],[260,77],[320,96],[320,130]], ART.far);
+      paint(g, ART.stoneDark, 122, 105, 198, 47); paint(g, ART.stone, 145, 112, 175, 38);
+      for (let i = 0; i < 44; i++) paint(g, ART.stoneDark, 122 + i * 5, 102, 3, 5);
+      for (let row = 0; row < 5; row++) for (let col = 0; col < 18; col++) paint(g, ART.wallDark, 144 + col * 10 + row % 2 * 4, 116 + row * 7, 8, 1);
+      drawTower(g, 255, 154, 83, 20); drawTower(g, 298, 154, 83, 20);
+      pixelPolygon(g, [[274,153],[274,128],[286,116],[298,128],[298,153]], ART.shadow);
+      paint(g, ART.timber, 278, 131, 4, 20); paint(g, ART.timber, 293, 131, 4, 20);
+      paint(g, ART.soil, 0, 153, 320, 47);
+      pixelPolygon(g, [[88,200],[147,161],[230,151],[287,167],[320,200]], ART.path);
+      pixelPolygon(g, [[125,191],[154,174],[221,162],[265,169],[292,190],[260,198],[167,198]], ART.pathLight);
+      for (let i = 0; i < 35; i++) paint(g, i % 2 ? ART.wallDark : ART.path, 128 + i * 19 % 169, 171 + i * 7 % 28, 2 + i % 4, 1);
+      for (let i = 0; i < 5; i++) {
+        const x = 273 + i * 5, y = 147 + i % 2;
+        paint(g, ART.cloak, x,y,3,8); paint(g, ART.wall, x,y - 3,3,3);
+      }
+      [[264,148],[304,149]].forEach(([x,y]) => {
+        paint(g, ART.armor, x,y,4,10); paint(g, ART.shadow, x + 1,y - 3,3,3);
+        pixelLine(g, x - 2,y - 7, x - 2,y + 11, ART.stoneLight);
+      });
+      for (let i = 0; i < 9; i++) {
+        const x = 113 + i * 8;
+        paint(g, i % 2 ? ART.cloak : ART.armor, x,148,4,8); paint(g, ART.wallDark, x,145,3,3);
+      }
+      drawPine(g, 19, 187, 75); drawPine(g, 60, 176, 49);
+      pixelPolygon(g, [[0,195],[54,180],[101,190],[128,200],[0,200]], ART.tree);
+    }
+
+    function drawCaveDuel(g) {
+      paint(g,ART.night,0,0,320,200);
+      pixelPolygon(g,[[0,0],[320,0],[320,165],[280,153],[234,164],[180,151],[130,166],[60,153],[0,165]],ART.ridge);
+      pixelPolygon(g,[[0,0],[320,0],[310,35],[287,28],[272,56],[255,22],[230,37],[213,19],[188,47],[166,20],[138,51],[111,25],[86,40],[54,21],[32,46],[0,30]],ART.shadow);
+      paint(g,ART.stoneDark,158,114,152,43);
+      for(let row=0;row<5;row++) for(let col=0;col<13;col++) paint(g,ART.wallDark,160+col*12+row%2*5,116+row*8,10,1);
+      paint(g,ART.soil,0,158,320,42);
+      pixelPolygon(g,[[128,200],[157,169],[220,157],[285,173],[320,200]],ART.path);
+      for(let i=0;i<30;i++) paint(g,i%2?ART.stoneDark:ART.wallDark,130+(i*19)%185,169+(i*13)%29,3,1);
+      [173,292].forEach(x=>{
+        paint(g,ART.stone, x,111,9,44);pixelPolygon(g,[[x-5,114],[x+3,94],[x+14,113],[x+11,130],[x-2,128]],ART.stoneDark);
+        pixelLine(g,x+6,98,x+10,93,ART.stoneLight);paint(g,ART.shadow,x+6,111,2,2);
+      });
+      [149,277].forEach(x=>{paint(g,ART.bark,x,122,2,21);paint(g,ART.flame,x-2,119,5,7);paint(g,ART.hot,x,121,2,4);});
+      pixelPolygon(g,[[0,0],[41,0],[53,52],[26,117],[58,166],[0,200]],ART.shadow);
+    }
+
     function getSceneArt(key) {
       if (!uiState.art[key]) {
         const layer = document.createElement('canvas'); layer.width = LOGICAL_WIDTH; layer.height = LOGICAL_HEIGHT;
         const g = layer.getContext('2d'); g.imageSmoothingEnabled = false;
-        ({ street: drawStreet, keep: drawKeep }[key] ?? drawVerdure)(g);
+        if(key!=='dragon-flight') ({ street: drawStreet, keep: drawKeep, wall: drawKeep, tunnel: drawTunnel, temple: drawTemple, mill: drawMill, duel: drawDuel, cave_duel: drawCaveDuel }[key] ?? drawVerdure)(g);
         uiState.art[key] = layer;
       }
       return uiState.art[key];
@@ -5987,27 +6516,123 @@
       uiState.portraits[id] = face.toDataURL(); return uiState.portraits[id];
     }
 
-    function render() {
-      const key = PRESENTATION.scenes[gameState.lastReport?.roomId ?? gameState.roomId]?.art ?? 'keep';
-      const phase = uiState.reducedMotion ? 0 : Math.floor(gameState.tick / 14);
-      ctx.imageSmoothingEnabled = false;
-      ctx.drawImage(getSceneArt(key), 0, 0);
-      if (key === 'verdure') drawDragon(ctx, phase);
-      if (key !== 'keep') {
-        const sources = key === 'street' ? [[31,95],[284,95],[66,113]] : [[141,102],[203,115],[224,95],[294,111],[180,125]];
-        sources.forEach(([x,y], i) => {
-          const height = 6 + [0,2,1,3,1,2][(phase + i) % 6];
-          pixelPolygon(ctx, [[x-3,y+4],[x-2,y-3],[x,y],[x+2,y-height],[x+4,y-1],[x+5,y+4]], ART.flame);
-          paint(ctx, ART.hot, x, y-2, 2, 6);
-        });
-        for (let i = 0; i < 17; i++) paint(ctx, i % 3 ? ART.ember : ART.hot, 122 + (i * 23) % 190, 121 - (i * 13 + phase) % 60, 1, 1);
+    function getActionDirection() {
+      const report = gameState.lastReport;
+      if (!Object.hasOwn(SCENE_DIRECTIONS.actions,report?.optionId)) return null;
+      const direction = SCENE_DIRECTIONS.actions[report.optionId];
+      if (!direction) return null;
+      const actorState=characters[direction.actor]?.state;
+      if(direction.actor && !['active','injured'].includes(actorState) && !(report.failed && ['down','dead'].includes(actorState))) return null;
+      if (!report.failed) return direction;
+      return { ...direction, kind: direction.kind === 'duel' ? 'duel' : 'retreat', fallen: 'hero', caption: 'La tentative échoue; les conséquences sont détaillées ci-dessous.' };
+    }
+
+    function startSceneEffect() {
+      const direction = getActionDirection();
+      if (!direction || !uiState.preferences.effects) { uiState.effect = null; return; }
+      uiState.effect = { optionId: gameState.lastReport.optionId, startedTick: gameState.tick };
+      const sound = { advance: 'retreat', duel: 'clash' }[direction.kind] ?? direction.kind;
+      const effect = uiState.effect;
+      if (uiState.preferences.sound) activateSound().then(enabled => { if (enabled && uiState.effect === effect) soundscape.play(sound); });
+      render(); scheduleAnimation();
+    }
+
+    function effectProgress() {
+      if (uiState.reducedMotion || !uiState.preferences.effects || !uiState.effect || uiState.effect.optionId !== gameState.lastReport?.optionId) return 1;
+      return Math.max(0, Math.min(1,(gameState.tick - uiState.effect.startedTick) / 132));
+    }
+
+    function drawSmallPerson(g, id, x, y, fallen = false) {
+      const orc = ['drekthar','sislay'].includes(id), skin = orc ? ART.grassLight : ART.pathLight;
+      if (fallen) { paint(g, ART.armor, x, y - 4, 12, 4); paint(g, skin, x + 12, y - 4, 4, 4); return; }
+      const height = id === 'bjolnir' ? 14 : id === 'ellyjobell' ? 12 : 18;
+      paint(g, id === 'darrin' || id === 'ellyjobell' ? ART.cloak : ART.armor, x, y - height + 5, 7, height - 5);
+      paint(g, skin, x + 1,y - height,5,5); paint(g, ART.shadow,x + 4,y - height + 2,1,1);
+      paint(g, ART.shadow,x,y,2,4); paint(g, ART.shadow,x + 5,y,2,4);
+      if (id === 'bjolnir') { paint(g, ART.ember,x + 1,y - height + 4,5,4); pixelLine(g,x + 8,y - 9,x + 12,y - 1,ART.timber); paint(g,ART.stoneLight,x + 10,y - 3,6,3); }
+      if (orc) { paint(g,ART.moon,x + 1,y - height + 4,1,2); paint(g,ART.moon,x + 5,y - height + 4,1,2); }
+    }
+
+    function drawDuelActors(g, direction, progress) {
+      const finished = direction?.kind === 'duel' && progress > .55;
+      const fallen = finished ? direction.fallen : null;
+      if (['active','injured'].includes(characters.drekthar.state) || direction?.actor === 'drekthar') drawSmallPerson(g,'drekthar',190,168,fallen === 'hero' || characters.drekthar.state === 'dead');
+      if (fallen === 'enemy') { paint(g,ART.blueDark,238,169,19,5); paint(g,ART.blueLight,255,168,5,5); return; }
+      pixelPolygon(g,[[242,140],[247,131],[252,133],[255,141],[252,148],[245,149]],ART.blueDark);
+      paint(g,ART.blueLight,249,136,3,2); paint(g,ART.armor,241,147,14,17);
+      paint(g,ART.shadow,241,162,4,12); paint(g,ART.shadow,253,162,4,12);
+      pixelLine(g,242,151,231,147,ART.armor); pixelLine(g,232,147,224,127,ART.stoneLight);
+    }
+
+    function drawSceneAction(g, direction, progress) {
+      if (!direction) return;
+      const {kind,actor} = direction, step = Math.floor(progress * 20), moving = progress < 1;
+      if (actor && kind !== 'duel') {
+        const x = ['fog','door'].includes(kind) ? 225 : 176 + Math.min(12,step);
+        drawSmallPerson(g,actor,x,169,['down','dead'].includes(characters[actor]?.state));
+      }
+      if (kind === 'fog') {
+        for (let i=0;i<4;i++) drawSmallPerson(g,'civilian',245-i*12-Math.min(42,step*2),160+i%2*3);
+        for (let band=0;band<4;band++) for (let col=0;col<49;col++) {
+          const x=126+col*4,y=140+band*10+[2,1,0,0,1,2,3,3][(col+step+band*3)%8];
+          paint(g,band%2?ART.blueLight:ART.waterLight,x,y,4,5);
+          if(col%2) paint(g,ART.blueLight,x,y-1,2,1);
+        }
+      } else if (kind === 'hammer' && moving) {
+        const radius=7+step*3;
+        for(let i=0;i<14;i++) { const angle=i*Math.PI/7; paint(g,ART.pathLight,188+Math.cos(angle)*radius,173+Math.sin(angle)*radius*.3,3,1); }
+        if(progress>.35) for(let i=0;i<5;i++) pixelLine(g,218+i*9,172,222+i*9,173,ART.stoneLight);
+      } else if (kind === 'magic' && moving) {
+        for(let i=0;i<14;i++){const x=191+((i*13+step*4)%100),y=124+((i*17)%47);paint(g,i%3?ART.blueLight:ART.moon,x,y,2,2);}
+      } else if (['clash','duel','retreat'].includes(kind) && moving) {
+        for(let i=0;i<12;i++) paint(g,ART.pathLight,205+(i*13+step)%64,164+(i*7)%12,2,1);
+      } else if (kind === 'door') {
+        for(let i=0;i<6;i++) paint(g,ART.stoneLight,271+Math.min(9,step)+i,90,1,62);
       }
     }
 
+    function render() {
+      const key = PRESENTATION.scenes[gameState.lastReport?.roomId ?? gameState.roomId]?.art ?? 'keep';
+      const phase = uiState.reducedMotion ? 0 : Math.floor(Math.max(0,gameState.tick) / 14);
+      const direction=getActionDirection(), progress=effectProgress();
+      ctx.imageSmoothingEnabled=false; ctx.drawImage(getSceneArt(key),0,0);
+      if (SCENE_DIRECTIONS.scenes[key]?.dragon) {
+        if (direction?.kind === 'dragon') {
+          const layer=getSceneArt('dragon-flight'), g=layer.getContext('2d');
+          g.clearRect(0,0,320,200); drawDragon(g,phase); ctx.drawImage(layer,Math.round(progress*155),-Math.round(progress*20));
+        } else drawDragon(ctx,phase);
+      }
+      (SCENE_DIRECTIONS.scenes[key]?.fires ?? []).forEach(([x,y],i)=>{
+        const height=6+[0,2,1,3,1,2][(phase+i)%6];
+        pixelPolygon(ctx,[[x-3,y+4],[x-2,y-3],[x,y],[x+2,y-height],[x+4,y-1],[x+5,y+4]],ART.flame);
+        paint(ctx,ART.hot,x,y-2,2,6);
+      });
+      if (key==='duel' || (key==='cave_duel' && (!flags.cyanwrathDead || direction?.kind==='duel'))) {
+        drawDuelActors(ctx,direction,progress);
+        if(key==='cave_duel') [151,276].forEach(x=>drawSmallPerson(ctx,'berserker',x,174,direction?.kind==='duel' && progress>.55));
+      }
+      if (key==='temple' && (!gameState.lastReport || gameState.lastReport.failed)) for(let i=0;i<3;i++) {
+        paint(ctx,ART.wall,243+i*4,135+i%2,2,2);paint(ctx,ART.cloak,242+i*4,137+i%2,4,9);
+      }
+      if (!direction || !uiState.preferences.effects) return;
+      if (!uiState.actionFrame) { uiState.actionFrame=document.createElement('canvas'); uiState.actionFrame.width=320;uiState.actionFrame.height=200; }
+      const frame=uiState.actionFrame,g=frame.getContext('2d');g.imageSmoothingEnabled=false;
+      g.drawImage(canvas,0,0);drawSceneAction(g,direction,progress);
+      const action=document.getElementById('actionCanvas').getContext('2d');action.imageSmoothingEnabled=false;
+      const shake=!uiState.reducedMotion && progress<.22 && ['hammer','clash','duel','dragon'].includes(direction.kind) ? [0,1,0,-1,0,1,0,-1][Math.floor(progress*132/3)%8] : 0;
+      action.drawImage(frame,127+shake,68,192,120,0,0,320,200);
+    }
+
+    function scheduleAnimation() {
+      if (uiState.framePending || uiState.reducedMotion) return;
+      uiState.framePending=true;requestAnimationFrame(animationLoop);
+    }
+
     function animationLoop() {
-      gameState.tick += 1;
-      if (gameState.tick % 7 === 0) render();
-      if (!uiState.reducedMotion) requestAnimationFrame(animationLoop);
+      uiState.framePending=false;
+      if (!uiState.reducedMotion) gameState.tick+=1;
+      if (gameState.tick%3===0 || uiState.reducedMotion) render();
+      scheduleAnimation();
     }
 
     function dispatchCommand(command) {
@@ -6017,10 +6642,236 @@
       refreshInterface();
     }
 
+    function syncAmbianceControls() {
+      document.getElementById('effectsSetting').checked=uiState.preferences.effects;
+      document.getElementById('motionSetting').value=uiState.preferences.motion;
+      document.getElementById('soundSetting').checked=uiState.preferences.sound;
+      const volume=document.getElementById('volumeSetting');volume.value=Math.round(uiState.preferences.volume*100);
+      volume.setAttribute('aria-valuetext',`${volume.value} %`);
+      document.getElementById('motionNotice').textContent=uiState.systemReducedMotion ? 'Votre appareil demande des mouvements réduits: les illustrations restent fixes.' : 'Les secousses restent limitées à l’illustration. Le texte et les commandes restent immobiles.';
+      if(uiState.preferences.sound && !uiState.audioReady) document.getElementById('soundNotice').textContent='Le son reprendra à votre prochaine action.';
+    }
+
+    function storePreferences() {
+      try { localStorage.setItem(PREFERENCES_KEY,JSON.stringify(uiState.preferences)); }
+      catch { document.getElementById('soundNotice').textContent='Ces réglages sont appliqués pour cette session.'; }
+    }
+
+    async function activateSound() {
+      const request=(uiState.soundRequest ?? 0)+1;uiState.soundRequest=request;
+      const wanted=uiState.preferences.sound;
+      const enabled=await soundscape.enable(wanted,uiState.preferences.volume);
+      if(request!==uiState.soundRequest) return false;
+      uiState.audioReady=wanted && enabled;
+      if(wanted && !enabled) { uiState.preferences.sound=false;storePreferences();syncAmbianceControls(); }
+      document.getElementById('soundNotice').textContent=wanted && !enabled ? 'Le navigateur n’a pas pu activer le son. La lecture reste disponible.' : uiState.audioReady ? 'Ambiance sonore activée. Vous pouvez couper le son à tout moment.' : 'Le son est désactivé. Le récit reste entièrement compréhensible sans lui.';
+      return uiState.audioReady;
+    }
+
+    function applyAmbiancePreferences() {
+      uiState.reducedMotion=uiState.systemReducedMotion || uiState.preferences.motion==='reduced';
+      uiState.effect=null;storePreferences();syncAmbianceControls();refreshInterface();scheduleAnimation();
+    }
+
+    // Ambiances et ponctuations synthétiques: aucune voix enregistrée, aucun réseau.
+    // Appeler enable(true) depuis un geste joueur; la construction reste silencieuse.
+    function createSoundscape() {
+      const state = { context: null, master: null, noise: null, ambient: null,
+        voices: new Set(), enabled: false, volume: .25, scene: 'verdure', request: 0, suspending: null };
+      const scenes = {
+        verdure: { cutoff: 550, wind: .16, water: 0 },
+        street: { cutoff: 700, wind: .14, water: 0 },
+        keep: { cutoff: 220, wind: .055, water: 0 },
+        tunnel: { cutoff: 250, wind: .075, water: .035 },
+        temple: { cutoff: 620, wind: .12, water: 0 },
+        mill: { cutoff: 800, wind: .13, water: .04 },
+        duel: { cutoff: 330, wind: .075, water: 0 }
+      };
+      const effects = {
+        hammer: [['tone','triangle',110,46,.42,.38], ['tone','sine',360,190,.16,.06], ['noise','lowpass',500,180,.18,.16]],
+        fog: [['noise','lowpass',750,300,1.1,.12]],
+        magic: [['tone','sine',200,660,.65,.11], ['tone','triangle',300,210,.8,.035]],
+        clash: [['tone','triangle',190,82,.28,.25], ['tone','sine',660,440,.09,.06], ['noise','lowpass',1800,600,.18,.09]],
+        dragon: [['noise','bandpass',170,70,1.1,.2], ['tone','triangle',66,36,1.1,.17]],
+        door: [['tone','triangle',85,50,.2,.2], ['noise','lowpass',400,160,.16,.1]],
+        retreat: [['noise','lowpass',480,180,.6,.1]]
+      };
+
+      function clampVolume(value) {
+        const n = Number(value);
+        return Number.isFinite(n) ? Math.max(0, Math.min(1, n)) : state.volume;
+      }
+
+      function makeNoise(context) {
+        const buffer = context.createBuffer(1, Math.ceil(context.sampleRate * 2), context.sampleRate);
+        const samples = buffer.getChannelData(0);
+        let seed = 15170423;
+        for (let i = 0; i < samples.length; i++) {
+          seed = (Math.imul(seed, 1664525) + 1013904223) >>> 0;
+          samples[i] = (seed / 2147483648 - 1) * .7;
+        }
+        return buffer;
+      }
+
+      function release(entry) {
+        state.voices.delete(entry);
+        entry.nodes.forEach(node => { try { node.disconnect(); } catch {} });
+      }
+
+      function stop(entry) {
+        if (!entry) return;
+        try { entry.source.stop(); } catch {}
+        release(entry);
+      }
+
+      function stopAll() {
+        [...state.voices].forEach(stop);
+        (state.ambient?.entries ?? []).forEach(stop);
+        state.ambient = null;
+      }
+
+      function makeNoiseBand(type, cutoff, peak, loop = false) {
+        const context = state.context, source = context.createBufferSource();
+        const filter = context.createBiquadFilter(), gain = context.createGain();
+        source.buffer = state.noise; source.loop = loop;
+        filter.type = type; filter.frequency.value = cutoff; filter.Q.value = .45;
+        gain.gain.value = peak;
+        source.connect(filter); filter.connect(gain); gain.connect(state.master);
+        const entry = { source, filter, gain, nodes: [source, filter, gain] };
+        source.onended = () => release(entry);
+        return entry;
+      }
+
+      function updateAmbient() {
+        if (!state.enabled || !state.context || state.context.state !== 'running') return;
+        const scene = scenes[state.scene] ?? scenes.keep, now = state.context.currentTime;
+        if (!state.ambient) {
+          const wind = makeNoiseBand('lowpass', scene.cutoff, 0, true);
+          const water = makeNoiseBand('bandpass', 1450, 0, true);
+          water.filter.Q.value = 1.2;
+          state.ambient = { wind, water, entries: [wind, water] };
+          wind.source.start(); water.source.start(0, .71);
+        }
+        const { wind, water } = state.ambient;
+        wind.filter.frequency.setTargetAtTime(scene.cutoff, now, .25);
+        wind.gain.gain.setTargetAtTime(scene.wind, now, .4);
+        water.gain.gain.setTargetAtTime(scene.water, now, .4);
+      }
+
+      function setVolume(value) {
+        state.volume = clampVolume(value);
+        if (state.master && state.context) {
+          const param = state.master.gain, now = state.context.currentTime;
+          param.cancelScheduledValues(now);
+          param.setTargetAtTime(state.enabled ? state.volume * .3 : 0, now, .025);
+        }
+      }
+
+      async function enable(enabled, volume = state.volume) {
+        const request = ++state.request;
+        state.volume = clampVolume(volume);
+        if (!enabled) {
+          state.enabled = false;
+          if (state.master && state.context) {
+            const now = state.context.currentTime;
+            state.master.gain.cancelScheduledValues(now);
+            state.master.gain.setValueAtTime(0, now);
+          }
+          stopAll();
+          try {
+            if (state.context?.state === 'running') {
+              const pending = state.context.suspend().catch(() => {});
+              state.suspending = pending; await pending;
+              if (state.suspending === pending) state.suspending = null;
+            }
+          } catch {}
+          return true;
+        }
+        try {
+          if (state.suspending) await state.suspending;
+          if (request !== state.request) return false;
+          if (!state.context || state.context.state === 'closed') {
+            const Constructor = typeof window === 'undefined' ? null : window.AudioContext || window.webkitAudioContext;
+            if (!Constructor) return false;
+            state.context = new Constructor();
+            state.master = state.context.createGain();
+            state.master.gain.value = 0;
+            state.master.connect(state.context.destination);
+            state.noise = makeNoise(state.context);
+          }
+          if (state.context.state !== 'running') await state.context.resume();
+          if (request !== state.request || state.context.state !== 'running') return false;
+          state.enabled = true;
+          setVolume(state.volume); updateAmbient();
+          return true;
+        } catch {
+          if (request === state.request) {
+            state.enabled = false; stopAll();
+          }
+          return false;
+        }
+      }
+
+      function pulse(spec) {
+        const [kind, type, from, to, duration, peak] = spec;
+        const context = state.context, now = context.currentTime;
+        let entry;
+        if (kind === 'noise') {
+          entry = makeNoiseBand(type, from, 0);
+          entry.filter.frequency.exponentialRampToValueAtTime(to, now + duration);
+        } else {
+          const source = context.createOscillator(), gain = context.createGain();
+          source.type = type; source.frequency.setValueAtTime(from, now);
+          source.frequency.exponentialRampToValueAtTime(to, now + duration);
+          source.connect(gain); gain.connect(state.master);
+          entry = { source, gain, nodes: [source, gain] };
+          source.onended = () => release(entry);
+        }
+        const envelope = entry.gain.gain;
+        envelope.setValueAtTime(0, now);
+        envelope.linearRampToValueAtTime(peak, now + .025);
+        envelope.exponentialRampToValueAtTime(.0001, now + duration);
+        state.voices.add(entry);
+        entry.source.start(now); entry.source.stop(now + duration + .03);
+      }
+
+      function play(kind) {
+        if (!state.enabled || state.context?.state !== 'running' || !effects[kind]) return false;
+        while (state.voices.size > 8) stop(state.voices.values().next().value);
+        effects[kind].forEach(pulse);
+        return true;
+      }
+
+      function setScene(scene) {
+        state.scene = Object.hasOwn(scenes, scene) ? scene : 'keep';
+        updateAmbient();
+      }
+
+      async function dispose() {
+        const context = state.context;
+        ++state.request; state.enabled = false; stopAll();
+        state.context = null; state.master = null; state.noise = null;
+        try { if (context && context.state !== 'closed') await context.close(); } catch {}
+      }
+
+      return { enable, setVolume, setScene, play, pause: () => enable(false), dispose };
+    }
+
+    const soundscape = createSoundscape();
+
     function bindInterface() {
       const onClick = (id, handler) => document.getElementById(id).addEventListener('click', handler);
       onClick('journalButton', () => openJournal('history'));
       onClick('companyButton', openCompany);
+      onClick('ambianceButton',()=>{syncAmbianceControls();showDialog('ambianceDialog');});
+      onClick('replayActionButton',()=>{startSceneEffect();document.getElementById('actionScene').scrollIntoView?.({block:'center',behavior:'auto'});});
+      document.getElementById('effectsSetting').addEventListener('change',event=>{uiState.preferences.effects=event.target.checked;applyAmbiancePreferences();});
+      document.getElementById('motionSetting').addEventListener('change',event=>{uiState.preferences.motion=event.target.value==='reduced'?'reduced':'auto';applyAmbiancePreferences();});
+      document.getElementById('soundSetting').addEventListener('change',event=>{uiState.preferences.sound=event.target.checked;storePreferences();activateSound();});
+      document.getElementById('volumeSetting').addEventListener('input',event=>{uiState.preferences.volume=Math.max(0,Math.min(1,Number(event.target.value)/100));soundscape.setVolume(uiState.preferences.volume);storePreferences();syncAmbianceControls();});
+      document.addEventListener('pointerdown',()=>{if(uiState.preferences.sound && !uiState.audioReady) activateSound();});
+      document.addEventListener('visibilitychange',()=>{if(document.hidden){uiState.soundRequest=(uiState.soundRequest ?? 0)+1;uiState.audioReady=false;soundscape.pause();}});
+      window.matchMedia?.('(prefers-reduced-motion: reduce)').addEventListener?.('change',event=>{uiState.systemReducedMotion=event.matches;uiState.reducedMotion=event.matches || uiState.preferences.motion==='reduced';uiState.effect=null;syncAmbianceControls();render();scheduleAnimation();});
       onClick('adventureButton', () => document.getElementById('context').scrollIntoView({ behavior: uiState.reducedMotion ? 'instant' : 'smooth' }));
       onClick('chronicleTab', () => openJournal('chronicle'));
       onClick('historyTab', () => openJournal('history'));
@@ -6085,7 +6936,8 @@
       uiState.feedback = '';
     }
     describeCurrentRoom();
-    animationLoop();
+    syncAmbianceControls();
+    scheduleAnimation();
   </script>
 
   <!--
@@ -6099,6 +6951,10 @@
   [ ] Un échec au temple ou au moulin ne valide pas le sauvetage.
   [ ] Sans checkpoint, un échec laisse accéder à l'accueil.
   [ ] Les sept fiches restent accessibles sur mobile, sans défilement horizontal.
+  [ ] Revoir l'action ne change ni états, ni objectifs, ni checkpoints, ni sauvegarde.
+  [ ] Brouillard, combat et repli correspondent au résultat réellement obtenu.
+  [ ] Le son attend une activation volontaire; muet coupe aussi les effets en cours.
+  [ ] Les réglages d'ambiance persistent sans modifier la progression.
   [ ] Les choix et les touches 1–9 correspondent, y compris « choose 1 ».
   [ ] Le clavier n'active aucun choix derrière une fenêtre ou pendant une saisie.
   [ ] Sur mobile 320–390 px, aucun débordement horizontal; cartes faciles à toucher.
@@ -6108,7 +6964,7 @@
   [ ] Les options de groupe respectent l'état des personnages.
   [ ] triggerGameOver(...) restaure le dernier checkpoint (go dragon + option Lennithon).
   [ ] Aucun Math.random dans la boucle d'animation.
-  [ ] Pas de tremblement du monde; seulement un scintillement déterministe local.
+  [ ] Les secousses restent dans l'illustration; texte et choix ne bougent pas.
   [ ] imageSmoothingEnabled reste désactivé.
   -->
 </body>
