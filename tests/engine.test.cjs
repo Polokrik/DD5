@@ -8,17 +8,21 @@ const source = html.match(/<script>([\s\S]*?)<\/script>/)[1];
 
 function boot(saved = null) {
   const storage = new Map(saved ? [['clanDestain.save.v1', saved]] : []);
-  const context = { children: [], appendChild(line) { this.children.push(line.textContent); } };
-  const elements = {
-    context,
-    statusStrip: {},
-    commandInput: { value: '', addEventListener() {} },
-    gameCanvas: { getContext: () => ({ fillRect() {}, fillText() {} }) }
-  };
+  function element() {
+    return { children: [], dataset: {}, value: '', classList: { toggle() {} },
+      appendChild(child) { this.children.push(child); }, append(...children) { this.children.push(...children); },
+      replaceChildren(...children) { this.children = children; }, addEventListener() {}, setAttribute() {},
+      getContext: () => ({ fillRect() {}, fillText() {}, drawImage() {} }), toDataURL: () => 'data:image/png;base64,',
+      showModal() { this.open = true; }, close() { this.open = false; }
+    };
+  }
+  const elements = Object.fromEntries([...html.matchAll(/id="([^"]+)"/g)].map(([, id]) => [id, element()]));
+  const lines = [];
+  elements.eventLog.appendChild = line => lines.push(line.textContent);
   const sandbox = vm.createContext({
     URLSearchParams, structuredClone, console,
     window: { location: { search: '' } }, navigator: {},
-    document: { getElementById: id => elements[id], createElement: () => ({}) },
+    document: { getElementById: id => elements[id], createElement: element, querySelectorAll: () => [], addEventListener() {} },
     localStorage: { getItem: k => storage.get(k) ?? null, setItem: (k, v) => storage.set(k, v), removeItem: k => storage.delete(k) },
     requestAnimationFrame() {}
   });
@@ -26,7 +30,7 @@ function boot(saved = null) {
   return {
     run: code => vm.runInContext(code, sandbox),
     json: code => JSON.parse(vm.runInContext(`JSON.stringify(${code})`, sandbox)),
-    lines: context.children, storage
+    lines, storage
   };
 }
 
@@ -309,4 +313,26 @@ test('une action réussie ne permet pas de fabriquer du soutien à l’infini et
   assert.equal(g.run('getAvailableOptions("northern_road").some(o => o.id === "caravane-marchands")'), false);
   g.run('undoToCheckpoint()');
   assert.equal(g.run('getAvailableOptions("northern_road").some(o => o.id === "caravane-marchands")'), true);
+});
+
+test('les numéros affichés et les commandes choose déclenchent le même choix', () => {
+  const g = boot();
+  g.run('handleCommand("2")');
+  assert.equal(g.run('gameState.roomId'), 'title_screen');
+  assert.equal(g.storage.has('clanDestain.save.v1'), false);
+  g.run('handleCommand("choose 3")');
+  assert.equal(g.run('gameState.roomId'), 'title_screen');
+  assert.equal(g.run('uiState.chapter'), 0);
+  g.run('handleCommand("1"); handleCommand("choose 1")');
+  assert.equal(g.run('gameState.roomId'), 'swift_street');
+});
+
+test('la chronique embarquée reste fidèle aux 18 chapitres du document', () => {
+  const md = fs.readFileSync(require('node:path').join(__dirname, '../docs/CHRONIQUE_CAMPAGNE.md'), 'utf8');
+  const expected = md.split(/^## Chapitre /m).slice(1).map(part => {
+    const block = part.split('\n## Notes de rédaction')[0].trim(), line = block.indexOf('\n');
+    return { title: block.slice(0, line).trim(), paragraphs: block.slice(line).trim().split(/\n\s*\n/).map(s => s.replace(/\n/g, ' ').replace(/^\*|\*$/g, '')) };
+  });
+  assert.equal(expected.length, 18);
+  assert.deepEqual(boot().json('CHRONICLE_CHAPTERS'), expected);
 });

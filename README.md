@@ -9,7 +9,13 @@ Depuis la racine du dépôt, démarrer un serveur statique:
 python3 -m http.server 8000 --bind 127.0.0.1
 ```
 
-Commandes du jeu: `help`, `choose <numéro>`, `look`, `n/s/e/w`, `party`,
+L'interface propose des choix cliquables, des raccourcis numériques, les portraits
+de la compagnie et un lecteur intégré des 18 chapitres de la chronique.
+La première tranche illustrée couvre le titre, l'approche de Verdure, la famille
+de Linan et l'arrivée à la forteresse. Voir les [détails de l'interface](docs/INTERFACE.md).
+
+Le panneau « Commandes clavier et outils » reste disponible. Commandes:
+`1`, `2`, `3`, `help`, `choose <numéro>`, `look`, `n/s/e/w`, `party`,
 `sheet`, `save`, `load`, `undo`, `export`, `import <json>`.
 La sauvegarde utilise le stockage local du navigateur. Les commandes de réglage
 des variables nécessitent `debug on` et servent uniquement au diagnostic.
@@ -29,7 +35,8 @@ node tools/verify_paris.cjs
 
 Les tests chargent le script réel du HTML. Ils vérifient les références, toutes
 les options dans deux configurations de score, les parcours des cinq actes,
-les trois plans finaux, les sauvegardes, les états et les checkpoints. La CI
+les trois plans finaux, les sauvegardes, les états, les checkpoints, les numéros
+de choix et la fidélité du texte embarqué aux 18 chapitres du document. La CI
 exécute la suite du moteur à chaque push et pull request.
 
 Un test supplémentaire utilise un vrai navigateur. Playwright 1.62.1 et Chromium
@@ -38,6 +45,11 @@ ont été utilisés dans l'environnement cloud. Ces outils sont réservés aux t
 ```sh
 DD5_CHROMIUM_PATH=/usr/bin/chromium node tests/browser-smoke.cjs
 ```
+
+Ce test vérifie aussi les clics, les fenêtres du journal et du groupe, l'import,
+les écrans de 320 à 1440 pixels, les mouvements réduits et la palette du canvas.
+Les captures sont écrites dans `/tmp/dd5-ui-title.png`, `/tmp/dd5-ui-verdure.png`,
+`/tmp/dd5-ui-linan.png` et `/tmp/dd5-ui-mobile.png`.
 
 Si Playwright n'est pas disponible, l'installer dans un répertoire d'outils
 extérieur au projet et rendre son module accessible à Node, par exemple:

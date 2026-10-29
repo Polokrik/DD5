@@ -1,5 +1,9 @@
 # Audit et remise en état de DD5
 
+Ce rapport décrit la première remise en état du moteur. La tranche d'interface
+réalisée ensuite est documentée dans [INTERFACE.md](INTERFACE.md); les références
+au squelette graphique ci-dessous décrivent l'état antérieur à cette tranche.
+
 État de référence: `e949a95cbbe93373560888ae93366a98c65d6c35`, qui était la tête
 distante de `main` lors de la vérification. Travail sur
 `repair/dd5-audit-campaign`; sauvegarde locale
