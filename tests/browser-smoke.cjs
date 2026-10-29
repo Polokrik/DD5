@@ -35,7 +35,8 @@ const html = fs.readFileSync(require('node:path').join(__dirname, '../index.html
     assert.equal(await page.locator('#journalDialog').evaluate(e => e.open), true);
     assert.equal(await page.locator('#chapterList button').count(), 18);
     await page.locator('#chapterList button').last().click();
-    assert.match(await page.locator('#chapterReader h3').innerText(), /Thay/);
+    assert.match(await page.locator('#chapterReader h3').innerText(), /L’histoire reste à écrire/);
+    assert.doesNotMatch(await page.locator('#chapterReader').innerText(), /session|juin|MJ|pas encore été joués/);
     await page.keyboard.press('1');
     assert.equal(await page.evaluate(() => gameState.roomId), 'title_screen');
     await page.keyboard.press('Escape');

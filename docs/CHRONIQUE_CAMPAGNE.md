@@ -1,10 +1,7 @@
 # Clan d’Estain — Chronique de la campagne
 
-*Rédaction fondée sur le journal de la campagne et les précisions du MJ.
-Cette version couvre les événements consignés, de l’arrivée à Verdure jusqu’à
-l’invitation à Thay, lors de la session du 12 juin 2025. Le MJ confirme que la
-campagne en est toujours à cette étape. Les fins simulées du jeu n’appartiennent
-pas à cette chronique.*
+*Chronique du Clan d’Estain, fondée sur les récits de campagne. Les chemins
+« What If » et les fins simulées du jeu restent des récits alternatifs.*
 
 ## Chapitre 1 — Verdure brûle
 
@@ -316,19 +313,11 @@ Melandrach remercie le Clan. Les forces qu’il mobilisait pour protéger ses te
 
 L’alliance progresse, mais chaque engagement demeure lié aux décisions des autres. Les victoires dans les forêts et les cavernes doivent encore trouver leur prolongement autour des tables du Conseil.
 
-## Chapitre 18 — L’invitation de Thay
+## Chapitre 18 — L’histoire reste à écrire
 
-Lors de la session du 12 juin 2025, Leosin vient chercher le Clan pour une nouvelle réunion. Le Conseil a reçu un message de Thay. Les mages rouges souhaitent négocier.
+Les pages suivantes sont encore blanches.
 
-Une faction menée par Rath Modar a rejoint les forces draconiques. D’autres, au service du pouvoir de Thay, s’inquiètent des conséquences du retour de Tiamat et de ce qui pourrait se tenir au-delà. Une représentante propose une audience sur le plateau de Thay.
-
-Lady Silverhand demande aux aventuriers de représenter le Conseil, ou d’accompagner ses envoyés. L’enthousiasme du Clan demeure mesuré. Une autre révélation rend la demande plus personnelle: Islabus Gloomward, le maître de Darrin, est devenu un mage rouge.
-
-Depuis Verdure, les routes ont conduit les aventuriers des camps de pillards aux châteaux volants, des tombeaux aux glaces du nord. Ils ont vu des peuples se soulever, des dragons tomber et des alliés exiger le prix de blessures anciennes. À présent, il leur faut envisager de porter la parole du Conseil jusque sur les terres de Thay.
-
-*La campagne est toujours en cours. Elle en est à cette invitation: le voyage à
-Thay et la suite n’ont pas encore été joués. La chronique reprendra lorsque le
-Clan d’Estain poursuivra l’aventure.*
+Le voyage du Clan d’Estain continue. La suite de son histoire reste à écrire.
 
 ## Notes de rédaction et références pour le MJ
 
@@ -349,7 +338,7 @@ phrases et les descriptions de transition sont une rédaction, pas de nouveaux
 | 12–13 | `Rise of Tiamat`, lignes 96–157 |
 | 14 | `Rise of Tiamat`, lignes 159–182 |
 | 15–17 | `Rise of Tiamat`, lignes 183–262 |
-| 18 | `Rise of Tiamat`, lignes 264–274 |
+| 18 | Ouverture littéraire, sans nouvel événement. L’invitation à Thay reste documentée dans le référentiel (`Rise of Tiamat`, lignes 264–274). |
 
 Les fiches PDF précisent les identités et classes. Les variantes orthographiques
 du journal sont harmonisées pour la lisibilité, sans fusionner automatiquement
