@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Clan d’Estain — Squelette moteur</title>
+  <title>Clan d’Estain — Chronique interactive</title>
   <style>
     :root { color-scheme: dark; }
     body { margin: 0; background: #111; color: #ddd; font-family: monospace; display: grid; place-items: center; min-height: 100vh; }
@@ -41,55 +41,32 @@
     const PULSE_LUT = [0, 0, 1, 1, 2, 1, 1, 0, 0, -1, -1, -2, -1, -1, 0, 0];
     const URL_PARAMS = new URLSearchParams(window.location.search);
 
-    const DATA = {
-      rosterTimeline: [
+    const ROSTER_TIMELINE = [
         {
-          trigger: 'END_ACT_I',
+          trigger: 'LODGE_REUNION',
           add: ['kairon'],
-          remove: [],
-          message: 'Kairon rejoint officiellement le Clan.'
+          remove: ['drekthar', 'sislay'],
+          source: 'JDR DD5 2023.xlsx — Tyranny of dragons!203; PJ!J1:J5; identité confirmée par le MJ',
+          message: 'Kairon rejoint le groupe au pavillon; Drek’Thar et la rôdeuse de Lunaaz partent vers d’autres horizons.'
         },
         {
-          trigger: 'HATCHERY_ESCAPE',
-          conditional: 'if eggsDestroyed',
-          remove: ['malrond'],
-          message: 'Malrond quitte le groupe en désaccord.'
+          trigger: 'SKYREACH_REUNION',
+          add: ['malar'],
+          source: 'JDR DD5 2023.xlsx — Tyranny of dragons!226',
+          message: 'Au château volant, Malar, voleur semi-elfe, rejoint la compagnie.'
         }
-      ]
-    };
-
-    const DATA = {
-      acts: {
-        current: 'ACT_I',
-        unlocked: ['ACT_I']
-      },
-      rooms: {
+    ];
     const characters = {
       bjolnir: { name: 'Bjolnir', state: 'active', mainStory: true, skills: ['redemption', 'leadership', 'diplomacy', 'strategy'], narrativeTags: ['ancien mercenaire', 'chef de fortune'] },
-      malar: { name: 'Malar', state: 'active', mainStory: true, skills: ['stealth'], narrativeTags: ['ombre urbaine', 'éclaireur'] },
+      malar: { name: 'Malar', state: 'absent', mainStory: true, skills: ['stealth'], narrativeTags: ['voleur semi-elfe'] },
       darrin: { name: 'Darrin', state: 'active', mainStory: true, skills: ['wild_magic', 'arcana'], narrativeTags: ['arcaniste instable', 'provocateur'] },
       drekthar: { name: 'Drek’Thar', state: 'active', mainStory: true, skills: ['might', 'duel'], narrativeTags: ['vétéran taciturne', 'mur de fer'] },
-      ellyjobell: { name: 'Ellyjobell', state: 'absent', mainStory: false, skills: ['arcana'], narrativeTags: ['érudite disparue'] },
-      kairon: { name: 'Kairon', state: 'captured', mainStory: false, skills: ['strategy'], narrativeTags: ['stratège prisonnier'] },
-      malrond: { name: 'Malrond', state: 'active', mainStory: false, skills: ['commandement'], narrativeTags: ['vétéran inflexible'] }
+      ellyjobell: { name: 'Ellyjobell Folkor', state: 'active', mainStory: false, skills: ['arcana', 'stealth', 'nature'], narrativeTags: ['druidesse gnome des forêts'] },
+      kairon: { name: 'Kairon Erudit', state: 'absent', mainStory: false, skills: ['strategy', 'arcana'], narrativeTags: ['occultiste tieffelin'] },
+      sislay: { name: 'Sislay Baite', state: 'active', mainStory: false, skills: ['stealth', 'tracking'], narrativeTags: ['rôdeuse demi-orque', 'joueuse: Lunaaz (table PJ)'] }
     };
 
-    const flags = {
-      hasSeenSquare: true,
-      lennithonInsulted: false,
-      cyanwrathDead: false,
-      leosinSaved: false,
-      eggsDestroyed: false,
-      eggsStolen: false,
-      eggsLeft: false,
-      heavyCasualties: false,
-      moraleHigh: false,
-      WHAT_IF_CYANWRATH_DEAD: false
-    };
-    const variables = { moraleGroupe: 1, chaos: 0, suspicionCamp: 0 };
-    const acts = { current: 'ACT_II', unlocked: ['ACT_I', 'ACT_II'] };
-
-    const rooms = {
+    const ACT_II_ROOMS = {
       cult_trail: {
         id: 'cult_trail',
         title: 'Traque vers le camp',
@@ -99,8 +76,8 @@
         options: [
           {
             id: 'suivre-discretement',
-            label: 'Option – Malar: Suivre discrètement la colonne',
-            characterId: 'malar',
+            label: 'Option – Sislay: Suivre discrètement la colonne',
+            characterId: 'sislay',
             skill: 'stealth',
             resolution: { difficulty: 3, skill: 'stealth', risk: 'capture', deathType: 'replaceable' },
             effects: { chaos: -1, message: 'Vous gardez la colonne en vue sans révéler votre présence.' }
@@ -131,8 +108,8 @@
         options: [
           {
             id: 'sonder-patrouilles',
-            label: 'Option – Kairon: Lire la cadence des patrouilles',
-            characterId: 'kairon',
+            label: 'Option – Bjolnir: Lire la cadence des patrouilles',
+            characterId: 'bjolnir',
             skill: 'strategy',
             resolution: { difficulty: 4, skill: 'strategy', risk: 'capture', deathType: 'replaceable' },
             effects: { chaos: -1, message: 'Les relèves deviennent lisibles: vous trouvez une fenêtre vers la palissade.' }
@@ -156,16 +133,18 @@
         options: [
           {
             id: 'liberer-leosin',
-            label: 'Option – Malar: Libérer Leosin en silence',
-            characterId: 'malar',
+            forbiddenFlag: 'leosinSaved',
+            label: 'Option – Sislay: Libérer Leosin en silence',
+            characterId: 'sislay',
             skill: 'stealth',
             resolution: { difficulty: 5, skill: 'stealth', risk: 'capture', deathType: 'replaceable' },
-            effects: { moraleGroupe: 1, chaos: -1, message: 'Leosin rejoint votre colonne et murmure un plan de retraite.' }
+            effects: { moraleGroupe: 1, chaos: -1, message: 'Leosin rejoint votre colonne et murmure un plan de retraite.' },
+            onSuccess: { setFlags: { leosinSaved: true } }
           },
           {
             id: 'observer-leaders',
-            label: 'Option – Kairon: Observer les meneurs du Culte',
-            characterId: 'kairon',
+            label: 'Option – Bjolnir: Observer les meneurs du Culte',
+            characterId: 'bjolnir',
             skill: 'strategy',
             resolution: { difficulty: 5, skill: 'strategy', risk: 'injury', deathType: 'replaceable' },
             effects: { chaos: -1, message: 'Vous relevez les ordres et les sceaux des chefs sous la grande tente.' }
@@ -196,8 +175,8 @@
         options: [
           {
             id: 'descendre-discretement',
-            label: 'Option – Malar: Descendre discrètement',
-            characterId: 'malar',
+            label: 'Option – Sislay: Descendre discrètement',
+            characterId: 'sislay',
             skill: 'stealth',
             resolution: { difficulty: 6, skill: 'stealth', risk: 'injury', deathType: 'replaceable' },
             effects: { chaos: -1, message: 'La colonne s’enfonce sans bruit dans les galeries.' }
@@ -221,8 +200,8 @@
         options: [
           {
             id: 'traversee-prudente',
-            label: 'Option – Kairon: Traversée lente et calculée',
-            characterId: 'kairon',
+            label: 'Option – Bjolnir: Traversée lente et calculée',
+            characterId: 'bjolnir',
             skill: 'strategy',
             resolution: { difficulty: 6, skill: 'strategy', risk: 'injury', deathType: 'replaceable' },
             effects: { chaos: -1, message: 'Vous contournez les nappes de spores dans un silence d’église.' }
@@ -253,8 +232,8 @@
         options: [
           {
             id: 'strategie-kairon',
-            label: 'Option – Kairon: Neutraliser les vrilles par la stratégie',
-            characterId: 'kairon',
+            label: 'Option – Bjolnir: Neutraliser les vrilles par la stratégie',
+            characterId: 'bjolnir',
             skill: 'strategy',
             resolution: { difficulty: 7, skill: 'strategy', risk: 'injury', deathType: 'replaceable' },
             effects: { moraleGroupe: 1, message: 'Le tentaculeur est pris à contre-rythme et recule.' }
@@ -269,8 +248,8 @@
           },
           {
             id: 'sacrifice-calculé',
-            label: 'Option – Malar: Sacrifice calculé pour couvrir la retraite',
-            characterId: 'malar',
+            label: 'Option – Sislay: Sacrifice calculé pour couvrir la retraite',
+            characterId: 'sislay',
             skill: 'stealth',
             resolution: { difficulty: 7, skill: 'stealth', risk: 'death', deathType: 'replaceable' },
             effects: { chaos: -1, message: 'Le groupe passe pendant que Malar détourne les vrilles.' }
@@ -286,27 +265,31 @@
         options: [
           {
             id: 'detruire-oeufs',
-            label: 'Option – Bjolnir: Détruire les œufs',
+            label: 'What If — Bjolnir: Détruire les œufs',
+            forbiddenFlag: 'eggsDecided',
             characterId: 'bjolnir',
             skill: 'leadership',
             resolution: { difficulty: 7, skill: 'leadership', risk: 'injury', deathType: 'replaceable' },
-            effects: { moraleGroupe: 1, chaos: 1, message: 'Les coquilles éclatent; un cri rituel résonne dans tout le repaire.' }
+            effects: { moraleGroupe: 1, chaos: 1, message: 'Les coquilles éclatent; un cri rituel résonne dans tout le repaire.' },
+            onSuccess: { setFlags: { eggsDecided: true, eggsDestroyed: true, eggsStolen: false, eggsLeft: false } }
           },
           {
             id: 'voler-oeufs',
-            label: 'Option – Malar: Voler les œufs',
-            characterId: 'malar',
-            skill: 'stealth',
-            resolution: { difficulty: 7, skill: 'stealth', risk: 'capture', deathType: 'replaceable' },
-            effects: { chaos: 1, message: 'Vous emportez des œufs sous des toiles, au prix d’une fuite compliquée.' }
+            label: 'Chronique — Emporter les deux œufs noirs',
+            forbiddenFlag: 'eggsDecided',
+            source: 'JDR DD5 2023.xlsx — Tyranny of dragons!75:82',
+            effects: { message: 'Les deux œufs noirs sont emportés. Le groupe retourne à Greenest.' },
+            onSuccess: { setFlags: { eggsDecided: true, eggsStolen: true, eggsDestroyed: false, eggsLeft: false } }
           },
           {
             id: 'laisser-oeufs',
-            label: 'Option – Kairon: Les laisser pour préserver la discrétion',
-            characterId: 'kairon',
+            label: 'What If — Bjolnir: Laisser les œufs',
+            forbiddenFlag: 'eggsDecided',
+            characterId: 'bjolnir',
             skill: 'strategy',
             resolution: { difficulty: 6, skill: 'strategy', risk: 'injury', deathType: 'replaceable' },
-            effects: { chaos: -1, message: 'Vous mémorisez le lieu et quittez le nid sans le toucher.' }
+            effects: { chaos: -1, message: 'Vous mémorisez le lieu et quittez le nid sans le toucher.' },
+            onSuccess: { setFlags: { eggsDecided: true, eggsLeft: true, eggsStolen: false, eggsDestroyed: false } }
           }
         ]
       },
@@ -319,8 +302,8 @@
         options: [
           {
             id: 'retraite-ordonnee',
-            label: 'Option – Kairon: Ordonner la retraite finale',
-            characterId: 'kairon',
+            label: 'Option – Bjolnir: Ordonner la retraite finale',
+            characterId: 'bjolnir',
             skill: 'strategy',
             resolution: { difficulty: 7, skill: 'strategy', risk: 'injury', deathType: 'replaceable' },
             effects: { moraleGroupe: 1, chaos: -1, message: 'La fuite se transforme en extraction nette. L’Acte III est à portée.' }
@@ -343,6 +326,21 @@
         exits: { ouest: 'hatchery_exit' },
         options: [
           {
+            id: 'revanche-drekthar',
+            label: 'Chronique — Drek’Thar prend sa revanche sur Cyanwrath',
+            characterId: 'drekthar',
+            skill: 'duel',
+            forbiddenFlag: 'cyanwrathDead',
+            source: 'JDR DD5 2023.xlsx — Tyranny of dragons!71:72',
+            onSuccess: { setFlags: { cyanwrathDead: true }, message: 'Drek’Thar décapite Langdedrosa. Le groupe vient à bout des berserkers.' }
+          },
+          {
+            id: 'act2-end',
+            label: 'Clore l’Acte II et prendre la route du Nord',
+            requiresFlag: 'eggsDecided',
+            onSuccess: { setFlags: { actIICompleted: true }, setAct: 'ACT_III', unlockActs: ['ACT_III'], gotoRoom: 'northern_road' }
+          },
+          {
             id: 'duel-bjolnir',
             label: 'Option – Bjolnir: Accepter un duel bref et rompre le contact',
             characterId: 'bjolnir',
@@ -352,11 +350,23 @@
           },
           {
             id: 'repli-furtif',
-            label: 'Option – Malar: Repli furtif par une faille secondaire',
-            characterId: 'malar',
+            label: 'Option – Sislay: Repli furtif par une faille secondaire',
+            characterId: 'sislay',
             skill: 'stealth',
             resolution: { difficulty: 8, skill: 'stealth', risk: 'capture', deathType: 'replaceable' },
             effects: { chaos: -1, message: 'Vous glissez hors de portée et laissez les fanatiques se quereller.' }
+          }
+        ]
+      }
+    };
+
+    const flags = {
+      hasSeenSquare: false,
+      lennithonInsulted: false,
+      leosinSaved: false,
+      heavyCasualties: false,
+      moraleHigh: false,
+      WHAT_IF_CYANWRATH_DEAD: false,
       scene1Done: false,
       scene2Done: false,
       moulinDone: false,
@@ -368,7 +378,8 @@
       keepLossApplied: false,
       cyanwrathDead: false,
       eggsDestroyed: false,
-      actIIICompleted: false,
+      eggsDecided: false,
+      dragonetsHatched: false,
       councilSessionInitialized: false,
       councilConvocationDone: false,
       councilDefenseDone: false,
@@ -387,12 +398,7 @@
       portalDamaged: false,
       portalIntact: false,
       actVCompleted: false,
-      campaignComplete: false
-      strongAlliance: false,
-      fragileAlliance: true,
-      fracturedAlliance: false,
-      metallicAlliance: false,
-      actIVCompleted: false,
+      campaignComplete: false,
       finaleStartCheckpointed: false,
       finalBattleInitialized: false,
       sabotageSuccess: false,
@@ -404,7 +410,7 @@
     };
     const variables = {
       moraleGroupe: 0,
-      chaos: 2,
+      chaos: 1,
       casualties: 0,
       publicTrust: 0,
       totalSupport: 0,
@@ -416,12 +422,8 @@
         cult: -3
       },
       castleAlertLevel: 0,
-      ritualProgress: 0
-      councilReputation: {
-        waterdeep: 0,
-        neverwinter: 0,
-        elturel: 0
-      },
+      ritualProgress: 0,
+      suspicionCamp: 0,
       finalBattle: {
         alliedStrength: 0,
         cultMomentum: 0,
@@ -434,6 +436,7 @@
     const acts = { current: 'ACT_I', unlocked: ['ACT_I'] };
 
     const rooms = {
+      ...ACT_II_ROOMS,
       hill_overlook: {
         id: 'hill_overlook',
         title: 'Approche de Greenest',
@@ -453,7 +456,7 @@
           {
             id: 'approche-riviere',
             label: 'Option – Approche furtive par la rivière',
-            characterId: 'malar',
+            characterId: 'ellyjobell',
             skill: 'stealth',
             resolution: { difficulty: 3, skill: 'stealth', risk: 'injury', deathType: 'replaceable' },
             effects: { chaos: -1, message: 'L’eau noire étouffe vos pas; vous atteignez les ruelles sans alerter la horde.' },
@@ -557,9 +560,16 @@
             onSuccess: { setAct: 'ACT_IV', unlockActs: ['ACT_IV'], gotoRoom: 'waterdeep_council_hall', checkpoint: 'Début Act IV — Conseil de Waterdeep' }
           },
           {
+            id: 'depart-camp',
+            label: 'Acte II — Suivre la piste des pillards',
+            requiresFlag: 'actICompleted',
+            forbiddenFlag: 'actIICompleted',
+            onSuccess: { setAct: 'ACT_II', gotoRoom: 'cult_trail' }
+          },
+          {
             id: 'depart-nord',
             label: 'Acte III — Rejoindre la caravane du Nord',
-            requiresFlag: 'actICompleted',
+            requiresFlag: 'actIICompleted',
             forbiddenFlag: 'actIIICompleted',
             onSuccess: { unlockActs: ['ACT_III'], gotoRoom: 'northern_road', checkpoint: 'Départ pour l’Acte III' }
           }
@@ -575,7 +585,7 @@
           {
             id: 'moulin-furtif',
             label: 'Option – Approche furtive du moulin',
-            characterId: 'malar',
+            characterId: 'ellyjobell',
             skill: 'stealth',
             resolution: { difficulty: 3, skill: 'stealth', risk: 'injury', deathType: 'replaceable' },
             effects: { message: 'Vous coupez les sentinelles et gagnez l’accès aux pompes à eau.' },
@@ -606,7 +616,7 @@
           {
             id: 'sanctuaire-tunnel',
             label: 'Option – Infiltration par les tunnels',
-            characterId: 'malar',
+            characterId: 'ellyjobell',
             skill: 'stealth',
             resolution: { difficulty: 3, skill: 'stealth', risk: 'capture', deathType: 'replaceable' },
             effects: { message: 'Vous ouvrez les verrous de l’intérieur et brisez l’élan du bélier.' },
@@ -635,13 +645,21 @@
         exits: {},
         options: [
           {
+            id: 'duel-campagne',
+            label: 'Chronique — Drek’Thar affronte Cyanwrath et survit à sa défaite',
+            characterId: 'drekthar',
+            skill: 'duel',
+            source: 'JDR DD5 2023.xlsx — Tyranny of dragons!33:35',
+            onSuccess: { setFlags: { duelDone: true }, characterChanges: [{ id: 'drekthar', toState: 'injured' }], gotoRoom: 'greenest_keep', message: 'Drek’Thar tombe sous les coups de Cyanwrath. Les otages sont libérés; le champion du Clan survit.' }
+          },
+          {
             id: 'duel-accept',
-            label: 'Option – Accepter le duel (Drek’Thar)',
+            label: 'What If — Vaincre Cyanwrath dès Greenest (Drek’Thar)',
             characterId: 'drekthar',
             skill: 'duel',
             resolution: { difficulty: 2, skill: 'duel', risk: 'death', deathType: 'replaceable' },
             effects: { moraleGroupe: 2, message: 'Le duel tourne à votre avantage; les otages sont relâchés sous les huées.' },
-            onSuccess: { setFlags: { duelDone: true, cyanwrathDead: true }, gotoRoom: 'greenest_keep', checkpoint: 'Scène 5 résolue — Duel de Cyanwrath' },
+            onSuccess: { setFlags: { duelDone: true, cyanwrathDead: true, WHAT_IF_CYANWRATH_DEAD: true }, gotoRoom: 'greenest_keep', checkpoint: 'Scène 5 résolue — Duel de Cyanwrath' },
             onFailure: { message: 'Votre champion plie, mais survit. Cyanwrath ordonne malgré tout la libération des otages.' },
             onFailurePost: { setFlags: { duelDone: true }, gotoRoom: 'greenest_keep', checkpoint: 'Scène 5 résolue — Duel de Cyanwrath' }
           },
@@ -755,7 +773,7 @@
           { id: 'dragons-persuade', label: 'Plaider pour l’alliance (Diplomatie)', characterId: 'bjolnir', skill: 'diplomacy', resolution: { difficulty: 3, skill: 'diplomacy', risk: 'injury', deathType: 'replaceable' }, effects: { message: 'Votre plaidoyer lie honneur et nécessité. Les anciens dragons acquiescent.', councilReputation: { harpers: 1, gauntlet: 1, enclave: 2, zhentarim: 0, lords: 2 }, publicTrust: 2 }, onSuccess: { setFlags: { metallicAlliance: true, metallicAudienceDone: true }, gotoRoom: 'council_resolution', checkpoint: 'Scène 4 résolue — Alliance métallique' }, onFailure: { message: 'Votre voix ne suffit pas. Les dragons restent neutres.', councilReputation: { enclave: -1, lords: -1 } }, onFailurePost: { setFlags: { metallicAlliance: false, metallicAudienceDone: true }, gotoRoom: 'council_resolution', checkpoint: 'Scène 4 résolue — Dragons neutres' } },
           { id: 'dragons-offer-alliance', label: 'Offrir un pacte militaire (Leadership)', characterId: 'bjolnir', skill: 'leadership', resolution: { difficulty: 2, skill: 'leadership', risk: 'injury', deathType: 'replaceable' }, effects: { message: 'Votre serment de campagne convainc les dragons de soutenir la coalition.', councilReputation: { harpers: 1, gauntlet: 1, enclave: 1, zhentarim: 0, lords: 2 }, publicTrust: 1 }, onSuccess: { setFlags: { metallicAlliance: true, metallicAudienceDone: true }, gotoRoom: 'council_resolution', checkpoint: 'Scène 4 résolue — Alliance métallique' }, onFailure: { message: 'Le pacte est jugé prématuré. Les dragons diffèrent leur décision.', councilReputation: { lords: -1 } }, onFailurePost: { setFlags: { metallicAlliance: false, metallicAudienceDone: true }, gotoRoom: 'council_resolution', checkpoint: 'Scène 4 résolue — Dragons neutres' } },
           { id: 'dragons-threaten-cult', label: 'Menacer le culte par démonstration (Stratégie)', characterId: 'bjolnir', skill: 'strategy', resolution: { difficulty: 3, skill: 'strategy', risk: 'injury', deathType: 'replaceable' }, effects: { message: 'Votre plan d’encerclement rassure les dragons quant au coût de leur engagement.', councilReputation: { gauntlet: 1, enclave: 1, zhentarim: 1, lords: 1 }, publicTrust: 0 }, onSuccess: { setFlags: { metallicAlliance: true, metallicAudienceDone: true }, gotoRoom: 'council_resolution', checkpoint: 'Scène 4 résolue — Alliance métallique' }, onFailure: { message: 'Les dragons rejettent toute pression. Ils resteront neutres pour l’instant.', councilReputation: { enclave: -1, lords: -1 } }, onFailurePost: { setFlags: { metallicAlliance: false, metallicAudienceDone: true }, gotoRoom: 'council_resolution', checkpoint: 'Scène 4 résolue — Dragons neutres' } },
-          { id: 'dragons-ride-selfie', label: 'Option absurde — Demander un selfie sur dragon', onSelect: 'silly_dragon_selfie' }
+          { id: 'dragons-ride-selfie', label: 'Option absurde — Exiger un portrait à dos de dragon', onSelect: 'silly_dragon_selfie' }
         ]
       },
       council_resolution: {
@@ -784,7 +802,7 @@
           {
             id: 'caravane-espionner',
             label: 'Option – Espionner discrètement',
-            characterId: 'malar',
+            characterId: 'ellyjobell',
             skill: 'stealth',
             resolution: { difficulty: 2, skill: 'stealth', risk: 'capture', deathType: 'replaceable' },
             effects: { message: 'Des lettres codées changent de mains. Les Zhentarim jugent votre efficacité.' },
@@ -826,7 +844,7 @@
           {
             id: 'naerytar-reco',
             label: 'Option – Observer les patrouilles dans les roseaux',
-            characterId: 'malar',
+            characterId: 'ellyjobell',
             skill: 'stealth',
             resolution: { difficulty: 3, skill: 'stealth', risk: 'injury', deathType: 'replaceable' },
             effects: { message: 'Vous notez les relèves et les angles morts des tours.' },
@@ -918,7 +936,7 @@
             id: 'portal-traverse',
             label: 'Décision – Traverser immédiatement',
             effects: { message: 'Le groupe franchit le seuil avant que le château ne referme ses mâchoires.' },
-            onSuccess: { setFlags: { portalIntact: true, portalDamaged: false }, gotoRoom: 'act3_epilogue', checkpoint: 'Décision du portail — Traversée' }
+            onSuccess: { setFlags: { portalIntact: true, portalDamaged: false }, gotoRoom: 'hunting_lodge', checkpoint: 'Décision du portail — Traversée' }
           },
           {
             id: 'portal-saboter',
@@ -927,17 +945,41 @@
             skill: 'wild_magic',
             resolution: { difficulty: 3, skill: 'wild_magic', risk: 'injury', deathType: 'replaceable' },
             effects: { message: 'Les glyphes se fissurent. Le portail survivra, mais affaibli pour la suite.' },
-            onSuccess: { setFlags: { portalDamaged: true, portalIntact: false }, gotoRoom: 'act3_epilogue', checkpoint: 'Décision du portail — Sabotage' },
+            onSuccess: { setFlags: { portalDamaged: true, portalIntact: false }, gotoRoom: 'hunting_lodge', checkpoint: 'Décision du portail — Sabotage' },
             onFailure: { variableDelta: { castleAlertLevel: 1 }, message: 'Le sabotage échoue partiellement; l’onde attire des renforts.' },
-            onFailurePost: { setFlags: { portalIntact: true, portalDamaged: false }, gotoRoom: 'act3_epilogue', checkpoint: 'Décision du portail — Échec sabotage' }
+            onFailurePost: { setFlags: { portalIntact: true, portalDamaged: false }, gotoRoom: 'hunting_lodge', checkpoint: 'Décision du portail — Échec sabotage' }
           },
           {
             id: 'portal-observer',
             label: 'Décision – Observer et consigner',
             effects: { message: 'Vous mémorisez chaque rune et gardez l’option d’un retour stratégique.' },
-            onSuccess: { setFlags: { portalIntact: true, portalDamaged: false, portalObserved: true }, gotoRoom: 'act3_epilogue', checkpoint: 'Décision du portail — Observation' }
+            onSuccess: { setFlags: { portalIntact: true, portalDamaged: false, portalObserved: true }, gotoRoom: 'hunting_lodge', checkpoint: 'Décision du portail — Observation' }
           }
         ]
+      },
+      hunting_lodge: {
+        id: 'hunting_lodge',
+        title: 'Pavillon de chasse — chronique abrégée',
+        description: 'Le portail mène au froid et au pavillon de Talis, amie d’enfance d’Ellyjobell. Talis accepte de trahir le Culte et indique Parnast et le château volant.',
+        source: 'JDR DD5 2023.xlsx — Tyranny of dragons!189:205',
+        objects: ['Talis', 'bannière', 'route de Parnast'], exits: {},
+        options: [{ id: 'lodge-reunion', label: 'Rejoindre Kairon, puis gagner Parnast', onSuccess: { timelineTrigger: 'LODGE_REUNION', gotoRoom: 'skyreach_castle' } }]
+      },
+      skyreach_castle: {
+        id: 'skyreach_castle',
+        title: 'Cumulus — chronique abrégée',
+        description: 'Le groupe embarque à Parnast. Malar rejoint la compagnie dans le château volant.',
+        source: 'JDR DD5 2023.xlsx — Tyranny of dragons!203:226',
+        objects: ['Malar', 'Blagothkus', 'Eskarotha'], exits: {},
+        options: [{ id: 'skyreach-reunion', label: 'Accueillir Malar et poursuivre la chronique', onSuccess: { timelineTrigger: 'SKYREACH_REUNION', gotoRoom: 'skyreach_chronicle' } }]
+      },
+      skyreach_chronicle: {
+        id: 'skyreach_chronicle',
+        title: 'Du château volant à Waterdeep',
+        description: 'Eskarotha convainc Blagothkus de combattre le Culte. Rezmir est capturé puis se suicide. Les hommes de Blagothkus capturent Glazael. Le groupe repart vers Waterdeep, via Secomber.',
+        source: 'JDR DD5 2023.xlsx — Tyranny of dragons!229:259',
+        objects: ['chronique du château volant'], exits: {},
+        options: [{ id: 'skyreach-return', label: 'Reprendre la route de Waterdeep', onSuccess: { gotoRoom: 'act3_epilogue' } }]
       },
       act3_epilogue: {
         id: 'act3_epilogue',
@@ -965,15 +1007,26 @@
           },
           {
             id: 'act5-muster',
-            label: 'Convoquer le Conseil de guerre final (Acte V)',
+            label: 'Rejoindre le Conseil de Waterdeep (Acte IV)',
             requiresFlag: 'actIIICompleted',
             onSuccess: {
-              setFlags: { actIVCompleted: true },
-              unlockActs: ['ACT_V'],
-              gotoRoom: 'war_council_tent',
-              checkpoint: 'Transition vers l’Acte V'
+              setAct: 'ACT_IV',
+              unlockActs: ['ACT_IV'],
+              gotoRoom: 'waterdeep_council_hall',
+              checkpoint: 'Transition vers l’Acte IV'
             }
           }
+        ]
+      },
+      campaign_frontier: {
+        id: 'campaign_frontier',
+        title: 'La chronique reste ouverte',
+        description: 'La campagne réelle est toujours en cours. Son dernier épisode consigné est l’invitation à Thay. Les aventures de Rise of Tiamat sont encore abrégées dans cette version du jeu; la chronique rédigée les détaille. La bataille finale proposée ensuite est une simulation facultative.',
+        source: 'JDR DD5 2023.xlsx — Rise of Tiamat!264:274; campagne en cours confirmée par le MJ',
+        objects: ['chronique inachevée'], exits: {},
+        options: [
+          { id: 'simulate-finale', label: 'What If — Explorer une bataille finale hypothétique', onSuccess: { setAct: 'ACT_V', unlockActs: ['ACT_V'], gotoRoom: 'war_council_tent' } },
+          { id: 'frontier-title', label: 'Revenir au titre', onSelect: 'return_title' }
         ]
       },
       war_council_tent: {
@@ -990,54 +1043,25 @@
           }
         ]
       },
-      act_v_ritual: {
-        id: 'act_v_ritual',
-        title: 'Acte V — Rituel de Tiamat',
-        description: 'Les autels tremblent. Chaque décision scelle l’issue de la guerre.',
-        objects: ['autel', 'portail draconique', 'alliés'],
-        exits: {},
-        options: [
-          { id: 'ritual-saboter', label: 'Saboter les canaux rituels', characterId: 'darrin', skill: 'arcana', resolution: { difficulty: 2, skill: 'arcana', risk: 'injury', deathType: 'replaceable' }, effects: { message: 'Les runes vacillent et le rituel ralentit.', ritualProgress: -2 }, onFailure: { variableDelta: { ritualProgress: 1 }, message: 'Une onde infernale renforce le portail.' } },
-          { id: 'ritual-proteger', label: 'Protéger les alliés sur le flanc', characterId: 'drekthar', skill: 'might', resolution: { difficulty: 2, skill: 'might', risk: 'injury', deathType: 'replaceable' }, effects: { message: 'Le front tient; les prêtres perdent du terrain.', ritualProgress: -1 } },
-          { id: 'ritual-final', label: 'Clore l’Acte V', onSuccess: { setFlags: { actVCompleted: true }, gotoRoom: 'finale', checkpoint: 'End Act V' } }
-        ]
-      },
-      finale: {
-        id: 'finale',
-        title: 'Finale',
-        description: 'Le verdict de la campagne tombe dans les cendres et les hymnes de guerre.',
-        objects: ['bilan', 'alliés', 'survivants'],
-        exits: {},
-        options: [
-          { id: 'vers-epilogue', label: 'Voir l’épilogue', onSuccess: { setFlags: { campaignComplete: true }, gotoRoom: 'epilogue', checkpoint: 'Campaign Complete' } }
-        ]
-      },
-      epilogue: {
-        id: 'epilogue',
-        title: 'Épilogue',
-        description: 'Les bardes consignent la destinée du Clan et des Côtes de l’Épée.',
-        objects: ['chronique finale'],
-        exits: {},
-        options: [
-          { id: 'restart-campaign', label: 'Restart Campaign', onSelect: 'restart_campaign' },
-          { id: 'return-title', label: 'Return to Title', onSelect: 'return_title' }
-        ]
-      },
+
       credits: {
         id: 'credits',
         title: 'Crédits',
-        description: 'Based on D&D 5e Tyranny of Dragons\nAdapted for Clan d’Estain\nMême les dragons signent en bas de page.',
+        description: 'D’après D&D 5e — Tyranny of Dragons, adapté pour le Clan d’Estain. Journal de campagne fourni par le MJ. Cette version abrège les événements; la bataille finale reste une simulation.',
         objects: ['rideau'],
         exits: {},
         options: [
-          { id: 'credits-back', label: 'Return to Title', onSelect: 'return_title' }
+          { id: 'credits-back', label: 'Retour au titre', onSelect: 'return_title' }
         ]
       },
       title_screen: {
         id: 'title_screen',
         title: 'Clan d’Estain — Tyranny of Dragons',
-        description: 'Choisissez une option pour commencer.',
+        description: 'Une adaptation abrégée de la campagne du Clan d’Estain. Les options « Chronique » suivent des faits attestés; les chemins « What If » sont des variantes. La bataille finale est une simulation, en attente du récit du MJ.',
         objects: ['menu principal'],
+        exits: {},
+        options: []
+      },
       battle_plan_selection: {
         id: 'battle_plan_selection',
         title: 'Sélection du Plan',
@@ -1162,9 +1186,9 @@
           {
             id: 'decapitation-strike',
             label: 'Option – Neutraliser le lieutenant (Duel tactique)',
-            characterId: 'drekthar',
-            skill: 'duel',
-            resolution: { difficulty: 3, skill: 'duel', risk: 'death', deathType: 'replaceable' },
+            characterId: 'kairon',
+            skill: 'strategy',
+            resolution: { difficulty: 3, skill: 'strategy', risk: 'death', deathType: 'replaceable' },
             effects: { message: 'Le lieutenant tombe, et la chaîne de commandement cultiste se disloque.' },
             onSuccess: { setFlags: { lieutenantDefeated: true }, gotoRoom: 'ritual_chamber', checkpoint: 'Décapitation réussie' },
             onFailure: { message: 'Le lieutenant survit et relance la pression sur tous les fronts.' },
@@ -1211,7 +1235,7 @@
           },
           {
             id: 'evacuation-reckless',
-            label: 'Choix RECKLESS – Forcer un pont en flammes avec la foule',
+            label: 'Choix manifestement périlleux — Forcer un pont en flammes avec la foule',
             onSelect: 'serious_reckless_bridge'
           }
         ]
@@ -1220,11 +1244,12 @@
         id: 'ritual_chamber',
         title: 'Chambre du Rituel Final',
         description: 'Le portail de Tiamat pulse dans un grondement qui déforme la pierre.',
-        objects: ['ward seals', 'nexus draconique', 'alliés à bout de souffle'],
+        objects: ['sceaux de garde', 'nexus draconique', 'alliés à bout de souffle'],
         exits: {},
         options: [
           {
             id: 'ritual-break-ward',
+            repeatable: true,
             label: 'Action décisive – Briser un sceau de garde (Arcane)',
             characterId: 'darrin',
             skill: 'wild_magic',
@@ -1233,6 +1258,7 @@
           },
           {
             id: 'ritual-rally',
+            repeatable: true,
             label: 'Action décisive – Rallier les alliés pour une poussée',
             characterId: 'bjolnir',
             skill: 'leadership',
@@ -1241,6 +1267,7 @@
           },
           {
             id: 'ritual-sacrifice-gear',
+            repeatable: true,
             label: 'Action décisive – Sacrifier équipement et temps pour affaiblir le rituel',
             characterId: 'kairon',
             skill: 'strategy',
@@ -1265,9 +1292,24 @@
         description: 'La poussière retombe sur le dernier champ de bataille. Les chroniques se ferment.',
         objects: ['étendards brisés', 'serments survivants'],
         exits: {},
-        options: []
+        options: [
+          { id: 'restart-campaign', label: 'Recommencer la campagne', onSelect: 'restart_campaign' },
+          { id: 'return-title', label: 'Retour au titre', onSelect: 'return_title' }
+        ]
       }
+    };
+
+    const DATA = {
+      acts,
+      rooms,
+      actRooms: {
+        ACT_I: ['hill_overlook', 'swift_street', 'greenest_keep', 'mill_approach', 'sanctuary_approach', 'duel_field'],
+        ACT_II: Object.keys(ACT_II_ROOMS),
+        ACT_III: ['northern_road', 'naerytar_swamp', 'castle_naerytar', 'portal_chamber', 'hunting_lodge', 'skyreach_castle', 'skyreach_chronicle', 'act3_epilogue'],
+        ACT_IV: ['waterdeep_council_hall', 'council_defense_floor', 'council_strategy_floor', 'metallic_dragon_audience', 'council_resolution', 'campaign_frontier'],
+        ACT_V: ['war_council_tent', 'battle_plan_selection', 'supply_lines', 'warded_corridor', 'ritual_components', 'commander_tent', 'champion_confrontation', 'refugee_corridor', 'burning_streets_finale', 'ritual_chamber', 'campaign_end']
       },
+      rosterTimeline: ROSTER_TIMELINE,
       scenes: {
         GREENEST_SIEGE: {
           onEnter: () => {},
@@ -1275,24 +1317,12 @@
           onTurn: () => {}
         }
       },
-      characters: {
-        bjolnir: { name: 'Bjolnir', state: 'active', skills: ['redemption', 'leadership'] },
-        malar: { name: 'Malar', state: 'injured', skills: ['stealth'] },
-        darrin: { name: 'Darrin', state: 'active', skills: ['wild_magic'] },
-        ellyjobell: { name: 'Ellyjobell', state: 'absent', skills: ['arcana'] },
-        kairon: { name: 'Kairon', state: 'captured', skills: ['strategy'] }
-      },
+      characters,
       globalVariables: {
-        flags: { hasSeenSquare: false, lennithonInsulted: false },
-        variables: { moraleGroupe: 0, chaos: 1 },
-        roomIds: { place: 'place', portes: 'portes' }
+        flags,
+        variables
       }
     };
-
-    const acts = DATA.acts;
-    const flags = DATA.globalVariables.flags;
-    const variables = DATA.globalVariables.variables;
-    const ROOM_IDS = DATA.globalVariables.roomIds;
 
     const gameState = {
       roomId: 'title_screen',
@@ -1303,6 +1333,7 @@
       commandHistory: [],
       historyCursor: -1,
       timelineApplied: [],
+      resolvedOptions: [],
       debugMode: URL_PARAMS.get('debug') === '1'
     };
 
@@ -1318,6 +1349,33 @@
       return typeof structuredClone === 'function' ? structuredClone(value) : JSON.parse(JSON.stringify(value));
     }
 
+    function getCurrentRoom() {
+      return DATA.rooms[gameState.roomId];
+    }
+
+    function getAvailableOptions(roomId) {
+      return computeAvailableOptions(roomId);
+    }
+
+    function callSceneHook(hook) {
+      DATA.scenes[getCurrentRoom()?.sceneId]?.[hook]?.();
+    }
+
+    function callSceneTurn() {
+      callSceneHook('onTurn');
+    }
+
+    function enterRoom(roomId, reason = 'Déplacement', options = {}) {
+      if (!DATA.rooms[roomId]) throw new Error(`Salle inconnue: ${roomId}`);
+      if (!options.skipCheckpoint) createCheckpoint(reason);
+      if (!options.skipScene) callSceneHook('onExit');
+      gameState.roomId = roomId;
+      if (!options.skipScene) prepareCurrentRoom();
+      if (!options.skipScene) callSceneHook('onEnter');
+      if (!options.skipDescribe) describeCurrentRoom();
+      if (!options.skipAutoSave) saveGame();
+    }
+
     const INITIAL_CHARACTERS = safeClone(characters);
     const INITIAL_FLAGS = safeClone(flags);
     const INITIAL_VARIABLES = safeClone(variables);
@@ -1328,20 +1386,46 @@
     }
 
     function isValidSavePayload(parsed) {
-      if (!parsed || typeof parsed !== 'object') return false;
-      if (!parsed.gameState || !parsed.characters || !parsed.flags || !parsed.variables || !parsed.acts) return false;
-      return typeof parsed.gameState.roomId === 'string';
+      const record = value => value && typeof value === 'object' && !Array.isArray(value);
+      const strings = value => Array.isArray(value) && value.every(v => typeof v === 'string');
+      const safeKeys = value => !value || typeof value !== 'object' || Object.keys(value).every(k =>
+        !['__proto__', 'constructor', 'prototype'].includes(k) && safeKeys(value[k]));
+      const compatible = (value, template) => {
+        if (typeof template === 'number') return Number.isFinite(value);
+        if (Array.isArray(template)) return strings(value);
+        if (record(template)) return record(value) && Object.keys(template).every(k => compatible(value[k], template[k]));
+        return typeof value === typeof template;
+      };
+      const validState = payload => {
+        if (!record(payload)) return false;
+        const state = payload.gameState;
+        if (!record(state) || !Object.hasOwn(rooms, state.roomId)) return false;
+        if (!strings(state.inventory) || !strings(state.commandHistory) || !strings(state.timelineApplied)) return false;
+        if (state.resolvedOptions !== undefined && !strings(state.resolvedOptions)) return false;
+        if (!Number.isFinite(state.tick) || !Array.isArray(state.checkpoints)) return false;
+        if (!record(payload.characters) || Object.keys(payload.characters).length !== Object.keys(INITIAL_CHARACTERS).length || !Object.keys(INITIAL_CHARACTERS).every(id => {
+          const c = payload.characters[id];
+          return record(c) && ['active', 'injured', 'down', 'absent', 'captured', 'retired', 'dead'].includes(c.state)
+            && typeof c.name === 'string' && strings(c.skills);
+        })) return false;
+        if (!compatible(payload.flags, INITIAL_FLAGS) || !compatible(payload.variables, INITIAL_VARIABLES)) return false;
+        return record(payload.acts) && ['ACT_I', 'ACT_II', 'ACT_III', 'ACT_IV', 'ACT_V'].includes(payload.acts.current)
+          && strings(payload.acts.unlocked) && payload.acts.unlocked.every(a => /^ACT_(I|II|III|IV|V)$/.test(a));
+      };
+      if (!safeKeys(parsed) || !validState(parsed) || parsed.gameState.checkpoints.length > 30) return false;
+      return parsed.gameState.checkpoints.every(cp => validState(cp)
+        && cp.gameState.checkpoints.length === 0 && typeof cp.reason === 'string' && Number.isFinite(cp.timestamp));
     }
 
     function configureTitleOptions() {
       const canContinue = hasSaveData();
       rooms.title_screen.options = [
-        { id: 'title-new', label: 'New Game', onSelect: 'title_new_game' },
-        ...(canContinue ? [{ id: 'title-continue', label: 'Continue', onSelect: 'title_continue' }] : []),
-        { id: 'title-clear', label: 'Clear Save', onSelect: 'title_clear_save' },
-        { id: 'title-export', label: 'Export Save', onSelect: 'title_export_save' },
-        { id: 'title-import', label: 'Import Save', onSelect: 'title_import_save' },
-        { id: 'title-credits', label: 'Credits', onSuccess: { gotoRoom: 'credits' } }
+        { id: 'title-new', label: 'Nouvelle partie', onSelect: 'title_new_game' },
+        ...(canContinue ? [{ id: 'title-continue', label: 'Reprendre', onSelect: 'title_continue' }] : []),
+        { id: 'title-clear', label: 'Effacer la sauvegarde', onSelect: 'title_clear_save' },
+        { id: 'title-export', label: 'Exporter la sauvegarde', onSelect: 'title_export_save' },
+        { id: 'title-import', label: 'Importer une sauvegarde', onSelect: 'title_import_save' },
+        { id: 'title-credits', label: 'Crédits', onSuccess: { gotoRoom: 'credits' } }
       ];
     }
 
@@ -1359,13 +1443,14 @@
       gameState.checkpoints = [];
       gameState.gameOver = null;
       gameState.timelineApplied = [];
+      gameState.resolvedOptions = [];
     }
 
     function exportSaveToClipboard() {
       try {
         const payload = localStorage.getItem(SAVE_KEY);
         if (!payload) return writeContext('Aucune sauvegarde à exporter.');
-        if (navigator.clipboard?.writeText) navigator.clipboard.writeText(payload);
+        if (navigator.clipboard?.writeText) navigator.clipboard.writeText(payload).catch(() => writeContext('Accès au presse-papiers refusé.'));
         writeContext('Sauvegarde exportée (copiée dans le presse-papiers si autorisé).');
       } catch {
         writeContext('Export impossible pour le moment.');
@@ -1483,7 +1568,8 @@
     function computeAvailableOptions(roomId) {
       const room = rooms[roomId];
       if (!room?.options) return [];
-      return room.options.filter(option => {
+      const available = room.options.filter(option => {
+        if (!option.repeatable && gameState.resolvedOptions.includes(`${roomId}:${option.id}`)) return false;
         if (!isSkillAvailable(option.characterId, option.skill)) return false;
         if (option.requiresFlag && !flags[option.requiresFlag]) return false;
         if (option.forbiddenFlag && flags[option.forbiddenFlag]) return false;
@@ -1495,12 +1581,16 @@
         }
         return true;
       });
+      if (room.options.length && !available.some(o => !o.onSelect?.startsWith('silly_')) && peekCheckpoint()) {
+        available.push({ id: 'recover-checkpoint', label: 'Revenir à la dernière décision pour retrouver une voie praticable', onSelect: 'recover_checkpoint' });
+      }
+      return available;
     }
 
     function addCharacterToParty(characterId) {
       const character = characters[characterId];
       if (!character) return false;
-      if (['active', 'injured'].includes(character.state)) return false;
+      if (['active', 'injured', 'dead', 'down'].includes(character.state)) return false;
       character.state = 'active';
       return true;
     }
@@ -1542,7 +1632,6 @@
         if (!changedCharacters.length && !entry.message) return;
         const narrativeMessage = entry.message || `Le groupe évolue (${changedCharacters.join(', ')}).`;
         writeContext(entry.narrativeHook || narrativeMessage);
-        createCheckpoint(`Roster update — ${trigger}`);
       });
       if (context.characterId && trigger === 'CHARACTER_DEATH') {
         if (gameState.debugMode) showDebugState();
@@ -1596,6 +1685,7 @@
         gameState.commandHistory = restoredGameState.commandHistory ?? [];
         gameState.historyCursor = gameState.commandHistory.length;
         gameState.timelineApplied = restoredGameState.timelineApplied ?? [];
+        gameState.resolvedOptions = restoredGameState.resolvedOptions ?? [];
 
         Object.keys(characters).forEach(id => delete characters[id]);
         Object.assign(characters, safeClone(parsed.characters));
@@ -1671,6 +1761,7 @@
       gameState.commandHistory = restoredGameState.commandHistory || [];
       gameState.historyCursor = gameState.commandHistory.length;
       gameState.timelineApplied = restoredGameState.timelineApplied || [];
+      gameState.resolvedOptions = restoredGameState.resolvedOptions || [];
       gameState.checkpoints = remainingStack;
 
       Object.keys(DATA.characters).forEach(id => delete DATA.characters[id]);
@@ -1764,28 +1855,32 @@
 
     function resolveFinalEnding() {
       const finalBattle = variables.finalBattle;
+      flags.sealedForever = false;
       if (flags.sabotageSuccess && flags.strongAlliance && flags.metallicAlliance && finalBattle.ritualProgress <= 5) {
         flags.sealedForever = true;
         flags.finalBattleEnding = 'what_if';
-        return 'Les dragons métalliques plongent depuis les nuées et scellent le portail pour toujours. Victoire majeure, improbable et définitive.';
+        return 'What If — Les dragons métalliques scellent le portail pour toujours. Cette fin simulée n’est pas attestée par le journal.';
       }
       if (finalBattle.ritualProgress <= 4 && finalBattle.alliedStrength >= 5) {
-        flags.finalBattleEnding = 'canonical_victory';
-        return 'Victoire canonique: le rituel est interrompu avant l’émergence de Tiamat.';
+        flags.finalBattleEnding = 'simulated_victory';
+        return 'Fin simulée — Le rituel est interrompu avant l’émergence de Tiamat. Le journal fourni ne relate pas cette bataille.';
       }
       if (finalBattle.ritualProgress <= 8) {
         flags.finalBattleEnding = 'partial_victory';
-        return 'Victoire partielle: une manifestation de Tiamat franchit le voile avant d’être repoussée au prix du sang.';
+        return 'Fin simulée — Victoire partielle: une manifestation de Tiamat est repoussée au prix du sang.';
       }
       flags.finalBattleEnding = 'failure';
-      return 'Échec: Tiamat émerge pleinement. Le monde chancelle sous la catastrophe draconique.';
+      return 'Fin simulée — Échec: Tiamat émerge pleinement. Le monde chancelle sous la catastrophe draconique.';
     }
 
-    function describeCurrentRoom() {
+    // Initialisation des transitions ; une commande « look » ne change pas la partie.
+    function prepareCurrentRoom() {
       const room = getCurrentRoom();
       if (!room) return;
+      const actId = Object.keys(DATA.actRooms).find(id => DATA.actRooms[id].includes(room.id));
+      if (actId) acts.current = actId;
+      if (actId === 'ACT_V' && !flags.finalBattleInitialized) computeFinalBattleBaseline();
       if (room.id === 'waterdeep_council_hall') {
-        acts.current = 'ACT_IV';
         initializeCouncilSessionIfNeeded();
       }
       if (room.id === 'greenest_keep' && variables.chaos > 5 && !flags.keepLossApplied) {
@@ -1793,18 +1888,27 @@
         variables.moraleGroupe -= 1;
         writeContext('Des cris montent des faubourgs: trop de civils n’ont pas atteint la forteresse à temps.');
       }
+      if (room.id === 'northern_road' && flags.eggsStolen && !flags.dragonetsHatched) {
+        flags.dragonetsHatched = true;
+        gameState.inventory.push('Boule', 'Bill');
+        writeContext('En route vers Elturel, les deux œufs noirs éclosent et les dragonnets adoptent Bjolnir.');
+      }
+      if (room.id === 'campaign_end') {
+        flags.actVCompleted = true;
+        flags.campaignComplete = true;
+        resolveFinalEnding();
+      }
+    }
+
+    function describeCurrentRoom() {
+      const room = getCurrentRoom();
+      if (!room) return;
       if (room.id === 'greenest_keep' && flags.cyanwrathDead) {
         writeContext('La nouvelle court: Cyanwrath est tombé. Les vétérans murmurent qu’un avenir différent vient de naître.');
       }
       if (room.id === 'greenest_keep' && flags.actICompleted) {
         if (variables.moraleGroupe >= 2) writeContext('Les défenseurs reprennent souffle. Une lueur d’espoir parcourt les remparts.');
         if (variables.chaos >= 6) writeContext('La victoire a un goût de cendre: Greenest survivra, mais marquée à jamais.');
-      }
-      if (['northern_road', 'naerytar_swamp', 'castle_naerytar', 'portal_chamber', 'act3_epilogue'].includes(room.id)) {
-        acts.current = 'ACT_III';
-      }
-      if (['war_council_tent', 'battle_plan_selection', 'supply_lines', 'warded_corridor', 'ritual_components', 'commander_tent', 'champion_confrontation', 'refugee_corridor', 'burning_streets_finale', 'ritual_chamber', 'campaign_end'].includes(room.id)) {
-        acts.current = 'ACT_V';
       }
       if (room.id === 'castle_naerytar') {
         writeContext(flags.cyanwrathDead
@@ -1819,28 +1923,8 @@
       if (room.id === 'waterdeep_council_hall') {
         writeContext('Chaque mot pèse comme un traité: Waterdeep écoute, juge et se souvient.');
       }
-      if (room.id === 'act_v_ritual') {
-        writeContext(`Tension rituelle: ${variables.ritualProgress}/8.`);
-      }
-      if (room.id === 'finale' || room.id === 'epilogue') {
-        const dead = Object.values(characters).filter(c => c.state === 'dead').map(c => c.name);
-        const alive = Object.values(characters).filter(c => c.state !== 'dead').map(c => c.name);
-        writeContext(`Vivants: ${alive.join(', ') || 'aucun'}`);
-        writeContext(`Morts: ${dead.join(', ') || 'aucun'}`);
-        const metallic = flags.metallicAlliance ? 'engagés' : 'restés en retrait';
-        const eggsFate = flags.eggsDestroyed ? 'détruits' : (flags.eggsSaved ? 'sauvés' : 'incertain');
-        writeContext(`Alliance: ${variables.allianceStrength} | Dragons métalliques: ${metallic} | Œufs: ${eggsFate}`);
-        writeContext(`Waterdeep: ${flags.strongAlliance ? 'unie' : flags.fracturedAlliance ? 'divisée' : 'prudente'} | Greenest: chaos ${variables.chaos}`);
-      }
-      if (room.id === 'war_council_tent' && !flags.finalBattleInitialized) {
-        computeFinalBattleBaseline();
-      }
       if (room.id === 'war_council_tent') {
         writeContext(`Rapport stratégique — Force alliée: ${variables.finalBattle.alliedStrength}, Élan cultiste: ${variables.finalBattle.cultMomentum}, Réputation du Conseil: ${councilReputationTotal()}.`);
-        if (!flags.finaleStartCheckpointed) {
-          createCheckpoint('Finale Start');
-          flags.finaleStartCheckpointed = true;
-        }
       }
       if (room.id === 'battle_plan_selection') {
         writeContext('Trois plans: sabotage précis, frappe de décapitation, ou évacuation défensive.');
@@ -1854,12 +1938,12 @@
         writeContext(`État du rituel — Progression: ${variables.finalBattle.ritualProgress}/10 | Force alliée: ${variables.finalBattle.alliedStrength} | Élan cultiste: ${variables.finalBattle.cultMomentum} | Chaos: ${variables.finalBattle.battlefieldChaos} | Risque civil: ${variables.finalBattle.civilianRisk}.`);
       }
       if (room.id === 'campaign_end') {
-        writeContext(resolveFinalEnding());
+        const endingLabels = { what_if: 'scellement définitif du portail', simulated_victory: 'rituel interrompu', partial_victory: 'victoire partielle', failure: 'émergence de Tiamat' };
+        writeContext(`Issue simulée: ${endingLabels[flags.finalBattleEnding] ?? 'indéterminée'}. La véritable campagne est toujours en cours.`);
         const fallen = Object.values(characters).filter(character => character.state === 'dead').map(character => character.name);
         writeContext(`Pertes du groupe: ${fallen.length ? fallen.join(', ') : 'aucune perte définitive recensée'}.`);
         writeContext(`Bilan moral: risque civil ${variables.finalBattle.civilianRisk}/10, moral du groupe ${variables.moraleGroupe}.`);
         if (flags.sealedForever) writeContext('Le sceau des dragons métalliques tient: le portail est fermé pour les ères à venir.');
-        if (!gameState.checkpoints.some(cp => cp.reason === 'Campaign End')) createCheckpoint('Campaign End');
       }
       clampTrackedVariables();
       writeContext(`[${room.title}] ${room.description}`);
@@ -1892,8 +1976,8 @@
         writeContext('Impossible d’aller par là.');
         return;
       }
-      variables.chaos += 1;
-      enterRoom(destinationId, `Move: ${gameState.roomId} -> ${destinationId}`);
+      createCheckpoint(`Déplacement: ${gameState.roomId} -> ${destinationId}`);
+      enterRoom(destinationId, '', { skipCheckpoint: true });
     }
 
     function clampTrackedVariables() {
@@ -1912,7 +1996,7 @@
 
     function applyVariableDelta(delta = {}) {
       Object.entries(delta).forEach(([key, value]) => {
-        if (key === 'moraleGroupe' || key === 'chaos' || key === 'castleAlertLevel' || key === 'ritualProgress') {
+        if (['moraleGroupe', 'chaos', 'castleAlertLevel', 'ritualProgress', 'publicTrust'].includes(key)) {
           variables[key] = (variables[key] ?? 0) + (Number(value) || 0);
           return;
         }
@@ -1999,6 +2083,7 @@
         checkpoint: branch.checkpoint ?? null,
         unlockActs: branch.unlockActs ?? [],
         setAct: branch.setAct ?? null,
+        timelineTrigger: branch.timelineTrigger ?? null,
         onSelect: branch.onSelect ?? null,
         setFlagFromState: branch.setFlagFromState ?? {}
       };
@@ -2058,7 +2143,6 @@
         baseOutcome = { ...baseOutcome, message: `${character.name} est capturé.`, characterChanges: [{ id: option.characterId, toState: 'captured' }] };
       } else if (option.resolution.risk === 'death') {
         if (character.state === 'active') baseOutcome = { ...baseOutcome, message: `${character.name} est grièvement blessé.`, characterChanges: [{ id: option.characterId, toState: 'injured' }] };
-        else if (character.state === 'injured') baseOutcome = { ...baseOutcome, message: `${character.name} s'effondre au sol.`, characterChanges: [{ id: option.characterId, toState: 'down' }] };
         else baseOutcome = { ...baseOutcome, message: `${character.name} affronte un risque mortel.`, characterChanges: [{ id: option.characterId, toState: 'dead', deathType: option.resolution.deathType ?? 'replaceable' }] };
       }
 
@@ -2071,7 +2155,8 @@
       });
       Object.entries(post.setFlagFromState ?? {}).forEach(([targetFlag, source]) => {
         if (source === 'cyanwrathDead') flags[targetFlag] = Boolean(flags.cyanwrathDead);
-        if (source === 'eggsOutcome') flags[targetFlag] = flags.eggsDestroyed ? 'destroyed' : (flags.eggsSaved ? 'saved' : 'unknown');
+        if (source === 'eggsOutcome') flags[targetFlag] = flags.eggsDestroyed ? 'destroyed'
+          : flags.eggsStolen ? 'taken' : flags.eggsLeft ? 'left' : flags.eggsSaved ? 'saved' : 'unknown';
         if (source === 'castleAlertLevel') flags[targetFlag] = variables.castleAlertLevel;
         if (source === 'factionTrust') flags[targetFlag] = JSON.stringify(variables.factionTrust);
       });
@@ -2080,7 +2165,6 @@
       });
       if (post.setAct) acts.current = post.setAct;
       if (post.gotoRoom) gameState.roomId = post.gotoRoom;
-      if (post.checkpoint) createCheckpoint(post.checkpoint);
       if (post.setFlags?.actICompleted) fireRosterTimelineTrigger('END_ACT_I');
       if (post.setFlags?.actIICompleted) fireRosterTimelineTrigger('END_ACT_II');
       if (post.timelineTrigger) fireRosterTimelineTrigger(post.timelineTrigger);
@@ -2113,12 +2197,17 @@
 
 
     function handleSpecialSelection(selectionKey) {
+      if (selectionKey === 'recover_checkpoint') {
+        triggerGameOver('serious', 'Le groupe ne dispose plus des capacités nécessaires à cette décision.');
+        return { endedByGameOver: true, handled: true };
+      }
       const sillyMessages = {
-        silly_wave_lennithon: 'Vous saluez Lennithon. Il répond par un cône d’acide, protocolaire et terminal.',
+        silly_lennithon: 'Votre diversion tourne à la farce. Les sentinelles vous encerclent avant la fin du spectacle.',
+        silly_wave_lennithon: 'Vous saluez Lennithon. Il répond par un souffle de foudre, protocolaire et terminal.',
         silly_join_cult: 'Votre offre de service enthousiasme les kobolds: ils exigent d’abord un sacrifice. Vous.',
         silly_dance_cyanwrath: 'Vous lancez un pas de danse martial. Cyanwrath, offensé artistiquement, met fin au spectacle.',
         silly_king_waterdeep: 'Vous réclamez la couronne de Waterdeep. Le protocole vous couronne surtout d’un bannissement immédiat.',
-        silly_dragon_selfie: 'Vous demandez un selfie en selle. Le dragon d’airain vous expédie dehors d’un souffle magistral.',
+        silly_dragon_selfie: 'Vous exigez de poser pour un portrait en selle. Le dragon d’airain vous expédie dehors d’un souffle magistral.',
         silly_accuse_dragons: 'Vous accusez toute la caravane d’être draconique. Les marchands votent votre exil immédiat.',
         silly_swamp_duck: 'Le canard réclame un tribut impérial en pain sec. Votre refus déclenche une embuscade absurde.',
         silly_tax_inspection: 'Votre inspection fiscale révèle zéro reçu. Les cultistes préfèrent vous jeter dehors.',
@@ -2128,6 +2217,10 @@
       const seriousMessages = {
         serious_reckless_bridge: 'Le pont cède sous la foule. Catastrophe stratégique: la manœuvre était explicitement insensée.'
       };
+      if (seriousMessages[selectionKey]) {
+        triggerGameOver('definitive', seriousMessages[selectionKey]);
+        return { endedByGameOver: true, handled: true };
+      }
       if (sillyMessages[selectionKey]) {
         triggerGameOver('silly', sillyMessages[selectionKey]);
         return { endedByGameOver: true, handled: true };
@@ -2171,10 +2264,7 @@
           writeContext('Le vote se fracture. L’alliance restera morcelée avec un appui militaire limité en Acte V.');
         }
         flags.actIVCompleted = true;
-        acts.current = 'ACT_V';
-        if (!acts.unlocked.includes('ACT_V')) acts.unlocked.push('ACT_V');
-        gameState.roomId = 'act_v_ritual';
-        createCheckpoint('End Act IV');
+        gameState.roomId = 'campaign_frontier';
         return { endedByGameOver: false, handled: true };
       }
 
@@ -2211,17 +2301,18 @@
     }
 
     function applyOptionEffects(option) {
-      if (gameState.roomId === 'greenest_keep') {
-        variables.chaos += 1;
+      if (option.id === 'ritual-resolve' && variables.finalBattle.decisiveActions < 3) {
+        writeContext('Le cercle tient encore: prenez au moins trois actions décisives avant de conclure.');
+        return { endedByGameOver: false, success: false };
       }
       if (option.onSelect) {
         const special = handleSpecialSelection(option.onSelect);
-        if (special.handled) return { endedByGameOver: special.endedByGameOver, success: !special.endedByGameOver };
+        if (special.handled) {
+          if (!special.endedByGameOver) prepareCurrentRoom();
+          return { endedByGameOver: special.endedByGameOver, success: !special.endedByGameOver };
+        }
       }
-      if (option.onSelect && seriousMessages[option.onSelect]) {
-        triggerGameOver('definitive', seriousMessages[option.onSelect]);
-        return { endedByGameOver: true };
-      }
+      if (option.onSelect) throw new Error(`Sélection inconnue: ${option.onSelect}`);
 
       const score = computeActionScore(option, option.characterId);
       const outcome = resolveOutcome(option, score);
@@ -2260,14 +2351,11 @@
         if (['ritual-break-ward', 'ritual-rally', 'ritual-sacrifice-gear'].includes(option.id)) {
           applyDecisiveAction(option.id, Boolean(outcome.success));
         }
-        if (option.id === 'ritual-resolve' && variables.finalBattle.decisiveActions < 3) {
-          writeContext('Le cercle tient encore: prenez au moins trois actions décisives avant de conclure.');
-          gameState.roomId = 'ritual_chamber';
-        }
       }
       if (!result.endedByGameOver && !result.success && option.onFailurePost) {
         applyPostEffects(option.onFailurePost);
       }
+      if (!result.endedByGameOver) prepareCurrentRoom();
       return result;
     }
 
@@ -2278,10 +2366,14 @@
         writeContext('Choix invalide. Utilisez choose <numéro>.');
         return;
       }
-      createCheckpoint(`Décision risquée: ${options[index - 1].id}`);
+      const menu = ['title_screen', 'credits'].includes(gameState.roomId)
+        || ['return_title', 'restart_campaign'].includes(options[index - 1].onSelect);
+      const decisionId = `${gameState.roomId}:${options[index - 1].id}`;
+      if (!menu && options[index - 1].id !== 'recover-checkpoint') createCheckpoint(`Avant décision: ${options[index - 1].id}`);
       const result = applyOptionEffects(options[index - 1]);
-      saveGame();
+      if (!menu && result?.success && !options[index - 1].repeatable) gameState.resolvedOptions.push(decisionId);
       if (!result?.endedByGameOver) describeCurrentRoom();
+      if (!menu) saveGame();
     }
 
     function showInventory() {
@@ -2439,7 +2531,7 @@
       if (parsed.verb === 'set') {
         const key = parsed.args[0];
         const value = Number(parsed.args[1]);
-        if (!key || Number.isNaN(value) || !(key in variables)) return writeContext('Usage: set <variable> <value>');
+        if (!gameState.debugMode || !key || !Number.isFinite(value) || typeof variables[key] !== 'number') return writeContext('En mode debug: set <variable numérique> <valeur>');
         variables[key] = value;
         clampTrackedVariables();
         showDebugState();
@@ -2448,7 +2540,7 @@
       if (parsed.verb === 'flag') {
         const key = parsed.args[0];
         const val = parsed.args[1];
-        if (!key || !['true','false'].includes(val) || !(key in flags)) return writeContext('Usage: flag <name> true/false');
+        if (!gameState.debugMode || !key || !['true','false'].includes(val) || typeof flags[key] !== 'boolean') return writeContext('En mode debug: flag <nom> true/false');
         flags[key] = val === 'true';
         showDebugState();
         return;
@@ -2535,8 +2627,8 @@
     configureTitleOptions();
     const shouldAutoload = hasSaveData() && URL_PARAMS.get('noautoload') !== '1';
     if (shouldAutoload) {
-      loadGame({ silent: true });
-      writeContext('Sauvegarde locale restaurée automatiquement.');
+      const loaded = loadGame({ silent: true });
+      writeContext(loaded ? 'Sauvegarde locale restaurée automatiquement.' : 'Sauvegarde illisible conservée. Vous pouvez lancer une nouvelle partie.');
     } else {
       gameState.roomId = 'title_screen';
       writeContext('Écran titre initialisé. Tapez "help" pour commencer.');
