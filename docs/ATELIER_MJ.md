@@ -49,8 +49,31 @@ Sources: `JDR DD5 2023.xlsx`, `Tyranny of dragons!4:12`; ouverture rédigée par
 3. Quelles autres approches le MJ aurait-il acceptées, avec quels risques,
    ressources engagées et compromis?
 
-Réponses: en attente. Aucun dialogue supplémentaire ni coût chiffré n'est
-considéré comme validé à ce stade.
+### Réponses du MJ intégrées
+
+- Arrivée: horreur, colère et réaction rapide. Aucun mot ou geste particulier
+  supplémentaire n'est rapporté; ne pas fabriquer une réplique canonique.
+- Linan: Bjolnir et Drek'Thar foncent les premiers, avec l'aide du groupe. Aucun
+  moment particulier avec la famille n'est rapporté.
+- Bjolnir refuse de tuer. Il utilise son charisme pour obtenir que les kobolds
+  survivants abandonnent le combat. Le récit et l'option de persuasion sont
+  corrigés pour conserver cette nuance.
+- Le MJ est ouvert aux approches bien expliquées et jouées en RP. Cette ouverture
+  autorise à proposer des variantes; elle ne fixe pas encore leurs coûts ou
+  leurs résultats. Aucun dialogue supplémentaire ni coût chiffré n'est validé.
+
+### Variantes à travailler, sans les qualifier de canoniques
+
+- Protéger la famille tout en offrant une issue aux adversaires.
+- Combiner une diversion et une extraction, plutôt que résoudre toute la scène
+  avec la seule compétence d'un personnage.
+- Faire intervenir la magie pour contrôler la situation, avec un effet dépendant
+  du sort et de l'intention, et non un résultat violent imposé.
+
+Prochain entretien conseillé: le duel de Drek'Thar contre Cyanwrath. Le journal
+donne déjà la défaite survivable puis la revanche. Approfondir ce que cette
+défaite représente pour Drek'Thar, la réaction du groupe et les marges de choix,
+sans redemander le résultat connu des combats.
 
 ## Fiche de scène réutilisable
 

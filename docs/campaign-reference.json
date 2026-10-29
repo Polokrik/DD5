@@ -70,7 +70,7 @@
         "sheets:Feuille 1!6"
       ],
       "death": null,
-      "notes": "Aucune mort permanente attestée dans ce journal. Parent adoptif des dragonnets noirs."
+      "notes": "Aucune mort permanente attestée dans ce journal. Parent adoptif des dragonnets noirs. Le MJ précise qu'il refuse de tuer et obtient la reddition des kobolds survivants par son charisme (gmConfirmations.verdureInterview)."
     },
     {
       "id": "darrin",
@@ -187,9 +187,10 @@
     {
       "id": "linan-rescue",
       "act": "ACT_I",
-      "fact": "Persuasion du premier groupe de kobolds puis défense de Linan et sa famille; refuge à la forteresse.",
+      "fact": "Persuasion du premier groupe de kobolds puis défense de Linan et sa famille. Bjolnir et Drek'Thar interviennent les premiers, aidés du groupe. Bjolnir refuse de tuer et obtient par son charisme la reddition des kobolds survivants; la famille rejoint la forteresse.",
       "sources": [
-        "Tyranny of dragons!8:12"
+        "Tyranny of dragons!8:12",
+        "gmConfirmations.verdureInterview"
       ],
       "implemented": "abridged"
     },
@@ -550,6 +551,12 @@
   "gmConfirmations": {
     "campaignStatus": "En cours, à l'invitation à Thay. La suite n'a pas été jouée.",
     "identities": ["Lunaaz/Luunaz = joueuse de Sislay Baite", "Malaar = Malar"],
+    "verdureInterview": {
+      "arrival": "Horreur, colère et réaction rapide. Aucune réplique ni autre réaction particulière rapportée.",
+      "linan": "Bjolnir et Drek'Thar foncent les premiers, assistés du reste de l'équipe. Aucun échange particulier avec la famille rapporté.",
+      "bjolnir": "Refuse de tuer et utilise son charisme pour faire abandonner le combat aux kobolds survivants.",
+      "alternatives": "Le MJ est ouvert aux approches expliquées et jouées en RP. Aucun coût ou résultat alternatif précis n'est encore fixé."
+    },
     "source": "Réponses explicites du MJ dans cette conversation, 29 octobre 2026"
   },
   "unresolved": [

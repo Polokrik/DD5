@@ -15,7 +15,7 @@ N’écoutant que leur courage, Bjolnir et Drek’Thar se ruent à la défense d
 
 La mission devait pourtant être bien différente. Envoyés par leur guilde pour escorter un marchand et retrouver un ami des fondateurs, Bjolnir HautMarteau, Ellyjobell, Sislay Baite, Darrin et Drek’Thar découvrent une cité livrée au pillage. À présent, il ne s’agit plus de terminer une escorte, mais d’empêcher que Verdure ne devienne un tombeau.
 
-Un premier groupe de kobolds leur barre la route. Bjolnir s’avance, et sa persuasion obtient ce qu’un affrontement aurait payé de sang: les créatures se retirent. Plus loin, d’autres assaillants encerclent une famille. Cette fois, les mots ne suffisent plus. Le Clan intervient, abat les kobolds et prend sous sa protection Linan et les siens.
+Un premier groupe de kobolds leur barre la route. Bjolnir s’avance, et sa persuasion obtient ce qu’un affrontement aurait payé de sang: les créatures se retirent. Plus loin, d’autres assaillants encerclent une famille. Bjolnir et Drek’Thar se portent les premiers à son secours, soutenus par leurs compagnons. Le combat s’engage, mais Bjolnir refuse de tuer. Usant de son charisme, il obtient que les kobolds survivants abandonnent la lutte. Le Clan prend sous sa protection Linan et les siens.
 
 La forteresse demeure le seul refuge. Pour l’atteindre, les aventuriers affrontent de nouveaux brigands et arrachent des villageois aux rues menacées par le dragon. Un prisonnier leur apprend que les pillards appartiennent à un culte préparant l’avènement de la Reine des Dragons. Lorsque les portes se referment enfin derrière les derniers réfugiés, la compagnie dispose d’un nom pour désigner l’ennemi. Elle ignore encore jusqu’où s’étendent ses desseins.
 
