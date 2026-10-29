@@ -50,6 +50,7 @@ test('toutes les salles et références des options sont valides', () => {
     for (const target of Object.values(room.exits)) assert.ok(rooms[target], `${id} -> ${target}`);
     for (const option of room.options) {
       if (option.characterId) assert.ok(g.run(`Boolean(characters[${JSON.stringify(option.characterId)}])`), option.id);
+      for (const id of option.requiresCharacters ?? []) assert.ok(g.run(`Boolean(characters[${JSON.stringify(id)}])`), option.id);
       for (const branch of ['onSuccess', 'onFailure', 'onFailurePost']) {
         if (option[branch]?.gotoRoom) assert.ok(rooms[option[branch].gotoRoom], `${option.id} -> ${option[branch].gotoRoom}`);
       }
@@ -123,6 +124,8 @@ test('rendu déterministe, aucune dépendance externe, saisie séparée', () => 
 });
 
 function choose(g, id) {
+  if (g.run('Boolean(gameState.lastReport)')) g.run('executePresentedChoice(1)');
+  if (id.startsWith('@')) { g.run(`moveTo(${JSON.stringify(id.slice(1))})`); return; }
   const index = g.run(`getAvailableOptions(gameState.roomId).findIndex(o => o.id === ${JSON.stringify(id)})`);
   assert.ok(index >= 0, `${id} absent dans ${g.run('gameState.roomId')}`);
   g.run(`chooseOption('${index + 1}')`);
@@ -130,36 +133,24 @@ function choose(g, id) {
 
 function journeyToFinale() {
   const g = boot();
-  for (const id of ['title-new', 'charge-civils', 'swift-diplomatie', 'mission-sanctuaire', 'sanctuaire-assaut',
-    'mission-moulin', 'moulin-assaut', 'vers-duel', 'duel-campagne', 'fin-acte', 'depart-camp']) choose(g, id);
+  const path = require('./campaign-path.cjs');
+  for (const id of path.opening) choose(g, id);
   assert.equal(g.run('acts.current'), 'ACT_II');
   assert.equal(g.run('characters.malar.state'), 'absent');
   assert.equal(g.run('characters.kairon.state'), 'absent');
-  g.run('handleCommand("n"); handleCommand("n"); handleCommand("n"); handleCommand("n"); handleCommand("e")');
-  assert.equal(g.run('gameState.roomId'), 'egg_chamber');
-  choose(g, 'voler-oeufs');
-  g.run('handleCommand("n"); handleCommand("e")');
-  choose(g, 'revanche-drekthar');
-  choose(g, 'act2-end');
+  for (const id of path.camp) choose(g,id);
   assert.equal(g.run('acts.current'), 'ACT_III');
   assert.equal(g.run('flags.dragonetsHatched'), true);
   assert.equal(g.run('flags.cyanwrathDead'), true);
   assert.equal(g.run('flags.WHAT_IF_CYANWRATH_DEAD'), false);
-  for (const id of ['caravane-marchands', 'caravane-arrivee', 'naerytar-entree', 'naerytar-portal', 'portal-traverse',
-    'lodge-reunion', 'skyreach-reunion', 'skyreach-return', 'act3-end', 'act5-muster']) choose(g, id);
+  for (const id of path.north) choose(g, id);
   assert.equal(g.run('acts.current'), 'ACT_IV');
   assert.equal(g.run('characters.kairon.state'), 'active');
   assert.equal(g.run('characters.malar.state'), 'active');
   assert.equal(g.run('characters.drekthar.state'), 'absent');
-  for (const id of ['council-open-session', 'defense-honnete', 'strategy-metallic']) choose(g, id);
-  if (g.run('gameState.roomId') === 'metallic_dragon_audience') choose(g, 'dragons-offer-alliance');
-  choose(g, 'resolve-council-session');
-  assert.equal(g.run('gameState.roomId'), 'campaign_frontier');
-  assert.equal(g.run('acts.unlocked.includes("ACT_V")'), false);
-  choose(g, 'simulate-finale');
+  for (const id of path.council) choose(g,id);
   assert.equal(g.run('acts.current'), 'ACT_V');
   assert.equal(g.run('flags.actIVCompleted'), true);
-  choose(g, 'finale-plan-room');
   return g;
 }
 
@@ -187,12 +178,12 @@ test('menu: continuer, effacer et consulter les crédits préservent le stockage
   const g = boot(); choose(g, 'title-new'); choose(g, 'charge-civils');
   const saved = g.storage.get('clanDestain.save.v1');
   const menu = boot(saved);
-  menu.run('gameState.roomId = "title_screen"; configureTitleOptions()');
+  menu.run('gameState.lastReport = null; gameState.roomId = "title_screen"; configureTitleOptions()');
   choose(menu, 'title-credits');
   assert.equal(menu.storage.get('clanDestain.save.v1'), saved);
   choose(menu, 'credits-back'); choose(menu, 'title-continue');
   assert.equal(menu.run('gameState.roomId'), 'swift_street');
-  menu.run('gameState.roomId = "title_screen"; configureTitleOptions()');
+  menu.run('gameState.lastReport = null; gameState.roomId = "title_screen"; configureTitleOptions()');
   choose(menu, 'title-clear');
   assert.equal(menu.storage.has('clanDestain.save.v1'), false);
 });
@@ -335,4 +326,99 @@ test('la chronique embarquée reste fidèle aux 18 chapitres du document', () =>
   });
   assert.equal(expected.length, 18);
   assert.deepEqual(boot().json('CHRONICLE_CHAPTERS'), expected);
+});
+
+test('le résultat reste lisible, survit au rechargement et se poursuit sans rejouer l’action', () => {
+  const g = boot();
+  for (const id of ['title-new', 'charge-civils', 'swift-diplomatie']) choose(g, id);
+  const report = g.json('gameState.lastReport');
+  assert.match(report.paragraphs.join(' '), /marteau.*Déposez vos armes/s);
+  assert.equal(g.run('getPresentedChoices().length'), 1);
+  assert.equal(g.run('getPresentedChoices()[0].option.id'), 'report-continue');
+  const resumed = boot(g.storage.get('clanDestain.save.v1'));
+  assert.deepEqual(resumed.json('gameState.lastReport'), report);
+  const before = resumed.json('({characters,flags,variables,checkpoints:gameState.checkpoints})');
+  resumed.run('executePresentedChoice(1)');
+  assert.equal(resumed.run('gameState.lastReport'), null);
+  assert.deepEqual(resumed.json('({characters,flags,variables,checkpoints:gameState.checkpoints})'), before);
+  assert.equal(boot(resumed.storage.get('clanDestain.save.v1')).run('gameState.lastReport'), null);
+  resumed.run('undoToCheckpoint()');
+  assert.equal(resumed.run('flags.scene2Done'), false);
+  assert.equal(resumed.run('gameState.roomId'), 'swift_street');
+});
+
+test('un parcours défavorable conserve les objectifs à reprendre, sans modifier les scores à la main', () => {
+  const g = boot();
+  for (const id of ['title-new','approche-riviere','swift-magie','mission-sanctuaire','tunnel-temple','sanctuaire-tunnel']) choose(g,id);
+  assert.equal(g.run('flags.sanctuaireDone'), false);
+  assert.equal(g.run('characters.sislay.state'), 'injured');
+  assert.equal(g.run('characters.ellyjobell.state'), 'injured');
+  assert.equal(g.run('characters.darrin.state'), 'injured');
+  assert.equal(g.run('getAvailableOptions(gameState.roomId).some(o=>o.id==="mission-sanctuaire")'), true);
+  assert.equal(g.run('getAvailableOptions(gameState.roomId).some(o=>o.id==="mission-moulin")'), false);
+  for (const id of ['mission-sanctuaire','tunnel-temple','temple-evacuation','mission-moulin','moulin-assaut']) choose(g,id);
+  assert.equal(g.run('flags.templeEvacuated'), true);
+  assert.equal(g.run('flags.moulinDone'), false);
+  assert.equal(g.run('getAvailableOptions(gameState.roomId).some(o=>o.id==="mission-moulin")'), true);
+  assert.equal(g.run('getAvailableOptions(gameState.roomId).some(o=>o.id==="vers-duel")'), false);
+  assert.match(g.json('gameState.lastReport.changes').join(' '), /Drek.*Blessé/);
+  g.run('undoToCheckpoint()');
+  assert.equal(g.run('gameState.roomId'), 'mill_approach');
+  assert.equal(g.run('characters.drekthar.state'), 'active');
+});
+
+test('une issue existe sans checkpoint et les scènes collectives respectent les absences', () => {
+  const g = boot(); choose(g,'title-new');
+  for (const [room,id,actor] of [['sanctuary_approach','temple-evacuation','ellyjobell'],['cult_camp','camp-liberation','darrin']]) {
+    g.run(`characters[${JSON.stringify(actor)}].state='dead'`);
+    assert.equal(g.run(`getAvailableOptions(${JSON.stringify(room)}).some(o=>o.id===${JSON.stringify(id)})`), false);
+  }
+  g.run('gameState.checkpoints=[]; triggerGameOver("serious","Test sans checkpoint")');
+  assert.equal(g.run('gameState.roomId'), 'title_screen');
+  g.run('executePresentedChoice(1)');
+  assert.equal(g.run('getPresentedChoices().some(c=>c.option.id==="title-new")'), true);
+  g.run('gameState.roomId="mill_approach"; gameState.checkpoints=[]; Object.values(characters).forEach(c=>c.state="captured")');
+  assert.equal(g.run('getAvailableOptions(gameState.roomId).some(o=>o.id==="return-home")'), true);
+  choose(g,'return-home');
+  assert.equal(g.run('gameState.roomId'), 'title_screen');
+  g.run('gameState.roomId="cult_trail"; moveTo("nord")');
+  assert.equal(g.run('gameState.roomId'), 'cult_trail');
+  assert.equal(g.run('getAvailableOptions(gameState.roomId).some(o=>o.id==="return-home")'), true);
+});
+
+test('les étapes sourcées sont visitées dans l’ordre et les anciennes sauvegardes restent lisibles', () => {
+  const g=boot(), path=require('./campaign-path.cjs'), visited=[];
+  for (const id of [...path.opening,...path.camp,...path.north,...path.council.slice(0,-2)]) {
+    choose(g,id); visited.push(g.run('gameState.roomId'));
+  }
+  const ordered=['old_tunnel','sanctuary_approach','mill_approach','dragon_assault','duel_field',
+    'leosin_return','act2_confrontation','egg_chamber','mondath_chamber','elturel_road',
+    'elturel_tournament','northern_road','carnath_roadhouse','diderius_chronicle',
+    'ice_sea_chronicle','iceberg_rebellion','second_council','metallic_dragon_audience','misty_forest_chronicle',
+    'neronvein_chronicle','neronvein_battle','thay_invitation','campaign_frontier'];
+  assert.deepEqual(visited.filter((id,i)=>ordered.includes(id)&&visited.indexOf(id)===i),ordered);
+  assert.equal(g.run('acts.unlocked.includes("ACT_V")'),false);
+  const saved=JSON.parse(g.storage.get('clanDestain.save.v1'));
+  for (const entry of [saved,...saved.gameState.checkpoints]) {
+    delete entry.gameState.lastReport;
+    for (const key of ['dragonRepelled','templeEvacuated','millSaved','confrontationDone']) delete entry.flags[key];
+  }
+  const loaded=boot(JSON.stringify(saved));
+  assert.equal(loaded.run('gameState.roomId'),'campaign_frontier');
+  assert.equal(loaded.run('flags.dragonRepelled'),true);
+  assert.equal(loaded.run('flags.templeEvacuated'),true);
+  loaded.run('rollbackToLastCheckpoint()');
+  assert.equal(loaded.run('flags.dragonRepelled'),true);
+  assert.equal(loaded.run('flags.templeEvacuated'),true);
+});
+
+test('les variantes ne ressuscitent pas Cyanwrath et ne font pas éclore les œufs laissés sur place', () => {
+  const g=boot(); choose(g,'title-new');
+  g.run('flags.cyanwrathDead=true; flags.WHAT_IF_CYANWRATH_DEAD=true; gameState.roomId="act2_confrontation"');
+  assert.equal(g.run('getAvailableOptions(gameState.roomId).some(o=>["duel-bjolnir","repli-furtif","revanche-drekthar"].includes(o.id))'),false);
+  assert.match(g.json('getScenePresentation(getCurrentRoom()).paragraphs').join(' '), /mort lors du duel de Verdure/);
+  g.run('gameState.roomId="elturel_road"; flags.eggsLeft=true; prepareCurrentRoom()');
+  assert.equal(g.run('flags.dragonetsHatched'),false);
+  assert.equal(g.json('gameState.inventory').includes('Boule'),false);
+  assert.match(g.json('getScenePresentation(getCurrentRoom()).paragraphs').join(' '), /sans les dragonnets/);
 });

@@ -1,8 +1,9 @@
 # Première tranche de l'interface illustrée
 
 La présentation adopte un livre d'aventure: fond ardoise, papier ivoire,
-accents cuivrés, titres en sérif et récit distinct des actions. Elle s'appuie sur
-le moteur réparé, avec les mêmes règles, flags et sauvegardes.
+accents cuivrés, titres en sérif et récit distinct des actions. La révision
+suivante de la lecture et des embranchements est détaillée dans
+[REVISION_JOUEUR.md](REVISION_JOUEUR.md).
 
 [Aperçu sur ordinateur](previews/title.png) · [Aperçu mobile](previews/mobile.png)
 
@@ -17,7 +18,11 @@ le moteur réparé, avec les mêmes règles, flags et sauvegardes.
   en français. Les personnages indisponibles ne donnent pas accès à leurs choix.
   Les touches numériques fonctionnent aussi sans ouvrir la saisie de commandes.
 - Portraits des compagnons présents, blessures visibles et fenêtre détaillant
-  les sept personnages, y compris les absents.
+  les sept personnages, y compris les absents: race, classe, personnalité,
+  biographie, équipement et sources des PDF. Une fiche est ouverte à la fois.
+- Résultats d’action lisibles avant de poursuivre, sauvegardés avec la partie;
+  vingt décisions ont un récit spécifique. Les choix indiquent leur intention
+  et leur risque, puis un bilan explique les changements effectifs.
 - Lecteur hors ligne des 18 chapitres complets. Le journal de session reste
   accessible dans un onglet séparé. Ce dernier retrace la session courante;
   le texte intégral de campagne demeure disponible après rechargement.
@@ -51,9 +56,10 @@ node tools/verify_paris.cjs
 git diff --check
 ```
 
-22 tests du moteur réussissent. Chromium valide les cinq actes, l'undo,
+27 tests du moteur réussissent. Chromium valide les cinq actes, l'undo,
 les sauvegardes et les interactions de la nouvelle interface. Le parcours au clic
-va de l'écran titre au sauvetage de Linan. Les tests couvrent aussi les
+va de l'écran titre à une fin simulée; un second parcours vérifie les échecs
+de la rivière, de la magie, du temple et du moulin. Les tests couvrent aussi les
 formulaires d'import valide/invalide, les raccourcis, les portraits et le lecteur
 des 18 chapitres. Aucun appel externe ni erreur JavaScript n'est observé.
 Les largeurs 320, 390, 768, 1024 et 1440 pixels sont contrôlées, ainsi que le

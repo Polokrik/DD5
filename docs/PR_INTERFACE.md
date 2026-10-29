@@ -1,26 +1,35 @@
-L'ancienne présentation affichait une console de commandes et un canvas composé
-de blocs. Cette tranche introduit une interface de livre d'aventure: titre
-illustré, scènes en pixel art de Verdure et Linan, portraits du groupe et cartes
-de choix cliquables. Les chiffres fonctionnent directement au clavier et dans
-la saisie; il n'est plus nécessaire de connaître la syntaxe `choose`.
+Les résultats d’action disparaissaient au changement de scène, des missions
+échouées étaient considérées comme accomplies et la progression sautait des
+épisodes du journal. Cette branche répare le moteur puis apporte une interface
+de livre d’aventure: choix cliquables, portraits et chronique intégrée. Les
+décisions importantes affichent désormais leur déroulement et leurs conséquences
+avant de poursuivre; un échec conserve une issue ou un retour au checkpoint.
 
-Le journal contient les 18 chapitres complets de la campagne, intégrés au HTML
-pour une lecture sans réseau. Les commandes classiques restent accessibles dans
-un panneau discret. Les sauvegardes, imports validés et checkpoints sont conservés.
-Le jeu reste un fichier autonome, sans dépendance runtime ni requête externe.
+Le parcours suit les étapes documentées de Verdure jusqu’à l’invitation de Thay.
+La revanche précède les œufs; leur éclosion se produit sur la route d’Elturel.
+Carnath, Diderius, la Mer de Glace et la Forêt Brumeuse ont des étapes de récit
+dans le jeu. Les alternatives restent distinctes, et la finale est une simulation
+facultative. Les sept profils reprennent les PDF et les précisions du MJ. Les
+ouvertures et plusieurs passages de la chronique ont été réécrits en phrases
+suivies, sans ajouter d’événement canonique.
 
-Validation: 22 tests du moteur réussis; Chromium parcourt les cinq actes et vérifie
-les clics, les raccourcis, le lecteur des 18 chapitres, les portraits, les imports,
-l'undo et le rechargement. Affichage contrôlé entre 320 et 1440 pixels, réduction
-des animations respectée, rendu déterministe et palette de scène ≤ 48 couleurs.
+Le jeu reste un seul HTML autonome. Les sauvegardes antérieures restent lisibles;
+le résultat courant est conservé au rechargement. Les sources primaires et les
+44 fichiers de Notre Paris restent identiques. La direction artistique détaillée
+couvre encore principalement Verdure; plusieurs étapes ultérieures restent des
+résumés et utilisent un décor d’ambiance générique.
 
-La direction artistique détaillée couvre le titre, l'approche de Verdure, la rue
-de Linan et la forteresse. Les autres salles utilisent la nouvelle interface avec
-un décor d'ambiance générique. Notre Paris et les sources de campagne sont inchangés.
+Validation: 27 tests moteur, parcours Chromium des cinq actes au clic, parcours
+défavorable sans réglage des scores et variantes Cyanwrath/œufs. Vérifications
+des imports, sauvegardes, états, morts, retours, trois plans finaux, quatre issues,
+clavier, 18 chapitres, sept fiches et affichages de 320 à 1440 pixels. Aucune
+requête externe ni erreur JavaScript; palette de scène ≤ 48 couleurs. Contrôle
+séparé des sources et de Notre Paris.
 
-Cette branche part de `repair/dd5-audit-campaign`. Comparer à cette branche pour
-revoir uniquement l'interface; comparer à `main` inclut également les réparations
-du moteur et la conservation de Notre Paris.
+La comparaison avec `main` inclut la remise en état initiale. La comparaison
+avec `repair/dd5-audit-campaign` permet de revoir l’interface et la révision
+narrative. Le diff HTML est en partie mécanique: les données des salles sont
+désormais présentées sur plusieurs lignes.
 
-Voir `docs/INTERFACE.md` et les captures `docs/previews/title.png` et
-`docs/previews/mobile.png`.
+Voir [le rapport de révision](REVISION_JOUEUR.md), [l’interface](INTERFACE.md) et
+les captures dans `docs/previews/`.

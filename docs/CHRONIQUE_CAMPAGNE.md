@@ -13,7 +13,7 @@ Un dragon bleu surplombe la cité, rugissant et accentuant la panique et le sent
 
 N’écoutant que leur courage, Bjolnir et Drek’Thar se ruent à la défense de la ville, talonnés par leurs compagnons.
 
-La mission devait pourtant être bien différente. Envoyés par leur guilde pour escorter un marchand et retrouver un ami des fondateurs, Bjolnir HautMarteau, Ellyjobell, Sislay Baite, Darrin et Drek’Thar découvrent une cité livrée au pillage. À présent, il ne s’agit plus de terminer une escorte, mais d’empêcher que Verdure ne devienne un tombeau.
+Leur guilde les avait envoyés escorter un marchand et retrouver un ami de ses fondateurs. Bjolnir HautMarteau, Ellyjobell, Sislay Baite, Darrin et Drek’Thar devaient donc entrer dans Verdure pour achever leur mission. Devant les maisons qui brûlent et les habitants pourchassés dans les rues, les aventuriers se portent au secours de ceux qui cherchent encore à rejoindre les remparts.
 
 Un premier groupe de kobolds leur barre la route. Bjolnir s’avance, et sa persuasion obtient ce qu’un affrontement aurait payé de sang: les créatures se retirent. Plus loin, d’autres assaillants encerclent une famille. Bjolnir et Drek’Thar se portent les premiers à son secours, soutenus par leurs compagnons. Le combat s’engage, mais Bjolnir refuse de tuer. Usant de son charisme, il obtient que les kobolds survivants abandonnent la lutte. Le Clan prend sous sa protection Linan et les siens.
 
@@ -29,13 +29,13 @@ Après un court repos, les aventuriers empruntent le tunnel. Des hordes de rats 
 
 Le temple est encerclé. Des ennemis s’acharnent sur ses accès, tandis qu’un groupe s’apprête à incendier la porte sud. Une illusion détourne leur attention. Profitant de l’ouverture, Bjolnir persuade le prêtre et les paysans de quitter leur abri. Ellyjobell étend une nappe de brouillard pour couvrir leur fuite. Les silhouettes des rescapés disparaissent dans la brume, puis retrouvent le chemin du château.
 
-Le répit est bref. Un garde annonce que les pillards tentent de mettre le feu au moulin. Avec lui, ce sont les réserves de nourriture de la ville qui risquent de disparaître. Le Clan repart, déjoue une embuscade et livre un nouveau combat. Le moulin tient.
+À peine les habitants du temple ont-ils retrouvé la sécurité des remparts qu’un garde apporte de nouvelles alarmes: les pillards tentent de mettre le feu au moulin. Sa destruction priverait les survivants d’une part des réserves dont ils auront besoin après le siège. Le Clan repart dans les rues, déjoue l’embuscade préparée près du bâtiment et repousse les assaillants au terme d’un nouveau combat.
 
-Alors que les aventuriers espèrent enfin reprendre souffle, le dragon attaque. La compagnie lui oppose un assaut combiné et parvient à le chasser. Verdure ne connaît toujours pas la paix, mais ses défenseurs viennent d’obtenir ce qui leur manquait le plus: la preuve qu’ils peuvent encore résister.
+Alors que les aventuriers espèrent enfin reprendre souffle, le dragon attaque la forteresse. La compagnie rejoint les défenseurs et concentre ses efforts contre la créature, jusqu’à la contraindre à s’éloigner. Les gardes restent sur les remparts pour surveiller son retour, tandis que le Clan peut enfin se retirer de cet affrontement.
 
 Au petit matin, une créature draconique se présente avec des otages et exige un duel. Drek’Thar relève le défi. Sous les yeux de ses compagnons, le guerrier affronte Langdedrosa Cyanwrath pour obtenir la libération des prisonniers. Malgré son courage, il finit par s’effondrer sous les coups de son adversaire.
 
-Drek’Thar survit. Le duel laisse cependant une dette que le guerrier n’oubliera pas.
+Ses compagnons le récupèrent vivant après la libération des otages et le ramènent derrière les murs. Drek’Thar gardera le souvenir de cette défaite jusqu’à sa prochaine rencontre avec Cyanwrath.
 
 ## Chapitre 3 — Dans le camp des pillards
 
@@ -65,7 +65,7 @@ Le Clan retrouve enfin Langdedrosa Cyanwrath, accompagné de deux berserkers. Dr
 
 Pendant que ses compagnons affrontent les berserkers, le guerrier tient tête au demi-dragon. Bjolnir est assommé par l’un des adversaires. La bataille menace de basculer. Mu par la colère et l’énergie du désespoir, Drek’Thar décapite Langdedrosa, puis se retourne pour porter secours au reste du groupe. Les berserkers finissent par tomber.
 
-La revanche est accomplie. Mais la grotte n’a pas livré tous ses dangers. Un coffre libère un gaz piégé lorsque Drek’Thar l’ouvre. Plus loin, au-delà des statues draconiques, le Clan découvre un enclos où deux créatures et un tentaculeur protègent des œufs de dragon noir. Après avoir vaincu leurs gardiens, les aventuriers en récupèrent deux.
+Le combat achevé, les aventuriers reprennent leur exploration des salles voisines. Drek’Thar ouvre un coffre dont le piège libère un gaz, puis la compagnie gagne un enclos situé au-delà des statues draconiques. Deux créatures et un tentaculeur y protègent des œufs de dragon noir. Après avoir vaincu leurs gardiens, les aventuriers en récupèrent deux et les emportent hors du nid.
 
 Sur le chemin du retour, les hommes envoyés par Frulam Mondath tentent de comprendre le tumulte. Ils trouvent le Clan et sont vaincus. Un passage secret mène finalement jusqu’aux appartements de leur maîtresse. Une nouvelle bataille, coûteuse en blessures, permet aux aventuriers de fouiller les lieux.
 
@@ -79,11 +79,7 @@ La compagnie prépare des chariots pour transporter les œufs. Une route barrée
 
 Les prisonniers sont finalement échangés à un marchand contre des chevaux. Plus loin, un pont fragile impose de décharger les chariots et de passer un par un. Malgré ces précautions, Bjolnir traverse les planches. La chute ne lui cause heureusement pas de dommage majeur.
 
-Durant la nuit, les œufs s’ouvrent.
-
-Deux dragonnets noirs émergent des coquilles et choisissent Bjolnir comme parent. Avec leur naissance, les chariots du Clan transportent désormais bien davantage qu’un butin sauvé du Culte. Il faut nourrir les petites créatures, organiser la chasse et entreprendre un dressage dont personne ne mesure encore toutes les difficultés.
-
-Les deux jeunes dragons seront connus sous les noms de Boule et Bill.
+Durant la nuit, les œufs s’ouvrent et deux dragonnets noirs émergent des coquilles. Ils choisissent Bjolnir comme parent, obligeant le paladin et ses compagnons à prendre en charge leur nourriture, à organiser la chasse et à entreprendre leur dressage pendant le voyage. Les deux jeunes dragons, que le Clan appellera Boule et Bill, réclament désormais une place dans les préparatifs de chaque étape.
 
 La route se poursuit. Deux ogres tentent d’imposer un péage, que Bjolnir négocie. Au loin, un second soleil annonce Elturel. Après sept jours de voyage et la rencontre malheureuse d’un barde dévoré par les dragonnets, la compagnie atteint enfin la ville. Bjolnir envoie les petits dragons établir un nid pendant que ses compagnons franchissent les portes.
 
@@ -121,11 +117,7 @@ Au point du jour, des bruits éveillent son attention. Une activité inhabituell
 
 Quatre prisonniers survivent. Leur interrogatoire révèle le rôle de Bog Luck: les hommes-lézards transportent les richesses pillées jusqu’au château Naerytar. Après une négociation, le Clan laisse le maître du relais sur place et emmène les captifs. L’un d’eux, Pressegueule, devient leur guide.
 
-Le tunnel de la taverne les conduit vers les marais.
-
-La progression est difficile. L’eau, la boue et l’humidité éprouvent les voyageurs et leur équipement. Lors d’une halte, les hommes-lézards rapportent de la nourriture et racontent ce qui les attend au château. Leur peuple subit les attaques des brutaciens, sans recevoir l’aide espérée de ses maîtres draconiques. Leur chaman est mort. Le dragon noir Voaraghamanthar, qu’ils vénèrent, semble les avoir abandonnés.
-
-Le Clan décide de les aider à se libérer de leurs oppresseurs.
+Le tunnel de la taverne les conduit vers les marais, où l’eau, la boue et l’humidité éprouvent les voyageurs et leur équipement. Lors d’une halte, les hommes-lézards rapportent de la nourriture et racontent ce qui les attend au château. Leur peuple subit les attaques des brutaciens sans recevoir l’aide espérée de ses maîtres draconiques. Depuis la mort de leur chaman, le dragon noir Voaraghamanthar, qu’ils vénèrent, semble les avoir abandonnés. Le Clan décide de les aider à se libérer de leurs oppresseurs.
 
 À l’approche de Naerytar, une patrouille les conduit aux longues-maisons. Les hommes-lézards y disposent d’armes prises à leurs ennemis. Un plan se dessine, malgré l’importance des forces adverses et la présence du chaman Farblaix Crache-Mépris. Les aventuriers choisissent de se dissimuler dans des caisses de trésor pour entrer au château.
 
@@ -133,7 +125,7 @@ L’infiltration mène à un assaut. Le chef des brutaciens est tué. Le Clan pa
 
 Ils ne le trouvent pas dans les étages. En revanche, une pièce piégée, une statue de Tiamat et des documents leur permettent de découvrir le mot-clé d’un cercle de téléportation situé dans les sous-sols. Avant de franchir le seuil, Darrin récupère encore deux sorts dans une chambre dangereuse.
 
-Le portail s’active. De l’autre côté, le froid les attend.
+Les renseignements recueillis permettent d’activer le portail. En le franchissant, les aventuriers quittent les sous-sols humides du château et débouchent dans le froid, devant un pavillon qu’ils devront à son tour explorer.
 
 ## Chapitre 8 — Talis et les portes de Cumulus
 
@@ -143,7 +135,7 @@ Ellyjobell retrouve enfin la personne qu’elle cherchait depuis Verdure. Talis 
 
 Talis fournit des renseignements, une bannière à cinq bandes colorées et deux mots de passe. En retour, des lettres doivent permettre de justifier sa coopération auprès des autorités.
 
-C’est à cette étape que la compagnie change de visage. Kairon, l’occultiste tieffelin, rejoint le groupe. Drek’Thar et la rôdeuse de Lunaaz prennent d’autres horizons. Leur départ ne clôt pas leur histoire, mais les chemins du Clan se séparent pour un temps.
+Au pavillon, Kairon, l’occultiste tieffelin, rejoint la compagnie, tandis que Drek’Thar et Sislay Baite la quittent. Les aventuriers poursuivront donc l’enquête avec cet allié, dont la magie et les connaissances seront bientôt sollicitées dans le château volant.
 
 Après une nuit de voyage, les aventuriers atteignent Parnast. Le village semble ordinaire, avec son auberge et son sanctuaire. Pourtant, une porte gigantesque et un pont-levis annoncent la présence d’un édifice qui ne relève pas de la mesure humaine.
 
@@ -205,11 +197,9 @@ Les compagnons fouillent les livres et comptent rapporter à Ilda un ouvrage de 
 
 Près du tombeau de Diderius, le Clan apprend que les Yuan-ti ont emmené Varam dans leur repaire. Une porte cachée s’ouvre. La persuasion de Bjolnir et les démonstrations de Kairon obtiennent d’abord une reddition, mais la progression suivante se paie de nouveaux affrontements. Un pont glissant, une nursery qu’ils tentent d’éviter, des serpents et des armures animées ralentissent encore les aventuriers.
 
-Ils retrouvent enfin la prêtresse et le nain.
+Les aventuriers retrouvent enfin la prêtresse et le nain. Une négociation s’engage sur les victimes laissées derrière eux, mais une parole vantant les massacres du groupe la fait échouer. La prêtresse tue Varam avant d’attaquer le Clan. Kairon dresse les ténèbres pour gêner ses adversaires et Darrin répond par le feu, sans parvenir à empêcher leur ennemie de s’échapper.
 
-Une négociation s’engage sur les victimes laissées derrière eux. Une parole vantant les massacres du groupe la fait échouer. La prêtresse tue Varam, puis attaque. Kairon dresse les ténèbres, Darrin répond par le feu. Leur adversaire finit par s’échapper.
-
-Le masque n’est pas là. Après avoir rendu le livre à Ilda, la compagnie obtient une vision de Severin en pleine incantation. Il a récupéré le masque blanc.
+Le masque est introuvable dans le repaire. Après avoir rendu le livre à Ilda, la compagnie obtient une vision de Severin en pleine incantation et découvre qu’il a récupéré le masque blanc.
 
 Le Clan repart vers Waterdeep avec la tête de Varam. La piste a livré des informations, mais l’objet qu’ils espéraient soustraire au Culte leur échappe.
 
@@ -243,11 +233,11 @@ La magicienne est une prisonnière qui ne souhaite pas partir sans les connaissa
 
 Bjolnir soigne un villageois, Mend’Neth, et repart avec lui et Marfulb pour convaincre les chasseurs de glace de se joindre au soulèvement. Le plan réussit. Kobolds, crapauds et habitants du village se retrouvent réunis autour du Clan.
 
-Arauthator n’affronte donc pas seulement une poignée d’aventuriers. Une armée s’élève contre lui dans son propre domaine. Le dragon blanc est tué.
+Lorsque les aventuriers affrontent Arauthator, ils disposent ainsi du concours de ceux qui vivaient sous sa domination. Le soulèvement rassemble les forces des kobolds, des crapauds et des habitants du village autour du Clan, qui parvient à tuer le dragon blanc dans son domaine.
 
 La victoire laisse des promesses à tenir. Les kobolds veulent un bateau pour repartir. Maccath réclame les connaissances de sa confrérie, tandis que Marfulb souhaite conserver les archives. Le Clan trouve une issue en proposant au chef des crapauds de rejoindre l’organisation de la magicienne. Le savoir pourra être conservé et étudié ensemble.
 
-Le voyage de retour vers Waterdeep se déroule sans difficulté. Pour une fois, les aventuriers ramènent de leur expédition autre chose que des prisonniers et des avertissements: ils ont soustrait une population entière à l’autorité d’un dragon.
+Le voyage de retour vers Waterdeep se déroule sans difficulté. Maccath peut rejoindre la Confrérie de l’Arcane, tandis que les peuples de l’iceberg n’auront plus à servir Arauthator. Le Clan doit maintenant rapporter au Conseil la mort du dragon et les accords conclus après la victoire.
 
 ## Chapitre 14 — Les conditions des anciens
 
@@ -263,7 +253,7 @@ Avant de s’y rendre, le Clan gagne le conseil des dragons sur le dos d’Elia.
 
 L’alliance exige également de rouvrir des blessures anciennes. Connerad Brawnanvil doit présenter les excuses des nains et restituer la dépouille de la nièce d’Otaaryliakkarnos. Melandrach doit s’incliner au nom des elfes pour le Dracorage.
 
-Le Clan repart avec des conditions précises, plutôt qu’avec une armée acquise à sa cause. Pour obtenir l’aide des dragons, il faudra encore convaincre les souverains.
+Le Clan repart en connaissant les engagements exigés par les dragons. Il devra les présenter aux souverains et obtenir leur accord avant de pouvoir compter sur cette aide contre le Culte.
 
 ## Chapitre 15 — Le gardien d’Altorn
 
@@ -297,7 +287,7 @@ Leur tentative de traverser le groupe de cultistes échoue. Une nouvelle bataill
 
 Dans les appartements du Dragophone, Ellyjobell découvre un journal. Le masque a été envoyé à Severin. D’autres notes évoquent des puissances plus grandes que Tiamat, au-delà de la porte. Une pierre d’obsidienne porte des caractères infernaux et sert à communiquer; une amulette montre les symboles du clan druidique de Khyber.
 
-Le passage secret les conduit devant un petit autel de Fenmarel Mestarine, puis vers une vaste salle. Neronvein les y attend. Au fond se devine le trésor. Le dragon apparaît.
+Le passage secret les conduit devant un petit autel de Fenmarel Mestarine, puis vers une vaste salle où Neronvein les attend. Les aventuriers distinguent son trésor au fond de la caverne lorsque le dragon apparaît, les obligeant à se préparer à l’affrontement.
 
 ## Chapitre 17 — La forêt reprend souffle
 
@@ -311,7 +301,9 @@ Le Clan récupère ce qu’il peut dans les décombres, dont l’épée de Neron
 
 Melandrach remercie le Clan. Les forces qu’il mobilisait pour protéger ses terres pourront être dirigées vers d’autres fronts. Reste la demande des dragons. Au terme des négociations, le roi accepte de s’incliner, à condition que le souverain des nains fasse de même. Il prend également en charge l’épée de Neronvein.
 
-L’alliance progresse, mais chaque engagement demeure lié aux décisions des autres. Les victoires dans les forêts et les cavernes doivent encore trouver leur prolongement autour des tables du Conseil.
+Leosin vient bientôt chercher les aventuriers pour une nouvelle session du Conseil. Un message de Thay propose une audience auprès des mages rouges, dont une faction menée par Rath Modar a rejoint les forces draconiques. Lady Silverhand demande au Clan de représenter le Conseil, ou d’en escorter les délégués jusqu’au plateau où doit se tenir la rencontre.
+
+La proposition inspire peu d’enthousiasme aux compagnons. Islabus Gloomward d’Athkatla, le maître de Darrin devenu mage rouge, leur explique pourtant que Szass Tam s’inquiète lui aussi de Tiamat et des puissances qui pourraient se trouver derrière elle. Le Clan doit encore décider comment répondre à cette invitation.
 
 ## Chapitre 18 — L’histoire reste à écrire
 
@@ -337,8 +329,8 @@ phrases et les descriptions de transition sont une rédaction, pas de nouveaux
 | 10–11 | `Rise of Tiamat`, lignes 3–95 |
 | 12–13 | `Rise of Tiamat`, lignes 96–157 |
 | 14 | `Rise of Tiamat`, lignes 159–182 |
-| 15–17 | `Rise of Tiamat`, lignes 183–262 |
-| 18 | Ouverture littéraire, sans nouvel événement. L’invitation à Thay reste documentée dans le référentiel (`Rise of Tiamat`, lignes 264–274). |
+| 15–17 | `Rise of Tiamat`, lignes 183–274, jusqu’à l’invitation à Thay |
+| 18 | Ouverture littéraire, sans nouvel événement. |
 
 Les fiches PDF précisent les identités et classes. Les variantes orthographiques
 du journal sont harmonisées pour la lisibilité, sans fusionner automatiquement

@@ -3,6 +3,7 @@ const assert = require('node:assert/strict');
 const fs = require('node:fs');
 const http = require('node:http');
 const { chromium } = require('playwright');
+const path = require('./campaign-path.cjs');
 const html = fs.readFileSync(require('node:path').join(__dirname, '../index.html'));
 
 (async () => {
@@ -23,10 +24,14 @@ const html = fs.readFileSync(require('node:path').join(__dirname, '../index.html
     await page.goto(`http://127.0.0.1:${server.address().port}`);
     const input = page.locator('#commandInput');
     async function command(value) { await page.locator('#commandPanel').evaluate(e => e.open = true); await input.fill(value); await input.press('Enter'); }
+    async function resume() {
+      if (await page.locator('[data-choice="report-continue"]').count()) await page.locator('[data-choice="report-continue"]').click();
+    }
     async function choose(id) {
-      const index = await page.evaluate(id => getAvailableOptions(gameState.roomId).findIndex(o => o.id === id), id);
-      assert.ok(index >= 0, `Option indisponible: ${id}`);
-      await command(`choose ${index + 1}`);
+      await resume();
+      const selector = id.startsWith('@') ? `[data-direction="${id.slice(1)}"]` : `[data-choice="${id}"]`;
+      assert.equal(await page.locator(selector).count(), 1, `${id} absent dans ${await page.evaluate(() => gameState.roomId)}`);
+      await page.locator(selector).click();
     }
     assert.equal(await page.locator('#choiceList .choice-card').count(), 3);
     assert.equal(await page.locator('[data-choice="title-continue"]').isDisabled(), true);
@@ -46,8 +51,11 @@ const html = fs.readFileSync(require('node:path').join(__dirname, '../index.html
     await page.locator('[data-choice="charge-civils"]').click();
     assert.equal(await page.evaluate(() => gameState.roomId), 'swift_street');
     await page.screenshot({ path: '/tmp/dd5-ui-linan.png', fullPage: true });
-    await page.locator('[data-choice="swift-diplomatie"]').click();
+    assert.equal(await page.locator('#sceneNarrative p').count(), 2);
+    await choose('swift-diplomatie');
     assert.equal(await page.evaluate(() => flags.scene2Done), true);
+    assert.match(await page.locator('#sceneNarrative').innerText(), /marteau.*Déposez vos armes/s);
+    await page.screenshot({ path: '/tmp/dd5-ui-action.png', fullPage: true });
     await page.locator('#undoButton').click();
     assert.equal(await page.evaluate(() => gameState.roomId), 'swift_street');
     await command('undo');
@@ -63,19 +71,14 @@ const html = fs.readFileSync(require('node:path').join(__dirname, '../index.html
     assert.equal(await page.evaluate(() => gameState.roomId), 'hill_overlook');
     await command('go dragon');
     assert.equal(await page.evaluate(() => gameState.roomId), 'hill_overlook');
-    assert.match(await page.locator('#feedback').innerText(), /GAME OVER/);
+    assert.match(await page.locator('#sceneTitle').innerText(), /tentative a échoué/);
+    assert.equal(await page.locator('[data-choice="report-continue"]').isVisible(), true);
     await choose('charge-civils'); await command('undo');
     assert.equal(await page.evaluate(() => gameState.roomId), 'hill_overlook');
-    for (const id of ['charge-civils', 'swift-diplomatie', 'mission-sanctuaire', 'sanctuaire-assaut',
-      'mission-moulin', 'moulin-assaut', 'vers-duel', 'duel-campagne', 'fin-acte', 'depart-camp']) await choose(id);
-    for (const direction of ['n', 'n', 'n', 'n', 'e']) await command(direction);
-    await choose('voler-oeufs'); await command('n'); await command('e');
-    for (const id of ['revanche-drekthar', 'act2-end', 'caravane-marchands', 'caravane-arrivee',
-      'naerytar-entree', 'naerytar-portal', 'portal-traverse', 'lodge-reunion', 'skyreach-reunion',
-      'skyreach-return', 'act3-end', 'act5-muster', 'council-open-session', 'defense-honnete', 'strategy-metallic']) await choose(id);
-    if (await page.evaluate(() => gameState.roomId === 'metallic_dragon_audience')) await choose('dragons-offer-alliance');
-    for (const id of ['resolve-council-session', 'simulate-finale', 'finale-plan-room', 'plan-sabotage', 'sabotage-identify',
-      'sabotage-stealth', 'sabotage-arcana', 'ritual-rally', 'ritual-rally', 'ritual-rally', 'ritual-resolve']) await choose(id);
+    for (const id of [...path.opening.slice(1), ...path.camp, ...path.north, ...path.council,
+      'plan-sabotage', 'sabotage-identify', 'sabotage-stealth', 'sabotage-arcana',
+      'ritual-rally', 'ritual-rally', 'ritual-rally', 'ritual-resolve']) await choose(id);
+    await resume();
     assert.equal(await page.evaluate(() => flags.campaignComplete && flags.actVCompleted), true);
     await command('save');
     const before = await page.evaluate(() => JSON.stringify({ characters, flags, variables, acts, room: gameState.roomId }));
@@ -93,6 +96,31 @@ const html = fs.readFileSync(require('node:path').join(__dirname, '../index.html
     assert.deepEqual(errors, []);
     assert.deepEqual(external, []);
     await page.screenshot({ path: '/tmp/dd5-browser-smoke.png', fullPage: true });
+    // Variante défavorable au clic, sans modifier les scores ni les états du groupe.
+    await page.locator('#saveMenu summary').click(); await page.locator('#restartButton').click();
+    for (const id of ['approche-riviere','swift-magie','mission-sanctuaire','tunnel-temple','sanctuaire-tunnel']) await choose(id);
+    assert.equal(await page.evaluate(() => flags.sanctuaireDone), false);
+    assert.match(await page.locator('#reportChanges').innerText(), /Sislay.*Blessé/);
+    for (const id of ['mission-sanctuaire','tunnel-temple','temple-evacuation','mission-moulin','moulin-assaut']) await choose(id);
+    assert.equal(await page.evaluate(() => flags.templeEvacuated), true);
+    assert.equal(await page.evaluate(() => flags.moulinDone), false);
+    assert.equal(await page.locator('[data-choice="report-continue"]').isVisible(), true);
+    await page.locator('#undoButton').click();
+    assert.equal(await page.evaluate(() => gameState.roomId), 'mill_approach');
+    assert.equal(await page.evaluate(() => characters.drekthar.state), 'active');
+    await page.locator('#saveMenu summary').click(); await page.locator('#titleButton').click();
+    assert.equal(await page.locator('[data-choice="title-continue"]').isEnabled(), true);
+    await choose('title-continue');
+    assert.equal(await page.evaluate(() => gameState.roomId), 'mill_approach');
+    // Deux divergences conservées: Cyanwrath vaincu tôt et œufs laissés dans la grotte.
+    await page.locator('#saveMenu summary').click(); await page.locator('#restartButton').click();
+    for (const id of [...path.opening.slice(1), ...path.camp.slice(0,-2)]) {
+      await choose(({ 'duel-campagne':'duel-accept', 'revanche-drekthar':'confrontation-passee', 'voler-oeufs':'laisser-oeufs' })[id] ?? id);
+    }
+    await resume();
+    assert.equal(await page.evaluate(() => flags.WHAT_IF_CYANWRATH_DEAD), true);
+    assert.equal(await page.evaluate(() => flags.dragonetsHatched || gameState.inventory.includes('Boule')), false);
+    assert.match(await page.locator('#sceneNarrative').innerText(), /sans les dragonnets/);
     const mobile = await browser.newPage({ viewport: { width: 390, height: 844 }, isMobile: true, hasTouch: true, reducedMotion: 'reduce' });
     mobile.on('pageerror', e => errors.push(e.message));
     await mobile.goto(`http://127.0.0.1:${server.address().port}`);
@@ -102,7 +130,12 @@ const html = fs.readFileSync(require('node:path').join(__dirname, '../index.html
     assert.ok(await mobile.locator('#choiceList .choice-card').first().evaluate(e => e.getBoundingClientRect().height >= 44));
     await mobile.screenshot({ path: '/tmp/dd5-ui-mobile.png', fullPage: true });
     await mobile.locator('#companyButton').click();
-    assert.equal(await mobile.locator('.party-detail').count(), 7);
+    assert.equal(await mobile.locator('#companyRoster button').count(), 7);
+    await mobile.locator('#companyRoster [data-character="drekthar"]').click();
+    assert.match(await mobile.locator('#companyDetails').innerText(), /Demi-orc/);
+    await mobile.locator('#companyRoster [data-character="malar"]').click();
+    assert.match(await mobile.locator('#companyDetails').innerText(), /Demi-elfe.*marque.*cou/s);
+    await mobile.screenshot({ path: '/tmp/dd5-ui-company.png', fullPage: true });
     await mobile.locator('[data-close="companyDialog"]').click();
     await mobile.locator('#commandPanel').evaluate(e => e.open = true);
     await mobile.locator('#commandInput').fill('1'); await mobile.locator('#commandInput').press('Enter');
@@ -117,9 +150,17 @@ const html = fs.readFileSync(require('node:path').join(__dirname, '../index.html
       await mobile.setViewportSize({ width, height: 844 });
       assert.equal(await mobile.evaluate(() => document.documentElement.scrollWidth <= innerWidth), true, `Débordement à ${width}px`);
     }
+    await mobile.setViewportSize({width:320,height:844});
+    await mobile.locator('#companyButton').click();
+    assert.equal(await mobile.locator('#companyRoster button').evaluateAll(buttons=>buttons.every(button=>{
+      const r=button.getBoundingClientRect(); return r.left>=0 && r.right<=innerWidth && r.top>=0 && r.bottom<=innerHeight;
+    })),true,'Les sept personnages doivent être visibles sans défilement horizontal.');
+    assert.equal(await mobile.evaluate(() => document.documentElement.scrollWidth <= innerWidth), true);
     assert.deepEqual(errors, []);
     await mobile.close();
     console.log('Chromium : cinq actes, finale, rollback, sauvegarde/rechargement, clavier et rendu OK ; aucune erreur JS ni requête externe.');
+    console.log('Parcours défavorable: échecs rivière, magie, temple et moulin; nouvelle tentative, undo, accueil et reprise OK.');
+    console.log('Variantes au clic: Cyanwrath vaincu dès Verdure, confrontation adaptée et absence de dragonnets sans les œufs OK.');
     console.log('Interface : clics, raccourcis numériques, chronique 18 chapitres, portraits, mobile 390 px, mouvements réduits et palette ≤ 48 couleurs OK.');
   } finally {
     if (browser) await browser.close();

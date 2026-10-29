@@ -71,7 +71,28 @@
       ],
       "death": null,
       "notes": "Aucune mort permanente attestée dans ce journal. Parent adoptif des dragonnets noirs. Le MJ précise qu'il refuse de tuer et obtient la reddition des kobolds survivants par son charisme (gmConfirmations.verdureInterview).",
-      "personality": { "traits": ["refuse de tuer", "protecteur", "charismatique"], "source": "gmConfirmations.verdureInterview" }
+      "personality": { "traits": ["refuse de tuer", "protecteur", "charismatique"], "source": "gmConfirmations.verdureInterview" },
+      "sheetDetails": {
+        "background": "Acolyte",
+        "equipment": [
+          "Marteau de frappe précise",
+          "Bouclier",
+          "Livre de prières et symbole sacré"
+        ],
+        "laterEquipment": [
+          "Armure de plates résistante à la foudre",
+          "Gantelets de force d'ogre"
+        ],
+        "biography": [
+          "Cette confiance a aussi ses limites: il peut croire trop facilement ceux qui disent partager sa foi. Le souci des plus faibles, affirmé dans son serment de rédemption, le pousse à prendre des risques personnels pour leur venir en aide.",
+          "Son marteau et son bouclier accompagnent ses interventions. Au cours du sauvetage de Linan, il se porte au secours de la famille avec Drek'Thar, puis obtient par la persuasion que les kobolds survivants abandonnent le combat."
+        ],
+        "sources": [
+          "Bjolnir.pdf, pages 1–2",
+          "Précisions du MJ: refus de tuer et sauvetage de Linan"
+        ],
+        "scope": "Description de la fiche et précisions du MJ; équipement tardif distinct, sans attribution rétroactive au début du jeu."
+      }
     },
     {
       "id": "darrin",
@@ -88,7 +109,29 @@
       ],
       "death": null,
       "notes": "Le classeur visuel et le MJ disent « Mage »; la fiche précise ensorceleur de magie sauvage. Le MJ lie Kloumsihande à clumsy et à sa tendance à faire exploser les choses.",
-      "personality": { "traits": ["puissant", "nombreux sorts", "tendance à faire exploser les choses"], "source": "gmConfirmations.personalityInterview" }
+      "personality": { "traits": ["puissant", "nombreux sorts", "tendance à faire exploser les choses"], "source": "gmConfirmations.personalityInterview" },
+      "sheetDetails": {
+        "background": "Étudiant maladroit",
+        "equipment": [
+          "Focalisateur arcanique",
+          "Dague",
+          "Arbalète légère",
+          "Encre et plume"
+        ],
+        "laterEquipment": [
+          "Bâton du Miroir Brisé",
+          "Bâton de neutralisation"
+        ],
+        "biography": [
+          "Les artefacts magiques l'attirent au point de lui faire oublier la prudence. Sa fiche le dit sujet aux accidents lorsqu'il les manipule, et le MJ rappelle sa tendance à faire exploser les choses. Ce goût de l'expérimentation accompagne cependant une réelle curiosité et une grande variété de moyens d'action.",
+          "Il voyage avec un focalisateur, une dague et de quoi écrire. Le surnom Kloumsihande renvoie à sa maladresse; il ne résume pas toutes les possibilités de sa magie."
+        ],
+        "sources": [
+          "darrin.pdf, pages 1–3",
+          "Précisions du MJ: puissance, variété des sorts et origine du nom"
+        ],
+        "scope": "Description de la fiche et précisions du MJ; équipement tardif distinct, sans attribution rétroactive au début du jeu."
+      }
     },
     {
       "id": "drekthar",
@@ -108,7 +151,29 @@
       ],
       "death": null,
       "notes": "Défaite au premier duel, revanche mortelle pour Cyanwrath; départ ultérieur, pas une mort. La formule du MJ « un vrai orc » est enregistrée comme description du tempérament; la race demi-orc reste celle de la fiche.",
-      "personality": { "traits": ["tempérament très orc", "aime se battre", "combattant compétent"], "source": "gmConfirmations.personalityInterview" }
+      "personality": { "traits": ["tempérament très orc", "aime se battre", "combattant compétent"], "source": "gmConfirmations.personalityInterview" },
+      "sheetDetails": {
+        "background": "Noble",
+        "equipment": [
+          "Épée à deux mains",
+          "Cotte de mailles",
+          "Arbalète légère",
+          "Chevalière portée autour du cou"
+        ],
+        "laterEquipment": [
+          "Épée à deux mains de feu"
+        ],
+        "biography": [
+          "Il n'a jamais vraiment connu l'appartenance à une famille et recherche l'approbation du groupe. Le manque de confiance et l'impétuosité inscrits dans sa fiche permettent de comprendre ce que peut représenter pour lui un défi lancé devant les autres.",
+          "Il manie les armes à deux mains et porte une chevalière suspendue à une chaîne d'argent. À Verdure, il accepte le duel de Cyanwrath pour délivrer les otages; dans la grotte du Culte, leur second affrontement lui donne l'occasion de prendre sa revanche."
+        ],
+        "sources": [
+          "drekthar.pdf, pages 1–2",
+          "Journal, Tyranny of dragons!33:35 et !71:72",
+          "Précisions du MJ: tempérament et maîtrise du combat"
+        ],
+        "scope": "Description de la fiche et précisions du MJ; équipement tardif distinct, sans attribution rétroactive au début du jeu."
+      }
     },
     {
       "id": "ellyjobell",
@@ -126,7 +191,30 @@
       ],
       "death": null,
       "notes": "Active dès Verdure. Ni absente ni érudite disparue.",
-      "personality": { "traits": ["intelligente", "gentille", "ingénieuse", "très naïve", "premier degré"], "source": "gmConfirmations.personalityInterview" }
+      "personality": { "traits": ["intelligente", "gentille", "ingénieuse", "très naïve", "premier degré"], "source": "gmConfirmations.personalityInterview" },
+      "sheetDetails": {
+        "background": "Sauvageonne",
+        "equipment": [
+          "Bâton",
+          "Armure de cuir",
+          "Focalisateur druidique",
+          "Nécessaire d'herboristerie"
+        ],
+        "laterEquipment": [
+          "Bouclier régénérateur",
+          "Statuette du Gardien de l'Arbre"
+        ],
+        "biography": [
+          "La protection du monde naturel compte beaucoup pour elle. Sa colère se porte contre ceux qui ont saccagé sa terre, tandis que sa curiosité et son sens pratique lui font chercher des solutions dans les plantes, les bêtes et les transformations druidiques.",
+          "Elle possède un bâton, un focalisateur et un nécessaire d'herboristerie. Dans le tunnel de Verdure, elle éloigne les rats en leur parlant et en s'aidant d'une illusion. Sa fiche mentionne aussi une faible résistance aux boissons alcoolisées."
+        ],
+        "sources": [
+          "Ellyjobell.pdf, pages 1–3",
+          "Journal, Tyranny of dragons!24 et !27",
+          "Précisions du MJ: intelligence, gentillesse, naïveté et premier degré"
+        ],
+        "scope": "Description de la fiche et précisions du MJ; équipement tardif distinct, sans attribution rétroactive au début du jeu."
+      }
     },
     {
       "id": "sislay",
@@ -143,7 +231,30 @@
       ],
       "death": null,
       "notes": "Le MJ confirme que Lunaaz/Luunaz est la joueuse de Sislay. Ce n'est pas un personnage supplémentaire.",
-      "personality": { "traits": ["discrète", "peu bavarde", "efficace", "pleine de ressources"], "source": "gmConfirmations.personalityInterview" }
+      "personality": { "traits": ["discrète", "peu bavarde", "efficace", "pleine de ressources"], "source": "gmConfirmations.personalityInterview" },
+      "sheetDetails": {
+        "background": "Rôdeuse",
+        "equipment": [
+          "Rapière",
+          "Arc court et carquois",
+          "Armure de cuir",
+          "Dagues",
+          "Outils de voleur"
+        ],
+        "laterEquipment": [
+          "Arc long"
+        ],
+        "biography": [
+          "Sa fiche la rattache à la voie du chasseur et mentionne l'usage des armes de duel, du tir à l'arc et d'outils de voleur. Les champs consacrés à sa biographie sont vides: aucun passé supplémentaire ne lui est attribué.",
+          "Elle participe à l'arrivée du Clan à Verdure, puis quitte le groupe à l'étape du pavillon, avant l'entrée de Malar dans la compagnie."
+        ],
+        "sources": [
+          "sislay.pdf, pages 1–4",
+          "Journal, Tyranny of dragons!5 et !203",
+          "Précisions du MJ: discrétion, efficacité et ressources"
+        ],
+        "scope": "Description de la fiche et précisions du MJ; équipement tardif distinct, sans attribution rétroactive au début du jeu."
+      }
     },
     {
       "id": "kairon",
@@ -159,7 +270,30 @@
       ],
       "death": null,
       "notes": "Présent dans l'ancienne campagne de Phandelver, ce qui ne prouve pas sa présence à Greenest. Sa table d'échec critique définit des possibilités, pas des événements subis.",
-      "personality": { "traits": ["sournois", "intelligent", "un peu froid", "sarcastique", "bon fond"], "source": "gmConfirmations.personalityInterview" }
+      "personality": { "traits": ["sournois", "intelligent", "un peu froid", "sarcastique", "bon fond"], "source": "gmConfirmations.personalityInterview" },
+      "sheetDetails": {
+        "background": "Sauvageon",
+        "equipment": [
+          "Focalisateur arcanique",
+          "Bâton",
+          "Armure de cuir clouté",
+          "Dagues"
+        ],
+        "laterEquipment": [
+          "Cape rouge",
+          "Gantelets de puissance d'ogre"
+        ],
+        "biography": [
+          "Il a quitté son foyer pour découvrir le monde et cherche à gagner la gloire pour lui-même et pour son clan. Sa fiche évoque des visions d'un désastre imminent qu'il veut empêcher, ainsi qu'une rancune tenace envers ceux qui l'ont offensé.",
+          "La richesse et les bonnes manières ne lui inspirent pas de respect particulier. Son pacte du Tome et sa magie d'origine fiélonne complètent ses moyens d'action. Il rejoint les aventuriers au pavillon de Talis."
+        ],
+        "sources": [
+          "kairon.pdf, pages 1–4",
+          "Journal, Tyranny of dragons!203",
+          "Précisions du MJ: froideur, sarcasme et bon fond"
+        ],
+        "scope": "Description de la fiche et précisions du MJ; équipement tardif distinct, sans attribution rétroactive au début du jeu."
+      }
     },
     {
       "id": "malar",
@@ -177,8 +311,33 @@
         "DD5 Persos.xlsx:Feuille 1!5"
       ],
       "death": null,
-      "notes": "Le MJ confirme que Malaar et Malar sont le même personnage. Sa biographie décrit un membre secret des Bardes. Les prompts qui le placent dans la caravane contredisent le journal.",
-      "personality": { "traits": ["vrai roublard", "sournois"], "source": "gmConfirmations.personalityInterview" }
+      "notes": "Le MJ confirme que Malaar et Malar sont le même personnage. Sa biographie décrit un membre secret des Bardes. DD5 Persos.xlsx, Feuille 1!5, associe Malar au joueur Rojo; les mentions d'El Rojo dans le journal sont ainsi rattachées à son personnage. Les prompts qui le placent dans la caravane contredisent le journal.",
+      "personality": { "traits": ["vrai roublard", "sournois"], "source": "gmConfirmations.personalityInterview" },
+      "sheetDetails": {
+        "background": "Voleur",
+        "equipment": [
+          "Rapière",
+          "Arc court",
+          "Dagues",
+          "Cuir clouté",
+          "Outils de voleur"
+        ],
+        "laterEquipment": [
+          "Cape permettant un déplacement magique",
+          "Grappin"
+        ],
+        "biography": [
+          "Une marque sur son cou lui rappelle cet héritage et les rejets qu'il a subis. Il la garde secrète. Sa mère a disparu et la biographie laisse incertain le sort exact de son père.",
+          "Son habileté de voleur, ses talents de baratineur et sa discrétion expliquent sa manière sournoise d'aborder les situations. Sa biographie mentionne une affiliation secrète à la guilde des Bardes. Il rejoint le Clan dans le château volant, bien après les événements de Verdure."
+        ],
+        "sources": [
+          "malar.pdf, pages 1–2",
+          "malaar bio.docx, paragraphes 1–3",
+          "Journal, Tyranny of dragons!226",
+          "Précisions du MJ: Malar et Malaar sont le même personnage"
+        ],
+        "scope": "Description de la fiche et précisions du MJ; équipement tardif distinct, sans attribution rétroactive au début du jeu."
+      }
     }
   ],
   "events": [

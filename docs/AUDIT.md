@@ -3,6 +3,8 @@
 Ce rapport décrit la première remise en état du moteur. La tranche d'interface
 réalisée ensuite est documentée dans [INTERFACE.md](INTERFACE.md); les références
 au squelette graphique ci-dessous décrivent l'état antérieur à cette tranche.
+Les corrections ultérieures de lecture, d’ordre des scènes et d’échecs sont
+documentées dans [REVISION_JOUEUR.md](REVISION_JOUEUR.md).
 
 État de référence: `e949a95cbbe93373560888ae93366a98c65d6c35`, qui était la tête
 distante de `main` lors de la vérification. Travail sur
