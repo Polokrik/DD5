@@ -1,0 +1,43 @@
+{
+  "expo": {
+    "name": "Guide de Paris",
+    "slug": "paris-guide",
+    "version": "1.0.0",
+    "scheme": "parisguide",
+    "orientation": "portrait",
+    "userInterfaceStyle": "automatic",
+    "newArchEnabled": true,
+    "splash": {
+      "resizeMode": "contain",
+      "backgroundColor": "#0EA5E9"
+    },
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "com.duo.parisguide",
+      "config": {
+        "googleMapsApiKey": "YOUR_IOS_GOOGLE_MAPS_KEY"
+      },
+      "infoPlist": {
+        "NSLocationWhenInUseUsageDescription": "Afficher les lieux du guide autour de vous."
+      }
+    },
+    "android": {
+      "package": "com.duo.parisguide",
+      "config": {
+        "googleMaps": {
+          "apiKey": "YOUR_ANDROID_GOOGLE_MAPS_KEY"
+        }
+      },
+      "permissions": ["ACCESS_FINE_LOCATION", "ACCESS_COARSE_LOCATION"]
+    },
+    "plugins": ["expo-router", "expo-secure-store", "expo-location"],
+    "experiments": {
+      "typedRoutes": true
+    },
+    "extra": {
+      "supabaseUrl": "https://YOUR_PROJECT.supabase.co",
+      "supabaseAnonKey": "YOUR_SUPABASE_ANON_KEY",
+      "googlePlacesApiKey": "YOUR_GOOGLE_PLACES_KEY"
+    }
+  }
+}
