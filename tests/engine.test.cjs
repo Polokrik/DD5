@@ -1,39 +1,7 @@
 const { test } = require('node:test');
 const assert = require('node:assert/strict');
 const fs = require('node:fs');
-const vm = require('node:vm');
-
-const html = fs.readFileSync(require('node:path').join(__dirname, '../index.html'), 'utf8');
-const source = html.match(/<script>([\s\S]*?)<\/script>/)[1];
-
-function boot(saved = null, preferences = null) {
-  const storage = new Map(saved ? [['clanDestain.save.v1', saved]] : []);
-  if (preferences !== null) storage.set('clanDestain.preferences.v1', preferences);
-  function element() {
-    return { children: [], dataset: {}, value: '', classList: { toggle() {} },
-      appendChild(child) { this.children.push(child); }, append(...children) { this.children.push(...children); },
-      replaceChildren(...children) { this.children = children; }, addEventListener() {}, setAttribute() {},
-      getContext: () => ({ fillRect() {}, fillText() {}, drawImage() {}, clearRect() {} }), toDataURL: () => 'data:image/png;base64,',
-      showModal() { this.open = true; }, close() { this.open = false; }
-    };
-  }
-  const elements = Object.fromEntries([...html.matchAll(/id="([^"]+)"/g)].map(([, id]) => [id, element()]));
-  const lines = [];
-  elements.eventLog.appendChild = line => lines.push(line.textContent);
-  const sandbox = vm.createContext({
-    URLSearchParams, structuredClone, console,
-    window: { location: { search: '' } }, navigator: {},
-    document: { getElementById: id => elements[id], createElement: element, querySelectorAll: () => [], addEventListener() {} },
-    localStorage: { getItem: k => storage.get(k) ?? null, setItem: (k, v) => storage.set(k, v), removeItem: k => storage.delete(k) },
-    requestAnimationFrame() {}
-  });
-  new vm.Script(source, { filename: 'index.html' }).runInContext(sandbox);
-  return {
-    run: code => vm.runInContext(code, sandbox),
-    json: code => JSON.parse(vm.runInContext(`JSON.stringify(${code})`, sandbox)),
-    lines, storage
-  };
-}
+const { boot, choose, continueReport, html, source } = require('./support.cjs');
 
 test('syntaxe du script et démarrage réel du moteur', () => {
   const game = boot();
@@ -60,17 +28,20 @@ test('toutes les salles et références des options sont valides', () => {
   }
 });
 
-test('chaque option et chaque salle peuvent être exécutées (succès et échec)', () => {
+test('chaque option et chaque salle peuvent être exécutées avec des D20 de 20 et de 1', () => {
   const base = boot();
   for (const [id, room] of Object.entries(base.json('rooms'))) {
     for (const success of [true, false]) {
       for (let i = 0; i < room.options.length; i++) {
         const g = boot();
+        g.dice.fallback = success ? 20 : 1;
         assert.doesNotThrow(() => g.run(`
           resetCampaignState(); gameState.roomId = ${JSON.stringify(id)};
-          variables.moraleGroupe = ${success ? 5 : -5}; variables.chaos = ${success ? -5 : 6};
           prepareCurrentRoom(); describeCurrentRoom(); createCheckpoint('test');
-          applyOptionEffects(rooms[gameState.roomId].options[${i}]); describeCurrentRoom(); render();
+          const option = rooms[gameState.roomId].options[${i}];
+          const playable = option.groupAction ? getAvailableOptions(gameState.roomId).find(o => o.id === option.id) : option;
+          if (!playable) throw new Error('Option collective sans acteur disponible: ' + option.id);
+          applyOptionEffects(playable); describeCurrentRoom(); render();
         `), `${id}/${room.options[i].id}/${success ? 'succès' : 'échec'}`);
       }
     }
@@ -125,14 +96,6 @@ test('rendu déterministe, aucune dépendance externe, saisie séparée', () => 
   assert.ok(html.indexOf('id="context"') < html.indexOf('id="commandInput"'));
 });
 
-function choose(g, id) {
-  if (g.run('Boolean(gameState.lastReport)')) g.run('executePresentedChoice(1)');
-  if (id.startsWith('@')) { g.run(`moveTo(${JSON.stringify(id.slice(1))})`); return; }
-  const index = g.run(`getAvailableOptions(gameState.roomId).findIndex(o => o.id === ${JSON.stringify(id)})`);
-  assert.ok(index >= 0, `${id} absent dans ${g.run('gameState.roomId')}`);
-  g.run(`chooseOption('${index + 1}')`);
-}
-
 function journeyToFinale() {
   const g = boot();
   const path = require('./campaign-path.cjs');
@@ -156,7 +119,7 @@ function journeyToFinale() {
   return g;
 }
 
-test('parcours des cinq actes sans triche, œufs, recrutement et fins des trois plans', () => {
+test('parcours des cinq actes avec D20 contrôlés, œufs, recrutement et fins des trois plans', () => {
   for (const [plan, route] of [
     ['plan-sabotage', ['sabotage-identify', 'sabotage-stealth', 'sabotage-arcana']],
     ['plan-decapitation', ['decapitation-approach', 'decapitation-strike']],
@@ -166,9 +129,12 @@ test('parcours des cinq actes sans triche, œufs, recrutement et fins des trois 
     choose(g, plan);
     for (const id of route) choose(g, id);
     assert.equal(g.run('gameState.roomId'), 'ritual_chamber');
-    choose(g, 'ritual-resolve');
+    continueReport(g);
+    const checkpoints = g.run('gameState.checkpoints.length');
+    assert.equal(g.run('getAvailableOptions(gameState.roomId).some(o => o.id === "ritual-resolve")'), false);
     assert.equal(g.run('flags.campaignComplete'), false);
     assert.equal(g.run('gameState.roomId'), 'ritual_chamber');
+    assert.equal(g.run('gameState.checkpoints.length'), checkpoints);
     for (let i = 0; i < 3; i++) choose(g, 'ritual-rally');
     choose(g, 'ritual-resolve');
     assert.equal(g.run('gameState.roomId'), 'campaign_end');
@@ -256,7 +222,7 @@ test('échec définitif et absence de capacités restaurent le dernier checkpoin
   assert.equal(g.run('gameState.roomId'), 'burning_streets_finale');
   assert.ok(g.lines.some(l => l.includes('GAME OVER (definitive)')));
   g.run('gameState.roomId = "hill_overlook"; createCheckpoint("groupe actif"); Object.values(characters).forEach(c => c.state = "captured")');
-  choose(g, 'recover-checkpoint');
+  choose(g, 'navigation-back');
   assert.equal(g.run('characters.bjolnir.state'), 'active');
 });
 
@@ -335,7 +301,7 @@ test('le résultat reste lisible, survit au rechargement et se poursuit sans rej
   for (const id of ['title-new', 'charge-civils', 'swift-diplomatie']) choose(g, id);
   const report = g.json('gameState.lastReport');
   assert.match(report.paragraphs.join(' '), /marteau.*Déposez vos armes/s);
-  assert.equal(g.run('getPresentedChoices().length'), 1);
+  assert.ok(g.run('getPresentedChoices().length') >= 2);
   assert.equal(g.run('getPresentedChoices()[0].option.id'), 'report-continue');
   const resumed = boot(g.storage.get('clanDestain.save.v1'));
   assert.deepEqual(resumed.json('gameState.lastReport'), report);
@@ -349,16 +315,22 @@ test('le résultat reste lisible, survit au rechargement et se poursuit sans rej
   assert.equal(resumed.run('gameState.roomId'), 'swift_street');
 });
 
-test('un parcours défavorable conserve les objectifs à reprendre, sans modifier les scores à la main', () => {
+test('un parcours défavorable sur D20 de 1 conserve les objectifs à reprendre et permet de changer d’approche', () => {
   const g = boot();
-  for (const id of ['title-new','approche-riviere','swift-magie','mission-sanctuaire','tunnel-temple','sanctuaire-tunnel']) choose(g,id);
+  for (const [id, natural] of [['title-new',20],['approche-riviere',1],['swift-magie',1],['mission-sanctuaire',20],['tunnel-temple',20],['sanctuaire-tunnel',1]]) {
+    g.dice.fallback = natural;
+    choose(g,id);
+  }
   assert.equal(g.run('flags.sanctuaireDone'), false);
   assert.equal(g.run('characters.sislay.state'), 'injured');
   assert.equal(g.run('characters.ellyjobell.state'), 'injured');
   assert.equal(g.run('characters.darrin.state'), 'injured');
   assert.equal(g.run('getAvailableOptions(gameState.roomId).some(o=>o.id==="mission-sanctuaire")'), true);
   assert.equal(g.run('getAvailableOptions(gameState.roomId).some(o=>o.id==="mission-moulin")'), false);
-  for (const id of ['mission-sanctuaire','tunnel-temple','temple-evacuation','mission-moulin','moulin-assaut']) choose(g,id);
+  g.dice.fallback = 20;
+  for (const id of ['mission-sanctuaire','tunnel-temple','temple-evacuation','mission-moulin']) choose(g,id);
+  g.dice.fallback = 1;
+  choose(g,'moulin-assaut');
   assert.equal(g.run('flags.templeEvacuated'), true);
   assert.equal(g.run('flags.moulinDone'), false);
   assert.equal(g.run('getAvailableOptions(gameState.roomId).some(o=>o.id==="mission-moulin")'), true);
@@ -380,12 +352,12 @@ test('une issue existe sans checkpoint et les scènes collectives respectent les
   g.run('executePresentedChoice(1)');
   assert.equal(g.run('getPresentedChoices().some(c=>c.option.id==="title-new")'), true);
   g.run('gameState.roomId="mill_approach"; gameState.checkpoints=[]; Object.values(characters).forEach(c=>c.state="captured")');
-  assert.equal(g.run('getAvailableOptions(gameState.roomId).some(o=>o.id==="return-home")'), true);
-  choose(g,'return-home');
+  assert.equal(g.run('getAvailableOptions(gameState.roomId).some(o=>o.id==="navigation-home")'), true);
+  choose(g,'navigation-home');
   assert.equal(g.run('gameState.roomId'), 'title_screen');
   g.run('gameState.roomId="cult_trail"; moveTo("nord")');
   assert.equal(g.run('gameState.roomId'), 'cult_trail');
-  assert.equal(g.run('getAvailableOptions(gameState.roomId).some(o=>o.id==="return-home")'), true);
+  assert.equal(g.run('getAvailableOptions(gameState.roomId).some(o=>o.id==="navigation-home")'), true);
 });
 
 test('les étapes sourcées sont visitées dans l’ordre et les anciennes sauvegardes restent lisibles', () => {
@@ -461,6 +433,7 @@ test('les réglages sont séparés de la sauvegarde et les résultats anciens re
 test('le récit d’un duel mortel respecte la mort réelle du personnage', () => {
   const g=boot();choose(g,'title-new');
   g.run('gameState.roomId="duel_field";characters.drekthar.state="injured";variables.moraleGroupe=-5;variables.chaos=6');
+  g.setRolls(1);
   choose(g,'duel-accept');
   assert.equal(g.run('characters.drekthar.state'),'dead');
   assert.match(g.run('gameState.lastReport.title'),/ne survit pas/);

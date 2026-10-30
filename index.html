@@ -124,6 +124,25 @@
     .profile-prose { font: 16px/1.8 Georgia,serif; color: #414b4c; max-width: 64ch; }
     .profile-prose p { margin: 0 0 17px; }
     .profile-equipment { font-size: 12px; line-height: 1.8; margin: 24px 0; }
+    .character-stats { margin: 20px 0 28px; padding: 18px 0; border-top: 1px solid #d6cebf; border-bottom: 1px solid #d6cebf; }
+    .character-stats h4 { margin: 0 0 12px; font: 21px Georgia,serif; }
+    .stats-summary { font-size: 13px; font-weight: 600; line-height: 1.7; }
+    .stats-reference,.stats-saves { font-size: 12px; line-height: 1.8; }
+    .stats-caution { font-size: 11px; line-height: 1.7; color: #666b5f; }
+    .stats-table { border-collapse: collapse; width: 100%; font-size: 12px; margin: 16px 0; }
+    .stats-table caption { text-align: left; color: #62695f; font-size: 11px; padding-bottom: 10px; }
+    .stats-table th,.stats-table td { padding: 8px 6px; border-bottom: 1px solid #d6cebf; text-align: left; }
+    .check-preview { display: block; margin-top: 7px; font-size: 11px; line-height: 1.7; color: #415e66; }
+    .check-panel { border: 1px solid #c9bda8; padding: 17px 20px; margin: 0 0 24px; border-radius: 4px; background: #f7f2e8; }
+    .check-heading { display: flex; justify-content: space-between; flex-wrap: wrap; gap: 8px; font-size: 12px; line-height: 1.6; }
+    .check-main { display: flex; align-items: center; gap: 20px; margin: 10px 0; }
+    .d20-die { width: 76px; height: 82px; position: relative; flex-shrink: 0; color: #22464e; }
+    .d20-die svg { width: 100%; height: 100%; fill: #e6dfcd; stroke: currentColor; stroke-width: 1.2; }
+    .d20-die span { position: absolute; inset: 0; display: grid; place-items: center; font: bold 24px Georgia,serif; padding-top: 6px; }
+    .check-summary { font: 19px/1.5 Georgia,serif; }
+    .check-breakdown { font-size: 12px; line-height: 1.8; margin: 0; color: #4e5c59; }
+    .check-panel[data-outcome='failure'] { border-color: #b07a60; }
+    .check-panel[data-outcome='pending'] .d20-die { will-change: transform; }
     .profile-equipment h4 { font-size: 12px; margin: 0 0 8px; }
     .profile-sources { font-size: 11px; color: #79756c; line-height: 1.7; }
     .choice-risk { display: block; margin-top: 7px; font-size: 11px; color: #8b553d; line-height: 1.6; }
@@ -232,7 +251,7 @@
     <section class="journal-sheet" id="context" aria-label="Récit et décisions">
       <div class="chapter-rule eyebrow"><span class="page-number" id="pageNumber">I</span><span id="chapterLabel">Le commencement d’une chronique</span></div>
       <div class="story-grid">
-        <article><h2 id="sceneTitle">Sur la route de Verdure</h2><figure id="actionScene" class="action-scene" hidden><canvas id="actionCanvas" width="320" height="200" aria-label="Illustration du résultat de votre action"></canvas><figcaption><span id="actionCaption"></span><button id="replayActionButton" type="button">Revoir l’action ↻</button></figcaption></figure><div id="sceneNarrative" class="prose"></div><ul id="reportChanges" class="report-changes" hidden></ul><div id="feedback" class="feedback" role="status" hidden></div></article>
+        <article><h2 id="sceneTitle">Sur la route de Verdure</h2><section id="checkPanel" class="check-panel" aria-label="Résultat de l’épreuve" hidden><div class="check-heading"><strong id="checkActor"></strong><span id="checkKind"></span></div><div class="check-main"><div id="d20Die" class="d20-die" aria-hidden="true"><svg viewBox="0 0 80 86"><path d="M40 3 74 24v38L40 83 6 62V24Z M6 24l34-7 34 7-17 35-17 24-17-24L6 24Zm17 35h34L40 17 23 59Z"/></svg><span id="d20Value">20</span></div><div id="checkSummary" class="check-summary" role="status"></div></div><p id="checkBreakdown" class="check-breakdown"></p></section><figure id="actionScene" class="action-scene" hidden><canvas id="actionCanvas" width="320" height="200" aria-label="Illustration du résultat de votre action"></canvas><figcaption><span id="actionCaption"></span><button id="replayActionButton" type="button">Revoir l’action ↻</button></figcaption></figure><div id="sceneNarrative" class="prose"></div><ul id="reportChanges" class="report-changes" hidden></ul><div id="feedback" class="feedback" role="status" hidden></div></article>
         <section aria-labelledby="decisionTitle"><h3 id="decisionTitle" class="decision-title eyebrow">Votre prochaine aventure</h3><div id="choiceList" class="choice-list"></div><p class="choice-hint">Cliquez sur un choix ou utilisez les touches <kbd>1</kbd>, <kbd>2</kbd>, <kbd>3</kbd>.</p></section>
       </div>
       <div class="sheet-footer"><div id="statusStrip" aria-live="polite"></div><button id="undoButton" class="quiet-button">↶ Revenir sur ma décision</button></div>
@@ -242,7 +261,7 @@
   </main>
   <dialog id="journalDialog" aria-labelledby="journalTitle"><div class="dialog-header"><h2 id="journalTitle">Les chroniques du Clan</h2><button class="close-dialog" data-close="journalDialog" aria-label="Fermer le journal">×</button></div><div class="journal-tabs"><button id="chronicleTab" aria-pressed="true">La campagne · 18 chapitres</button><button id="historyTab" aria-pressed="false">Votre aventure</button></div><div id="chroniclePanel" class="chronicle-layout"><nav id="chapterList" class="chapter-list" aria-label="Chapitres de la chronique"></nav><article id="chapterReader" class="chapter-reader"></article></div><div id="eventLog" hidden></div></dialog>
   <dialog id="companyDialog" aria-labelledby="companyTitle"><div class="dialog-header"><h2 id="companyTitle">La compagnie</h2><button class="close-dialog" data-close="companyDialog" aria-label="Fermer la compagnie">×</button></div><div class="company-layout"><nav id="companyRoster" class="company-roster" aria-label="Choisir un personnage"></nav><article id="companyDetails" class="party-detail-list"></article></div></dialog>
-  <dialog id="ambianceDialog" aria-labelledby="ambianceTitle"><div class="dialog-header"><h2 id="ambianceTitle">L’ambiance du récit</h2><button class="close-dialog" data-close="ambianceDialog" aria-label="Fermer les réglages d’ambiance">×</button></div><div class="ambiance-body"><p>Les illustrations accompagnent les gestes des compagnons. Vous pouvez garder une lecture calme ou ajouter une ambiance sonore discrète.</p><label class="ambiance-setting" for="effectsSetting">Effets liés aux actions<input id="effectsSetting" type="checkbox" /></label><label class="ambiance-setting" for="motionSetting">Mouvements<select id="motionSetting"><option value="auto">Selon l’appareil</option><option value="reduced">Réduits</option></select></label><p class="ambiance-notice" id="motionNotice"></p><label class="ambiance-setting" for="soundSetting">Sons d’ambiance et d’action<input id="soundSetting" type="checkbox" /></label><label class="ambiance-setting" for="volumeSetting">Volume<input id="volumeSetting" type="range" min="0" max="100" step="5" aria-valuetext="25 %" /></label><p id="soundNotice" class="ambiance-notice" role="status">Le son est désactivé au départ. Le récit reste entièrement compréhensible sans lui.</p></div></dialog>
+  <dialog id="ambianceDialog" aria-labelledby="ambianceTitle"><div class="dialog-header"><h2 id="ambianceTitle">L’ambiance du récit</h2><button class="close-dialog" data-close="ambianceDialog" aria-label="Fermer les réglages d’ambiance">×</button></div><div class="ambiance-body"><p>Les illustrations accompagnent les gestes des compagnons. Vous pouvez garder une lecture calme ou ajouter une ambiance sonore discrète.</p><label class="ambiance-setting" for="diceSetting">Animer les jets de D20<input id="diceSetting" type="checkbox" /></label><label class="ambiance-setting" for="effectsSetting">Effets liés aux actions<input id="effectsSetting" type="checkbox" /></label><label class="ambiance-setting" for="motionSetting">Mouvements<select id="motionSetting"><option value="auto">Selon l’appareil</option><option value="reduced">Réduits</option></select></label><p class="ambiance-notice" id="motionNotice"></p><label class="ambiance-setting" for="soundSetting">Sons d’ambiance et d’action<input id="soundSetting" type="checkbox" /></label><label class="ambiance-setting" for="volumeSetting">Volume<input id="volumeSetting" type="range" min="0" max="100" step="5" aria-valuetext="25 %" /></label><p id="soundNotice" class="ambiance-notice" role="status">Le son est désactivé au départ. Le récit reste entièrement compréhensible sans lui.</p></div></dialog>
   <dialog id="importDialog" aria-labelledby="importTitle"><div class="dialog-header"><h2 id="importTitle">Reprendre une autre chronique</h2><button class="close-dialog" data-close="importDialog" aria-label="Fermer l’import">×</button></div><div class="import-body"><p>Collez le contenu de votre sauvegarde exportée. Votre partie actuelle sera remplacée uniquement si cette sauvegarde est valide.</p><label for="importPayload" class="eyebrow">Votre sauvegarde</label><textarea id="importPayload" spellcheck="false"></textarea><p id="importResult" role="status"></p><button id="importButton" class="choice-card primary">Importer et reprendre l’aventure <span aria-hidden="true">→</span></button></div></dialog>
 
   <script>
@@ -4653,6 +4672,751 @@
       }
     };
 
+    // Voies de secours What If: les deux issues avancent, le dé fixe le coût.
+    const SAFE_ALTERNATIVES = [
+  {
+    "roomId": "mill_approach",
+    "option": {
+      "id": "moulin-garde-groupe",
+      "label": "What If — Organiser une intervention avec les gardes pour sécuriser le moulin",
+      "groupAction": true,
+      "requiresAnyAvailableCharacter": true,
+      "skill": "persuasion",
+      "resolution": {
+        "difficulty": 12,
+        "skill": "persuasion",
+        "ability": "charisma",
+        "risk": "cost",
+        "dc": 12
+      },
+      "failForward": true,
+      "intent": "Le groupe s’appuie sur les défenseurs pour protéger les réserves. Réussite: alerte +1. Échec: moulin sauvé tout de même, alerte +2 et moral -1.",
+      "riskText": "Cette approche permet de poursuivre dans les deux cas. Le D20 détermine le coût annoncé; aucun compagnon n’est blessé ou tué par ce choix.",
+      "onSuccess": {
+        "gotoRoom": "greenest_keep",
+        "setFlags": {
+          "moulinDone": true,
+          "millSaved": true
+        },
+        "variableDelta": {
+          "chaos": 1
+        },
+        "message": "Les compagnons coordonnent l’intervention avec les gardes. Les défenseurs tiennent les abords pendant que les pillards sont repoussés. Le moulin et ses réserves sont sécurisés, mais cette mobilisation donne l’alerte dans le quartier."
+      },
+      "onFailure": {
+        "gotoRoom": "greenest_keep",
+        "setFlags": {
+          "moulinDone": true,
+          "millSaved": true
+        },
+        "variableDelta": {
+          "chaos": 2,
+          "moraleGroupe": -1
+        },
+        "message": "La coordination est plus lente que prévu et les gardes doivent tenir le passage plus longtemps. Le Clan finit par sécuriser le moulin et ses réserves; les ordres criés augmentent l’alerte et l’effort éprouve le moral du groupe."
+      },
+      "source": "Variante de jeu proposée; événement non attesté dans la campagne jouée.",
+      "check": {
+        "ability": "cha",
+        "skillKey": "persuasion",
+        "kind": "ability",
+        "label": "Persuasion",
+        "dc": 12
+      }
+    }
+  },
+  {
+    "roomId": "sanctuary_approach",
+    "option": {
+      "id": "temple-garde-groupe",
+      "label": "What If — Couvrir ensemble l’évacuation avec l’aide des défenseurs",
+      "groupAction": true,
+      "requiresAnyAvailableCharacter": true,
+      "skill": "persuasion",
+      "resolution": {
+        "difficulty": 12,
+        "skill": "persuasion",
+        "ability": "charisma",
+        "risk": "cost",
+        "dc": 12
+      },
+      "failForward": true,
+      "intent": "Autre sauvetage possible, distinct du brouillard rapporté dans le journal. Réussite: alerte +1. Échec: habitants évacués malgré tout, alerte +2 et moral -1.",
+      "riskText": "Cette approche permet de poursuivre dans les deux cas. Le D20 détermine le coût annoncé; aucun compagnon n’est blessé ou tué par ce choix.",
+      "onSuccess": {
+        "gotoRoom": "greenest_keep",
+        "setFlags": {
+          "sanctuaireDone": true,
+          "templeEvacuated": true
+        },
+        "variableDelta": {
+          "chaos": 1
+        },
+        "message": "Le groupe organise avec les défenseurs une sortie couverte. Les habitants quittent le temple pendant que leurs protecteurs retiennent les pillards, puis rejoignent la forteresse. Leur déplacement attire l’attention des assaillants."
+      },
+      "onFailure": {
+        "gotoRoom": "greenest_keep",
+        "setFlags": {
+          "sanctuaireDone": true,
+          "templeEvacuated": true
+        },
+        "variableDelta": {
+          "chaos": 2,
+          "moraleGroupe": -1
+        },
+        "message": "Les pillards réagissent avant que la sortie soit entièrement dégagée. Les compagnons et les défenseurs prolongent leur couverture jusqu’au passage des derniers habitants. Tous rejoignent la forteresse, au prix d’une alerte accrue et d’un moral éprouvé."
+      },
+      "source": "Variante de jeu proposée; événement non attesté dans la campagne jouée.",
+      "check": {
+        "ability": "cha",
+        "skillKey": "persuasion",
+        "kind": "ability",
+        "label": "Persuasion",
+        "dc": 12
+      }
+    }
+  },
+  {
+    "roomId": "act2_confrontation",
+    "option": {
+      "id": "cyanwrath-diversion-groupe",
+      "label": "What If — Attirer les gardes à l’écart et contourner leur salle ensemble",
+      "groupAction": true,
+      "requiresAnyAvailableCharacter": true,
+      "skill": "deception",
+      "resolution": {
+        "difficulty": 13,
+        "skill": "deception",
+        "ability": "charisma",
+        "risk": "cost",
+        "dc": 13
+      },
+      "failForward": true,
+      "intent": "Contourner l’affrontement laisse Cyanwrath vivant. Réussite: alerte +1. Échec: détour plus difficile mais passage obtenu, alerte +2 et moral -1.",
+      "riskText": "Cette approche permet de poursuivre dans les deux cas. Le D20 détermine le coût annoncé; aucun compagnon n’est blessé ou tué par ce choix.",
+      "onSuccess": {
+        "gotoRoom": "roper_lair",
+        "setFlags": {
+          "confrontationDone": true
+        },
+        "variableDelta": {
+          "chaos": 1
+        },
+        "message": "Le groupe attire l’attention des gardes vers une autre partie de la salle et profite de leur déplacement pour passer. Cyanwrath demeure vivant derrière lui; le Clan peut poursuivre l’exploration, désormais attendu par les occupants de la grotte."
+      },
+      "onFailure": {
+        "gotoRoom": "roper_lair",
+        "setFlags": {
+          "confrontationDone": true
+        },
+        "variableDelta": {
+          "chaos": 2,
+          "moraleGroupe": -1
+        },
+        "message": "La diversion est remarquée et les adversaires cherchent à refermer le passage. Les compagnons doivent céder du terrain avant de trouver leur détour. Ils finissent par gagner la salle suivante, avec une alerte accrue et le moral éprouvé; Cyanwrath n’a pas été tué."
+      },
+      "source": "Variante de jeu proposée; événement non attesté dans la campagne jouée.",
+      "forbiddenFlag": "cyanwrathDead",
+      "check": {
+        "ability": "cha",
+        "skillKey": "deception",
+        "kind": "ability",
+        "label": "Tromperie",
+        "dc": 13
+      }
+    }
+  },
+  {
+    "roomId": "roper_lair",
+    "option": {
+      "id": "roper-contournement-groupe",
+      "label": "What If — Contenir les vrilles pendant que le groupe contourne l’enclos",
+      "groupAction": true,
+      "requiresAnyAvailableCharacter": true,
+      "skill": "athletics",
+      "resolution": {
+        "difficulty": 13,
+        "skill": "athletics",
+        "ability": "strength",
+        "risk": "cost",
+        "dc": 13
+      },
+      "failForward": true,
+      "intent": "Une traversée collective remplace le duel avec la créature. Réussite: alerte +1. Échec: traversée obtenue après un long détour, alerte +2 et moral -1.",
+      "riskText": "Cette approche permet de poursuivre dans les deux cas. Le D20 détermine le coût annoncé; aucun compagnon n’est blessé ou tué par ce choix.",
+      "onSuccess": {
+        "gotoRoom": "egg_chamber",
+        "setFlags": {},
+        "variableDelta": {
+          "chaos": 1
+        },
+        "message": "Les compagnons soutiennent leur progression et retiennent les vrilles le temps que chacun trouve un passage. Ils rejoignent la chambre voisine sans avoir à vaincre le tentaculeur. Le bruit de leur traversée résonne dans la grotte."
+      },
+      "onFailure": {
+        "gotoRoom": "egg_chamber",
+        "setFlags": {},
+        "variableDelta": {
+          "chaos": 2,
+          "moraleGroupe": -1
+        },
+        "message": "Les vrilles obligent les compagnons à abandonner leur premier passage et à longer plus lentement l’enclos. Ils parviennent finalement à gagner la chambre des œufs. Le temps et les efforts dépensés augmentent l’alerte et éprouvent le moral du groupe."
+      },
+      "source": "Variante de jeu proposée; événement non attesté dans la campagne jouée.",
+      "check": {
+        "ability": "str",
+        "skillKey": "athletics",
+        "kind": "ability",
+        "label": "Athlétisme",
+        "dc": 13
+      }
+    }
+  },
+  {
+    "roomId": "supply_lines",
+    "option": {
+      "id": "sabotage-convoi-groupe",
+      "label": "What If — Confier la reconnaissance du convoi au groupe et à ses alliés",
+      "groupAction": true,
+      "requiresAnyAvailableCharacter": true,
+      "skill": "investigation",
+      "resolution": {
+        "difficulty": 13,
+        "skill": "investigation",
+        "ability": "intelligence",
+        "risk": "cost",
+        "dc": 13
+      },
+      "failForward": true,
+      "intent": "Utiliser des alliés pour poursuivre même sans Kairon. Réussite: rituel +1, force alliée -1. Échec: rituel +2, force alliée -1, chaos du front +1.",
+      "riskText": "Cette approche permet de poursuivre dans les deux cas. Le D20 détermine le coût annoncé; aucun compagnon n’est blessé ou tué par ce choix.",
+      "onSuccess": {
+        "gotoRoom": "warded_corridor",
+        "setFlags": {
+          "sabotageKeyKnown": true
+        },
+        "variableDelta": {},
+        "message": "Les compagnons répartissent la recherche avec les alliés affectés au convoi. Ils reconnaissent les chargements utiles et atteignent l’accès protégé. Cette reconnaissance prend du temps et détourne des combattants du front.",
+        "finalBattleDelta": {
+          "ritualProgress": 1,
+          "alliedStrength": -1
+        }
+      },
+      "onFailure": {
+        "gotoRoom": "warded_corridor",
+        "setFlags": {
+          "sabotageKeyKnown": false
+        },
+        "variableDelta": {},
+        "message": "La recherche ne permet pas d’isoler immédiatement le bon chargement. Les alliés couvrent néanmoins l’avance du groupe jusqu’à l’accès protégé. Le retard profite au rituel et le front se désorganise pendant cette mobilisation.",
+        "finalBattleDelta": {
+          "ritualProgress": 2,
+          "alliedStrength": -1,
+          "battlefieldChaos": 1
+        }
+      },
+      "source": "Variante de jeu proposée; événement non attesté dans la campagne jouée.",
+      "check": {
+        "ability": "int",
+        "skillKey": "investigation",
+        "kind": "ability",
+        "label": "Investigation",
+        "dc": 13
+      }
+    }
+  },
+  {
+    "roomId": "warded_corridor",
+    "option": {
+      "id": "sabotage-couloir-groupe",
+      "label": "What If — Faire protéger la traversée des sceaux par les alliés",
+      "groupAction": true,
+      "requiresAnyAvailableCharacter": true,
+      "skill": "arcana",
+      "resolution": {
+        "difficulty": 13,
+        "skill": "arcana",
+        "ability": "intelligence",
+        "risk": "cost",
+        "dc": 13
+      },
+      "failForward": true,
+      "intent": "Une traversée couverte permet d’avancer sans dépendre de Malar. Réussite: rituel +1. Échec: rituel +2 et chaos du front +1.",
+      "riskText": "Cette approche permet de poursuivre dans les deux cas. Le D20 détermine le coût annoncé; aucun compagnon n’est blessé ou tué par ce choix.",
+      "onSuccess": {
+        "gotoRoom": "ritual_components",
+        "setFlags": {},
+        "variableDelta": {},
+        "message": "Les compagnons étudient les sceaux pendant que les alliés maintiennent les sentinelles à distance. Le groupe franchit le couloir et atteint les composants du rituel. La progression a donné aux cultistes le temps de poursuivre leur invocation.",
+        "finalBattleDelta": {
+          "ritualProgress": 1
+        }
+      },
+      "onFailure": {
+        "gotoRoom": "ritual_components",
+        "setFlags": {},
+        "variableDelta": {},
+        "message": "Les sceaux réagissent au passage du groupe. Les alliés couvrent son avance malgré l’alarme, jusqu’à ce que les aventuriers atteignent les composants. Le retard et le désordre ont renforcé la pression du rituel.",
+        "finalBattleDelta": {
+          "ritualProgress": 2,
+          "battlefieldChaos": 1
+        }
+      },
+      "source": "Variante de jeu proposée; événement non attesté dans la campagne jouée.",
+      "check": {
+        "ability": "int",
+        "skillKey": "arcana",
+        "kind": "ability",
+        "label": "Arcanes",
+        "dc": 13
+      }
+    }
+  },
+  {
+    "roomId": "ritual_components",
+    "option": {
+      "id": "sabotage-relais-groupe",
+      "label": "What If — Faire briser un relais par une attaque concertée",
+      "groupAction": true,
+      "requiresAnyAvailableCharacter": true,
+      "skill": "arcana",
+      "resolution": {
+        "difficulty": 14,
+        "skill": "arcana",
+        "ability": "intelligence",
+        "risk": "cost",
+        "dc": 14
+      },
+      "failForward": true,
+      "intent": "Tentative collective sans dépendre de Darrin. Réussite: sabotage accompli, rituel -1 et force alliée -1. Échec: sabotage manqué, rituel +2 et force alliée -1; le groupe rejoint quand même le cercle.",
+      "riskText": "Cette approche permet de poursuivre dans les deux cas. Le D20 détermine le coût annoncé; aucun compagnon n’est blessé ou tué par ce choix.",
+      "onSuccess": {
+        "gotoRoom": "ritual_chamber",
+        "setFlags": {
+          "sabotageSuccess": true
+        },
+        "variableDelta": {},
+        "message": "L’attaque concertée atteint un relais essentiel. Les compagnons et leurs alliés le brisent avant de rejoindre la chambre du rituel. Une partie des forces a été mobilisée loin du front, mais le sabotage ralentit l’invocation.",
+        "finalBattleDelta": {
+          "ritualProgress": -1,
+          "alliedStrength": -1
+        }
+      },
+      "onFailure": {
+        "gotoRoom": "ritual_chamber",
+        "setFlags": {
+          "sabotageSuccess": false
+        },
+        "variableDelta": {},
+        "message": "Les compagnons frappent un relais qui ne suffit pas à désorganiser l’invocation. Les alliés couvrent leur retrait vers la chambre du rituel. Le sabotage n’est pas accompli; il a coûté du temps et une partie des forces disponibles.",
+        "finalBattleDelta": {
+          "ritualProgress": 2,
+          "alliedStrength": -1
+        }
+      },
+      "source": "Variante de jeu proposée; événement non attesté dans la campagne jouée.",
+      "check": {
+        "ability": "int",
+        "skillKey": "arcana",
+        "kind": "ability",
+        "label": "Arcanes",
+        "dc": 14
+      }
+    }
+  },
+  {
+    "roomId": "commander_tent",
+    "option": {
+      "id": "commandement-percee-groupe",
+      "label": "What If — Rallier les alliés pour ouvrir l’accès au commandement",
+      "groupAction": true,
+      "requiresAnyAvailableCharacter": true,
+      "skill": "persuasion",
+      "resolution": {
+        "difficulty": 13,
+        "skill": "persuasion",
+        "ability": "charisma",
+        "risk": "cost",
+        "dc": 13
+      },
+      "failForward": true,
+      "intent": "Ouvrir l’accès ensemble sans dépendre de Bjolnir. Réussite: rituel +1 et force alliée -1. Échec: rituel +2, force alliée -1, chaos du front +1.",
+      "riskText": "Cette approche permet de poursuivre dans les deux cas. Le D20 détermine le coût annoncé; aucun compagnon n’est blessé ou tué par ce choix.",
+      "onSuccess": {
+        "gotoRoom": "champion_confrontation",
+        "setFlags": {},
+        "variableDelta": {},
+        "message": "Les compagnons réunissent les alliés nécessaires pour ouvrir une brèche jusqu’à la tente du commandement. Le groupe atteint le champion, tandis que les combattants mobilisés manquent à leur position initiale.",
+        "finalBattleDelta": {
+          "ritualProgress": 1,
+          "alliedStrength": -1
+        }
+      },
+      "onFailure": {
+        "gotoRoom": "champion_confrontation",
+        "setFlags": {},
+        "variableDelta": {},
+        "message": "Les lignes ennemies résistent et les alliés doivent prolonger leur effort pour maintenir un passage. Les aventuriers atteignent le champion après ce retard, au prix d’un front plus dispersé et d’un rituel avancé.",
+        "finalBattleDelta": {
+          "ritualProgress": 2,
+          "alliedStrength": -1,
+          "battlefieldChaos": 1
+        }
+      },
+      "source": "Variante de jeu proposée; événement non attesté dans la campagne jouée.",
+      "check": {
+        "ability": "cha",
+        "skillKey": "persuasion",
+        "kind": "ability",
+        "label": "Persuasion",
+        "dc": 13
+      }
+    }
+  },
+  {
+    "roomId": "champion_confrontation",
+    "option": {
+      "id": "commandement-fixer-groupe",
+      "label": "What If — Fixer le lieutenant pendant qu’une attaque alliée le déborde",
+      "groupAction": true,
+      "requiresAnyAvailableCharacter": true,
+      "skill": "intimidation",
+      "resolution": {
+        "difficulty": 14,
+        "skill": "intimidation",
+        "ability": "charisma",
+        "risk": "cost",
+        "dc": 14
+      },
+      "failForward": true,
+      "intent": "Une manœuvre collective remplace l’action de Kairon. Réussite: lieutenant neutralisé, élan cultiste -1, force alliée -1. Échec: lieutenant vivant, rituel +2, force alliée -1, chaos du front +1; le groupe gagne le cercle.",
+      "riskText": "Cette approche permet de poursuivre dans les deux cas. Le D20 détermine le coût annoncé; aucun compagnon n’est blessé ou tué par ce choix.",
+      "onSuccess": {
+        "gotoRoom": "ritual_chamber",
+        "setFlags": {
+          "lieutenantDefeated": true
+        },
+        "variableDelta": {},
+        "message": "Les compagnons retiennent le lieutenant pendant que les alliés attaquent son flanc. La manœuvre le neutralise et désorganise une partie des troupes du Culte. Le Clan gagne ensuite la chambre du rituel avec moins de combattants disponibles sur le front.",
+        "finalBattleDelta": {
+          "cultMomentum": -1,
+          "alliedStrength": -1
+        }
+      },
+      "onFailure": {
+        "gotoRoom": "ritual_chamber",
+        "setFlags": {
+          "lieutenantDefeated": false
+        },
+        "variableDelta": {},
+        "message": "Le lieutenant se dégage de la manœuvre et conserve son commandement. Les alliés protègent néanmoins le passage du groupe vers la chambre du rituel. Cette tentative manquée laisse l’ennemi actif et lui a donné du temps.",
+        "finalBattleDelta": {
+          "ritualProgress": 2,
+          "alliedStrength": -1,
+          "battlefieldChaos": 1
+        }
+      },
+      "source": "Variante de jeu proposée; événement non attesté dans la campagne jouée.",
+      "check": {
+        "ability": "cha",
+        "skillKey": "intimidation",
+        "kind": "ability",
+        "label": "Intimidation",
+        "dc": 14
+      }
+    }
+  },
+  {
+    "roomId": "refugee_corridor",
+    "option": {
+      "id": "evacuation-entraide-groupe",
+      "label": "What If — Répartir la protection et le transport des réfugiés entre les alliés",
+      "groupAction": true,
+      "requiresAnyAvailableCharacter": true,
+      "skill": "survival",
+      "resolution": {
+        "difficulty": 12,
+        "skill": "survival",
+        "ability": "wisdom",
+        "risk": "cost",
+        "dc": 12
+      },
+      "failForward": true,
+      "intent": "Poursuivre l’évacuation sans dépendre de Bjolnir. Réussite: danger civil -1 et rituel +1. Échec: danger civil +1 et rituel +2; une sortie est atteinte et le choix de priorité reste à faire.",
+      "riskText": "Cette approche permet de poursuivre dans les deux cas. Le D20 détermine le coût annoncé; aucun compagnon n’est blessé ou tué par ce choix.",
+      "onSuccess": {
+        "gotoRoom": "burning_streets_finale",
+        "setFlags": {},
+        "variableDelta": {},
+        "message": "Les compagnons répartissent les habitants entre les groupes chargés de les guider et de les protéger. Une sortie est atteinte sans nouvelle cohue. Le rituel continue cependant de progresser pendant l’évacuation.",
+        "finalBattleDelta": {
+          "civilianRisk": -1,
+          "ritualProgress": 1
+        }
+      },
+      "onFailure": {
+        "gotoRoom": "burning_streets_finale",
+        "setFlags": {},
+        "variableDelta": {},
+        "message": "La foule se désorganise et ralentit les protecteurs. Les compagnons maintiennent malgré tout une sortie, mais les civils restent davantage exposés et le rituel a avancé. Le groupe doit maintenant choisir entre prolonger leur protection et rejoindre immédiatement le cercle.",
+        "finalBattleDelta": {
+          "civilianRisk": 1,
+          "ritualProgress": 2
+        }
+      },
+      "source": "Variante de jeu proposée; événement non attesté dans la campagne jouée.",
+      "check": {
+        "ability": "wis",
+        "skillKey": "survival",
+        "kind": "ability",
+        "label": "Survie",
+        "dc": 12
+      }
+    }
+  }
+];
+    SAFE_ALTERNATIVES.forEach(({roomId,option}) => rooms[roomId].options.push(option));
+
+    const CHRONICLE_CHECKS = {
+      'tunnel-temple': { actor:'darrin',skill:'arcana',ability:'int',skillKey:'investigation',label:'Ouvrir la porte du tunnel',dc:10,
+        failure:'La porte résiste sous la rouille. Darrin finit par la dégager, mais les grincements portent au-delà du passage et donnent l’alerte.' },
+      'temple-evacuation': { actor:'ellyjobell',skill:'stealth',ability:'dex',skillKey:'stealth',label:'Couvrir discrètement l’évacuation',dc:12,
+        failure:'La brume masque les habitants, mais les appels des retardataires attirent l’attention. Le groupe les ramène à la forteresse au prix d’une retraite plus éprouvante.' },
+      'dragon-defendre': { actor:'bjolnir',skill:'leadership',ability:'cha',skillKey:'persuasion',label:'Coordonner les défenseurs',dc:13,
+        failure:'Les ordres se perdent entre les grondements. Le Clan et les gardes finissent par repousser le dragon, mais la défense désorganisée laisse le groupe éprouvé.' },
+      'camp-liberation': { actor:'darrin',skill:'arcana',ability:'cha',skillKey:'deception',label:'Dissimuler l’infiltration',dc:12,
+        failure:'La diversion ne couvre pas tous les mouvements. Darrin et Drek’Thar doivent hâter l’évasion; les prisonniers sont libérés, mais les cris donnent l’alerte dans le camp.' },
+      'duel-campagne': { actor:'drekthar',skill:'duel',ability:'str',skillKey:'athletics',label:'Tenir jusqu’à la libération des otages',dc:15,
+        failure:'Cyanwrath impose rapidement sa force. Drek’Thar tombe sous ses coups et survit; les otages sont libérés. Le Clan accueille son compagnon avec un moral éprouvé.' }
+    };
+    Object.values(rooms).forEach(room => room.options.forEach(option => {
+      const config = CHRONICLE_CHECKS[option.id];
+      if (config) {
+        Object.assign(option,{ characterId:config.actor,skill:config.skill,failForward:true,
+          resolution:{ dc:config.dc,risk:'cost' },
+          check:{ ability:config.ability,skillKey:config.skillKey,kind:'ability',label:config.label,dc:config.dc } });
+        option.onFailure = { ...safeClone(option.onSuccess),message:config.failure,variableDelta:{chaos:1,moraleGroupe:-1} };
+        option.intent += ' Le D20 mesure la difficulté de l’exécution : l’objectif reste atteint; un échec ajoute 1 alerte et retire 1 moral, sans blessure supplémentaire.';
+        option.riskText = 'Échec : alerte +1, moral −1. Le dé ne réécrit pas l’issue attestée de cette scène.';
+      }
+      if (option.id === 'revanche-drekthar') {
+        option.resolution = {dc:17,risk:'injury'};
+        option.check = {ability:'str',skillKey:null,kind:'attack',label:'Attaque contre Cyanwrath',dc:17};
+        option.onFailure = {message:'Cyanwrath repousse l’assaut de Drek’Thar, qui reçoit une blessure. Le champion tient encore le passage; le groupe doit changer d’approche ou revenir avant l’affrontement.'};
+        option.intent += ' Attaque contre CA 17. Un échec blesse Drek’Thar sans terminer l’affrontement.';
+        option.riskText = 'Un échec blesse Drek’Thar; s’il est déjà blessé, il tombe à terre.';
+      }
+      if (option.id === 'duel-accept') option.check = {ability:'str',skillKey:null,kind:'attack',label:'Attaque contre Cyanwrath',dc:17};
+      if (['bruler-fonges','naerytar-saboter','portal-saboter','sabotage-arcana'].includes(option.id)) option.check = {ability:'int',skillKey:'arcana',kind:'ability',label:'Arcanes'};
+      if (option.id === 'voler-informations') option.check = {ability:'dex',skillKey:'stealth',kind:'ability',label:'Discrétion'};
+      if (option.id === 'ritual-break-ward') option.check = {ability:'int',skillKey:'arcana',kind:'ability',label:'Désamorcer le sceau',dc:12};
+      if (option.id === 'ritual-sacrifice-gear') option.intent = 'Kairon engage ses ressources pour affaiblir le cercle. Un échec le blesse gravement; s’il est déjà blessé, il peut mourir. Trois actions au total avant la conclusion.';
+      if (option.id === 'ritual-rally') option.intent = 'Bjolnir tente de faire avancer les alliés. Un échec le blesse. Trois actions au total avant la conclusion.';
+    }));
+
+    const ADVENTURE_LEVELS = {
+  "title_screen": 1,
+  "credits": 1,
+  "hill_overlook": 1,
+  "swift_street": 1,
+  "greenest_keep": 1,
+  "old_tunnel": 1,
+  "mill_approach": 1,
+  "sanctuary_approach": 1,
+  "dragon_assault": 1,
+  "duel_field": 1,
+  "cult_trail": 2,
+  "cult_camp_exterior": 2,
+  "cult_camp": 2,
+  "leosin_return": 3,
+  "hatchery_entry": 3,
+  "fungal_chamber": 3,
+  "act2_confrontation": 3,
+  "roper_lair": 3,
+  "egg_chamber": 3,
+  "mondath_chamber": 3,
+  "hatchery_exit": 4,
+  "elturel_road": 4,
+  "elturel_tournament": 4,
+  "northern_road": 4,
+  "carnath_roadhouse": 5,
+  "naerytar_swamp": 5,
+  "castle_naerytar": 5,
+  "portal_chamber": 5,
+  "hunting_lodge": 6,
+  "skyreach_castle": 7,
+  "skyreach_chronicle": 7,
+  "act3_epilogue": 8,
+  "waterdeep_council_hall": 8,
+  "council_defense_floor": 8,
+  "council_strategy_floor": 8,
+  "diderius_chronicle": 8,
+  "ice_sea_chronicle": 9,
+  "iceberg_rebellion": 9,
+  "second_council": 10,
+  "metallic_dragon_audience": 10,
+  "misty_forest_chronicle": 10,
+  "neronvein_chronicle": 11,
+  "neronvein_battle": 11,
+  "thay_invitation": 12,
+  "council_resolution": 12,
+  "campaign_frontier": 12,
+  "war_council_tent": 14,
+  "battle_plan_selection": 14,
+  "supply_lines": 14,
+  "warded_corridor": 14,
+  "ritual_components": 14,
+  "commander_tent": 14,
+  "champion_confrontation": 14,
+  "refugee_corridor": 14,
+  "burning_streets_finale": 14,
+  "ritual_chamber": 14,
+  "campaign_end": 14
+};
+
+    // Instantanés PDF réels; les valeurs calculées ci-dessous sont une projection de jeu explicite.
+    const CHARACTER_SHEETS = {
+      bjolnir: {"name":"Bjolnir HautMarteau","level":10,"classKey":"paladin","subclass":"Rédemption","hitDie":10,"abilities":{"str":19,"dex":10,"con":16,"int":8,"wis":12,"cha":16},"armorClass":21,"hitPoints":85,"proficiency":4,"skills":{"acrobatics":{"bonus":0,"rank":0,"ability":"dex"},"animalHandling":{"bonus":1,"rank":0,"ability":"wis"},"arcana":{"bonus":-1,"rank":0,"ability":"int"},"athletics":{"bonus":8,"rank":1,"ability":"str"},"deception":{"bonus":3,"rank":0,"ability":"cha"},"history":{"bonus":-1,"rank":0,"ability":"int"},"insight":{"bonus":5,"rank":1,"ability":"wis"},"intimidation":{"bonus":3,"rank":0,"ability":"cha"},"investigation":{"bonus":-1,"rank":0,"ability":"int"},"medicine":{"bonus":1,"rank":0,"ability":"wis"},"nature":{"bonus":-1,"rank":0,"ability":"int"},"perception":{"bonus":1,"rank":0,"ability":"wis"},"performance":{"bonus":3,"rank":0,"ability":"cha"},"persuasion":{"bonus":7,"rank":1,"ability":"cha"},"religion":{"bonus":3,"rank":1,"ability":"int"},"sleightOfHand":{"bonus":0,"rank":0,"ability":"dex"},"stealth":{"bonus":0,"rank":0,"ability":"dex"},"survival":{"bonus":1,"rank":0,"ability":"wis"}},"saves":{"str":{"bonus":7,"rank":0,"ability":"str"},"dex":{"bonus":3,"rank":0,"ability":"dex"},"con":{"bonus":6,"rank":0,"ability":"con"},"int":{"bonus":2,"rank":0,"ability":"int"},"wis":{"bonus":8,"rank":1,"ability":"wis"},"cha":{"bonus":10,"rank":1,"ability":"cha"}},"spellAbility":"cha","referenceAttacks":[{"name":"Marteau de frappe précise (1 main)","attackBonus":9,"damage":"1d8+5 contondants"},{"name":"Marteau de frappe précise (2 mains)","attackBonus":9,"damage":"1d10+5 contondants"},{"name":"Masse","attackBonus":8,"damage":"1d6+4 contondants"}],"sources":["Bjolnir.pdf:page1 (caractéristiques, niveau, CA, PV, maîtrise, compétences, sauvegardes)","Bjolnir.pdf:page3 (incantation)"],"cautions":["FOR19 et gantelets d’ogre présents; on ne connaît pas la FOR naturelle antérieure.","Les sauvegardes imprimées incluent +3 d’Aura de protection. À niveau inférieur à6, ce bonus ne doit pas être appliqué."],"aura":{"level":6,"ability":"cha","printedBonus":3},"strengthReconstruction":{"base":17,"itemScore":19,"restoreAtLevel":10,"source":"Choix du MJ dans cette conversation: 16/17 minimum, valeur17 retenue pour la reconstitution.","status":"gmReconstruction"}},
+      drekthar: {"name":"Drek’Thar","level":5,"classKey":"fighter","subclass":"Champion","hitDie":10,"abilities":{"str":20,"dex":12,"con":16,"int":14,"wis":10,"cha":13},"armorClass":16,"hitPoints":49,"proficiency":3,"skills":{"acrobatics":{"bonus":1,"rank":0,"ability":"dex"},"animalHandling":{"bonus":0,"rank":0,"ability":"wis"},"arcana":{"bonus":2,"rank":0,"ability":"int"},"athletics":{"bonus":8,"rank":1,"ability":"str"},"deception":{"bonus":1,"rank":0,"ability":"cha"},"history":{"bonus":5,"rank":1,"ability":"int"},"insight":{"bonus":0,"rank":0,"ability":"wis"},"intimidation":{"bonus":1,"rank":0,"ability":"cha"},"investigation":{"bonus":2,"rank":0,"ability":"int"},"medicine":{"bonus":0,"rank":0,"ability":"wis"},"nature":{"bonus":2,"rank":0,"ability":"int"},"perception":{"bonus":3,"rank":1,"ability":"wis"},"performance":{"bonus":1,"rank":0,"ability":"cha"},"persuasion":{"bonus":4,"rank":1,"ability":"cha"},"religion":{"bonus":2,"rank":0,"ability":"int"},"sleightOfHand":{"bonus":1,"rank":0,"ability":"dex"},"stealth":{"bonus":1,"rank":0,"ability":"dex"},"survival":{"bonus":0,"rank":0,"ability":"wis"}},"saves":{"str":{"bonus":8,"rank":1,"ability":"str"},"dex":{"bonus":1,"rank":0,"ability":"dex"},"con":{"bonus":6,"rank":1,"ability":"con"},"int":{"bonus":2,"rank":0,"ability":"int"},"wis":{"bonus":0,"rank":0,"ability":"wis"},"cha":{"bonus":1,"rank":0,"ability":"cha"}},"spellAbility":null,"referenceAttacks":[{"name":"Greatsword","attackBonus":8,"damage":"2d6+5 tranchants"},{"name":"Shortsword","attackBonus":8,"damage":"1d6+5 perforants"},{"name":"Light Crossbow","attackBonus":4,"damage":"1d8+1 perforants"},{"name":"Épée 2M de FEU","attackBonus":8,"damage":"2D6+5 + 1D6 (texte de fiche; type du dernier dé non explicité dans la cellule)"}],"sources":["drekthar.pdf:page1 (caractéristiques, niveau, CA, PV, maîtrise, compétences, sauvegardes)","drekthar.pdf:page3 (incantation)"],"cautions":["Intimidation +1 imprimée, sans la maîtrise normalement octroyée au demi-orc5e2014 (qui donnerait +4). Garder le total réel affiché et signaler l’écart."]},
+      ellyjobell: {"name":"Ellyjobell Folkor","level":10,"classKey":"druid","subclass":"Cercle du berger (déduit des traits, non écrit dans l’en-tête)","hitDie":8,"abilities":{"str":14,"dex":18,"con":17,"int":17,"wis":18,"cha":12},"armorClass":18,"hitPoints":81,"proficiency":4,"skills":{"acrobatics":{"bonus":4,"rank":0,"ability":"dex"},"animalHandling":{"bonus":4,"rank":0,"ability":"wis"},"arcana":{"bonus":3,"rank":0,"ability":"int"},"athletics":{"bonus":6,"rank":1,"ability":"str"},"deception":{"bonus":1,"rank":0,"ability":"cha"},"history":{"bonus":3,"rank":0,"ability":"int"},"insight":{"bonus":4,"rank":0,"ability":"wis"},"intimidation":{"bonus":1,"rank":0,"ability":"cha"},"investigation":{"bonus":3,"rank":0,"ability":"int"},"medicine":{"bonus":8,"rank":1,"ability":"wis"},"nature":{"bonus":7,"rank":1,"ability":"int"},"perception":{"bonus":4,"rank":0,"ability":"wis"},"performance":{"bonus":1,"rank":0,"ability":"cha"},"persuasion":{"bonus":1,"rank":0,"ability":"cha"},"religion":{"bonus":3,"rank":0,"ability":"int"},"sleightOfHand":{"bonus":4,"rank":0,"ability":"dex"},"stealth":{"bonus":4,"rank":0,"ability":"dex"},"survival":{"bonus":8,"rank":1,"ability":"wis"}},"saves":{"str":{"bonus":2,"rank":0,"ability":"str"},"dex":{"bonus":4,"rank":0,"ability":"dex"},"con":{"bonus":3,"rank":0,"ability":"con"},"int":{"bonus":7,"rank":1,"ability":"int"},"wis":{"bonus":8,"rank":1,"ability":"wis"},"cha":{"bonus":1,"rank":0,"ability":"cha"}},"spellAbility":"wis","referenceAttacks":[{"name":"Bâton (1 main)","attackBonus":6,"damage":"1d6+2 contondants"},{"name":"Bâton (2 mains)","attackBonus":6,"damage":"1d8+2 contondants"},{"name":"Bâton magique","attackBonus":8,"damage":"1d8+4 contondants","note":"Compatible avec Gourdin magique (SAG), ne pas en déduire arbitrairement une arme +2"},{"name":"Flamme","attackBonus":8,"damage":"2d8 feu"},{"name":"Appel de la foudre","saveDC":16,"damage":"3d10 foudre"}],"sources":["Ellyjobell.pdf:page1 (caractéristiques, niveau, CA, PV, maîtrise, compétences, sauvegardes)","Ellyjobell.pdf:page3 (incantation)"],"cautions":["Niveau10 en en-tête, mais l’esprit de l’ours est nommé +14PV (devrait15 au niveau10) et la description de durée de forme sauvage indique2h (niveau10 devrait5h). Ne pas utiliser les fragments périmés comme progression."]},
+      darrin: {"name":"Darrin Kloumsihande","level":10,"classKey":"sorcerer","subclass":"Magie sauvage","hitDie":6,"abilities":{"str":11,"dex":13,"con":14,"int":15,"wis":9,"cha":16},"armorClass":11,"hitPoints":62,"proficiency":4,"skills":{"acrobatics":{"bonus":5,"rank":1,"ability":"dex"},"animalHandling":{"bonus":-1,"rank":0,"ability":"wis"},"arcana":{"bonus":6,"rank":1,"ability":"int"},"athletics":{"bonus":0,"rank":0,"ability":"str"},"deception":{"bonus":7,"rank":1,"ability":"cha"},"history":{"bonus":6,"rank":1,"ability":"int"},"insight":{"bonus":-1,"rank":0,"ability":"wis"},"intimidation":{"bonus":3,"rank":0,"ability":"cha"},"investigation":{"bonus":2,"rank":0,"ability":"int"},"medicine":{"bonus":-1,"rank":0,"ability":"wis"},"nature":{"bonus":2,"rank":0,"ability":"int"},"perception":{"bonus":-1,"rank":0,"ability":"wis"},"performance":{"bonus":3,"rank":0,"ability":"cha"},"persuasion":{"bonus":7,"rank":1,"ability":"cha"},"religion":{"bonus":2,"rank":0,"ability":"int"},"sleightOfHand":{"bonus":1,"rank":0,"ability":"dex"},"stealth":{"bonus":1,"rank":0,"ability":"dex"},"survival":{"bonus":-1,"rank":0,"ability":"wis"}},"saves":{"str":{"bonus":0,"rank":0,"ability":"str"},"dex":{"bonus":1,"rank":0,"ability":"dex"},"con":{"bonus":6,"rank":1,"ability":"con"},"int":{"bonus":2,"rank":0,"ability":"int"},"wis":{"bonus":-1,"rank":0,"ability":"wis"},"cha":{"bonus":7,"rank":1,"ability":"cha"}},"spellAbility":"cha","referenceAttacks":[{"name":"Ray of Frost","attackBonus":7,"damage":"2d8 froid"},{"name":"Magic Missile","attackBonus":null,"damage":"1d4+1 force par projectile","note":"Pas de jet d’attaque en règle5e"},{"name":"Light Crossbow","attackBonus":5,"damage":"1d8+1 perforants"},{"name":"Dagger","attackBonus":5,"damage":"1d4+1 perforants"},{"name":"Éclair de chaos","attackBonus":7,"damage":"2d8+1d6"},{"name":"Boule de feu","attackBonusPrinted":7,"damage":"8d6 feu","note":"Cellule affichée +7, mais la règle utilise une sauvegarde DEX (DD de sorts15 ici), pas un jet d’attaque"}],"sources":["darrin.pdf:page1 (caractéristiques, niveau, CA, PV, maîtrise, compétences, sauvegardes)","darrin.pdf:page3 (incantation)"],"cautions":["En-tête ensorceleur10; XP6840 correspond à niveau5. Utiliser l’en-tête comme niveau du snapshot, sans considérer l’XP comme progression actuelle.","Chaos contrôlé (le texte dit niveau14) et Bombardement de sort (niveau18) sont listés sur la fiche10. Ne pas les activer au niveau10 ni plus tôt.","Project Image apparaît deux fois dans les sorts7, alors que l’ensorceleur10 ne dispose pas d’emplacement de sort7."]},
+      kairon: {"name":"Kairon Erudit","level":9,"classKey":"warlock","subclass":"Fiélon","hitDie":8,"abilities":{"str":19,"dex":13,"con":15,"int":12,"wis":14,"cha":20},"armorClass":17,"hitPoints":67,"proficiency":4,"skills":{"acrobatics":{"bonus":1,"rank":0,"ability":"dex"},"animalHandling":{"bonus":2,"rank":0,"ability":"wis"},"arcana":{"bonus":1,"rank":0,"ability":"int"},"athletics":{"bonus":4,"rank":0,"ability":"str"},"deception":{"bonus":5,"rank":0,"ability":"cha"},"history":{"bonus":1,"rank":0,"ability":"int"},"insight":{"bonus":2,"rank":0,"ability":"wis"},"intimidation":{"bonus":5,"rank":0,"ability":"cha"},"investigation":{"bonus":1,"rank":0,"ability":"int"},"medicine":{"bonus":2,"rank":0,"ability":"wis"},"nature":{"bonus":1,"rank":0,"ability":"int"},"perception":{"bonus":2,"rank":0,"ability":"wis"},"performance":{"bonus":5,"rank":0,"ability":"cha"},"persuasion":{"bonus":5,"rank":0,"ability":"cha"},"religion":{"bonus":1,"rank":0,"ability":"int"},"sleightOfHand":{"bonus":1,"rank":0,"ability":"dex"},"stealth":{"bonus":1,"rank":0,"ability":"dex"},"survival":{"bonus":2,"rank":0,"ability":"wis"}},"saves":{"str":{"bonus":4,"rank":0,"ability":"str"},"dex":{"bonus":1,"rank":0,"ability":"dex"},"con":{"bonus":2,"rank":0,"ability":"con"},"int":{"bonus":1,"rank":0,"ability":"int"},"wis":{"bonus":2,"rank":0,"ability":"wis"},"cha":{"bonus":5,"rank":0,"ability":"cha"}},"spellAbility":"cha","referenceAttacks":[{"name":"Masse d’arme","attackBonus":8,"damage":"1d6+4 contondants"},{"name":"Dague","attackBonus":5,"damage":"1d4+1 perforants"},{"name":"Quarterstaff","attackBonus":8,"damage":"1d6+5 contondants"},{"name":"Décharge occulte (français)","attackBonusPrinted":5,"damagePrinted":"1d10+5 force","source":"kairon.pdf:page2"},{"name":"Eldritch Blast (anglais)","attackBonusPrinted":9,"damagePrinted":"1d10+4 force","source":"kairon.pdf:page2","note":"Deux entrées incohérentes: avec CHA20, maîtrise4 et Lance agonisante, règle attend +9 / 1d10+5 par rayon"},{"name":"Fire Bolt","attackBonus":9,"damage":"2d10 feu"},{"name":"Ray of Frost","attackBonus":9,"damage":"2d8 froid"}],"sources":["kairon.pdf:page1 (caractéristiques, niveau, CA, PV, maîtrise, compétences, sauvegardes)","kairon.pdf:page3 (incantation)"],"cautions":["La fiche9/PB4 indique sauvegardes SAG+2 et CHA+5 (aucune maîtrise). Un occultiste standard devrait SAG+6/CHA+9. Aucune multiclassage n’est attesté. Garder les valeurs de fiche et afficher la réserve.","Les18 compétences imprimées sont égales aux seuls modificateurs de caractéristiques. Les maîtrises de classe/historique ne sont pas renseignées dans les totaux.","En-tête occultiste9; XP34000 correspond à niveau8.","Quatre emplacements5 sont imprimés; occultiste9 pur dispose normalement de deux emplacements5.","FOR19 et gantelets d’ogre présents; FOR naturelle antérieure inconnue.","Décharge occulte +5/1d10+5 et Eldritch Blast +9/1d10+4 se contredisent; avec caractéristiques actuelles et invocation, calcul standard +9/1d10+5. Hellish Rebuke DD12 page1 vs DD17 page2 et en-tête DD17 page3."],"strengthReconstruction":{"base":17,"itemScore":19,"restoreAtLevel":9,"source":"Choix du MJ dans cette conversation: 16/17 minimum, valeur17 retenue pour la reconstitution.","status":"gmReconstruction"}},
+      malar: {"name":"Malar","level":9,"classKey":"rogue","subclass":"Voleur","hitDie":8,"abilities":{"str":12,"dex":19,"con":12,"int":12,"wis":15,"cha":18},"armorClass":17,"hitPoints":58,"proficiency":4,"skills":{"acrobatics":{"bonus":8,"rank":1,"ability":"dex"},"animalHandling":{"bonus":2,"rank":0,"ability":"wis"},"arcana":{"bonus":1,"rank":0,"ability":"int"},"athletics":{"bonus":1,"rank":0,"ability":"str"},"deception":{"bonus":12,"rank":2,"ability":"cha"},"history":{"bonus":1,"rank":0,"ability":"int"},"insight":{"bonus":6,"rank":1,"ability":"wis"},"intimidation":{"bonus":4,"rank":0,"ability":"cha"},"investigation":{"bonus":9,"rank":2,"ability":"int"},"medicine":{"bonus":2,"rank":0,"ability":"wis"},"nature":{"bonus":1,"rank":0,"ability":"int"},"perception":{"bonus":6,"rank":1,"ability":"wis"},"performance":{"bonus":4,"rank":0,"ability":"cha"},"persuasion":{"bonus":4,"rank":0,"ability":"cha"},"religion":{"bonus":1,"rank":0,"ability":"int"},"sleightOfHand":{"bonus":4,"rank":0,"ability":"dex"},"stealth":{"bonus":12,"rank":2,"ability":"dex"},"survival":{"bonus":2,"rank":0,"ability":"wis"}},"saves":{"str":{"bonus":1,"rank":0,"ability":"str"},"dex":{"bonus":8,"rank":1,"ability":"dex"},"con":{"bonus":1,"rank":0,"ability":"con"},"int":{"bonus":5,"rank":1,"ability":"int"},"wis":{"bonus":2,"rank":0,"ability":"wis"},"cha":{"bonus":4,"rank":0,"ability":"cha"}},"spellAbility":null,"referenceAttacks":[{"name":"Rapier","attackBonus":8,"damage":"1d8+4 perforants"},{"name":"Shortbow","attackBonus":8,"damage":"1d6+4 perforants"},{"name":"Dagger","attackBonus":8,"damage":"1d4+4 perforants"}],"sources":["malar.pdf:page1 (caractéristiques, niveau, CA, PV, maîtrise, compétences, sauvegardes)","malar.pdf:page3 (incantation)"],"cautions":["En-tête roublard9; XP5001 correspond à niveau4."]},
+      sislay: {"name":"Sislay Baite","level":5,"classKey":"ranger","subclass":"Chasseur","hitDie":10,"abilities":{"str":14,"dex":14,"con":16,"int":11,"wis":10,"cha":14},"armorClass":13,"hitPoints":53,"proficiency":3,"skills":{"acrobatics":{"bonus":2,"rank":0,"ability":"dex"},"animalHandling":{"bonus":0,"rank":0,"ability":"wis"},"arcana":{"bonus":0,"rank":0,"ability":"int"},"athletics":{"bonus":2,"rank":0,"ability":"str"},"deception":{"bonus":2,"rank":0,"ability":"cha"},"history":{"bonus":0,"rank":0,"ability":"int"},"insight":{"bonus":3,"rank":1,"ability":"wis"},"intimidation":{"bonus":5,"rank":1,"ability":"cha"},"investigation":{"bonus":0,"rank":0,"ability":"int"},"medicine":{"bonus":0,"rank":0,"ability":"wis"},"nature":{"bonus":0,"rank":0,"ability":"int"},"perception":{"bonus":0,"rank":0,"ability":"wis"},"performance":{"bonus":2,"rank":0,"ability":"cha"},"persuasion":{"bonus":2,"rank":0,"ability":"cha"},"religion":{"bonus":0,"rank":0,"ability":"int"},"sleightOfHand":{"bonus":2,"rank":0,"ability":"dex"},"stealth":{"bonus":2,"rank":0,"ability":"dex"},"survival":{"bonus":0,"rank":0,"ability":"wis"}},"saves":{"str":{"bonus":5,"rank":1,"ability":"str"},"dex":{"bonus":5,"rank":1,"ability":"dex"},"con":{"bonus":3,"rank":0,"ability":"con"},"int":{"bonus":0,"rank":0,"ability":"int"},"wis":{"bonus":0,"rank":0,"ability":"wis"},"cha":{"bonus":2,"rank":0,"ability":"cha"}},"spellAbility":"wis","referenceAttacks":[{"name":"Rapier","attackBonus":5,"damage":"1d8+2 perforants"},{"name":"Shortbow","attackBonus":5,"damage":"1d6+2 perforants"},{"name":"Arc long","attackBonus":5,"damage":"1d8+2"},{"name":"Hunter’s Mark","damage":"1d6 supplémentaires"},{"name":"Cure Wounds","healingPrinted":"1d8"}],"sources":["sislay.pdf:page1 (caractéristiques, niveau, CA, PV, maîtrise, compétences, sauvegardes)","sislay.pdf:page3 (incantation)"],"cautions":["Rôdeuse5 et sorts/traits de rôdeur corroborés, mais langues/maîtrises d’armes et armure ressemblent à ceux d’un roublard; livre de prière, symbole sacré et compteur Divine Sense paraissent copiés. Ils ne prouvent aucun multiclassage paladin ou roublard.","Seules Perspicacité et Intimidation ont un bonus de maîtrise visible; Discrétion+2, Perception0 et Survie0 sont les vrais totaux imprimés. Ne pas inventer une maîtrise parce que le personnage est une rôdeuse efficace."]}
+    };
+
+    function abilityModifier(score) {
+      return Math.floor((Number(score) - 10) / 2);
+    }
+
+    function proficiencyBonus(level) {
+      return 2 + Math.floor((Math.max(1, Math.min(20, Math.floor(Number(level) || 1))) - 1) / 4);
+    }
+
+    function getAdventureStats(id, roomId = gameState.roomId) {
+      const sheet = CHARACTER_SHEETS[id];
+      if (!sheet) return null;
+      const requested = Number(getAdventureLevel(roomId));
+      const hasAdventureLevel = Number.isInteger(requested) && requested >= 1 && requested <= 20;
+      const level = hasAdventureLevel ? requested : sheet.level;
+      const abilities = { ...sheet.abilities };
+      const strength = sheet.strengthReconstruction;
+      if (strength && level < strength.restoreAtLevel) abilities.str = strength.base;
+      const modifiers = Object.fromEntries(Object.entries(abilities).map(([key, score]) => [key, abilityModifier(score)]));
+      const proficiency = proficiencyBonus(level);
+      const averageGain = Math.max(1, Math.floor(sheet.hitDie / 2) + 1 + modifiers.con);
+      const hitPoints = level === sheet.level ? sheet.hitPoints
+        : level > sheet.level ? sheet.hitPoints + (level - sheet.level) * averageGain
+        : Math.max(1, sheet.hitDie + modifiers.con) + (level - 1) * averageGain;
+      const skills = Object.fromEntries(Object.entries(sheet.skills).map(([key, skill]) => [key, {
+        ability: skill.ability, rank: skill.rank, bonus: modifiers[skill.ability] + skill.rank * proficiency,
+        referenceBonus: skill.bonus
+      }]));
+      const conscious = typeof characters === 'undefined' || !['dead', 'down', 'absent', 'captured', 'retired'].includes(characters[id]?.state);
+      const aura = sheet.aura && level >= sheet.aura.level && conscious ? Math.max(1, modifiers[sheet.aura.ability]) : 0;
+      const saves = Object.fromEntries(Object.entries(sheet.saves).map(([key, save]) => [key, {
+        ability: key, rank: save.rank, bonus: modifiers[key] + save.rank * proficiency + aura,
+        referenceBonus: save.bonus
+      }]));
+      const cautions = [];
+      if (strength && level < strength.restoreAtLevel) cautions.push('FOR 17 reconstituée avec le MJ avant les gantelets; la date exacte de leur acquisition reste inconnue.');
+      if (id === 'kairon') cautions.push('Les maîtrises de compétences et de sauvegardes manquent sur la fiche; les totaux imprimés sont conservés comme référence.');
+      if (id === 'sislay') cautions.push('Certaines maîtrises de la fiche sont incomplètes; Discrétion reste sans maîtrise attestée.');
+      return {
+        id, name: sheet.name, level, hasAdventureLevel, referenceLevel: sheet.level,
+        classKey: sheet.classKey, abilities, modifiers, proficiency, hitPoints,
+        hitPointsAreEstimate: level !== sheet.level, armorClassReference: sheet.armorClass,
+        skills, saves, auraBonus: aura,
+        meleeAttackBonus: modifiers.str + proficiency,
+        rangedAttackBonus: modifiers.dex + proficiency,
+        spellAttackBonus: sheet.spellAbility ? modifiers[sheet.spellAbility] + proficiency : null,
+        spellSaveDC: sheet.spellAbility ? 8 + modifiers[sheet.spellAbility] + proficiency : null,
+        spellAbility: sheet.spellAbility, reference: sheet,
+        projectionLabel: 'Caractéristiques de référence et maîtrise adaptée au niveau de la scène',
+        attackNote: 'Bonus de base hors bonus magique d’arme. Les attaques imprimées restent dans la référence PDF.',
+        cautions
+      };
+    }
+
+    function renderCharacterStats(container, id) {
+      const stats = getAdventureStats(id);
+      if (!stats) return;
+      const signed = value => (value >= 0 ? '+' : '') + value;
+      const labels = { str: 'FOR', dex: 'DEX', con: 'CON', int: 'INT', wis: 'SAG', cha: 'CHA' };
+      const element = (tag, text, className) => {
+        const node = document.createElement(tag);
+        if (text !== undefined) node.textContent = text;
+        if (className) node.className = className;
+        return node;
+      };
+      const section = element('section', undefined, 'character-stats');
+      section.setAttribute('aria-label', 'Statistiques de ' + stats.name);
+      section.appendChild(element('h4', 'Caractéristiques et épreuves'));
+      section.appendChild(element('p', (stats.hasAdventureLevel ? 'Niveau de la scène ' : 'Niveau de la fiche ') +
+        stats.level + ' · Maîtrise ' + signed(stats.proficiency) + ' · ' +
+        (stats.hitPointsAreEstimate ? 'PV estimés ' : 'PV de la fiche ') + stats.hitPoints, 'stats-summary'));
+      section.appendChild(element('p', 'Référence PDF: niveau ' + stats.referenceLevel +
+        ' · PV ' + stats.reference.hitPoints + ' · CA ' + stats.armorClassReference, 'stats-reference'));
+      const table = element('table', undefined, 'stats-table');
+      table.appendChild(element('caption', 'Projection de jeu et valeurs réelles de la fiche'));
+      const head = element('thead'), headRow = element('tr');
+      ['Caractéristique', 'Dans cette scène', 'Fiche N' + stats.referenceLevel].forEach(label => headRow.appendChild(element('th', label)));
+      head.appendChild(headRow); table.appendChild(head);
+      const body = element('tbody');
+      Object.entries(labels).forEach(([key, label]) => {
+        const row = element('tr'), name = element('th', label); name.setAttribute('scope', 'row'); row.appendChild(name);
+        row.appendChild(element('td', stats.abilities[key] + ' (' + signed(stats.modifiers[key]) + ')'));
+        row.appendChild(element('td', stats.reference.abilities[key] + ' (' + signed(abilityModifier(stats.reference.abilities[key])) + ')'));
+        body.appendChild(row);
+      });
+      table.appendChild(body); section.appendChild(table);
+      const saveText = Object.entries(labels).map(([key, label]) => label + ' ' + signed(stats.saves[key].bonus)).join(' · ');
+      section.appendChild(element('p', 'Sauvegardes projetées: ' + saveText +
+        (stats.auraBonus ? ' · Aura de protection incluse: ' + signed(stats.auraBonus) : ''), 'stats-saves'));
+      const details = element('details');
+      details.appendChild(element('summary', 'Compétences, sauvegardes et attaques'));
+      const skillLabels = {acrobatics:'Acrobaties',animalHandling:'Dressage',arcana:'Arcanes',athletics:'Athlétisme',deception:'Tromperie',history:'Histoire',insight:'Perspicacité',intimidation:'Intimidation',investigation:'Investigation',medicine:'Médecine',nature:'Nature',perception:'Perception',performance:'Représentation',persuasion:'Persuasion',religion:'Religion',sleightOfHand:'Escamotage',stealth:'Discrétion',survival:'Survie'};
+      renderBonusTable(details,'Compétences',stats.skills,skillLabels,stats.referenceLevel);
+      renderBonusTable(details,'Jets de sauvegarde',stats.saves,labels,stats.referenceLevel);
+      details.appendChild(element('p',`Attaques de base dans cette scène : mêlée ${signed(stats.meleeAttackBonus)}, à distance ${signed(stats.rangedAttackBonus)}${stats.spellAttackBonus === null ? '' : `, sorts ${signed(stats.spellAttackBonus)} · DD des sorts ${stats.spellSaveDC}`}.`, 'stats-saves'));
+      details.appendChild(element('p',stats.attackNote,'stats-caution'));
+      details.appendChild(element('p',`Attaques imprimées sur la fiche : ${stats.reference.referenceAttacks.map(attack => `${attack.name} ${Number.isFinite(attack.attackBonus ?? attack.attackBonusPrinted) ? signed(attack.attackBonus ?? attack.attackBonusPrinted) : ''} (${attack.damage ?? attack.damagePrinted ?? attack.healingPrinted ?? 'voir fiche'})`).join(' ; ')}.`, 'stats-reference'));
+      section.appendChild(details);
+      section.appendChild(element('p',
+        'Les scores de la fiche restent la référence. La maîtrise suit le niveau du chapitre; les PV estimés utilisent la moyenne de la classe. La CA affichée appartient à la fiche, sans équipement rétroactif.',
+        'stats-caution'));
+      stats.cautions.forEach(note => section.appendChild(element('p', note, 'stats-caution')));
+      container.appendChild(section);
+    }
+
+    function renderBonusTable(container, caption, entries, labels, referenceLevel) {
+      const table = document.createElement('table'); table.className = 'stats-table';
+      const title = document.createElement('caption'); title.textContent = caption; table.appendChild(title);
+      const head = document.createElement('thead'), headings = document.createElement('tr');
+      ['Aptitude','Dans cette scène',`Fiche N${referenceLevel}`].forEach(label => {
+        const cell = document.createElement('th'); cell.textContent = label; headings.appendChild(cell);
+      });
+      head.appendChild(headings); table.appendChild(head);
+      const body = document.createElement('tbody'), signed = value => `${value >= 0 ? '+' : ''}${value}`;
+      Object.entries(entries).forEach(([key, entry]) => {
+        const row = document.createElement('tr'), label = document.createElement('th');
+        label.setAttribute('scope','row'); label.textContent = labels[key] ?? key; row.appendChild(label);
+        [entry.bonus,entry.referenceBonus].forEach(bonus => {
+          const cell = document.createElement('td'); cell.textContent = signed(bonus); row.appendChild(cell);
+        });
+        body.appendChild(row);
+      });
+      table.appendChild(body); container.appendChild(table);
+    }
+
+    function getAdventureLevel(roomId = gameState.roomId) {
+      if (DATA.actRooms.ACT_V.includes(roomId)) return 14;
+      return Math.max(1, gameState.adventureLevel ?? 1, ADVENTURE_LEVELS[roomId] ?? 1);
+    }
+
+    function updateAdventureLevel() {
+      if (!DATA.actRooms.ACT_V.includes(gameState.roomId)) gameState.adventureLevel = Math.max(gameState.adventureLevel ?? 1, ADVENTURE_LEVELS[gameState.roomId] ?? 1, flags.actICompleted ? 2 : 1);
+    }
+
     const gameState = {
       roomId: 'title_screen',
       inventory: ['torche'],
@@ -4664,6 +5428,8 @@
       timelineApplied: [],
       resolvedOptions: [],
       lastReport: null,
+      adventureLevel: 1,
+      rollHistory: [],
       debugMode: URL_PARAMS.get('debug') === '1'
     };
 
@@ -4679,12 +5445,13 @@
     uiState.reducedMotion = uiState.systemReducedMotion || uiState.preferences.motion === 'reduced';
 
     function readPreferences() {
-      const defaults = { effects: true, motion: 'auto', sound: false, volume: 0.25 };
+      const defaults = { effects: true, motion: 'auto', sound: false, volume: 0.25, diceAnimation: true };
       try {
         const saved = JSON.parse(localStorage.getItem(PREFERENCES_KEY));
         if (!saved || typeof saved !== 'object') return defaults;
         return { effects: typeof saved.effects === 'boolean' ? saved.effects : true,
           motion: saved.motion === 'reduced' ? 'reduced' : 'auto', sound: saved.sound === true,
+          diceAnimation: saved.diceAnimation !== false,
           volume: typeof saved.volume === 'number' && Number.isFinite(saved.volume) ? Math.max(0, Math.min(1,saved.volume)) : 0.25 };
       } catch { return defaults; }
     }
@@ -4717,6 +5484,7 @@
       gameState.lastReport = null;
       uiState.effect = null;
       if (!options.skipScene) prepareCurrentRoom();
+      uiState.diceAnimation = null;
       if (!options.skipScene) callSceneHook('onEnter');
       if (!options.skipDescribe) describeCurrentRoom();
       if (!options.skipAutoSave) saveGame();
@@ -4748,6 +5516,21 @@
         if (!record(state) || !Object.hasOwn(rooms, state.roomId)) return false;
         if (!strings(state.inventory) || !strings(state.commandHistory) || !strings(state.timelineApplied)) return false;
         if (state.resolvedOptions !== undefined && !strings(state.resolvedOptions)) return false;
+        if (state.adventureLevel !== undefined && (!Number.isInteger(state.adventureLevel) || state.adventureLevel < 1 || state.adventureLevel > 20)) return false;
+        const validCheck = check => record(check) && typeof check.id === 'string'
+          && Object.hasOwn(INITIAL_CHARACTERS, check.actorId)
+          && Number.isInteger(check.level) && check.level >= 1 && check.level <= 20
+          && Number.isInteger(check.natural) && check.natural >= 1 && check.natural <= 20
+          && Number.isInteger(check.dc) && check.dc >= 1 && check.dc <= 50
+          && ['str','dex','con','int','wis','cha'].includes(check.ability)
+          && ['ability','attack'].includes(check.kind) && typeof check.label === 'string'
+          && ['bonus','abilityModifier','proficiencyBonus','otherBonus','total'].every(key => Number.isFinite(check[key]))
+          && check.bonus === check.abilityModifier + check.proficiencyBonus + check.otherBonus
+          && check.total === check.natural + check.bonus && typeof check.success === 'boolean'
+          && check.critical === (check.kind === 'attack' ? check.natural === 20 ? 'success' : check.natural === 1 ? 'failure' : null : null)
+          && check.success === (check.critical === 'success' || (check.critical !== 'failure' && check.total >= check.dc));
+        if (state.rollHistory !== undefined && (!Array.isArray(state.rollHistory) || state.rollHistory.length > 100 || !state.rollHistory.every(validCheck))) return false;
+        if (state.lastReport?.check != null && !validCheck(state.lastReport.check)) return false;
         if (state.lastReport != null && (!record(state.lastReport) || !Object.hasOwn(rooms, state.lastReport.roomId)
           || typeof state.lastReport.title !== 'string' || !strings(state.lastReport.paragraphs)
           || !strings(state.lastReport.changes) || typeof state.lastReport.failed !== 'boolean'
@@ -4796,6 +5579,9 @@
       gameState.resolvedOptions = [];
       gameState.lastReport = null;
       uiState.effect = null;
+      uiState.diceAnimation = null;
+      gameState.adventureLevel = 1;
+      gameState.rollHistory = [];
     }
 
     function exportSaveToClipboard() {
@@ -4850,8 +5636,8 @@
 
     function updateStatusStrip() {
       const morale = variables.moraleGroupe >= 2 ? 'Le groupe garde confiance' : variables.moraleGroupe < 0 ? 'Le groupe est éprouvé' : 'Le groupe reste uni';
-      statusEl.textContent = `${morale} · ${hasSaveData() ? 'Progression enregistrée localement' : 'Votre aventure vous attend'}`;
-      document.getElementById('undoButton').disabled = !peekCheckpoint();
+      statusEl.textContent = `${morale} · Niveau ${getAdventureLevel()} · ${hasSaveData() ? 'Progression enregistrée localement' : 'Votre aventure vous attend'}`;
+      document.getElementById('undoButton').disabled = !findDecisionCheckpoint();
     }
 
     function renderFeedback() {
@@ -4876,29 +5662,42 @@
         const button = document.createElement('button'); button.className = 'party-person'; button.dataset.state = c.state;
         button.setAttribute('aria-label', `${c.name}, ${PRESENTATION.states[c.state]}. Voir la compagnie`);
         const text = document.createElement('span'), name = document.createElement('strong'), state = document.createElement('small');
-        name.textContent = PRESENTATION.people[id]?.short ?? c.name; state.textContent = PRESENTATION.states[c.state];
+        name.textContent = PRESENTATION.people[id]?.short ?? c.name; state.textContent = `N${getAdventureLevel()} · ${PRESENTATION.states[c.state]}`;
         text.append(name, state); button.append(portraitImage(id), text);
         button.addEventListener('click', () => openCompany(id)); list.appendChild(button);
       });
     }
 
     function getPresentedChoices() {
-      if (gameState.lastReport) return [{ option: { id: 'report-continue', label: gameState.lastReport.rolledBack ? 'Reprendre avant cette décision' : `Poursuivre: ${getCurrentRoom().title}` }, continuation: true, shortcut: 1 }];
+      if (gameState.lastReport) {
+        const pending = getD20AnimationPending(), back = findDecisionCheckpoint(), restart = !back && gameState.roomId === 'title_screen';
+        return [
+          { option: { id: pending ? 'dice-skip' : 'report-continue', label: pending ? 'Afficher le résultat maintenant' : gameState.lastReport.rolledBack ? 'Reprendre avant cette décision' : `Poursuivre : ${getCurrentRoom().title}` }, continuation: !pending, skipDice: pending, shortcut: 1 },
+          { option: { id: back ? 'report-back' : restart ? 'report-restart' : 'report-home', label: back ? 'Revenir avant une décision' : restart ? 'Commencer une nouvelle partie' : 'Revenir à l’accueil', intent: back ? 'Annule les conséquences de cette tentative en restaurant une décision praticable.' : restart ? 'Repartir à Verdure avec tous les compagnons du début.' : 'Conserver la sauvegarde et quitter la scène.' }, decisionBack: Boolean(back), restart, home: !back && !restart, shortcut: 2 }
+        ];
+      }
       const options = getAvailableOptions(gameState.roomId);
-      if (gameState.roomId !== 'title_screen') return options.map((option, index) => ({ option, index, shortcut: index + 1 }));
+      if (gameState.roomId !== 'title_screen') return options.map((option,index) => ({ option,index,shortcut:index+1 }));
       return [
-        { option: { id: 'title-new', label: 'Commencer l’aventure' }, index: options.findIndex(o => o.id === 'title-new'), shortcut: 1 },
-        { option: { id: 'title-continue', label: 'Reprendre ma partie' }, index: options.findIndex(o => o.id === 'title-continue'), shortcut: 2 },
-        { option: { id: 'read-chronicle', label: 'Lire la chronique' }, journal: true, shortcut: 3 }
+        { option: { id:'title-new',label:'Commencer l’aventure' },index:options.findIndex(o=>o.id==='title-new'),shortcut:1 },
+        { option: { id:'title-continue',label:'Reprendre ma partie' },index:options.findIndex(o=>o.id==='title-continue'),shortcut:2 },
+        { option: { id:'read-chronicle',label:'Lire la chronique' },journal:true,shortcut:3 }
       ];
     }
 
     function executePresentedChoice(shortcut) {
       const choice = getPresentedChoices().find(c => c.shortcut === Number(shortcut));
       if (!choice || choice.index === -1) return;
-      if (choice.continuation) { gameState.lastReport = null; uiState.effect = null; uiState.feedback = ''; refreshInterface(); saveGame(); focusNarrative(); return; }
+      if (choice.skipDice) { finishD20Animation(); return; }
+      if (choice.restart) { handleSpecialSelection('restart_campaign'); refreshInterface(); focusNarrative(); return; }
+      if (choice.decisionBack) { restoreDecisionCheckpoint(); saveGame(); refreshInterface(); focusNarrative(); return; }
+      if (choice.home) { handleSpecialSelection('return_title'); refreshInterface(); focusNarrative(); return; }
+      if (choice.continuation) {
+        gameState.lastReport = null; uiState.effect = null; uiState.diceAnimation = null; uiState.feedback = '';
+        refreshInterface(); if (gameState.roomId !== 'title_screen') saveGame(); focusNarrative(); return;
+      }
       if (choice.journal) { openJournal('chronicle'); return; }
-      chooseOption(String(choice.index + 1));
+      chooseOption(String(choice.index+1));
     }
 
     function renderChoices() {
@@ -4917,6 +5716,12 @@
         content.append(title, detail); card.appendChild(number);
         if (option.characterId) card.appendChild(portraitImage(option.characterId));
         card.appendChild(content);
+        if (option.resolution && option.characterId) {
+          const preview = getCheckPreview(option,option.characterId), hint = document.createElement('span');
+          hint.className = 'check-preview';
+          hint.textContent = `${characters[preview.actorId].name} · niveau ${preview.level} · ${preview.label} : D20 ${preview.bonus < 0 ? '−' : '+'}${Math.abs(preview.bonus)} · ${preview.kind === 'attack' ? 'CA' : 'DD'} ${preview.dc}`;
+          content.appendChild(hint);
+        }
         if (option.riskText) { const risk = document.createElement('span'); risk.className = 'choice-risk'; risk.textContent = option.riskText; content.appendChild(risk); }
         const arrow = document.createElement('span'); arrow.className = 'choice-arrow'; arrow.textContent = '→'; arrow.setAttribute('aria-hidden', 'true'); card.appendChild(arrow);
         card.addEventListener('click', () => dispatchCommand(String(choice.shortcut))); list.appendChild(card);
@@ -4963,6 +5768,7 @@
 
     function refreshInterface() {
       const room = getCurrentRoom(); if (!room) return;
+      const pending = getD20AnimationPending();
       const report = gameState.lastReport, shownRoom = report ? rooms[report.roomId] : room;
       const view = getScenePresentation(shownRoom);
       const text = (id, value) => { document.getElementById(id).textContent = value; };
@@ -4973,22 +5779,22 @@
       text('heroTagline', view?.tagline ?? '');
       document.getElementById('heroTagline').hidden = !view?.tagline;
       text('sceneCoordinate', view?.location ?? shownRoom.title);
-      text('sceneTitle', report?.title ?? view?.heading ?? room.title);
+      text('sceneTitle', pending ? 'Le groupe passe à l’action' : report?.title ?? view?.heading ?? room.title);
       const chapter = view?.chapterNumber ?? shownRoom.chapter;
       text('chapterLabel', chapter ? `Chapitre ${CHRONICLE_CHAPTERS[chapter - 1].title}` : 'Récit alternatif · La bataille finale');
       text('pageNumber', chapter ? String(chapter).padStart(2,'0') : '◇');
-      text('decisionTitle', report ? 'La suite' : room.id === 'title_screen' ? 'Ouvrir le récit' : 'Que faites-vous ?');
+      text('decisionTitle', pending ? 'Le D20 roule…' : report ? 'La suite' : room.id === 'title_screen' ? 'Ouvrir le récit' : 'Que faites-vous ?');
       const narrative = document.getElementById('sceneNarrative'); narrative.replaceChildren();
-      (report?.paragraphs ?? view?.paragraphs ?? room.paragraphs ?? [room.description]).forEach(paragraph => { const p = document.createElement('p'); p.textContent = paragraph; narrative.appendChild(p); });
-      const changes = document.getElementById('reportChanges'); changes.replaceChildren(); changes.hidden = !report;
+      (pending ? [`${characters[report.check.actorId]?.name ?? 'Le compagnon'} tente cette épreuve. Le résultat et ses conséquences apparaîtront dès que le dé sera arrêté.`] : report?.paragraphs ?? view?.paragraphs ?? room.paragraphs ?? [room.description]).forEach(paragraph => { const p = document.createElement('p'); p.textContent = paragraph; narrative.appendChild(p); });
+      const changes = document.getElementById('reportChanges'); changes.replaceChildren(); changes.hidden = !report || pending;
       changes.classList.toggle('failure', Boolean(report?.failed));
       (report?.changes ?? []).forEach(change => { const li = document.createElement('li'); li.textContent = change; changes.appendChild(li); });
       document.getElementById('undoButton').hidden = ['title_screen', 'credits'].includes(room.id);
       canvas.setAttribute('aria-label', view?.location ? `Illustration en pixel art: ${view.location}` : `Illustration d’ambiance: ${shownRoom.title}`);
       canvas.dataset.scene = PRESENTATION.scenes[shownRoom.id]?.art ?? 'keep';
       const direction = getActionDirection();
-      document.getElementById('actionScene').hidden = !direction || !uiState.preferences.effects;
-      text('actionCaption', direction?.caption ?? '');
+      document.getElementById('actionScene').hidden = pending || !direction || !uiState.preferences.effects;
+      text('actionCaption', pending ? '' : direction?.caption ?? '');
       document.getElementById('actionCanvas').setAttribute('aria-label', direction?.caption ?? 'Illustration du résultat de votre action');
       soundscape.setScene((view?.art === 'wall' ? 'verdure' : view?.art) ?? 'keep');
       renderChoices(); renderParty(); renderFeedback(); updateStatusStrip(); render();
@@ -5032,6 +5838,7 @@
       const name = document.createElement('h3'); name.textContent = person.name ?? characters[selected].name;
       const meta = document.createElement('div'); meta.className = 'profile-meta'; meta.textContent = `${person.race} · ${person.role} · ${PRESENTATION.states[characters[selected].state]}`;
       const identity = document.createElement('div'); identity.append(name, meta); heading.append(portraitImage(selected), identity); list.appendChild(heading);
+      renderCharacterStats(list,selected);
       const prose = document.createElement('div'); prose.className = 'profile-prose';
       [person.personality,...(person.biography??[])].forEach(text => {const p = document.createElement('p');p.textContent=text;prose.appendChild(p);}); list.appendChild(prose);
       const equipment = document.createElement('div'); equipment.className = 'profile-equipment';
@@ -5105,32 +5912,249 @@
       return requiredSkill ? character.skills.includes(requiredSkill) : true;
     }
 
+    // D20: un tirage cryptographique au clic; affichage et animation sans tirage.
+    const D20_RULES = {
+      abilities: { str: 'FOR', dex: 'DEX', con: 'CON', int: 'INT', wis: 'SAG', cha: 'CHA' },
+      skills: {
+        leadership: ['cha','persuasion','Persuasion'], diplomacy: ['cha','persuasion','Persuasion'],
+        redemption: ['cha','persuasion','Persuasion'], strategy: ['int','investigation','Investigation'],
+        stealth: ['dex','stealth','Discrétion'], arcana: ['int','arcana','Arcanes'],
+        nature: ['int','nature','Nature'], might: ['str','athletics','Athlétisme'],
+        tracking: ['wis','survival','Survie']
+      },
+      weaponActions: ['attaquer-arriere-garde','briser-ligne-garde','force-brute-roper','moulin-assaut','swift-force'],
+      faces: [4,13,7,18,2,16,5,11,20,8,14,3,17,6], duration: 42
+    };
+    let d20CheckSerial = 0;
+
+    function getCheckDefinition(option, actorId = option?.characterId) {
+      const legacy = option?.resolution ?? {}, override = option?.check ?? {};
+      const sourceSkill = option?.skill ?? legacy.skill;
+      const entry = D20_RULES.skills[sourceSkill] ?? ['int',null,'Intelligence'];
+      let ability = entry[0], skillKey = entry[1], label = entry[2], kind = 'ability';
+      if (sourceSkill === 'duel' || D20_RULES.weaponActions.includes(option?.id)) {
+        ability = ['sislay','malar'].includes(actorId) ? 'dex' : 'str';
+        skillKey = null; label = 'Attaque'; kind = 'attack';
+      } else if (sourceSkill === 'wild_magic') {
+        ability = 'cha'; skillKey = null; label = 'Attaque de sort'; kind = 'attack';
+      }
+      if (Object.hasOwn(D20_RULES.abilities,override.ability)) ability = override.ability;
+      if (Object.hasOwn(override,'skillKey')) skillKey = override.skillKey;
+      else if (Object.hasOwn(override,'skill')) skillKey = override.skill;
+      if (override.kind === 'attack' || override.kind === 'ability') kind = override.kind;
+      if (kind === 'attack') skillKey = null;
+      if (typeof override.label === 'string' && override.label.trim()) label = override.label;
+      const explicitDC = override.dc ?? legacy.dc;
+      const difficulty = Number.isFinite(legacy.difficulty) ? legacy.difficulty : 4;
+      const dc = Number.isFinite(explicitDC) ? Math.max(1,Math.round(explicitDC))
+        : difficulty <= 2 ? 10 : difficulty <= 4 ? 12 : difficulty <= 6 ? 15 : 18;
+      return { ability, skillKey, kind, label, dc };
+    }
+
+    function getCheckPreview(option, actorId = option?.characterId) {
+      if (!actorId) throw new Error('Un personnage doit être désigné pour cette épreuve.');
+      const stats = getAdventureStats(actorId,gameState.roomId), definition = getCheckDefinition(option,actorId);
+      if (!stats) throw new Error('La fiche du personnage est introuvable.');
+      const abilityModifier = stats.modifiers?.[definition.ability] ?? Math.floor(((stats.abilities?.[definition.ability] ?? 10)-10)/2);
+      const proficiency = Number.isFinite(stats.proficiency) ? stats.proficiency : 2;
+      let proficiencyBonus = 0, bonus = abilityModifier;
+      if (definition.kind === 'attack') {
+        proficiencyBonus = proficiency;
+        const attack = definition.ability === 'str' ? stats.meleeAttackBonus
+          : definition.ability === 'dex' ? stats.rangedAttackBonus
+          : definition.ability === stats.spellAbility ? stats.spellAttackBonus : null;
+        bonus = Number.isFinite(attack) ? attack : abilityModifier + proficiencyBonus;
+      } else if (definition.skillKey && stats.skills?.[definition.skillKey]) {
+        const skill = stats.skills[definition.skillKey], rank = Number.isFinite(skill.rank) ? skill.rank : 0;
+        proficiencyBonus = proficiency * rank;
+        const originalModifier = stats.modifiers?.[skill.ability] ?? abilityModifier;
+        bonus = Number.isFinite(skill.bonus) ? skill.bonus + abilityModifier - originalModifier : abilityModifier + proficiencyBonus;
+      }
+      return { actorId, level: stats.level, ...definition, abilityModifier, proficiencyBonus,
+        otherBonus: bonus-abilityModifier-proficiencyBonus, bonus };
+    }
+
+    function rollD20() {
+      const generator = globalThis.crypto ?? (typeof window === 'undefined' ? null : window.crypto);
+      if (!generator?.getRandomValues) throw new Error('Le générateur de dés du navigateur est indisponible.');
+      const sample = new Uint32Array(1);
+      // Les 16 valeurs excédentaires sont rejetées pour éviter le biais du modulo.
+      do { generator.getRandomValues(sample); } while (sample[0] >= 4294967280);
+      return sample[0] % 20 + 1;
+    }
+
+    function performD20Check(option, actorId = option?.characterId) {
+      const preview = getCheckPreview(option,actorId), natural = rollD20(), total = natural + preview.bonus;
+      const critical = preview.kind === 'attack' ? natural === 20 ? 'success' : natural === 1 ? 'failure' : null : null;
+      const success = critical === 'success' || (critical !== 'failure' && total >= preview.dc);
+      return { id: `${option.id}:${++d20CheckSerial}`, ...preview, natural, total, success, critical };
+    }
+
+    function getD20AnimationPending() {
+      const animation = uiState.diceAnimation;
+      if (!animation || animation.settled) return false;
+      if (gameState.lastReport?.check?.id !== animation.check.id) { uiState.diceAnimation = null; return false; }
+      return true;
+    }
+
+    function startD20Animation(check) {
+      if (!check) { uiState.diceAnimation = null; return; }
+      uiState.diceAnimation = { check, startedTick: gameState.tick, settled: false };
+      if (uiState.preferences.diceAnimation === false || uiState.reducedMotion) finishD20Animation();
+      else if (typeof scheduleAnimation === 'function') scheduleAnimation();
+    }
+
+    function finishD20Animation() {
+      if (!getD20AnimationPending()) return false;
+      // Verrou fermé AVANT les rendus imbriqués: ni second jet ni seconde ponctuation.
+      uiState.diceAnimation.settled = true;
+      if (typeof startSceneEffect === 'function') startSceneEffect();
+      if (typeof refreshInterface === 'function') refreshInterface();
+      return true;
+    }
+
+    function renderD20() {
+      const panel = document.getElementById('checkPanel'), check = gameState.lastReport?.check;
+      if (!panel) return;
+      panel.hidden = !check;
+      if (!check) { uiState.diceAnimation = null; return; }
+      const elapsed = Math.max(0,gameState.tick-(uiState.diceAnimation?.startedTick ?? gameState.tick));
+      if (getD20AnimationPending() && (elapsed >= D20_RULES.duration || uiState.reducedMotion || uiState.preferences.diceAnimation === false)) {
+        finishD20Animation(); return;
+      }
+      const rolling = getD20AnimationPending(), face = rolling ? D20_RULES.faces[Math.floor(elapsed/3)%D20_RULES.faces.length] : check.natural;
+      const signed = value => `${value < 0 ? '−' : '+'}${Math.abs(value)}`;
+      const name = typeof characters === 'undefined' ? check.actorId : characters[check.actorId]?.name ?? check.actorId;
+      document.getElementById('d20Value').textContent = String(face);
+      const die = document.getElementById('d20Die');
+      die.setAttribute('data-rolling',String(rolling));die.classList.toggle('rolling',rolling);
+      die.style.transform = rolling ? `translateY(${[0,-2,-4,-2,0,1][Math.floor(elapsed/3)%6]}px) rotate(${[0,8,13,5,-7,-12,-4][Math.floor(elapsed/3)%7]}deg)` : '';
+      document.getElementById('checkActor').textContent = `${name} · niveau ${check.level}`;
+      document.getElementById('checkKind').textContent = `${check.label} · ${check.kind === 'attack' ? 'CA' : 'DD'} ${check.dc}`;
+      const summary = rolling ? 'Le D20 roule…'
+        : check.critical === 'success' ? 'Réussite critique — 20 naturel'
+        : check.critical === 'failure' ? 'Échec critique — 1 naturel'
+        : `${check.success ? 'Épreuve réussie' : 'Épreuve échouée'}${check.natural === 1 || check.natural === 20 ? ` — ${check.natural} naturel` : ''}`;
+      const summaryElement = document.getElementById('checkSummary');
+      if (summaryElement.textContent !== summary) summaryElement.textContent = summary;
+      const components = `${D20_RULES.abilities[check.ability] ?? check.ability} ${signed(check.abilityModifier)} · maîtrise ${signed(check.proficiencyBonus)}${check.otherBonus ? ` · autres bonus ${signed(check.otherBonus)}` : ''}`;
+      const target = `${check.kind === 'attack' ? 'CA' : 'DD'} ${check.dc}`;
+      document.getElementById('checkBreakdown').textContent = rolling ? `${components} · ${target}` : `D20 ${check.natural} · ${components} = ${check.total}, ${target}`;
+      panel.setAttribute('data-outcome',rolling ? 'pending' : check.success ? 'success' : 'failure');
+    }
+
+    // Revenir à une vraie décision: les transitions « mission-* » portent aussi
+    // le préfixe Avant décision, mais ne constituent pas des épreuves viables.
+    function checkpointOptionIsDecision(option) {
+      if (!option || ['navigation-back','navigation-home','navigation-restart','recover-checkpoint'].includes(option.id)) return false;
+      const selection = option.onSelect ?? option.onSuccess?.onSelect ?? '';
+      if (/^(silly_|serious_|title_|return_title$|restart_campaign$|recover_checkpoint$|decision_back$)/.test(selection)) return false;
+      if (option.resolution || option.check || option.d20 || option.characterId || option.requiresCharacters?.length) return true;
+      if (selection) return true;
+      const effects = option.effects ?? {};
+      if (Object.keys(effects).some(key => key !== 'message')) return true;
+      return ['onSuccess','onFailure'].some(key => {
+        const branch = option[key] ?? {};
+        if (branch.characterChanges?.length || Object.keys(branch.variableDelta ?? {}).length) return true;
+        return Object.keys(branch.setFlags ?? {}).some(flag => !/^act(?:I|II|III|IV|V)Completed$|Snapshot$/.test(flag));
+      });
+    }
+
+    function checkpointSupportsOption(checkpoint, option) {
+      if (!checkpoint?.gameState || !checkpoint.characters || !option) return false;
+      const usable = id => ['active','injured'].includes(checkpoint.characters[id]?.state);
+      if (!Object.keys(checkpoint.characters).some(usable)) return false;
+      if (option.characterId && !usable(option.characterId)) return false;
+      if (option.requiresCharacters && !option.requiresCharacters.every(usable)) return false;
+      const snapshotFlags = checkpoint.flags ?? {}, snapshotVariables = checkpoint.variables ?? {};
+      if (option.requiresFlag && !snapshotFlags[option.requiresFlag]) return false;
+      if (option.forbiddenFlag && snapshotFlags[option.forbiddenFlag]) return false;
+      if (option.requiresAllFlags && !option.requiresAllFlags.every(flag => snapshotFlags[flag])) return false;
+      if (typeof option.requiresAlertMin === 'number' && (snapshotVariables.castleAlertLevel ?? 0) < option.requiresAlertMin) return false;
+      if (option.requiresTrust && !Object.entries(option.requiresTrust).every(([faction, threshold]) => (snapshotVariables.factionTrust?.[faction] ?? 0) >= threshold)) return false;
+      if (!option.repeatable && checkpoint.gameState.resolvedOptions?.includes(`${checkpoint.gameState.roomId}:${option.id}`)) return false;
+      return true;
+    }
+
+    function findDecisionCheckpoint() {
+      const checkpoints = gameState.checkpoints ?? [];
+      for (let index = checkpoints.length - 1; index >= 0; index--) {
+        const checkpoint = checkpoints[index];
+        if (typeof checkpoint.reason !== 'string' || !checkpoint.reason.startsWith('Avant décision: ')) continue;
+        const optionId = checkpoint.reason.slice('Avant décision: '.length);
+        const option = rooms[checkpoint.gameState?.roomId]?.options?.find(candidate => candidate.id === optionId);
+        if (checkpointOptionIsDecision(option) && checkpointSupportsOption(checkpoint, option)) return checkpoint;
+      }
+      // Anciennes sauvegardes et début de partie: accepter un point qui offre
+      // au moins une vraie action, jamais une simple nav vers le même blocage.
+      for (let index = checkpoints.length - 1; index >= 0; index--) {
+        const checkpoint = checkpoints[index], room = rooms[checkpoint.gameState?.roomId];
+        if (room?.options?.some(option => checkpointOptionIsDecision(option) && checkpointSupportsOption(checkpoint, option))) return checkpoint;
+      }
+      return null;
+    }
+
+    function restoreDecisionCheckpoint() {
+      const target = findDecisionCheckpoint();
+      if (!target) {
+        writeContext('Aucune décision antérieure praticable ne peut être restaurée. Vous pouvez revenir à l’accueil ou commencer une nouvelle partie.');
+        return false;
+      }
+      const restored = rollbackToLastCheckpoint(target);
+      if (restored) {
+        writeContext('Le groupe retrouve la situation qui précédait sa dernière décision praticable.');
+        describeCurrentRoom();
+      }
+      return restored;
+    }
+
+    function withSafeNavigationOptions(roomId, options = []) {
+      const result = options.slice();
+      const useful = option => option.disabled !== true && option.locked !== true && option.available !== false
+        && !/^(silly_|serious_)/.test(option.onSelect ?? '');
+      const usefulCount = () => result.filter(useful).length;
+      const add = option => { if (!result.some(existing => existing.id === option.id)) result.push(option); };
+      if (usefulCount() < 2 && findDecisionCheckpoint() && !result.some(option => option.onSelect === 'decision_back')) {
+        add({ id: 'navigation-back', label: 'Reconsidérer la dernière décision', onSelect: 'decision_back',
+          intent: 'Rétablit les états et les ressources d’avant la dernière épreuve ou décision praticable.' });
+      }
+      if (usefulCount() < 2 && roomId !== 'title_screen' && !result.some(option => option.onSelect === 'return_title')) {
+        add({ id: 'navigation-home', label: 'Revenir à l’accueil', onSelect: 'return_title',
+          intent: 'Quitter cette scène sans effacer la progression enregistrée.' });
+      }
+      if (usefulCount() < 2 && !result.some(option => ['restart_campaign','title_new_game'].includes(option.onSelect))) {
+        add({ id: 'navigation-restart', label: 'Commencer une nouvelle partie à Verdure', onSelect: 'restart_campaign',
+          intent: 'Réinitialise la partie en cours et sa sauvegarde locale.' });
+      }
+      return result;
+    }
+
     function computeAvailableOptions(roomId) {
       const room = rooms[roomId];
       if (!room?.options) return [];
       const canAct = Object.values(characters).some(c => ['active', 'injured'].includes(c.state));
-      const available = room.options.filter(option => {
-        if (!['title_screen', 'credits'].includes(roomId) && !option.onSelect && !canAct) return false;
+      const candidates = room.options.map(option => {
+        if (!option.groupAction) return option;
+        const actors = Object.keys(characters).filter(id => isSkillAvailable(id));
+        actors.sort((a,b) => getCheckPreview(option,b).bonus - getCheckPreview(option,a).bonus);
+        return { ...option, characterId: actors[0] };
+      });
+      const available = candidates.filter(option => {
+        if (!['title_screen', 'credits'].includes(roomId) && !option.onSelect && !canAct && option.id !== 'ritual-resolve') return false;
+        if (option.requiresAnyAvailableCharacter && !option.characterId) return false;
         if (!option.repeatable && gameState.resolvedOptions.includes(`${roomId}:${option.id}`)) return false;
-        if (!isSkillAvailable(option.characterId, option.skill)) return false;
+        if (!isSkillAvailable(option.characterId, option.groupAction ? null : option.skill)) return false;
         if (option.requiresCharacters && !option.requiresCharacters.every(id => isSkillAvailable(id))) return false;
         if (option.requiresFlag && !flags[option.requiresFlag]) return false;
         if (option.forbiddenFlag && flags[option.forbiddenFlag]) return false;
         if (option.requiresAllFlags && !option.requiresAllFlags.every(flagName => flags[flagName])) return false;
+        if (option.id === 'ritual-resolve' && variables.finalBattle.decisiveActions < 3 && canAct) return false;
+        if (roomId === 'ritual_chamber' && option.resolution && variables.finalBattle.decisiveActions >= 3) return false;
         if (typeof option.requiresAlertMin === 'number' && variables.castleAlertLevel < option.requiresAlertMin) return false;
-        if (option.requiresTrust) {
-          const trustChecks = Object.entries(option.requiresTrust);
-          if (!trustChecks.every(([faction, threshold]) => (variables.factionTrust?.[faction] ?? 0) >= threshold)) return false;
-        }
+        if (option.requiresTrust && !Object.entries(option.requiresTrust).every(([faction, threshold]) => (variables.factionTrust?.[faction] ?? 0) >= threshold)) return false;
         return true;
       });
-      if (room.options.length && !available.some(o => !o.onSelect?.startsWith('silly_')) && peekCheckpoint()) {
-        available.push({ id: 'recover-checkpoint', label: 'Revenir à la dernière décision pour retrouver une voie praticable', onSelect: 'recover_checkpoint' });
-      }
-      if (!available.some(o => !o.onSelect?.startsWith('silly_')) && (!canAct || !Object.keys(room.exits ?? {}).length) && !peekCheckpoint() && roomId !== 'title_screen') {
-        available.push({ id: 'return-home', label: 'Revenir à l’accueil pour reprendre ou commencer une partie', onSelect: 'return_title' });
-      }
-      return available;
+      return withSafeNavigationOptions(roomId, available);
     }
 
     function addCharacterToParty(characterId) {
@@ -5231,9 +6255,12 @@
         gameState.commandHistory = restoredGameState.commandHistory ?? [];
         gameState.historyCursor = gameState.commandHistory.length;
         gameState.timelineApplied = restoredGameState.timelineApplied ?? [];
+        gameState.rollHistory = restoredGameState.rollHistory ?? [];
         gameState.resolvedOptions = restoredGameState.resolvedOptions ?? [];
         gameState.lastReport = restoredGameState.lastReport ?? null;
         uiState.effect = null;
+        uiState.diceAnimation = null;
+        gameState.adventureLevel = restoredGameState.adventureLevel ?? (DATA.actRooms.ACT_V.includes(restoredGameState.roomId) ? 12 : ADVENTURE_LEVELS[restoredGameState.roomId] ?? 1);
 
         Object.keys(characters).forEach(id => delete characters[id]);
         Object.assign(characters, safeClone(parsed.characters));
@@ -5293,7 +6320,7 @@
       } else {
         const idx = gameState.checkpoints.indexOf(restoredEntry);
         if (idx === -1) return false;
-        gameState.checkpoints.splice(idx, 1);
+        gameState.checkpoints.splice(idx);
       }
       const remainingStack = safeClone(gameState.checkpoints);
       const restoredGameState = safeClone(restoredEntry.gameState);
@@ -5309,9 +6336,12 @@
       gameState.commandHistory = restoredGameState.commandHistory || [];
       gameState.historyCursor = gameState.commandHistory.length;
       gameState.timelineApplied = restoredGameState.timelineApplied || [];
+      gameState.rollHistory = restoredGameState.rollHistory || [];
       gameState.resolvedOptions = restoredGameState.resolvedOptions || [];
       gameState.lastReport = null;
       uiState.effect = null;
+      uiState.diceAnimation = null;
+      gameState.adventureLevel = restoredGameState.adventureLevel ?? (DATA.actRooms.ACT_V.includes(restoredGameState.roomId) ? 12 : ADVENTURE_LEVELS[restoredGameState.roomId] ?? 1);
       gameState.checkpoints = remainingStack;
 
       Object.keys(DATA.characters).forEach(id => delete DATA.characters[id]);
@@ -5432,6 +6462,7 @@
     function prepareCurrentRoom() {
       const room = getCurrentRoom();
       if (!room) return;
+      updateAdventureLevel();
       const actId = Object.keys(DATA.actRooms).find(id => DATA.actRooms[id].includes(room.id));
       if (actId) acts.current = actId;
       if (actId === 'ACT_V' && !flags.finalBattleInitialized) computeFinalBattleBaseline();
@@ -5507,6 +6538,10 @@
     }
 
     function moveTo(directionToken) {
+      if (gameState.lastReport) {
+        writeContext('Lisez le résultat puis poursuivez avant de vous déplacer.');
+        return;
+      }
       if (!Object.values(characters).some(c => ['active', 'injured'].includes(c.state))) {
         writeContext('Aucun compagnon ne peut poursuivre le déplacement. Revenez à la décision précédente ou à l’accueil.');
         return;
@@ -5571,15 +6606,11 @@
       return true;
     }
 
-    function computeActionScore(option, actorId) {
+    function computeActionScore(option, actorId, check = null) {
       if (!option?.resolution) return null;
-      clampTrackedVariables();
-      const character = characters[actorId];
-      if (!character || ['dead', 'captured', 'absent'].includes(character.state)) return null;
-
-      const stateModifierMap = { active: 1, injured: 0, down: -2 };
-      const stateModifier = stateModifierMap[character.state] ?? -2;
-      return 2 + variables.moraleGroupe - variables.chaos + stateModifier;
+      if (!isSkillAvailable(actorId)) return null;
+      const resolved = check ?? performD20Check(option,actorId);
+      return resolved.total;
     }
 
     function handleDeath(characterId, deathType) {
@@ -5631,12 +6662,13 @@
         setAct: branch.setAct ?? null,
         timelineTrigger: branch.timelineTrigger ?? null,
         onSelect: branch.onSelect ?? null,
-        setFlagFromState: branch.setFlagFromState ?? {}
+        setFlagFromState: branch.setFlagFromState ?? {},
+        finalBattleDelta: branch.finalBattleDelta ?? {}
       };
       return merged;
     }
 
-    function resolveOutcome(option, score) {
+    function resolveOutcome(option, score, check = null) {
       if (!option?.resolution) {
         return mergeBranchEffects({
           success: true,
@@ -5662,7 +6694,7 @@
         return { success: false, endedByGameOver: false, message: `${character.name} ne peut pas agir.`, variableDelta: { moraleGroupe: 0, chaos: 0, publicTrust: 0, councilReputation: {}, castleAlertLevel: 0, factionTrust: {}, ritualProgress: 0 }, characterChanges: [] };
       }
 
-      if (score >= option.resolution.difficulty) {
+      if ((check ? check.success : score >= getCheckDefinition(option).dc)) {
         return mergeBranchEffects({
           success: true,
           endedByGameOver: false,
@@ -5696,6 +6728,10 @@
     }
 
     function applyPostEffects(post = {}) {
+      Object.entries(post.finalBattleDelta ?? {}).forEach(([key, delta]) => {
+        if (Object.hasOwn(variables.finalBattle, key) && Number.isFinite(delta)) variables.finalBattle[key] += delta;
+      });
+      clampTrackedVariables();
       if (post.message) writeContext(post.message);
       Object.entries(post.setFlags ?? {}).forEach(([key, value]) => {
         flags[key] = value;
@@ -5744,9 +6780,9 @@
 
 
     function handleSpecialSelection(selectionKey) {
-      if (selectionKey === 'recover_checkpoint') {
-        triggerGameOver('serious', 'Le groupe ne dispose plus des capacités nécessaires à cette décision.');
-        return { endedByGameOver: true, handled: true };
+      if (['recover_checkpoint','decision_back'].includes(selectionKey)) {
+        restoreDecisionCheckpoint();
+        return { endedByGameOver: false, handled: true };
       }
       const sillyMessages = {
         silly_lennithon: 'Votre diversion tourne à la farce. Les sentinelles vous encerclent avant la fin du spectacle.',
@@ -5833,6 +6869,7 @@
       if (selectionKey === 'return_title') {
         gameState.lastReport = null;
         uiState.effect = null;
+        uiState.diceAnimation = null;
         gameState.roomId = 'title_screen';
         configureTitleOptions();
         return { endedByGameOver: false, handled: true };
@@ -5840,8 +6877,8 @@
       return { endedByGameOver: false, handled: false };
     }
 
-    function applyOptionEffects(option) {
-      if (option.id === 'ritual-resolve' && variables.finalBattle.decisiveActions < 3) {
+    function applyOptionEffects(option, check = null) {
+      if (option.id === 'ritual-resolve' && variables.finalBattle.decisiveActions < 3 && Object.values(characters).some(c => ['active','injured'].includes(c.state))) {
         writeContext('Le cercle tient encore: prenez au moins trois actions décisives avant de conclure.');
         return { endedByGameOver: false, success: false };
       }
@@ -5854,8 +6891,9 @@
       }
       if (option.onSelect) throw new Error(`Sélection inconnue: ${option.onSelect}`);
 
-      const score = computeActionScore(option, option.characterId);
-      const outcome = resolveOutcome(option, score);
+      if (option.resolution && !check && isSkillAvailable(option.characterId)) check = performD20Check(option,option.characterId);
+      const score = computeActionScore(option, option.characterId, check);
+      const outcome = resolveOutcome(option, score, check);
       const result = applyOutcome(outcome);
       if (!result?.endedByGameOver) {
         if (['plan-sabotage', 'plan-decapitation', 'plan-evacuation'].includes(option.id)) {
@@ -5896,43 +6934,48 @@
         applyPostEffects(option.onFailurePost);
       }
       if (!result.endedByGameOver) prepareCurrentRoom();
-      return result;
+      return { ...result, check, message: outcome.message, successWithCost: Boolean(option.failForward && !outcome.success),
+        success: Boolean(result.success || (option.failForward && !result.endedByGameOver)) };
     }
 
     function chooseOption(indexToken) {
-      uiState.feedback = '';
-      gameState.lastReport = null;
-      uiState.effect = null;
-      const index = Number.parseInt(indexToken, 10);
-      const options = getAvailableOptions(gameState.roomId);
-      if (Number.isNaN(index) || index < 1 || index > options.length) {
-        writeContext('Choix invalide. Utilisez choose <numéro>.');
+      if (gameState.lastReport) {
+        writeContext('Lisez le résultat puis poursuivez, ou revenez à une décision précédente.');
         return;
       }
-      const menu = ['title_screen', 'credits'].includes(gameState.roomId)
-        || ['return_title', 'restart_campaign'].includes(options[index - 1].onSelect);
-      const decisionId = `${gameState.roomId}:${options[index - 1].id}`;
-      const origin = gameState.roomId;
-      const before = { characters: safeClone(characters), flags: safeClone(flags), morale: variables.moraleGroupe, chaos: variables.chaos, reputation: safeClone(variables.councilReputation), trust: safeClone(variables.factionTrust) };
-      if (!menu && options[index - 1].id !== 'recover-checkpoint') createCheckpoint(`Avant décision: ${options[index - 1].id}`);
-      const result = applyOptionEffects(options[index - 1]);
-      const message = uiState.feedback;
-      if (!menu && result?.success && !options[index - 1].repeatable) gameState.resolvedOptions.push(decisionId);
-      if (!result?.endedByGameOver) describeCurrentRoom();
-      if (!menu && !result?.endedByGameOver && (options[index - 1].resolution || options[index - 1].effects?.message || options[index - 1].onSuccess?.message || ACTION_NARRATION[options[index - 1].id])) {
-        gameState.lastReport = buildActionReport(options[index - 1], origin, result, before, message);
-        startSceneEffect();
-        refreshInterface();
+      const index = Number.parseInt(indexToken, 10), options = getAvailableOptions(gameState.roomId);
+      if (Number.isNaN(index) || index < 1 || index > options.length) {
+        writeContext('Choix invalide. Utilisez choose <numéro>.'); return;
       }
-      if (!menu) saveGame();
-      focusNarrative();
+      const option = options[index - 1], origin = gameState.roomId;
+      const utility = ['return_title','restart_campaign','decision_back','recover_checkpoint'].includes(option.onSelect);
+      const menu = ['title_screen','credits'].includes(origin) || utility;
+      let check = null;
+      try { if (option.resolution) check = performD20Check(option,option.characterId); }
+      catch (error) { writeContext(error.message); return; }
+      uiState.feedback = ''; uiState.effect = null; uiState.diceAnimation = null;
+      const before = { characters: safeClone(characters), flags: safeClone(flags), morale: variables.moraleGroupe, chaos: variables.chaos, reputation: safeClone(variables.councilReputation), trust: safeClone(variables.factionTrust) };
+      if (!menu) createCheckpoint(`Avant décision: ${option.id}`);
+      const result = applyOptionEffects(option,check), message = result?.message ?? uiState.feedback;
+      if (!menu && result?.success && !option.repeatable) gameState.resolvedOptions.push(`${origin}:${option.id}`);
+      if (check) gameState.rollHistory = [...(gameState.rollHistory ?? []),safeClone(check)].slice(-100);
+      if (!result?.endedByGameOver) describeCurrentRoom();
+      if (!menu && !result?.endedByGameOver && (option.resolution || option.effects?.message || option.onSuccess?.message || ACTION_NARRATION[option.id])) {
+        gameState.lastReport = buildActionReport(option,origin,result,before,message);
+      }
+      if (check && gameState.lastReport) {
+        gameState.lastReport.check = safeClone(check);
+        startD20Animation(check);
+      } else if (gameState.lastReport) startSceneEffect();
+      if (!menu || option.onSelect === 'decision_back' || option.onSelect === 'recover_checkpoint') saveGame();
+      refreshInterface(); focusNarrative();
     }
 
     function buildActionReport(option, roomId, result, before, message) {
       const success = Boolean(result?.success), story = ACTION_NARRATION[option.id];
       const actor = characters[option.characterId];
       const stateStory = success ? null : story?.failureByState?.[actor?.state] ?? (actor?.state === 'dead' ? {title: `${actor.name} ne survit pas à cette tentative`, paragraphs: [`${actor.name} ne parvient pas à mener son action à bien. Déjà blessé, il reçoit des coups auxquels il ne survit pas.`, 'Le groupe doit désormais compter avec sa mort: il ne pourra plus participer aux actions suivantes. Le retour à la décision précédente permet de reprendre avant cette tentative.']} : null);
-      const paragraphs = stateStory?.paragraphs ?? story?.[success ? 'success' : 'failure'] ?? [message || (success ? 'Le groupe accomplit cette action.' : 'La tentative échoue; le groupe doit choisir une autre approche.')];
+      const paragraphs = result?.successWithCost ? [message] : stateStory?.paragraphs ?? story?.[success ? 'success' : 'failure'] ?? [message || (success ? 'Le groupe accomplit cette action.' : 'La tentative échoue; le groupe doit choisir une autre approche.')];
       const changes = [];
       Object.entries(characters).forEach(([id, c]) => {
         if (before.characters[id]?.state !== c.state) changes.push(`${c.name}: ${PRESENTATION.states[c.state]}.`);
@@ -5951,7 +6994,7 @@
       });
       if (gameState.roomId !== roomId) changes.push(`Suite du parcours: ${rooms[gameState.roomId].title}.`);
       if (!changes.length) changes.push(success ? 'L’action est accomplie. Le groupe peut poursuivre.' : 'L’objectif n’est pas encore atteint. Une autre approche ou un retour au checkpoint reste possible.');
-      return { roomId, optionId: option.id, title: stateStory?.title ?? story?.[success ? 'successTitle' : 'failureTitle'] ?? (success ? 'Le résultat de votre action' : 'La tentative rencontre un obstacle'), paragraphs, changes, failed: !success };
+      return { roomId, optionId: option.id, check: result?.check ?? null, successWithCost: Boolean(result?.successWithCost), title: result?.successWithCost ? 'L’objectif est atteint, au prix d’un effort supplémentaire' : stateStory?.title ?? story?.[success ? 'successTitle' : 'failureTitle'] ?? (success ? 'Le résultat de votre action' : 'La tentative rencontre un obstacle'), paragraphs, changes, failed: !success };
     }
 
     function showInventory() {
@@ -5959,7 +7002,7 @@
     }
 
     function undoToCheckpoint() {
-      const restored = rollbackToLastCheckpoint();
+      const restored = restoreDecisionCheckpoint();
       writeContext(restored ? '↩ Annulation: retour au dernier checkpoint.' : 'Aucun checkpoint à restaurer.');
       if (restored) describeCurrentRoom();
     }
@@ -6139,6 +7182,10 @@
         return;
       }
       if (parsed.verb === 'go') {
+        if (gameState.lastReport) {
+          writeContext('Lisez le résultat puis poursuivez avant de vous déplacer.');
+          return;
+        }
         if (directionVerb === 'dragon') {
           triggerGameOver('silly', 'Vous provoquez un dragon avec panache.');
           return;
@@ -6517,6 +7564,7 @@
     }
 
     function getActionDirection() {
+      if (getD20AnimationPending()) return null;
       const report = gameState.lastReport;
       if (!Object.hasOwn(SCENE_DIRECTIONS.actions,report?.optionId)) return null;
       const direction = SCENE_DIRECTIONS.actions[report.optionId];
@@ -6528,6 +7576,7 @@
     }
 
     function startSceneEffect() {
+      if (getD20AnimationPending()) return;
       const direction = getActionDirection();
       if (!direction || !uiState.preferences.effects) { uiState.effect = null; return; }
       uiState.effect = { optionId: gameState.lastReport.optionId, startedTick: gameState.tick };
@@ -6592,6 +7641,7 @@
     }
 
     function render() {
+      renderD20();
       const key = PRESENTATION.scenes[gameState.lastReport?.roomId ?? gameState.roomId]?.art ?? 'keep';
       const phase = uiState.reducedMotion ? 0 : Math.floor(Math.max(0,gameState.tick) / 14);
       const direction=getActionDirection(), progress=effectProgress();
@@ -6643,6 +7693,7 @@
     }
 
     function syncAmbianceControls() {
+      document.getElementById('diceSetting').checked=uiState.preferences.diceAnimation;
       document.getElementById('effectsSetting').checked=uiState.preferences.effects;
       document.getElementById('motionSetting').value=uiState.preferences.motion;
       document.getElementById('soundSetting').checked=uiState.preferences.sound;
@@ -6864,6 +7915,7 @@
       onClick('journalButton', () => openJournal('history'));
       onClick('companyButton', openCompany);
       onClick('ambianceButton',()=>{syncAmbianceControls();showDialog('ambianceDialog');});
+      document.getElementById('diceSetting').addEventListener('change',event=>{uiState.preferences.diceAnimation=event.target.checked;applyAmbiancePreferences();});
       onClick('replayActionButton',()=>{startSceneEffect();document.getElementById('actionScene').scrollIntoView?.({block:'center',behavior:'auto'});});
       document.getElementById('effectsSetting').addEventListener('change',event=>{uiState.preferences.effects=event.target.checked;applyAmbiancePreferences();});
       document.getElementById('motionSetting').addEventListener('change',event=>{uiState.preferences.motion=event.target.value==='reduced'?'reduced':'auto';applyAmbiancePreferences();});
@@ -6948,7 +8000,14 @@
   [ ] La chronique permet de lire les 18 chapitres, sans connexion.
   [ ] Après un choix, le récit du résultat reste affiché avant de poursuivre.
   [ ] Recharger pendant ce résultat conserve le texte sans rejouer l'action.
-  [ ] Un échec au temple ou au moulin ne valide pas le sauvetage.
+  [ ] Une approche risquée échouée ne valide pas le sauvetage; une issue avec coût l'explique.
+  [ ] Chaque scène et résultat propose deux choix utilisables, même sans compagnon apte.
+  [ ] Le retour du moulin restaure une décision praticable et efface ses checkpoints descendants.
+  [ ] Le rituel s'arrête après trois actions; sans acteur apte, sa conclusion reste disponible.
+  [ ] L'aperçu annonce acteur, niveau, bonus, DD/CA et coût; le résultat explique le calcul.
+  [ ] Un D20 par épreuve; passer, désactiver, revoir et recharger ne relancent jamais le dé.
+  [ ] Le déplacement par commande attend la lecture du résultat et ne contourne pas le D20.
+  [ ] Les scores PDF restent distincts des projections; la maîtrise et l'aura suivent le niveau.
   [ ] Sans checkpoint, un échec laisse accéder à l'accueil.
   [ ] Les sept fiches restent accessibles sur mobile, sans défilement horizontal.
   [ ] Revoir l'action ne change ni états, ni objectifs, ni checkpoints, ni sauvegarde.

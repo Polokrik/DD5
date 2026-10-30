@@ -1,0 +1,1271 @@
+{
+  "schemaVersion": 1,
+  "language": "fr",
+  "scope": "Instantanés des fiches PJ du dépôt DD5. Les valeurs imprimées ne décrivent pas chaque niveau historique.",
+  "abilityOrder": [
+    "strength",
+    "dexterity",
+    "constitution",
+    "intelligence",
+    "wisdom",
+    "charisma"
+  ],
+  "skillDefinitions": {
+    "acrobatics": {
+      "label": "Acrobaties",
+      "ability": "dexterity"
+    },
+    "animalHandling": {
+      "label": "Dressage",
+      "ability": "wisdom"
+    },
+    "arcana": {
+      "label": "Arcanes",
+      "ability": "intelligence"
+    },
+    "athletics": {
+      "label": "Athlétisme",
+      "ability": "strength"
+    },
+    "deception": {
+      "label": "Tromperie",
+      "ability": "charisma"
+    },
+    "history": {
+      "label": "Histoire",
+      "ability": "intelligence"
+    },
+    "insight": {
+      "label": "Perspicacité",
+      "ability": "wisdom"
+    },
+    "intimidation": {
+      "label": "Intimidation",
+      "ability": "charisma"
+    },
+    "investigation": {
+      "label": "Investigation",
+      "ability": "intelligence"
+    },
+    "medicine": {
+      "label": "Médecine",
+      "ability": "wisdom"
+    },
+    "nature": {
+      "label": "Nature",
+      "ability": "intelligence"
+    },
+    "perception": {
+      "label": "Perception",
+      "ability": "wisdom"
+    },
+    "performance": {
+      "label": "Représentation",
+      "ability": "charisma"
+    },
+    "persuasion": {
+      "label": "Persuasion",
+      "ability": "charisma"
+    },
+    "religion": {
+      "label": "Religion",
+      "ability": "intelligence"
+    },
+    "sleightOfHand": {
+      "label": "Escamotage",
+      "ability": "dexterity"
+    },
+    "stealth": {
+      "label": "Discrétion",
+      "ability": "dexterity"
+    },
+    "survival": {
+      "label": "Survie",
+      "ability": "wisdom"
+    }
+  },
+  "characters": {
+    "bjolnir": {
+      "name": "Bjolnir HautMarteau",
+      "file": "Bjolnir.pdf",
+      "sheetLevel": 10,
+      "experiencePrinted": 64000,
+      "classId": "paladin",
+      "subclass": "Rédemption",
+      "abilityScores": {
+        "strength": 19,
+        "dexterity": 10,
+        "constitution": 16,
+        "intelligence": 8,
+        "wisdom": 12,
+        "charisma": 16
+      },
+      "abilityModifiers": {
+        "strength": 4,
+        "dexterity": 0,
+        "constitution": 3,
+        "intelligence": -1,
+        "wisdom": 1,
+        "charisma": 3
+      },
+      "proficiencyBonus": 4,
+      "armorClass": 21,
+      "maxHitPoints": 85,
+      "initiative": 0,
+      "speedPrinted": 9,
+      "speedUnit": null,
+      "savingThrowBonuses": {
+        "strength": 7,
+        "dexterity": 3,
+        "constitution": 6,
+        "intelligence": 2,
+        "wisdom": 8,
+        "charisma": 10
+      },
+      "skillBonuses": {
+        "acrobatics": 0,
+        "animalHandling": 1,
+        "arcana": -1,
+        "athletics": 8,
+        "deception": 3,
+        "history": -1,
+        "insight": 5,
+        "intimidation": 3,
+        "investigation": -1,
+        "medicine": 1,
+        "nature": -1,
+        "perception": 1,
+        "performance": 3,
+        "persuasion": 7,
+        "religion": 3,
+        "sleightOfHand": 0,
+        "stealth": 0,
+        "survival": 1
+      },
+      "arithmeticTraining": {
+        "status": "inferredFromPrintedBonusesNotProofOfHistoricalChoice",
+        "skills": {
+          "acrobatics": 0,
+          "animalHandling": 0,
+          "arcana": 0,
+          "athletics": 1,
+          "deception": 0,
+          "history": 0,
+          "insight": 1,
+          "intimidation": 0,
+          "investigation": 0,
+          "medicine": 0,
+          "nature": 0,
+          "perception": 0,
+          "performance": 0,
+          "persuasion": 1,
+          "religion": 1,
+          "sleightOfHand": 0,
+          "stealth": 0,
+          "survival": 0
+        },
+        "savingThrows": {
+          "strength": 0,
+          "dexterity": 0,
+          "constitution": 0,
+          "intelligence": 0,
+          "wisdom": 1,
+          "charisma": 1
+        },
+        "otherSavingThrowBonus": 3
+      },
+      "spellcasting": {
+        "ability": "charisma",
+        "saveDC": 15,
+        "attackBonus": 7,
+        "source": "Bjolnir.pdf:page3, en-tête incantation"
+      },
+      "sources": {
+        "identity": "Bjolnir.pdf:page1, en-tête CLASSE ET NIVEAU",
+        "abilities": "Bjolnir.pdf:page1, six cases de caractéristiques",
+        "combat": "Bjolnir.pdf:page1, CA/initiative/vitesse/PV max",
+        "proficiency": "Bjolnir.pdf:page1, BONUS DE MAÎTRISE",
+        "skills": "Bjolnir.pdf:page1, COMPÉTENCES",
+        "savingThrows": "Bjolnir.pdf:page1, JETS DE SAUVEGARDE"
+      },
+      "attacks": [
+        {
+          "name": "Marteau de frappe précise (1 main)",
+          "attackBonus": 9,
+          "damage": "1d8+5 contondants"
+        },
+        {
+          "name": "Marteau de frappe précise (2 mains)",
+          "attackBonus": 9,
+          "damage": "1d10+5 contondants"
+        },
+        {
+          "name": "Masse",
+          "attackBonus": 8,
+          "damage": "1d6+4 contondants"
+        }
+      ],
+      "equipmentEffects": [
+        {
+          "item": "Gantelets de force d’ogre",
+          "effect": "Fixe normalement FOR à 19; FOR 19 sur la fiche, score naturel et date d’acquisition non fournis",
+          "source": "Bjolnir.pdf:page2"
+        },
+        {
+          "item": "Plate Armor résistance à la Foudre + bouclier + style Défense",
+          "effect": "CA de fiche 21 cohérente avec plate18 + bouclier2 + Défense1; pas une preuve de cet équipement à Verdure",
+          "source": "Bjolnir.pdf:pages1–2 et4"
+        },
+        {
+          "item": "Marteau de frappe précise",
+          "effect": "Les bonus imprimés +9 attaque / +5 dégâts sont cohérents avec +1 au-delà de FOR4+maîtrise4, mais ne constituent pas une fiche d’objet complète",
+          "source": "Bjolnir.pdf:page1"
+        }
+      ],
+      "specialProjection": [
+        {
+          "kind": "Aura de protection",
+          "minClassLevel": 6,
+          "bonusOnSheet": 3,
+          "source": "Bjolnir.pdf:page4",
+          "formula": "max(1,modificateurCHA) aux sauvegardes si conscient; retirer avant niveau6"
+        }
+      ],
+      "strengthReconstruction": {
+        "base": 17,
+        "itemScore": 19,
+        "restoreAtLevel": 10,
+        "status": "gmReconstruction",
+        "source": "Précision du MJ dans cette conversation: «non, je ne me souviens plus, on va dire16/17 min». Valeur17 retenue pour le jeu.",
+        "dateOfItemAcquisitionKnown": false
+      }
+    },
+    "drekthar": {
+      "name": "Drek’Thar",
+      "file": "drekthar.pdf",
+      "sheetLevel": 5,
+      "experiencePrinted": 6840,
+      "classId": "fighter",
+      "subclass": "Champion",
+      "abilityScores": {
+        "strength": 20,
+        "dexterity": 12,
+        "constitution": 16,
+        "intelligence": 14,
+        "wisdom": 10,
+        "charisma": 13
+      },
+      "abilityModifiers": {
+        "strength": 5,
+        "dexterity": 1,
+        "constitution": 3,
+        "intelligence": 2,
+        "wisdom": 0,
+        "charisma": 1
+      },
+      "proficiencyBonus": 3,
+      "armorClass": 16,
+      "maxHitPoints": 49,
+      "initiative": 1,
+      "speedPrinted": 30,
+      "speedUnit": null,
+      "savingThrowBonuses": {
+        "strength": 8,
+        "dexterity": 1,
+        "constitution": 6,
+        "intelligence": 2,
+        "wisdom": 0,
+        "charisma": 1
+      },
+      "skillBonuses": {
+        "acrobatics": 1,
+        "animalHandling": 0,
+        "arcana": 2,
+        "athletics": 8,
+        "deception": 1,
+        "history": 5,
+        "insight": 0,
+        "intimidation": 1,
+        "investigation": 2,
+        "medicine": 0,
+        "nature": 2,
+        "perception": 3,
+        "performance": 1,
+        "persuasion": 4,
+        "religion": 2,
+        "sleightOfHand": 1,
+        "stealth": 1,
+        "survival": 0
+      },
+      "arithmeticTraining": {
+        "status": "inferredFromPrintedBonusesNotProofOfHistoricalChoice",
+        "skills": {
+          "acrobatics": 0,
+          "animalHandling": 0,
+          "arcana": 0,
+          "athletics": 1,
+          "deception": 0,
+          "history": 1,
+          "insight": 0,
+          "intimidation": 0,
+          "investigation": 0,
+          "medicine": 0,
+          "nature": 0,
+          "perception": 1,
+          "performance": 0,
+          "persuasion": 1,
+          "religion": 0,
+          "sleightOfHand": 0,
+          "stealth": 0,
+          "survival": 0
+        },
+        "savingThrows": {
+          "strength": 1,
+          "dexterity": 0,
+          "constitution": 1,
+          "intelligence": 0,
+          "wisdom": 0,
+          "charisma": 0
+        },
+        "otherSavingThrowBonus": 0
+      },
+      "spellcasting": null,
+      "sources": {
+        "identity": "drekthar.pdf:page1, en-tête CLASSE ET NIVEAU",
+        "abilities": "drekthar.pdf:page1, six cases de caractéristiques",
+        "combat": "drekthar.pdf:page1, CA/initiative/vitesse/PV max",
+        "proficiency": "drekthar.pdf:page1, BONUS DE MAÎTRISE",
+        "skills": "drekthar.pdf:page1, COMPÉTENCES",
+        "savingThrows": "drekthar.pdf:page1, JETS DE SAUVEGARDE"
+      },
+      "attacks": [
+        {
+          "name": "Greatsword",
+          "attackBonus": 8,
+          "damage": "2d6+5 tranchants"
+        },
+        {
+          "name": "Shortsword",
+          "attackBonus": 8,
+          "damage": "1d6+5 perforants"
+        },
+        {
+          "name": "Light Crossbow",
+          "attackBonus": 4,
+          "damage": "1d8+1 perforants"
+        },
+        {
+          "name": "Épée 2M de FEU",
+          "attackBonus": 8,
+          "damage": "2D6+5 + 1D6 (texte de fiche; type du dernier dé non explicité dans la cellule)"
+        }
+      ],
+      "equipmentEffects": [
+        {
+          "item": "Cotte de mailles",
+          "effect": "CA16 imprimée, cohérente avec cotte de mailles",
+          "source": "drekthar.pdf:page1"
+        },
+        {
+          "item": "Maîtrise des armes à 2M",
+          "effect": "Choix −5 au jet / +10 dégâts pour armes lourdes maîtrisées; pas activé implicitement",
+          "source": "drekthar.pdf:page4"
+        }
+      ]
+    },
+    "ellyjobell": {
+      "name": "Ellyjobell Folkor",
+      "file": "Ellyjobell.pdf",
+      "sheetLevel": 10,
+      "experiencePrinted": 64000,
+      "classId": "druid",
+      "subclass": "Cercle du berger (déduit des traits, non écrit dans l’en-tête)",
+      "abilityScores": {
+        "strength": 14,
+        "dexterity": 18,
+        "constitution": 17,
+        "intelligence": 17,
+        "wisdom": 18,
+        "charisma": 12
+      },
+      "abilityModifiers": {
+        "strength": 2,
+        "dexterity": 4,
+        "constitution": 3,
+        "intelligence": 3,
+        "wisdom": 4,
+        "charisma": 1
+      },
+      "proficiencyBonus": 4,
+      "armorClass": 18,
+      "maxHitPoints": 81,
+      "initiative": 4,
+      "speedPrinted": 7.5,
+      "speedUnit": null,
+      "savingThrowBonuses": {
+        "strength": 2,
+        "dexterity": 4,
+        "constitution": 3,
+        "intelligence": 7,
+        "wisdom": 8,
+        "charisma": 1
+      },
+      "skillBonuses": {
+        "acrobatics": 4,
+        "animalHandling": 4,
+        "arcana": 3,
+        "athletics": 6,
+        "deception": 1,
+        "history": 3,
+        "insight": 4,
+        "intimidation": 1,
+        "investigation": 3,
+        "medicine": 8,
+        "nature": 7,
+        "perception": 4,
+        "performance": 1,
+        "persuasion": 1,
+        "religion": 3,
+        "sleightOfHand": 4,
+        "stealth": 4,
+        "survival": 8
+      },
+      "arithmeticTraining": {
+        "status": "inferredFromPrintedBonusesNotProofOfHistoricalChoice",
+        "skills": {
+          "acrobatics": 0,
+          "animalHandling": 0,
+          "arcana": 0,
+          "athletics": 1,
+          "deception": 0,
+          "history": 0,
+          "insight": 0,
+          "intimidation": 0,
+          "investigation": 0,
+          "medicine": 1,
+          "nature": 1,
+          "perception": 0,
+          "performance": 0,
+          "persuasion": 0,
+          "religion": 0,
+          "sleightOfHand": 0,
+          "stealth": 0,
+          "survival": 1
+        },
+        "savingThrows": {
+          "strength": 0,
+          "dexterity": 0,
+          "constitution": 0,
+          "intelligence": 1,
+          "wisdom": 1,
+          "charisma": 0
+        },
+        "otherSavingThrowBonus": 0
+      },
+      "spellcasting": {
+        "ability": "wisdom",
+        "saveDC": 16,
+        "attackBonus": 8,
+        "source": "Ellyjobell.pdf:page3, en-tête incantation"
+      },
+      "sources": {
+        "identity": "Ellyjobell.pdf:page1, en-tête CLASSE ET NIVEAU",
+        "abilities": "Ellyjobell.pdf:page1, six cases de caractéristiques",
+        "combat": "Ellyjobell.pdf:page1, CA/initiative/vitesse/PV max",
+        "proficiency": "Ellyjobell.pdf:page1, BONUS DE MAÎTRISE",
+        "skills": "Ellyjobell.pdf:page1, COMPÉTENCES",
+        "savingThrows": "Ellyjobell.pdf:page1, JETS DE SAUVEGARDE"
+      },
+      "attacks": [
+        {
+          "name": "Bâton (1 main)",
+          "attackBonus": 6,
+          "damage": "1d6+2 contondants"
+        },
+        {
+          "name": "Bâton (2 mains)",
+          "attackBonus": 6,
+          "damage": "1d8+2 contondants"
+        },
+        {
+          "name": "Bâton magique",
+          "attackBonus": 8,
+          "damage": "1d8+4 contondants",
+          "note": "Compatible avec Gourdin magique (SAG), ne pas en déduire arbitrairement une arme +2"
+        },
+        {
+          "name": "Flamme",
+          "attackBonus": 8,
+          "damage": "2d8 feu"
+        },
+        {
+          "name": "Appel de la foudre",
+          "saveDC": 16,
+          "damage": "3d10 foudre"
+        }
+      ],
+      "equipmentEffects": [
+        {
+          "item": "Armure de cuir +1 et bouclier régénérateur",
+          "effect": "CA18 imprimée, cohérente avec 11+1+DEX4+bouclier2; ne pas attribuer ces objets avant acquisition",
+          "source": "Ellyjobell.pdf:pages1–2"
+        }
+      ]
+    },
+    "darrin": {
+      "name": "Darrin Kloumsihande",
+      "file": "darrin.pdf",
+      "sheetLevel": 10,
+      "experiencePrinted": 6840,
+      "classId": "sorcerer",
+      "subclass": "Magie sauvage",
+      "abilityScores": {
+        "strength": 11,
+        "dexterity": 13,
+        "constitution": 14,
+        "intelligence": 15,
+        "wisdom": 9,
+        "charisma": 16
+      },
+      "abilityModifiers": {
+        "strength": 0,
+        "dexterity": 1,
+        "constitution": 2,
+        "intelligence": 2,
+        "wisdom": -1,
+        "charisma": 3
+      },
+      "proficiencyBonus": 4,
+      "armorClass": 11,
+      "maxHitPoints": 62,
+      "initiative": 1,
+      "speedPrinted": 30,
+      "speedUnit": null,
+      "savingThrowBonuses": {
+        "strength": 0,
+        "dexterity": 1,
+        "constitution": 6,
+        "intelligence": 2,
+        "wisdom": -1,
+        "charisma": 7
+      },
+      "skillBonuses": {
+        "acrobatics": 5,
+        "animalHandling": -1,
+        "arcana": 6,
+        "athletics": 0,
+        "deception": 7,
+        "history": 6,
+        "insight": -1,
+        "intimidation": 3,
+        "investigation": 2,
+        "medicine": -1,
+        "nature": 2,
+        "perception": -1,
+        "performance": 3,
+        "persuasion": 7,
+        "religion": 2,
+        "sleightOfHand": 1,
+        "stealth": 1,
+        "survival": -1
+      },
+      "arithmeticTraining": {
+        "status": "inferredFromPrintedBonusesNotProofOfHistoricalChoice",
+        "skills": {
+          "acrobatics": 1,
+          "animalHandling": 0,
+          "arcana": 1,
+          "athletics": 0,
+          "deception": 1,
+          "history": 1,
+          "insight": 0,
+          "intimidation": 0,
+          "investigation": 0,
+          "medicine": 0,
+          "nature": 0,
+          "perception": 0,
+          "performance": 0,
+          "persuasion": 1,
+          "religion": 0,
+          "sleightOfHand": 0,
+          "stealth": 0,
+          "survival": 0
+        },
+        "savingThrows": {
+          "strength": 0,
+          "dexterity": 0,
+          "constitution": 1,
+          "intelligence": 0,
+          "wisdom": 0,
+          "charisma": 1
+        },
+        "otherSavingThrowBonus": 0
+      },
+      "spellcasting": {
+        "ability": "charisma",
+        "saveDC": 15,
+        "attackBonus": 7,
+        "source": "darrin.pdf:page3, en-tête incantation"
+      },
+      "sources": {
+        "identity": "darrin.pdf:page1, en-tête CLASSE ET NIVEAU",
+        "abilities": "darrin.pdf:page1, six cases de caractéristiques",
+        "combat": "darrin.pdf:page1, CA/initiative/vitesse/PV max",
+        "proficiency": "darrin.pdf:page1, BONUS DE MAÎTRISE",
+        "skills": "darrin.pdf:page1, COMPÉTENCES",
+        "savingThrows": "darrin.pdf:page1, JETS DE SAUVEGARDE"
+      },
+      "attacks": [
+        {
+          "name": "Ray of Frost",
+          "attackBonus": 7,
+          "damage": "2d8 froid"
+        },
+        {
+          "name": "Magic Missile",
+          "attackBonus": null,
+          "damage": "1d4+1 force par projectile",
+          "note": "Pas de jet d’attaque en règle5e"
+        },
+        {
+          "name": "Light Crossbow",
+          "attackBonus": 5,
+          "damage": "1d8+1 perforants"
+        },
+        {
+          "name": "Dagger",
+          "attackBonus": 5,
+          "damage": "1d4+1 perforants"
+        },
+        {
+          "name": "Éclair de chaos",
+          "attackBonus": 7,
+          "damage": "2d8+1d6"
+        },
+        {
+          "name": "Boule de feu",
+          "attackBonusPrinted": 7,
+          "damage": "8d6 feu",
+          "note": "Cellule affichée +7, mais la règle utilise une sauvegarde DEX (DD de sorts15 ici), pas un jet d’attaque"
+        }
+      ],
+      "equipmentEffects": [
+        {
+          "item": "Wooden Staff of the Broken Mirror; Neutralizing Staff",
+          "effect": "Objets nommés sans bloc d’effet dans l’inventaire; ne pas déduire de bonus de caractéristiques",
+          "source": "darrin.pdf:page2"
+        }
+      ]
+    },
+    "kairon": {
+      "name": "Kairon Erudit",
+      "file": "kairon.pdf",
+      "sheetLevel": 9,
+      "experiencePrinted": 34000,
+      "classId": "warlock",
+      "subclass": "Fiélon",
+      "abilityScores": {
+        "strength": 19,
+        "dexterity": 13,
+        "constitution": 15,
+        "intelligence": 12,
+        "wisdom": 14,
+        "charisma": 20
+      },
+      "abilityModifiers": {
+        "strength": 4,
+        "dexterity": 1,
+        "constitution": 2,
+        "intelligence": 1,
+        "wisdom": 2,
+        "charisma": 5
+      },
+      "proficiencyBonus": 4,
+      "armorClass": 17,
+      "maxHitPoints": 67,
+      "initiative": 1,
+      "speedPrinted": 30,
+      "speedUnit": null,
+      "savingThrowBonuses": {
+        "strength": 4,
+        "dexterity": 1,
+        "constitution": 2,
+        "intelligence": 1,
+        "wisdom": 2,
+        "charisma": 5
+      },
+      "skillBonuses": {
+        "acrobatics": 1,
+        "animalHandling": 2,
+        "arcana": 1,
+        "athletics": 4,
+        "deception": 5,
+        "history": 1,
+        "insight": 2,
+        "intimidation": 5,
+        "investigation": 1,
+        "medicine": 2,
+        "nature": 1,
+        "perception": 2,
+        "performance": 5,
+        "persuasion": 5,
+        "religion": 1,
+        "sleightOfHand": 1,
+        "stealth": 1,
+        "survival": 2
+      },
+      "arithmeticTraining": {
+        "status": "inferredFromPrintedBonusesNotProofOfHistoricalChoice",
+        "skills": {
+          "acrobatics": 0,
+          "animalHandling": 0,
+          "arcana": 0,
+          "athletics": 0,
+          "deception": 0,
+          "history": 0,
+          "insight": 0,
+          "intimidation": 0,
+          "investigation": 0,
+          "medicine": 0,
+          "nature": 0,
+          "perception": 0,
+          "performance": 0,
+          "persuasion": 0,
+          "religion": 0,
+          "sleightOfHand": 0,
+          "stealth": 0,
+          "survival": 0
+        },
+        "savingThrows": {
+          "strength": 0,
+          "dexterity": 0,
+          "constitution": 0,
+          "intelligence": 0,
+          "wisdom": 0,
+          "charisma": 0
+        },
+        "otherSavingThrowBonus": 0
+      },
+      "spellcasting": {
+        "ability": "charisma",
+        "saveDC": 17,
+        "attackBonus": 9,
+        "source": "kairon.pdf:page3, en-tête incantation"
+      },
+      "sources": {
+        "identity": "kairon.pdf:page1, en-tête CLASSE ET NIVEAU",
+        "abilities": "kairon.pdf:page1, six cases de caractéristiques",
+        "combat": "kairon.pdf:page1, CA/initiative/vitesse/PV max",
+        "proficiency": "kairon.pdf:page1, BONUS DE MAÎTRISE",
+        "skills": "kairon.pdf:page1, COMPÉTENCES",
+        "savingThrows": "kairon.pdf:page1, JETS DE SAUVEGARDE"
+      },
+      "attacks": [
+        {
+          "name": "Masse d’arme",
+          "attackBonus": 8,
+          "damage": "1d6+4 contondants"
+        },
+        {
+          "name": "Dague",
+          "attackBonus": 5,
+          "damage": "1d4+1 perforants"
+        },
+        {
+          "name": "Quarterstaff",
+          "attackBonus": 8,
+          "damage": "1d6+5 contondants"
+        },
+        {
+          "name": "Décharge occulte (français)",
+          "attackBonusPrinted": 5,
+          "damagePrinted": "1d10+5 force",
+          "source": "kairon.pdf:page2"
+        },
+        {
+          "name": "Eldritch Blast (anglais)",
+          "attackBonusPrinted": 9,
+          "damagePrinted": "1d10+4 force",
+          "source": "kairon.pdf:page2",
+          "note": "Deux entrées incohérentes: avec CHA20, maîtrise4 et Lance agonisante, règle attend +9 / 1d10+5 par rayon"
+        },
+        {
+          "name": "Fire Bolt",
+          "attackBonus": 9,
+          "damage": "2d10 feu"
+        },
+        {
+          "name": "Ray of Frost",
+          "attackBonus": 9,
+          "damage": "2d8 froid"
+        }
+      ],
+      "equipmentEffects": [
+        {
+          "item": "Gantelets de puissance d’ogre",
+          "effect": "FOR19 sur la fiche; score naturel et date d’acquisition inconnus",
+          "source": "kairon.pdf:page2"
+        },
+        {
+          "item": "Cape rouge de Fer Rouge; bouclier; cuir clouté",
+          "effect": "CA17 imprimée; cuir clouté12+DEX1+bouclier2=15, les2 supplémentaires ne sont pas justifiés par un bloc d’objet fourni",
+          "source": "kairon.pdf:pages1–2"
+        }
+      ],
+      "strengthReconstruction": {
+        "base": 17,
+        "itemScore": 19,
+        "restoreAtLevel": 9,
+        "status": "gmReconstruction",
+        "source": "Précision du MJ dans cette conversation: «non, je ne me souviens plus, on va dire16/17 min». Valeur17 retenue pour le jeu.",
+        "dateOfItemAcquisitionKnown": false
+      }
+    },
+    "malar": {
+      "name": "Malar",
+      "file": "malar.pdf",
+      "sheetLevel": 9,
+      "experiencePrinted": 5001,
+      "classId": "rogue",
+      "subclass": "Voleur",
+      "abilityScores": {
+        "strength": 12,
+        "dexterity": 19,
+        "constitution": 12,
+        "intelligence": 12,
+        "wisdom": 15,
+        "charisma": 18
+      },
+      "abilityModifiers": {
+        "strength": 1,
+        "dexterity": 4,
+        "constitution": 1,
+        "intelligence": 1,
+        "wisdom": 2,
+        "charisma": 4
+      },
+      "proficiencyBonus": 4,
+      "armorClass": 17,
+      "maxHitPoints": 58,
+      "initiative": 4,
+      "speedPrinted": 30,
+      "speedUnit": null,
+      "savingThrowBonuses": {
+        "strength": 1,
+        "dexterity": 8,
+        "constitution": 1,
+        "intelligence": 5,
+        "wisdom": 2,
+        "charisma": 4
+      },
+      "skillBonuses": {
+        "acrobatics": 8,
+        "animalHandling": 2,
+        "arcana": 1,
+        "athletics": 1,
+        "deception": 12,
+        "history": 1,
+        "insight": 6,
+        "intimidation": 4,
+        "investigation": 9,
+        "medicine": 2,
+        "nature": 1,
+        "perception": 6,
+        "performance": 4,
+        "persuasion": 4,
+        "religion": 1,
+        "sleightOfHand": 4,
+        "stealth": 12,
+        "survival": 2
+      },
+      "arithmeticTraining": {
+        "status": "inferredFromPrintedBonusesNotProofOfHistoricalChoice",
+        "skills": {
+          "acrobatics": 1,
+          "animalHandling": 0,
+          "arcana": 0,
+          "athletics": 0,
+          "deception": 2,
+          "history": 0,
+          "insight": 1,
+          "intimidation": 0,
+          "investigation": 2,
+          "medicine": 0,
+          "nature": 0,
+          "perception": 1,
+          "performance": 0,
+          "persuasion": 0,
+          "religion": 0,
+          "sleightOfHand": 0,
+          "stealth": 2,
+          "survival": 0
+        },
+        "savingThrows": {
+          "strength": 0,
+          "dexterity": 1,
+          "constitution": 0,
+          "intelligence": 1,
+          "wisdom": 0,
+          "charisma": 0
+        },
+        "otherSavingThrowBonus": 0
+      },
+      "spellcasting": null,
+      "sources": {
+        "identity": "malar.pdf:page1, en-tête CLASSE ET NIVEAU",
+        "abilities": "malar.pdf:page1, six cases de caractéristiques",
+        "combat": "malar.pdf:page1, CA/initiative/vitesse/PV max",
+        "proficiency": "malar.pdf:page1, BONUS DE MAÎTRISE",
+        "skills": "malar.pdf:page1, COMPÉTENCES",
+        "savingThrows": "malar.pdf:page1, JETS DE SAUVEGARDE"
+      },
+      "attacks": [
+        {
+          "name": "Rapier",
+          "attackBonus": 8,
+          "damage": "1d8+4 perforants"
+        },
+        {
+          "name": "Shortbow",
+          "attackBonus": 8,
+          "damage": "1d6+4 perforants"
+        },
+        {
+          "name": "Dagger",
+          "attackBonus": 8,
+          "damage": "1d4+4 perforants"
+        }
+      ],
+      "equipmentEffects": [
+        {
+          "item": "Studded leather +1; breastplate +1",
+          "effect": "Les deux objets sont listés; CA17 est cohérente avec cuir clouté+1 et DEX4, ou avec cuirasse+1 et DEX plafonnée à2. Équipement porté exact non explicité.",
+          "source": "malar.pdf:pages1–2"
+        },
+        {
+          "item": "Thieves’ Tools⁺",
+          "effect": "Le symbole ⁺ indique une maîtrise améliorée; statut d’expertise à rapprocher des choix de roublard, pas un bonus d’objet chiffré",
+          "source": "malar.pdf:page1"
+        }
+      ]
+    },
+    "sislay": {
+      "name": "Sislay Baite",
+      "file": "sislay.pdf",
+      "sheetLevel": 5,
+      "experiencePrinted": 7100,
+      "classId": "ranger",
+      "subclass": "Chasseur",
+      "abilityScores": {
+        "strength": 14,
+        "dexterity": 14,
+        "constitution": 16,
+        "intelligence": 11,
+        "wisdom": 10,
+        "charisma": 14
+      },
+      "abilityModifiers": {
+        "strength": 2,
+        "dexterity": 2,
+        "constitution": 3,
+        "intelligence": 0,
+        "wisdom": 0,
+        "charisma": 2
+      },
+      "proficiencyBonus": 3,
+      "armorClass": 13,
+      "maxHitPoints": 53,
+      "initiative": 2,
+      "speedPrinted": 30,
+      "speedUnit": null,
+      "savingThrowBonuses": {
+        "strength": 5,
+        "dexterity": 5,
+        "constitution": 3,
+        "intelligence": 0,
+        "wisdom": 0,
+        "charisma": 2
+      },
+      "skillBonuses": {
+        "acrobatics": 2,
+        "animalHandling": 0,
+        "arcana": 0,
+        "athletics": 2,
+        "deception": 2,
+        "history": 0,
+        "insight": 3,
+        "intimidation": 5,
+        "investigation": 0,
+        "medicine": 0,
+        "nature": 0,
+        "perception": 0,
+        "performance": 2,
+        "persuasion": 2,
+        "religion": 0,
+        "sleightOfHand": 2,
+        "stealth": 2,
+        "survival": 0
+      },
+      "arithmeticTraining": {
+        "status": "inferredFromPrintedBonusesNotProofOfHistoricalChoice",
+        "skills": {
+          "acrobatics": 0,
+          "animalHandling": 0,
+          "arcana": 0,
+          "athletics": 0,
+          "deception": 0,
+          "history": 0,
+          "insight": 1,
+          "intimidation": 1,
+          "investigation": 0,
+          "medicine": 0,
+          "nature": 0,
+          "perception": 0,
+          "performance": 0,
+          "persuasion": 0,
+          "religion": 0,
+          "sleightOfHand": 0,
+          "stealth": 0,
+          "survival": 0
+        },
+        "savingThrows": {
+          "strength": 1,
+          "dexterity": 1,
+          "constitution": 0,
+          "intelligence": 0,
+          "wisdom": 0,
+          "charisma": 0
+        },
+        "otherSavingThrowBonus": 0
+      },
+      "spellcasting": {
+        "ability": "wisdom",
+        "saveDC": 11,
+        "attackBonus": 3,
+        "source": "sislay.pdf:page3, en-tête incantation"
+      },
+      "sources": {
+        "identity": "sislay.pdf:page1, en-tête CLASSE ET NIVEAU",
+        "abilities": "sislay.pdf:page1, six cases de caractéristiques",
+        "combat": "sislay.pdf:page1, CA/initiative/vitesse/PV max",
+        "proficiency": "sislay.pdf:page1, BONUS DE MAÎTRISE",
+        "skills": "sislay.pdf:page1, COMPÉTENCES",
+        "savingThrows": "sislay.pdf:page1, JETS DE SAUVEGARDE"
+      },
+      "attacks": [
+        {
+          "name": "Rapier",
+          "attackBonus": 5,
+          "damage": "1d8+2 perforants"
+        },
+        {
+          "name": "Shortbow",
+          "attackBonus": 5,
+          "damage": "1d6+2 perforants"
+        },
+        {
+          "name": "Arc long",
+          "attackBonus": 5,
+          "damage": "1d8+2"
+        },
+        {
+          "name": "Hunter’s Mark",
+          "damage": "1d6 supplémentaires"
+        },
+        {
+          "name": "Cure Wounds",
+          "healingPrinted": "1d8"
+        }
+      ],
+      "equipmentEffects": [
+        {
+          "item": "Leather Armor",
+          "effect": "CA13 imprimée, cohérente avec cuir11+DEX2",
+          "source": "sislay.pdf:page2"
+        },
+        {
+          "item": "Style Duel",
+          "effect": "Ajoute2 aux dégâts d’une arme à une main sans autre arme. Ce +2 ne figure pas dans la cellule de dégâts de rapière (1d8+2): vérifier les conditions au lieu de corriger silencieusement.",
+          "source": "sislay.pdf:pages1 et4"
+        }
+      ]
+    }
+  },
+  "issues": [
+    {
+      "character": "bjolnir",
+      "id": "strength-item",
+      "severity": "projection",
+      "fact": "FOR19 et gantelets d’ogre présents; on ne connaît pas la FOR naturelle antérieure.",
+      "sources": [
+        "Bjolnir.pdf:pages1–2"
+      ]
+    },
+    {
+      "character": "bjolnir",
+      "id": "save-aura",
+      "severity": "projection",
+      "fact": "Les sauvegardes imprimées incluent +3 d’Aura de protection. À niveau inférieur à6, ce bonus ne doit pas être appliqué.",
+      "sources": [
+        "Bjolnir.pdf:pages1 et4"
+      ]
+    },
+    {
+      "character": "drekthar",
+      "id": "racial-intimidation",
+      "severity": "incomplete-sheet",
+      "fact": "Intimidation +1 imprimée, sans la maîtrise normalement octroyée au demi-orc5e2014 (qui donnerait +4). Garder le total réel affiché et signaler l’écart.",
+      "sources": [
+        "drekthar.pdf:page1"
+      ]
+    },
+    {
+      "character": "ellyjobell",
+      "id": "stale-feature-texts",
+      "severity": "stale-sheet",
+      "fact": "Niveau10 en en-tête, mais l’esprit de l’ours est nommé +14PV (devrait15 au niveau10) et la description de durée de forme sauvage indique2h (niveau10 devrait5h). Ne pas utiliser les fragments périmés comme progression.",
+      "sources": [
+        "Ellyjobell.pdf:pages1 et4"
+      ]
+    },
+    {
+      "character": "darrin",
+      "id": "stale-xp",
+      "severity": "stale-sheet",
+      "fact": "En-tête ensorceleur10; XP6840 correspond à niveau5. Utiliser l’en-tête comme niveau du snapshot, sans considérer l’XP comme progression actuelle.",
+      "sources": [
+        "darrin.pdf:page1"
+      ]
+    },
+    {
+      "character": "darrin",
+      "id": "future-features",
+      "severity": "projection",
+      "fact": "Chaos contrôlé (le texte dit niveau14) et Bombardement de sort (niveau18) sont listés sur la fiche10. Ne pas les activer au niveau10 ni plus tôt.",
+      "sources": [
+        "darrin.pdf:pages1 et4"
+      ]
+    },
+    {
+      "character": "darrin",
+      "id": "unavailable-spells",
+      "severity": "projection",
+      "fact": "Project Image apparaît deux fois dans les sorts7, alors que l’ensorceleur10 ne dispose pas d’emplacement de sort7.",
+      "sources": [
+        "darrin.pdf:page3"
+      ]
+    },
+    {
+      "character": "kairon",
+      "id": "missing-save-proficiencies",
+      "severity": "incomplete-sheet",
+      "fact": "La fiche9/PB4 indique sauvegardes SAG+2 et CHA+5 (aucune maîtrise). Un occultiste standard devrait SAG+6/CHA+9. Aucune multiclassage n’est attesté. Garder les valeurs de fiche et afficher la réserve.",
+      "sources": [
+        "kairon.pdf:page1"
+      ]
+    },
+    {
+      "character": "kairon",
+      "id": "missing-skill-proficiencies",
+      "severity": "incomplete-sheet",
+      "fact": "Les18 compétences imprimées sont égales aux seuls modificateurs de caractéristiques. Les maîtrises de classe/historique ne sont pas renseignées dans les totaux.",
+      "sources": [
+        "kairon.pdf:page1"
+      ]
+    },
+    {
+      "character": "kairon",
+      "id": "stale-xp",
+      "severity": "stale-sheet",
+      "fact": "En-tête occultiste9; XP34000 correspond à niveau8.",
+      "sources": [
+        "kairon.pdf:page1"
+      ]
+    },
+    {
+      "character": "kairon",
+      "id": "spell-slots",
+      "severity": "incomplete-sheet",
+      "fact": "Quatre emplacements5 sont imprimés; occultiste9 pur dispose normalement de deux emplacements5.",
+      "sources": [
+        "kairon.pdf:page3"
+      ]
+    },
+    {
+      "character": "kairon",
+      "id": "strength-item",
+      "severity": "projection",
+      "fact": "FOR19 et gantelets d’ogre présents; FOR naturelle antérieure inconnue.",
+      "sources": [
+        "kairon.pdf:pages1–2"
+      ]
+    },
+    {
+      "character": "kairon",
+      "id": "duplicated-spell-values",
+      "severity": "inconsistent-sheet",
+      "fact": "Décharge occulte +5/1d10+5 et Eldritch Blast +9/1d10+4 se contredisent; avec caractéristiques actuelles et invocation, calcul standard +9/1d10+5. Hellish Rebuke DD12 page1 vs DD17 page2 et en-tête DD17 page3.",
+      "sources": [
+        "kairon.pdf:pages1–3"
+      ]
+    },
+    {
+      "character": "malar",
+      "id": "stale-xp",
+      "severity": "stale-sheet",
+      "fact": "En-tête roublard9; XP5001 correspond à niveau4.",
+      "sources": [
+        "malar.pdf:page1"
+      ]
+    },
+    {
+      "character": "sislay",
+      "id": "copied-fields",
+      "severity": "incomplete-sheet",
+      "fact": "Rôdeuse5 et sorts/traits de rôdeur corroborés, mais langues/maîtrises d’armes et armure ressemblent à ceux d’un roublard; livre de prière, symbole sacré et compteur Divine Sense paraissent copiés. Ils ne prouvent aucun multiclassage paladin ou roublard.",
+      "sources": [
+        "sislay.pdf:pages1–4"
+      ]
+    },
+    {
+      "character": "sislay",
+      "id": "missing-skill-proficiencies",
+      "severity": "incomplete-sheet",
+      "fact": "Seules Perspicacité et Intimidation ont un bonus de maîtrise visible; Discrétion+2, Perception0 et Survie0 sont les vrais totaux imprimés. Ne pas inventer une maîtrise parce que le personnage est une rôdeuse efficace.",
+      "sources": [
+        "sislay.pdf:page1"
+      ]
+    },
+    {
+      "character": "all",
+      "id": "speed-units",
+      "severity": "presentation",
+      "fact": "Valeurs de vitesse9,7.5 et30 mélangées, sans unité explicite dans les cases extraites. Ne pas les convertir automatiquement.",
+      "sources": [
+        "Les sept PDF:page1"
+      ]
+    },
+    {
+      "character": "all",
+      "id": "historical-abilities",
+      "severity": "projection",
+      "fact": "Les dates d’ASI/dons et les scores de départ ne sont pas fournis. Le score actuel ne permet pas de retrouver exactement celui des niveaux précédents, ni les PV historiques issus de jets ou d’objets.",
+      "sources": [
+        "Les sept PDF:pages1–2"
+      ]
+    }
+  ],
+  "projectionRecommendation": {
+    "displayRealSheet": "Afficher explicitement « fiche fournie: niveauN » avec scores, bonus totaux, CA et PVmax réellement imprimés. Ces valeurs demeurent consultables telles quelles.",
+    "adventureLevel": "Le niveau de la scène vient du module officiel séparément; ne pas choisir le niveau depuis les cases XP périmées des PJ.",
+    "proficiencyFormula": "PB(L)=2+floor((L-1)/4), pour L de1 à20.",
+    "conditionalTraining": "Pour une projection déclarée: bonusProjeté = modificateur de caractéristique de référence + coefficientMaîtriseInféré × PB(niveauScène) + bonus conditionnels réellement disponibles. Coefficients0/1/2 sont une inférence arithmétique des totaux imprimés, pas la preuve de choix historiques.",
+    "auraProtection": "Pour Bjolnir seulement, retirer +3 aux sauvegardes avant niveau6; au niveau6+ employer son modificateur CHA de référence si conscient. L’aura n’est pas un bonus aux compétences.",
+    "cannotReconstruct": "ASI/dons datés, PV tirés par niveau et équipement de départ exact manquent. La FOR avant les gantelets de Bjolnir et Kairon est reconstituée à17 avec le MJ; elle n’est pas attestée par les fiches antérieures.",
+    "practicalTransparentMode": "Si le jeu utilise la projection en attendant le MJ, la nommer « projection de jeu: caractéristiques de la fiche, maîtrise adaptée au niveau du chapitre », avec marqueur d’incertitude pour les scores influencés par objets. Les stats réelles de la fiche doivent rester visibles côte à côte.",
+    "uncertainTraining": "Kairon et Sislay ont des champs incomplets; ne pas corriger silencieusement avec des maîtrises de classe supposées. Prévoir correctif MJ explicite et tracé.",
+    "neverScaleLinearly": "Ne pas multiplier/diviser les scores, CA, PV ni tous les bonus d’attaque par le rapport des niveaux.",
+    "rolls": "Jet de compétence = d20 + modCaractéristique + maîtrise/expertise si attestée/applicable; un1 ou20 naturel n’est pas automatiquement échec/réussite sur un test de compétence5e2014. Un jet d’attaque gère ses règles propres; projectile magique ne demande pas de jet d’attaque. Blessure/désavantage et assistance sont des règles du jeu à annoncer séparément.",
+    "gmStrengthReconstruction": "Le MJ a proposé16/17 minimum;17 est retenu. Le jeu garde17 avant le niveau de la fiche, puis19 (gantelets) dès ce niveau:10 pour Bjolnir,9 pour Kairon. Ces seuils permettent de rejoindre les instantanés fournis et ne datent pas l’acquisition historique des objets."
+  }
+}

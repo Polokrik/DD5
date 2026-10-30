@@ -20,6 +20,8 @@ const html = fs.readFileSync(require('node:path').join(__dirname, '../index.html
     const page=await browser.newPage({viewport:{width:1440,height:1100}});
     page.on('pageerror',error=>errors.push(error.message));
     await page.addInitScript(()=>{
+      window.__testD20=20;
+      window.crypto.getRandomValues=array=>{array.fill(window.__testD20-1);return array;};
       const Native=window.AudioContext;
       window.__audio={contexts:[],gains:[],suspends:0,stops:0,oscillators:0};
       window.AudioContext=class extends Native {
@@ -37,8 +39,14 @@ const html = fs.readFileSync(require('node:path').join(__dirname, '../index.html
     await page.goto(url);
     assert.equal(await page.evaluate(()=>uiState.preferences.sound),false);
     assert.equal(await page.evaluate(()=>window.__audio.contexts.length),0,'Aucun contexte audio avant activation volontaire.');
-    async function resume(){if(await page.locator('[data-choice="report-continue"]').count()) await page.locator('[data-choice="report-continue"]').click();}
-    async function choose(id){await resume();await page.locator(id.startsWith('@')?`[data-direction="${id.slice(1)}"]`:`[data-choice="${id}"]`).click();}
+    async function resume(){
+      if(await page.locator('[data-choice="dice-skip"]').count()) await page.locator('[data-choice="dice-skip"]').click();
+      if(await page.locator('[data-choice="report-continue"]').count()) await page.locator('[data-choice="report-continue"]').click();
+    }
+    async function choose(id){
+      await resume();await page.locator(id.startsWith('@')?`[data-direction="${id.slice(1)}"]`:`[data-choice="${id}"]`).click();
+      await page.evaluate(()=>finishD20Animation());
+    }
     async function palette(){
       const counts=await page.evaluate(()=>['gameCanvas','actionCanvas'].map(id=>{
         const canvas=document.getElementById(id),data=canvas.getContext('2d').getImageData(0,0,320,200).data,colors=new Set();

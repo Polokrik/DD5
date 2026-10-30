@@ -21,10 +21,16 @@ const html = fs.readFileSync(require('node:path').join(__dirname, '../index.html
     page.on('pageerror', e => errors.push(e.message));
     const external = [];
     page.on('request', r => { if (!r.url().startsWith('http://127.0.0.1:')) external.push(r.url()); });
+    // Dés fixes uniquement dans cette fixture de parcours ; aucun état du groupe modifié.
+    await page.addInitScript(() => {
+      window.__testD20 = 20;
+      window.crypto.getRandomValues = array => { array.fill(window.__testD20 - 1); return array; };
+    });
     await page.goto(`http://127.0.0.1:${server.address().port}`);
     const input = page.locator('#commandInput');
     async function command(value) { await page.locator('#commandPanel').evaluate(e => e.open = true); await input.fill(value); await input.press('Enter'); }
     async function resume() {
+      if (await page.locator('[data-choice="dice-skip"]').count()) await page.locator('[data-choice="dice-skip"]').click();
       if (await page.locator('[data-choice="report-continue"]').count()) await page.locator('[data-choice="report-continue"]').click();
     }
     async function choose(id) {
@@ -32,6 +38,7 @@ const html = fs.readFileSync(require('node:path').join(__dirname, '../index.html
       const selector = id.startsWith('@') ? `[data-direction="${id.slice(1)}"]` : `[data-choice="${id}"]`;
       assert.equal(await page.locator(selector).count(), 1, `${id} absent dans ${await page.evaluate(() => gameState.roomId)}`);
       await page.locator(selector).click();
+      await page.evaluate(() => finishD20Animation());
     }
     assert.equal(await page.locator('#choiceList .choice-card').count(), 3);
     assert.equal(await page.locator('[data-choice="title-continue"]').isDisabled(), true);
@@ -49,6 +56,7 @@ const html = fs.readFileSync(require('node:path').join(__dirname, '../index.html
     assert.equal(await page.evaluate(() => gameState.roomId), 'hill_overlook');
     await page.screenshot({ path: '/tmp/dd5-ui-verdure.png', fullPage: true });
     await page.locator('[data-choice="charge-civils"]').click();
+    await page.evaluate(() => finishD20Animation());
     assert.equal(await page.evaluate(() => gameState.roomId), 'swift_street');
     await page.screenshot({ path: '/tmp/dd5-ui-linan.png', fullPage: true });
     assert.equal(await page.locator('#sceneNarrative p').count(), 2);
@@ -98,6 +106,7 @@ const html = fs.readFileSync(require('node:path').join(__dirname, '../index.html
     await page.screenshot({ path: '/tmp/dd5-browser-smoke.png', fullPage: true });
     // Variante défavorable au clic, sans modifier les scores ni les états du groupe.
     await page.locator('#saveMenu summary').click(); await page.locator('#restartButton').click();
+    await page.evaluate(() => window.__testD20 = 1);
     for (const id of ['approche-riviere','swift-magie','mission-sanctuaire','tunnel-temple','sanctuaire-tunnel']) await choose(id);
     assert.equal(await page.evaluate(() => flags.sanctuaireDone), false);
     assert.match(await page.locator('#reportChanges').innerText(), /Sislay.*Blessé/);
@@ -114,6 +123,7 @@ const html = fs.readFileSync(require('node:path').join(__dirname, '../index.html
     assert.equal(await page.evaluate(() => gameState.roomId), 'mill_approach');
     // Deux divergences conservées: Cyanwrath vaincu tôt et œufs laissés dans la grotte.
     await page.locator('#saveMenu summary').click(); await page.locator('#restartButton').click();
+    await page.evaluate(() => window.__testD20 = 20);
     for (const id of [...path.opening.slice(1), ...path.camp.slice(0,-2)]) {
       await choose(({ 'duel-campagne':'duel-accept', 'revanche-drekthar':'confrontation-passee', 'voler-oeufs':'laisser-oeufs' })[id] ?? id);
     }
@@ -159,7 +169,7 @@ const html = fs.readFileSync(require('node:path').join(__dirname, '../index.html
     assert.deepEqual(errors, []);
     await mobile.close();
     console.log('Chromium : cinq actes, finale, rollback, sauvegarde/rechargement, clavier et rendu OK ; aucune erreur JS ni requête externe.');
-    console.log('Parcours défavorable: échecs rivière, magie, temple et moulin; nouvelle tentative, undo, accueil et reprise OK.');
+    console.log('Parcours défavorable avec D20=1: échecs rivière, magie, temple et moulin; nouvelle tentative, undo, accueil et reprise OK.');
     console.log('Variantes au clic: Cyanwrath vaincu dès Verdure, confrontation adaptée et absence de dragonnets sans les œufs OK.');
     console.log('Interface : clics, raccourcis numériques, chronique 18 chapitres, portraits, mobile 390 px, mouvements réduits et palette ≤ 48 couleurs OK.');
   } finally {
