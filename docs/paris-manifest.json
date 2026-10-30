@@ -1,0 +1,182 @@
+{
+  "sourceCommit": "606e2d7",
+  "tree": "bcfd637c69682e1ec26de27bdff9463100eb6ac2",
+  "files": [
+    {
+      "path": "paris-guide/.env.example",
+      "blob": "6973d5345a5be10228e53b86e36630755d32bb3f"
+    },
+    {
+      "path": "paris-guide/.gitignore",
+      "blob": "1be49dad975c21419cda577607fca435e7cb2ced"
+    },
+    {
+      "path": "paris-guide/README.md",
+      "blob": "8d79cb2d6002404ee8a561a0e93f4dbfd33ec853"
+    },
+    {
+      "path": "paris-guide/app.json",
+      "blob": "eaee5d071e9b890a9c7f307150b4e5cfc43120f1"
+    },
+    {
+      "path": "paris-guide/app/(auth)/_layout.tsx",
+      "blob": "5b9eb401d7c32a60155cb36853d9fec736f987df"
+    },
+    {
+      "path": "paris-guide/app/(auth)/login.tsx",
+      "blob": "3b0031d11a958a5b031be7c763204991e98f89cc"
+    },
+    {
+      "path": "paris-guide/app/(tabs)/_layout.tsx",
+      "blob": "5497f2c446ca256a208bb9c36b1a276e4ac4fd2c"
+    },
+    {
+      "path": "paris-guide/app/(tabs)/add.tsx",
+      "blob": "979a697c047a9772e57fce9443440a4b9407910a"
+    },
+    {
+      "path": "paris-guide/app/(tabs)/index.tsx",
+      "blob": "c93c83f09ce62bdc5ea60ce283049a2f873e6b3c"
+    },
+    {
+      "path": "paris-guide/app/(tabs)/map.tsx",
+      "blob": "3f419b0c5171590047db8f87d169cceb24ff6085"
+    },
+    {
+      "path": "paris-guide/app/_layout.tsx",
+      "blob": "13d2a9519081adea19c79336a81a2c8029f3d138"
+    },
+    {
+      "path": "paris-guide/app/index.tsx",
+      "blob": "63c6a3f284ccc0272315bb5d1534910846514879"
+    },
+    {
+      "path": "paris-guide/app/place/[id].tsx",
+      "blob": "fb018c717ec76b1a9060eee771ca35bc9d3604cd"
+    },
+    {
+      "path": "paris-guide/babel.config.js",
+      "blob": "f3c649bba6d02540f175f28a37c6f6a2957e4807"
+    },
+    {
+      "path": "paris-guide/global.css",
+      "blob": "b5c61c956711f981a41e95f7fcf0038436cfbb22"
+    },
+    {
+      "path": "paris-guide/metro.config.js",
+      "blob": "b0963fe7f71fb8ac096f27baeee1b06ff16fdbdd"
+    },
+    {
+      "path": "paris-guide/nativewind-env.d.ts",
+      "blob": "a13e3136bbdc993c243204b43c51b01bf9194106"
+    },
+    {
+      "path": "paris-guide/package-lock.json",
+      "blob": "7ea9239162f630ff28dd099242ee5dbdbad9b44b"
+    },
+    {
+      "path": "paris-guide/package.json",
+      "blob": "1c79d66f1ea980a933238d38f509f885d3d9be7d"
+    },
+    {
+      "path": "paris-guide/src/components/CategoryFilter.tsx",
+      "blob": "704a0a4f5451f44fa4abb8e0d56ff965b18bcc35"
+    },
+    {
+      "path": "paris-guide/src/components/DraftEnrichment.tsx",
+      "blob": "857e6363564492cfc3b17151582ac8ef9f091e65"
+    },
+    {
+      "path": "paris-guide/src/components/PlaceCard.tsx",
+      "blob": "0a485997bf84ff9a2714a1c5f893379bc7398a27"
+    },
+    {
+      "path": "paris-guide/src/components/StarRating.tsx",
+      "blob": "e0b09518b25b6885743a8e2aec8745654854f437"
+    },
+    {
+      "path": "paris-guide/src/components/StatusBadge.tsx",
+      "blob": "d0f2bb2857be5257e072ec8a38c3685442238d29"
+    },
+    {
+      "path": "paris-guide/src/components/SyncIndicator.tsx",
+      "blob": "32066d39846d33babb01f5a9d831691c313be148"
+    },
+    {
+      "path": "paris-guide/src/components/VoteButtons.tsx",
+      "blob": "828c161e67e864edefc8e308677344d680cea640"
+    },
+    {
+      "path": "paris-guide/src/constants/categories.ts",
+      "blob": "2d4f1730d336df32ec034d76d0465e1fa77a88eb"
+    },
+    {
+      "path": "paris-guide/src/context/AppContext.tsx",
+      "blob": "bca40cb5a72d694b13c5f5d6d8777ed9dd647e62"
+    },
+    {
+      "path": "paris-guide/src/db/database.ts",
+      "blob": "d6780e30b13a2f9d15fc5a5eae46b436c4d24974"
+    },
+    {
+      "path": "paris-guide/src/db/queries.ts",
+      "blob": "c2e03d9a1cf60e5a0d64176c348a59f29f957587"
+    },
+    {
+      "path": "paris-guide/src/db/schema.sql",
+      "blob": "fc8af179b08498127bbc29a39185a0839ebc6794"
+    },
+    {
+      "path": "paris-guide/src/hooks/useNetworkStatus.ts",
+      "blob": "bfe3d5407f1f6a3ce4d3c59e57114709ef0d537d"
+    },
+    {
+      "path": "paris-guide/src/hooks/usePlaces.ts",
+      "blob": "ec6d5b1b67400f8d04777d451aee9480c1346bc7"
+    },
+    {
+      "path": "paris-guide/src/hooks/useSync.ts",
+      "blob": "550af6492d05ba370412e8b07052238b0bac9594"
+    },
+    {
+      "path": "paris-guide/src/lib/auth.ts",
+      "blob": "2c72409cbd7927bce0a12afe26af61ae09334a12"
+    },
+    {
+      "path": "paris-guide/src/lib/config.ts",
+      "blob": "6e50df06013ae2a504ad676058620be6adbb14f3"
+    },
+    {
+      "path": "paris-guide/src/lib/googlePlaces.ts",
+      "blob": "b8f07faa3af4b1a98b53a32c220ed5d9ddbcd7f3"
+    },
+    {
+      "path": "paris-guide/src/sync/networkState.ts",
+      "blob": "3f4d6c287b8b55e9d861f2a1292a2fb8121b5284"
+    },
+    {
+      "path": "paris-guide/src/sync/supabaseClient.ts",
+      "blob": "ff91e0b7090833b22c3e956bf0ae80fe4801a74b"
+    },
+    {
+      "path": "paris-guide/src/sync/syncEngine.ts",
+      "blob": "69827686aa3d0ed0cbf332e609068bb8450cd624"
+    },
+    {
+      "path": "paris-guide/src/types/index.ts",
+      "blob": "8c7b4beebc3257e50a6962e1bc5c0a62ede6dd6c"
+    },
+    {
+      "path": "paris-guide/supabase/schema.sql",
+      "blob": "84b6e749f188a0c16f15afac59569d5c61b8bc07"
+    },
+    {
+      "path": "paris-guide/tailwind.config.js",
+      "blob": "33b513919fb50b983b4cbc414f084d546fe7401d"
+    },
+    {
+      "path": "paris-guide/tsconfig.json",
+      "blob": "66dcd685536902aaf8d13dc5c5d922598d0ae9e3"
+    }
+  ]
+}

@@ -1,0 +1,763 @@
+{
+  "schemaVersion": 1,
+  "language": "fr",
+  "scope": "Faits attestés et incertitudes de la campagne fournie. Ce référentiel ne prétend pas que les événements absents du journal ont été joués.",
+  "authority": [
+    {
+      "id": "journal",
+      "file": "JDR DD5 2023.xlsx",
+      "role": "Source primaire des événements joués; les autres campagnes/feuilles ne sont pas fusionnées avec Tyranny.",
+      "sheets": [
+        "PJ",
+        "Guilde",
+        "Tyranny of dragons",
+        "Rise of Tiamat",
+        "Dragonnets"
+      ]
+    },
+    {
+      "id": "sheets",
+      "files": [
+        "Bjolnir.pdf",
+        "darrin.pdf",
+        "drekthar.pdf",
+        "Ellyjobell.pdf",
+        "kairon.pdf",
+        "malar.pdf",
+        "sislay.pdf"
+      ],
+      "role": "Identité et aptitudes à la date de la fiche; aucun niveau n'est rétroactivement imposé au début de l'histoire."
+    },
+    {
+      "id": "bios",
+      "files": [
+        "malaar bio.docx",
+        "DD5 - Compagnie de Mercenaires.docx",
+        "Fiche_KAIRON_echec_critique.docx"
+      ],
+      "role": "Biographie, fonctionnement de la guilde et règles maison; pas des comptes rendus de sessions."
+    },
+    {
+      "id": "module",
+      "files": [
+        "DD5.docx",
+        "D&D 5E - Tyranny of Dragons - Hoard of the Dragon Queen.pdf",
+        "D&D 5E - Tyranny of Dragons - The Rise of Tiamat.pdf",
+        "D&D5 - Le Trésor de la Reine Dragon.pdf"
+      ],
+      "role": "Scénarios de référence. DD5.docx est une traduction de l'épisode de la Mer de Glace, pas un journal de partie."
+    },
+    {
+      "id": "visual",
+      "files": [
+        "DD5 Persos.xlsx",
+        "Prompts_Visuels_Complets_Tiamat.xlsx"
+      ],
+      "role": "Références d'identité et intentions visuelles. Les mises en scène ne prouvent pas qu'un événement a été joué."
+    }
+  ],
+  "characters": [
+    {
+      "id": "bjolnir",
+      "name": "Bjolnir HautMarteau",
+      "race": "nain des montagnes",
+      "class": "paladin, rédemption",
+      "initial": "active",
+      "sources": [
+        "journal:PJ!I2:I5",
+        "journal:Tyranny of dragons!5",
+        "Bjolnir.pdf:page1",
+        "sheets:Feuille 1!6"
+      ],
+      "death": null,
+      "notes": "Aucune mort permanente attestée dans ce journal. Parent adoptif des dragonnets noirs. Le MJ précise qu'il refuse de tuer et obtient la reddition des kobolds survivants par son charisme (gmConfirmations.verdureInterview).",
+      "personality": { "traits": ["refuse de tuer", "protecteur", "charismatique"], "source": "gmConfirmations.verdureInterview" },
+      "sheetDetails": {
+        "background": "Acolyte",
+        "equipment": [
+          "Marteau de frappe précise",
+          "Bouclier",
+          "Livre de prières et symbole sacré"
+        ],
+        "laterEquipment": [
+          "Armure de plates résistante à la foudre",
+          "Gantelets de force d'ogre"
+        ],
+        "biography": [
+          "Cette confiance a aussi ses limites: il peut croire trop facilement ceux qui disent partager sa foi. Le souci des plus faibles, affirmé dans son serment de rédemption, le pousse à prendre des risques personnels pour leur venir en aide.",
+          "Son marteau et son bouclier accompagnent ses interventions. Au cours du sauvetage de Linan, il se porte au secours de la famille avec Drek'Thar, puis obtient par la persuasion que les kobolds survivants abandonnent le combat."
+        ],
+        "sources": [
+          "Bjolnir.pdf, pages 1–2",
+          "Précisions du MJ: refus de tuer et sauvetage de Linan"
+        ],
+        "scope": "Description de la fiche et précisions du MJ; équipement tardif distinct, sans attribution rétroactive au début du jeu."
+      }
+    },
+    {
+      "id": "darrin",
+      "name": "Darrin Kloumsihande",
+      "aliases": [
+        "Darin"
+      ],
+      "race": "humain",
+      "class": "ensorceleur, magie sauvage",
+      "initial": "active",
+      "sources": [
+        "journal:Tyranny of dragons!5",
+        "darrin.pdf:page1"
+      ],
+      "death": null,
+      "notes": "Le classeur visuel et le MJ disent « Mage »; la fiche précise ensorceleur de magie sauvage. Le MJ lie Kloumsihande à clumsy et à sa tendance à faire exploser les choses.",
+      "personality": { "traits": ["puissant", "nombreux sorts", "tendance à faire exploser les choses"], "source": "gmConfirmations.personalityInterview" },
+      "sheetDetails": {
+        "background": "Étudiant maladroit",
+        "equipment": [
+          "Focalisateur arcanique",
+          "Dague",
+          "Arbalète légère",
+          "Encre et plume"
+        ],
+        "laterEquipment": [
+          "Bâton du Miroir Brisé",
+          "Bâton de neutralisation"
+        ],
+        "biography": [
+          "Les artefacts magiques l'attirent au point de lui faire oublier la prudence. Sa fiche le dit sujet aux accidents lorsqu'il les manipule, et le MJ rappelle sa tendance à faire exploser les choses. Ce goût de l'expérimentation accompagne cependant une réelle curiosité et une grande variété de moyens d'action.",
+          "Il voyage avec un focalisateur, une dague et de quoi écrire. Le surnom Kloumsihande renvoie à sa maladresse; il ne résume pas toutes les possibilités de sa magie."
+        ],
+        "sources": [
+          "darrin.pdf, pages 1–3",
+          "Précisions du MJ: puissance, variété des sorts et origine du nom"
+        ],
+        "scope": "Description de la fiche et précisions du MJ; équipement tardif distinct, sans attribution rétroactive au début du jeu."
+      }
+    },
+    {
+      "id": "drekthar",
+      "name": "Drek'Thar",
+      "aliases": [
+        "Drekhtar",
+        "Drektar"
+      ],
+      "race": "demi-orc",
+      "class": "guerrier champion",
+      "initial": "active",
+      "leave": "lodge-reunion",
+      "sources": [
+        "journal:Tyranny of dragons!5",
+        "journal:Tyranny of dragons!203",
+        "drekthar.pdf:page1"
+      ],
+      "death": null,
+      "notes": "Défaite au premier duel, revanche mortelle pour Cyanwrath; départ ultérieur, pas une mort. La formule du MJ « un vrai orc » est enregistrée comme description du tempérament; la race demi-orc reste celle de la fiche.",
+      "personality": { "traits": ["tempérament très orc", "aime se battre", "combattant compétent"], "source": "gmConfirmations.personalityInterview" },
+      "sheetDetails": {
+        "background": "Noble",
+        "equipment": [
+          "Épée à deux mains",
+          "Cotte de mailles",
+          "Arbalète légère",
+          "Chevalière portée autour du cou"
+        ],
+        "laterEquipment": [
+          "Épée à deux mains de feu"
+        ],
+        "biography": [
+          "Il n'a jamais vraiment connu l'appartenance à une famille et recherche l'approbation du groupe. Le manque de confiance et l'impétuosité inscrits dans sa fiche permettent de comprendre ce que peut représenter pour lui un défi lancé devant les autres.",
+          "Il manie les armes à deux mains et porte une chevalière suspendue à une chaîne d'argent. À Verdure, il accepte le duel de Cyanwrath pour délivrer les otages; dans la grotte du Culte, leur second affrontement lui donne l'occasion de prendre sa revanche."
+        ],
+        "sources": [
+          "drekthar.pdf, pages 1–2",
+          "Journal, Tyranny of dragons!33:35 et !71:72",
+          "Précisions du MJ: tempérament et maîtrise du combat"
+        ],
+        "scope": "Description de la fiche et précisions du MJ; équipement tardif distinct, sans attribution rétroactive au début du jeu."
+      }
+    },
+    {
+      "id": "ellyjobell",
+      "name": "Ellyjobell Folkor",
+      "aliases": [
+        "Ellyjobel",
+        "Elijobel"
+      ],
+      "race": "gnome des forêts",
+      "class": "druidesse",
+      "initial": "active",
+      "sources": [
+        "journal:Tyranny of dragons!5",
+        "Ellyjobell.pdf:page1"
+      ],
+      "death": null,
+      "notes": "Active dès Verdure. Ni absente ni érudite disparue.",
+      "personality": { "traits": ["intelligente", "gentille", "ingénieuse", "très naïve", "premier degré"], "source": "gmConfirmations.personalityInterview" },
+      "sheetDetails": {
+        "background": "Sauvageonne",
+        "equipment": [
+          "Bâton",
+          "Armure de cuir",
+          "Focalisateur druidique",
+          "Nécessaire d'herboristerie"
+        ],
+        "laterEquipment": [
+          "Bouclier régénérateur",
+          "Statuette du Gardien de l'Arbre"
+        ],
+        "biography": [
+          "La protection du monde naturel compte beaucoup pour elle. Sa colère se porte contre ceux qui ont saccagé sa terre, tandis que sa curiosité et son sens pratique lui font chercher des solutions dans les plantes, les bêtes et les transformations druidiques.",
+          "Elle possède un bâton, un focalisateur et un nécessaire d'herboristerie. Dans le tunnel de Verdure, elle éloigne les rats en leur parlant et en s'aidant d'une illusion. Sa fiche mentionne aussi une faible résistance aux boissons alcoolisées."
+        ],
+        "sources": [
+          "Ellyjobell.pdf, pages 1–3",
+          "Journal, Tyranny of dragons!24 et !27",
+          "Précisions du MJ: intelligence, gentillesse, naïveté et premier degré"
+        ],
+        "scope": "Description de la fiche et précisions du MJ; équipement tardif distinct, sans attribution rétroactive au début du jeu."
+      }
+    },
+    {
+      "id": "sislay",
+      "name": "Sislay Baite",
+      "race": "demi-orque",
+      "class": "rôdeuse chasseur",
+      "initial": "active",
+      "leave": "lodge-reunion",
+      "sources": [
+        "journal:Tyranny of dragons!5",
+        "journal:PJ!J1:J5",
+        "journal:Tyranny of dragons!203",
+        "sislay.pdf:page1"
+      ],
+      "death": null,
+      "notes": "Le MJ confirme que Lunaaz/Luunaz est la joueuse de Sislay. Ce n'est pas un personnage supplémentaire.",
+      "personality": { "traits": ["discrète", "peu bavarde", "efficace", "pleine de ressources"], "source": "gmConfirmations.personalityInterview" },
+      "sheetDetails": {
+        "background": "Rôdeuse",
+        "equipment": [
+          "Rapière",
+          "Arc court et carquois",
+          "Armure de cuir",
+          "Dagues",
+          "Outils de voleur"
+        ],
+        "laterEquipment": [
+          "Arc long"
+        ],
+        "biography": [
+          "Sa fiche la rattache à la voie du chasseur et mentionne l'usage des armes de duel, du tir à l'arc et d'outils de voleur. Les champs consacrés à sa biographie sont vides: aucun passé supplémentaire ne lui est attribué.",
+          "Elle participe à l'arrivée du Clan à Verdure, puis quitte le groupe à l'étape du pavillon, avant l'entrée de Malar dans la compagnie."
+        ],
+        "sources": [
+          "sislay.pdf, pages 1–4",
+          "Journal, Tyranny of dragons!5 et !203",
+          "Précisions du MJ: discrétion, efficacité et ressources"
+        ],
+        "scope": "Description de la fiche et précisions du MJ; équipement tardif distinct, sans attribution rétroactive au début du jeu."
+      }
+    },
+    {
+      "id": "kairon",
+      "name": "Kairon Erudit",
+      "race": "tieffelin",
+      "class": "occultiste fiélon",
+      "initial": "absent",
+      "join": "lodge-reunion",
+      "sources": [
+        "journal:Tyranny of dragons!203",
+        "kairon.pdf:page1",
+        "Fiche_KAIRON_echec_critique.docx:table1"
+      ],
+      "death": null,
+      "notes": "Présent dans l'ancienne campagne de Phandelver, ce qui ne prouve pas sa présence à Greenest. Sa table d'échec critique définit des possibilités, pas des événements subis.",
+      "personality": { "traits": ["sournois", "intelligent", "un peu froid", "sarcastique", "bon fond"], "source": "gmConfirmations.personalityInterview" },
+      "sheetDetails": {
+        "background": "Sauvageon",
+        "equipment": [
+          "Focalisateur arcanique",
+          "Bâton",
+          "Armure de cuir clouté",
+          "Dagues"
+        ],
+        "laterEquipment": [
+          "Cape rouge",
+          "Gantelets de puissance d'ogre"
+        ],
+        "biography": [
+          "Il a quitté son foyer pour découvrir le monde et cherche à gagner la gloire pour lui-même et pour son clan. Sa fiche évoque des visions d'un désastre imminent qu'il veut empêcher, ainsi qu'une rancune tenace envers ceux qui l'ont offensé.",
+          "La richesse et les bonnes manières ne lui inspirent pas de respect particulier. Son pacte du Tome et sa magie d'origine fiélonne complètent ses moyens d'action. Il rejoint les aventuriers au pavillon de Talis."
+        ],
+        "sources": [
+          "kairon.pdf, pages 1–4",
+          "Journal, Tyranny of dragons!203",
+          "Précisions du MJ: froideur, sarcasme et bon fond"
+        ],
+        "scope": "Description de la fiche et précisions du MJ; équipement tardif distinct, sans attribution rétroactive au début du jeu."
+      }
+    },
+    {
+      "id": "malar",
+      "name": "Malar",
+      "aliases": [
+        "Malaar"
+      ],
+      "race": "demi-elfe",
+      "class": "roublard voleur",
+      "initial": "absent",
+      "join": "skyreach-reunion",
+      "sources": [
+        "journal:Tyranny of dragons!226",
+        "malar.pdf:page1",
+        "DD5 Persos.xlsx:Feuille 1!5"
+      ],
+      "death": null,
+      "notes": "Le MJ confirme que Malaar et Malar sont le même personnage. Sa biographie décrit un membre secret des Bardes. DD5 Persos.xlsx, Feuille 1!5, associe Malar au joueur Rojo; les mentions d'El Rojo dans le journal sont ainsi rattachées à son personnage. Les prompts qui le placent dans la caravane contredisent le journal.",
+      "personality": { "traits": ["vrai roublard", "sournois"], "source": "gmConfirmations.personalityInterview" },
+      "sheetDetails": {
+        "background": "Voleur",
+        "equipment": [
+          "Rapière",
+          "Arc court",
+          "Dagues",
+          "Cuir clouté",
+          "Outils de voleur"
+        ],
+        "laterEquipment": [
+          "Cape permettant un déplacement magique",
+          "Grappin"
+        ],
+        "biography": [
+          "Une marque sur son cou lui rappelle cet héritage et les rejets qu'il a subis. Il la garde secrète. Sa mère a disparu et la biographie laisse incertain le sort exact de son père.",
+          "Son habileté de voleur, ses talents de baratineur et sa discrétion expliquent sa manière sournoise d'aborder les situations. Sa biographie mentionne une affiliation secrète à la guilde des Bardes. Il rejoint le Clan dans le château volant, bien après les événements de Verdure."
+        ],
+        "sources": [
+          "malar.pdf, pages 1–2",
+          "malaar bio.docx, paragraphes 1–3",
+          "Journal, Tyranny of dragons!226",
+          "Précisions du MJ: Malar et Malaar sont le même personnage"
+        ],
+        "scope": "Description de la fiche et précisions du MJ; équipement tardif distinct, sans attribution rétroactive au début du jeu."
+      }
+    }
+  ],
+  "events": [
+    {
+      "id": "greenest-arrival",
+      "act": "ACT_I",
+      "fact": "La guilde envoie Bjolnir, Ellyjobell, Sislay, Darrin et Drek'Thar à Verdure pour une escorte; la ville est attaquée.",
+      "sources": [
+        "Tyranny of dragons!4:7"
+      ],
+      "implemented": "abridged"
+    },
+    {
+      "id": "linan-rescue",
+      "act": "ACT_I",
+      "fact": "Persuasion du premier groupe de kobolds puis défense de Linan et sa famille. Bjolnir et Drek'Thar interviennent les premiers, aidés du groupe. Bjolnir refuse de tuer et obtient par son charisme la reddition des kobolds survivants; la famille rejoint la forteresse.",
+      "sources": [
+        "Tyranny of dragons!8:12",
+        "gmConfirmations.verdureInterview"
+      ],
+      "implemented": "abridged"
+    },
+    {
+      "id": "keep-tunnel",
+      "act": "ACT_I",
+      "fact": "Nighthill et Escobert; poterne réparée, interrogatoire, rats éloignés par Ellyjobell et porte ouverte par Darrin.",
+      "sources": [
+        "Tyranny of dragons!14:25"
+      ],
+      "implemented": "missing"
+    },
+    {
+      "id": "temple-rescue",
+      "act": "ACT_I",
+      "fact": "Illusion pour détourner les pillards, persuasion de Bjolnir et brouillard d'Ellyjobell; retour des réfugiés.",
+      "sources": [
+        "Tyranny of dragons!26:28"
+      ],
+      "implemented": "adapted"
+    },
+    {
+      "id": "mill-and-dragon",
+      "act": "ACT_I",
+      "fact": "Moulin sauvé après embuscade; assaut collectif qui chasse le dragon.",
+      "sources": [
+        "Tyranny of dragons!29:32"
+      ],
+      "implemented": "mill-only"
+    },
+    {
+      "id": "first-duel",
+      "act": "ACT_I",
+      "fact": "Drek'Thar affronte Cyanwrath pour libérer les otages; il s'effondre mais poursuit ensuite l'aventure.",
+      "sources": [
+        "Tyranny of dragons!33:35",
+        "Tyranny of dragons!71:72"
+      ],
+      "implemented": "sourced-option"
+    },
+    {
+      "id": "leosin-rescue",
+      "act": "ACT_II",
+      "fact": "Darrin infiltre le camp; incendie de diversion; Darrin, Drek'Thar et Ellyjobell participent à l'évasion de Leosin et des prisonniers.",
+      "sources": [
+        "Tyranny of dragons!45:50"
+      ],
+      "implemented": "adapted"
+    },
+    {
+      "id": "hatchery-exploration",
+      "act": "ACT_II",
+      "fact": "Retour au camp déménagé; grotte, champignons, stirges, pièges et kobolds.",
+      "sources": [
+        "Tyranny of dragons!53:68"
+      ],
+      "implemented": "abridged"
+    },
+    {
+      "id": "cyanwrath-death",
+      "act": "ACT_II",
+      "fact": "Drek'Thar décapite Langdedrosa; le groupe tue les deux berserkers, Bjolnir ayant été assommé.",
+      "sources": [
+        "Tyranny of dragons!69:74"
+      ],
+      "implemented": "sourced-option-order-compressed"
+    },
+    {
+      "id": "two-black-eggs",
+      "act": "ACT_II",
+      "fact": "Après le tentaculeur et deux créatures draconiques, deux œufs noirs sont récupérés et ramenés à Greenest.",
+      "sources": [
+        "Tyranny of dragons!75:82"
+      ],
+      "implemented": "sourced-option"
+    },
+    {
+      "id": "mondath",
+      "act": "ACT_II",
+      "fact": "Combat dans les appartements de Frulam Mondath et découverte de la route du trésor vers Naerytar.",
+      "sources": [
+        "Tyranny of dragons!77:81"
+      ],
+      "implemented": "missing"
+    },
+    {
+      "id": "elturel-road",
+      "act": "ACT_III",
+      "fact": "Voyage vers Elturel; les deux dragonnets éclosent et adoptent Bjolnir.",
+      "sources": [
+        "Tyranny of dragons!85:103"
+      ],
+      "implemented": "hatching-summary"
+    },
+    {
+      "id": "tournament",
+      "act": "ACT_III",
+      "fact": "Bjolnir remporte la force, Darrin la magie et le groupe l'arène; Drek'Thar rejoint le Gantelet, Darrin les Ménestrels.",
+      "sources": [
+        "Tyranny of dragons!105:116"
+      ],
+      "implemented": "missing"
+    },
+    {
+      "id": "dragonets-at-guild",
+      "act": "ACT_III",
+      "fact": "Bjolnir et Adremas installent les dragonnets à la guilde; Bjolnir rejoint la caravane au septième jour.",
+      "sources": [
+        "Tyranny of dragons!125:127"
+      ],
+      "implemented": "missing"
+    },
+    {
+      "id": "caravan",
+      "act": "ACT_III",
+      "fact": "Caravane de Baldur's Gate vers Waterdeep; arrivée d'Azbara Jos et Jamna Gleamsilver.",
+      "sources": [
+        "Tyranny of dragons!118:143"
+      ],
+      "implemented": "abridged"
+    },
+    {
+      "id": "carnath",
+      "act": "ACT_III",
+      "fact": "Bog Luck, hommes-lézards et guide Pressegueule; tunnel vers les marais et Naerytar.",
+      "sources": [
+        "Tyranny of dragons!154:163"
+      ],
+      "implemented": "missing"
+    },
+    {
+      "id": "lizardfolk-alliance",
+      "act": "ACT_III",
+      "fact": "Le groupe aide les hommes-lézards à se libérer des brutaciens; infiltration dans les caisses et mort de leur chef.",
+      "sources": [
+        "Tyranny of dragons!164:183"
+      ],
+      "implemented": "missing"
+    },
+    {
+      "id": "portal",
+      "act": "ACT_III",
+      "fact": "Mot-clé du portail trouvé dans les papiers; traversée vers le pavillon de chasse.",
+      "sources": [
+        "Tyranny of dragons!184:190"
+      ],
+      "implemented": "adapted"
+    },
+    {
+      "id": "talis",
+      "act": "ACT_III",
+      "fact": "Talis, amie d'enfance d'Ellyjobell, accepte de trahir le Culte et fournit des informations sur Parnast et Cumulus.",
+      "sources": [
+        "Tyranny of dragons!191:205"
+      ],
+      "implemented": "sourced-summary"
+    },
+    {
+      "id": "lodge-reunion",
+      "act": "ACT_III",
+      "fact": "Kairon rejoint le groupe; Drek'Thar et Luunaz partent vers d'autres horizons.",
+      "sources": [
+        "Tyranny of dragons!203",
+        "PJ!J1:J5"
+      ],
+      "implemented": "roster-trigger"
+    },
+    {
+      "id": "skyreach-reunion",
+      "act": "ACT_III",
+      "fact": "Malar, voleur semi-elfe, rejoint le groupe dans le château volant.",
+      "sources": [
+        "Tyranny of dragons!226"
+      ],
+      "implemented": "roster-trigger"
+    },
+    {
+      "id": "blagothkus",
+      "act": "ACT_III",
+      "fact": "Bjolnir communique avec Eskarotha, puis s’appuie sur l’orgueil des géants, leur prétention à dominer les dragons et le désaccord probable de l’esprit de son épouse pour convaincre Blagothkus d’aller l’entendre. Eskarotha le convainc d’abandonner son projet de résurrection de Tiamat.",
+      "sources": [
+        "Tyranny of dragons!229:237",
+        "gmConfirmations.cumulusInterview"
+      ],
+      "implemented": "sourced-summary"
+    },
+    {
+      "id": "rezmir",
+      "act": "ACT_III",
+      "fact": "Rezmir est capturé puis se suicide; un mage rouge se repent.",
+      "sources": [
+        "Tyranny of dragons!240:251"
+      ],
+      "implemented": "sourced-summary"
+    },
+    {
+      "id": "glazael",
+      "act": "ACT_III",
+      "fact": "Les hommes de Blagothkus maîtrisent et capturent Glazael; retour par Secomber vers Waterdeep.",
+      "sources": [
+        "Tyranny of dragons!253:259"
+      ],
+      "implemented": "sourced-summary"
+    },
+    {
+      "id": "first-council",
+      "act": "ACT_IV",
+      "fact": "Conseil de Waterdeep, Draakhorn, factions et mission contre Varam.",
+      "sources": [
+        "Rise of Tiamat!6:23"
+      ],
+      "implemented": "adapted"
+    },
+    {
+      "id": "varam",
+      "act": "ACT_IV",
+      "fact": "Tombe de Diderius; la prêtresse tue Varam, le masque reste à Severin; retour avec la tête de Varam.",
+      "sources": [
+        "Rise of Tiamat!29:95"
+      ],
+      "implemented": "missing"
+    },
+    {
+      "id": "ice-sea",
+      "act": "ACT_IV",
+      "fact": "Armée de kobolds, villageois et crapauds rassemblée contre Arauthator; dragon tué, Maccath et Marfulb ramenés.",
+      "sources": [
+        "Rise of Tiamat!96:157"
+      ],
+      "implemented": "missing"
+    },
+    {
+      "id": "metallic-council",
+      "act": "ACT_IV",
+      "fact": "Elia invite les héros; les dragons réclament destruction des masques, excuses des nains et des elfes et restitution d'une dépouille.",
+      "sources": [
+        "Rise of Tiamat!159:182"
+      ],
+      "implemented": "adapted-with-missing-conditions"
+    },
+    {
+      "id": "misty-forest",
+      "act": "ACT_IV",
+      "fact": "Galin démasqué; Eldath, elfes libérés, Neronvein tué par le dragon; Darrin abat le dragon en fuite et la caverne s'effondre.",
+      "sources": [
+        "Rise of Tiamat!183:258"
+      ],
+      "implemented": "missing"
+    },
+    {
+      "id": "apologies",
+      "act": "ACT_IV",
+      "fact": "Talis s'est rendue; Melandrac accepte les excuses sous condition que le roi nain s'incline aussi.",
+      "sources": [
+        "Rise of Tiamat!259:262"
+      ],
+      "implemented": "missing"
+    },
+    {
+      "id": "thay-invitation",
+      "act": "ACT_IV",
+      "fact": "Session du 12 juin 2025: invitation à Thay; faction de Rath Modar et Islabus Gloomward évoqués. Le journal s'arrête là.",
+      "sources": [
+        "Rise of Tiamat!264:274"
+      ],
+      "implemented": "missing"
+    },
+    {
+      "id": "tiamat-finale",
+      "act": "ACT_V",
+      "fact": null,
+      "sources": [],
+      "implemented": "simulation-only",
+      "notes": "Le MJ confirme que la campagne en est à l'invitation à Thay: la finale n'a pas été jouée. Les prompts du Puits des Dragons et le module ne remplacent pas les événements de la partie."
+    }
+  ],
+  "deaths": [
+    {
+      "entity": "Langdedrosa Cyanwrath",
+      "event": "cyanwrath-death",
+      "state": "dead",
+      "source": "Tyranny of dragons!72"
+    },
+    {
+      "entity": "Rezmir",
+      "event": "rezmir",
+      "state": "dead",
+      "source": "Tyranny of dragons!251"
+    },
+    {
+      "entity": "Varam",
+      "event": "varam",
+      "state": "dead",
+      "source": "Rise of Tiamat!88"
+    },
+    {
+      "entity": "Arauthator",
+      "event": "ice-sea",
+      "state": "dead",
+      "source": "Rise of Tiamat!153"
+    },
+    {
+      "entity": "Neronvein",
+      "event": "misty-forest",
+      "state": "dead",
+      "source": "Rise of Tiamat!253"
+    },
+    {
+      "entity": "dragon de la Forêt Brumeuse (Chuth dans les références visuelles)",
+      "event": "misty-forest",
+      "state": "dead",
+      "source": "Rise of Tiamat!254"
+    }
+  ],
+  "decisions": [
+    {
+      "id": "duel",
+      "canonical": "défaite survivable à Greenest; revanche de Drek'Thar à la hatchery",
+      "whatIf": [
+        "victoire et mort de Cyanwrath dès Greenest",
+        "refus du duel"
+      ]
+    },
+    {
+      "id": "eggs",
+      "canonical": "deux œufs noirs emportés, éclosion, adoption par Bjolnir",
+      "whatIf": [
+        "œufs détruits",
+        "œufs laissés"
+      ]
+    },
+    {
+      "id": "portal",
+      "canonical": "mot-clé retrouvé puis traversée",
+      "whatIf": [
+        "sabotage du portail",
+        "observation sans traversée immédiate"
+      ]
+    },
+    {
+      "id": "factions",
+      "canonical": "alliance des hommes-lézards; négociation de Talis; ralliement de Blagothkus",
+      "whatIf": [
+        "autres méthodes d'infiltration du jeu"
+      ],
+      "notes": "Les scores numériques du jeu sont un modèle de conception, pas des notes de session."
+    },
+    {
+      "id": "finale",
+      "canonical": null,
+      "whatIf": [
+        "victoire simulée",
+        "victoire partielle simulée",
+        "échec simulé",
+        "scellement définitif simulé"
+      ]
+    }
+  ],
+  "gmConfirmations": {
+    "campaignStatus": "En cours, à l'invitation à Thay. La suite n'a pas été jouée.",
+    "identities": ["Lunaaz/Luunaz = joueuse de Sislay Baite", "Malaar = Malar"],
+    "verdureInterview": {
+      "arrival": "Horreur, colère et réaction rapide. Aucune réplique ni autre réaction particulière rapportée.",
+      "linan": "Bjolnir et Drek'Thar foncent les premiers, assistés du reste de l'équipe. Aucun échange particulier avec la famille rapporté.",
+      "bjolnir": "Refuse de tuer et utilise son charisme pour faire abandonner le combat aux kobolds survivants.",
+      "alternatives": "Le MJ est ouvert aux approches expliquées et jouées en RP. Aucun coût ou résultat alternatif précis n'est encore fixé."
+    },
+    "personalityInterview": {
+      "drekthar": "Un vrai orc, aime se battre et le fait bien.",
+      "malar": "Un vrai roublard, sournois.",
+      "ellyjobell": "Intelligente, gentille et ingénieuse, mais très naïve et premier degré.",
+      "darrin": "Puissant, dispose de nombreux sorts, tend à faire exploser les choses. Kloumsihande joue sur clumsy.",
+      "kairon": "Assez sournois, intelligent, un peu froid et sarcastique, mais a un bon fond.",
+      "sislay": "Discrète et peu bavarde, efficace et pleine de ressources."
+    },
+    "cumulusInterview": {
+      "argument": "Bjolnir joue sur l’arrogance des géants et sur leur prétention à dominer les dragons; il souligne qu’Eskarotha, esprit qui anime le château, n’approuverait probablement pas la décision de Blagothkus de se rallier aux dragons.",
+      "source": "Précision du MJ dans cette conversation, 30 octobre 2026",
+      "scope": "Argument confirmé, reformulé dans la narration; aucune citation exacte ni réaction supplémentaire inventée."
+    },
+    "source": "Réponses explicites du MJ dans cette conversation, 29 octobre 2026"
+  },
+  "gmMemories": [
+    {
+      "id": "brouillard-verdure",
+      "memory": "Darrin aurait créé une nappe de brouillard pour approcher discrètement d'un lieu et libérer des prisonniers, en empêchant les kobolds d'incendier les lieux.",
+      "casterRecalled": "darrin",
+      "locationUncertain": ["temple", "moulin"],
+      "journalAccount": "Le groupe gagne le temple par le tunnel; une illusion détourne les incendiaires à la porte sud. Bjolnir fait sortir le prêtre et les paysans; Ellyjobell couvre leur mise à l'abri d'une nappe de brouillard.",
+      "journalSources": ["Tyranny of dragons!23:30"],
+      "status": "Attribution et phase à réconcilier. Deux usages distincts de magie restent possibles; ne pas les fusionner ou réattribuer automatiquement.",
+      "source": "Souvenir du MJ dans cette conversation, avec hésitation explicite sur le lieu."
+    }
+  ],
+  "unresolved": [
+    "Aucune mort permanente des sept PJ n'est établie dans les feuilles Tyranny/Rise; absence de mention n'est pas une preuve d'immortalité.",
+    "Talis est décrite avec des pronoms variables; aucune réécriture de son identité sur la seule base du module.",
+    "Le titre de la guilde varie: Estain / Estaim / Estaing; le titre actuel est conservé.",
+    "Les prompts montrent Bjolnir contre Cyanwrath et Malar dans la caravane, contrairement aux participants et à l'ordre du journal.",
+    "Le découpage de prompt;MD (IV: Naerytar/Lodge/Skyreach, V: Rise/Conseil) diffère des cinq actes du code (III: Naerytar, IV: Conseil, V: finale). Les numéros du code sont conservés pour cette réparation.",
+    "Xonthal et le Puits des Dragons apparaissent dans les intentions visuelles; leur déroulement joué n'est pas attesté.",
+    "Les valeurs de confiance, le chaos, les compétences narratives et les seuils de fin sont des règles du jeu, pas des faits canoniques."
+  ]
+}

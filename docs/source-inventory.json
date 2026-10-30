@@ -1,0 +1,104 @@
+[
+  {
+    "file": "Bjolnir.pdf",
+    "bytes": 446052,
+    "sha256": "a07e3734844cd9a997f3b0ca6681eb2caf4d72577c818d1b686e121f4c323d49",
+    "extracted_records": 6
+  },
+  {
+    "file": "D&D 5E - Tyranny of Dragons - Hoard of the Dragon Queen.pdf",
+    "bytes": 8285755,
+    "sha256": "1191bd8c8b43967cae144d60e3c9e85afe76480885759cd7211f3c58e5aa4fd4",
+    "extracted_records": 0
+  },
+  {
+    "file": "D&D 5E - Tyranny of Dragons - The Rise of Tiamat.pdf",
+    "bytes": 8875109,
+    "sha256": "5bf2aa264299b52ecd6181ff6d192379045acf728555ade89a0b08d275d2a3e0",
+    "extracted_records": 0
+  },
+  {
+    "file": "D&D5 - Le Trésor de la Reine Dragon.pdf",
+    "bytes": 18038824,
+    "sha256": "90aade4e9c9c6d7d2e4915d969305f6ece77c6106f6668df01c3f20a2bf3718c",
+    "extracted_records": 0
+  },
+  {
+    "file": "DD5 - Compagnie de Mercenaires.docx",
+    "bytes": 11304,
+    "sha256": "98a553b9fd11e681480659c11550ecb7d19d0a695dcffb7bd8fa243f71539fcc",
+    "extracted_records": 90
+  },
+  {
+    "file": "DD5 Persos.xlsx",
+    "bytes": 15853,
+    "sha256": "4df882b8c3f0b1440a0b3fb054e59e2fa964fed395f2974cf5c8b7d3fbb820c2",
+    "extracted_records": 47
+  },
+  {
+    "file": "DD5.docx",
+    "bytes": 54791,
+    "sha256": "b2d6cbc0f84a3a0ebf45396cce93d30772144a23ac45f6b594e2bdb50f0d516b",
+    "extracted_records": 225
+  },
+  {
+    "file": "Ellyjobell.pdf",
+    "bytes": 469166,
+    "sha256": "aede6901db5c6abf8f8edf4e4fe7fc830a6ca2a4e2d681d6d41eec05721d193e",
+    "extracted_records": 8
+  },
+  {
+    "file": "Fiche_KAIRON_echec_critique.docx",
+    "bytes": 14531,
+    "sha256": "7bc191ab9241b1bd068db208e7f270fa6f76f7804e3e38b0a17f3c9159cef0fc",
+    "extracted_records": 10
+  },
+  {
+    "file": "JDR DD5 2023.xlsx",
+    "bytes": 79044,
+    "sha256": "df8f928f880a501706f78ebd2aab89d7e1d1e69305c9e0677f23351d38c4649e",
+    "extracted_records": 888
+  },
+  {
+    "file": "Prompts_Visuels_Complets_Tiamat.xlsx",
+    "bytes": 16414,
+    "sha256": "3316eda145c9aa3c37bd668e9312ab50a9b1df6cc667a3016f563112b66faa9e",
+    "extracted_records": 41
+  },
+  {
+    "file": "darrin.pdf",
+    "bytes": 467975,
+    "sha256": "610f0671bc26b14fbda02a9ef25a628c5da0e027268ad7db8a375f83134eb009",
+    "extracted_records": 7
+  },
+  {
+    "file": "drekthar.pdf",
+    "bytes": 365108,
+    "sha256": "99f01e3e178567b4fc9e7f8435350e9231fa2badcb181e9e51468885241fb893",
+    "extracted_records": 5
+  },
+  {
+    "file": "kairon.pdf",
+    "bytes": 469782,
+    "sha256": "df8d1749fad99a89fbbb277c3f7364e6e3d57cb0cae3714e33836bd0ac9625dd",
+    "extracted_records": 7
+  },
+  {
+    "file": "malaar bio.docx",
+    "bytes": 7783,
+    "sha256": "7d26a207c1176febc0d5f9202a5ee24f5141c24fa8ea735de8409fc02af2e07d",
+    "extracted_records": 3
+  },
+  {
+    "file": "malar.pdf",
+    "bytes": 427293,
+    "sha256": "4dab866b0ee9724e710b11616fbc6f6608875e890f7b565cc36e29b9a2bcceba",
+    "extracted_records": 5
+  },
+  {
+    "file": "sislay.pdf",
+    "bytes": 424223,
+    "sha256": "c49971184211d64e54e78474c22f07be437afd37dc7d85152d33e8c6c4a238a7",
+    "extracted_records": 5
+  }
+]

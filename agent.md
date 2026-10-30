@@ -93,8 +93,19 @@ Checkpoint system must snapshot:
 
 ## 5️⃣ RESOLUTION SYSTEM
 
-No visible dice.
-Resolution must be narrative-based.
+Le MJ demande désormais des épreuves DD5 avec D20 visible. Cette demande remplace
+l'ancienne règle « No visible dice ». Le résultat doit rester expliqué en récit.
+
+- Échantillonner le D20 une seule fois par épreuve, puis conserver son résultat.
+- L'animation est désactivable et ne doit jamais tirer un nouveau dé.
+- Afficher caractéristique, maîtrise, niveau, DD et calcul du résultat.
+- Les niveaux suivent les jalons de l'aventure officielle; distinguer cette
+  adaptation des niveaux historiques, inconnus lorsque les sources ne les donnent pas.
+- Afficher les valeurs réelles des fiches séparément des statistiques projetées.
+- Aucune hausse répétable de niveau en revenant dans une salle.
+- Toute scène, résultat compris, doit offrir au moins deux choix utilisables.
+  Un retour doit restaurer un état praticable, pas entretenir une boucle.
+- Vérifier les parcours défavorables, pas seulement compter les boutons.
 
 Possible results:
 - Success
@@ -161,6 +172,8 @@ No hard-coded branching logic inside UI functions.
 - Do not remove rollback system.
 - Do not introduce external dependencies.
 - Do not randomize visuals per frame.
+- Les tirages aléatoires de D20 interviennent dans la logique d'une épreuve,
+  jamais dans la boucle de rendu. Les animations restent déterministes.
 
 ---
 

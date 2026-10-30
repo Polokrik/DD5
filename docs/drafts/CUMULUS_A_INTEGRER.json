@@ -1,0 +1,352 @@
+{
+  "newRooms": {
+    "skyreach_command": {
+      "id": "skyreach_command",
+      "title": "Eskarotha et la fierté des géants",
+      "chapter": 9,
+      "description": "Les runes se déplacent dans la chambre. Bjolnir en reconnaît la langue et peut s’adresser à l’esprit d’Eskarotha, qui habite les commandes de Cumulus. Le château répond à des signes d’altitude, de direction, d’ancrage et de défense; derrière cette puissance, il y a toujours celle que Blagothkus a perdue.\n\nPour le paladin, la décision du géant porte une contradiction dont il faut se servir. Blagothkus prétend rendre leur grandeur aux siens en dominant les dragons, mais il a pour l’instant mis son château au service de ceux qui veulent rappeler Tiamat. Bjolnir entend aussi lui faire considérer qu’Eskarotha n’approuverait probablement pas ce ralliement.\n\nLa compagnie peut retourner auprès du maître de Cumulus et chercher à l’amener devant les runes. Il ne s’agit pas de prendre possession du château ni de soumettre le géant par la magie : le Clan veut qu’il entende sa femme et renonce à soutenir le Culte.",
+      "paragraphs": [
+        "Les runes se déplacent dans la chambre. Bjolnir en reconnaît la langue et peut s’adresser à l’esprit d’Eskarotha, qui habite les commandes de Cumulus. Le château répond à des signes d’altitude, de direction, d’ancrage et de défense; derrière cette puissance, il y a toujours celle que Blagothkus a perdue.",
+        "Pour le paladin, la décision du géant porte une contradiction dont il faut se servir. Blagothkus prétend rendre leur grandeur aux siens en dominant les dragons, mais il a pour l’instant mis son château au service de ceux qui veulent rappeler Tiamat. Bjolnir entend aussi lui faire considérer qu’Eskarotha n’approuverait probablement pas ce ralliement.",
+        "La compagnie peut retourner auprès du maître de Cumulus et chercher à l’amener devant les runes. Il ne s’agit pas de prendre possession du château ni de soumettre le géant par la magie : le Clan veut qu’il entende sa femme et renonce à soutenir le Culte."
+      ],
+      "objects": [
+        "Les runes qui conduisent le château",
+        "Le raisonnement de Blagothkus"
+      ],
+      "exits": {},
+      "options": [
+        {
+          "id": "skyreach-convaincre",
+          "label": "Bjolnir amène Blagothkus à entendre Eskarotha",
+          "characterId": "bjolnir",
+          "skill": "leadership",
+          "failForward": true,
+          "resolution": {
+            "dc": 14,
+            "risk": "cost"
+          },
+          "check": {
+            "ability": "cha",
+            "skillKey": "persuasion",
+            "kind": "ability",
+            "label": "Faire renoncer le géant au Culte",
+            "dc": 14
+          },
+          "intent": "S’appuyer sur la fierté des géants et sur l’opposition probable d’Eskarotha, puis conduire Blagothkus auprès d’elle. Le ralliement suit la chronique; le D20 mesure le coût de la discussion. Échec : moral −1 et chaos +1.",
+          "riskText": "Blagothkus se retourne contre le Culte dans les deux cas. Le jet ne lui fait pas abandonner son projet de capturer des dragons.",
+          "source": "JDR DD5 2023.xlsx — Tyranny of dragons!233:239; précision du MJ, 30 octobre 2026",
+          "onSuccess": {
+            "gotoRoom": "skyreach_cultists",
+            "setFlags": {
+              "skyreachGiantAllied": true
+            },
+            "message": "Blagothkus accepte d’aller entendre Eskarotha. Leur conversation l’amène à renoncer au retour de Tiamat et à se retourner contre les cultistes."
+          },
+          "onFailure": {
+            "gotoRoom": "skyreach_cultists",
+            "setFlags": {
+              "skyreachGiantAllied": true
+            },
+            "variableDelta": {
+              "moraleGroupe": -1,
+              "chaos": 1
+            },
+            "message": "La discussion est difficile et éprouve le Clan, mais Blagothkus finit par aller entendre Eskarotha. Il renonce à soutenir le retour de Tiamat et se retourne contre les cultistes."
+          }
+        }
+      ],
+      "observations": [
+        {
+          "id": "cumulus-commandes",
+          "title": "Les runes qui conduisent le château",
+          "paragraphs": [
+            "Bjolnir lit des commandes de montée, de descente, de rotation et de direction. D’autres permettent l’ancrage, le voile du château ou l’emploi d’éclairs défensifs. Eskarotha fait avancer certains signes pour aider les aventuriers; le Clan peut donc lui parler avant de reprendre l’entretien avec Blagothkus."
+          ],
+          "source": "JDR DD5 2023.xlsx — Tyranny of dragons!228:233"
+        },
+        {
+          "id": "cumulus-orgueil",
+          "title": "Le raisonnement de Blagothkus",
+          "paragraphs": [
+            "Le géant soutient le retour de Tiamat parce qu’il espère la vaincre ensuite et restaurer la grandeur des géants des nuages. Bjolnir cherche à retourner cette prétention contre le ralliement aux dragons. Il y ajoute la place d’Eskarotha : son influence auprès de Blagothkus peut compter davantage qu’une nouvelle objection des aventuriers."
+          ],
+          "source": "JDR DD5 2023.xlsx — Tyranny of dragons!220:237; précision du MJ, 30 octobre 2026"
+        }
+      ],
+      "source": "JDR DD5 2023.xlsx — Tyranny of dragons!228:239; précision du MJ, 30 octobre 2026",
+      "art": "skyreach",
+      "adventureLevel": 7,
+      "act": "ACT_III"
+    },
+    "skyreach_cultists": {
+      "id": "skyreach_cultists",
+      "title": "L’assaut contre les partisans du Culte",
+      "chapter": 9,
+      "description": "Blagothkus a renoncé à soutenir le retour de Tiamat. Avec le géant retourné contre eux, les cultistes ne disposent plus du même appui à bord de Cumulus. Le Clan doit maintenant descendre dans les niveaux qu’ils occupent et les empêcher de poursuivre leur projet depuis le château.\n\nAvant l’affrontement, Bjolnir cherche à tenir les kobolds à l’écart des combats. Il les convainc de ne pas y prendre part, espérant ainsi épargner des vies. Il ne sait pas encore quel sort Blagothkus réserve à certains d’entre eux.\n\nLa compagnie s’organise pour affronter les mages rouges et atteindre Rezmir. Les couloirs du château ne laissent plus la même place aux détours qu’au début de l’exploration; il faut faire agir les compagnons ensemble et conserver ce qui pourra révéler les desseins du Culte.",
+      "paragraphs": [
+        "Blagothkus a renoncé à soutenir le retour de Tiamat. Avec le géant retourné contre eux, les cultistes ne disposent plus du même appui à bord de Cumulus. Le Clan doit maintenant descendre dans les niveaux qu’ils occupent et les empêcher de poursuivre leur projet depuis le château.",
+        "Avant l’affrontement, Bjolnir cherche à tenir les kobolds à l’écart des combats. Il les convainc de ne pas y prendre part, espérant ainsi épargner des vies. Il ne sait pas encore quel sort Blagothkus réserve à certains d’entre eux.",
+        "La compagnie s’organise pour affronter les mages rouges et atteindre Rezmir. Les couloirs du château ne laissent plus la même place aux détours qu’au début de l’exploration; il faut faire agir les compagnons ensemble et conserver ce qui pourra révéler les desseins du Culte."
+      ],
+      "objects": [
+        "Les kobolds écartés de la bataille",
+        "Les occupants des niveaux inférieurs"
+      ],
+      "exits": {},
+      "options": [
+        {
+          "id": "skyreach-rezmir",
+          "label": "Coordonner l’assaut contre les mages rouges et Rezmir",
+          "groupAction": true,
+          "requiresAnyAvailableCharacter": true,
+          "failForward": true,
+          "resolution": {
+            "dc": 14,
+            "risk": "cost"
+          },
+          "check": {
+            "ability": "cha",
+            "skillKey": "persuasion",
+            "kind": "ability",
+            "label": "Coordonner l’assaut du Clan",
+            "dc": 14
+          },
+          "intent": "Suivre l’affrontement rapporté : vaincre les adversaires, capturer Rezmir et interroger le mage rouge survivant. Le D20 mesure la coordination, pas un nouveau résultat de bataille. Échec : moral −1 et chaos +1; l’enquête se poursuit.",
+          "riskText": "Cette lecture conserve les issues attestées : Rezmir est capturé puis se suicide, un mage rouge survit comme prisonnier. Le jet n’ajoute aucune mort de compagnon.",
+          "source": "JDR DD5 2023.xlsx — Tyranny of dragons!240:251",
+          "onSuccess": {
+            "gotoRoom": "skyreach_dragon",
+            "message": "Le Clan vainc les gardiens et capture Rezmir. Le mage rouge prisonnier révèle les divisions de son ordre; le livre Derrière la Porte de Fer décrit le sacrifice préparant le retour de Tiamat. Rezmir se suicide pendant sa captivité."
+          },
+          "onFailure": {
+            "gotoRoom": "skyreach_dragon",
+            "variableDelta": {
+              "moraleGroupe": -1,
+              "chaos": 1
+            },
+            "message": "L’assaut manque de coordination et éprouve le Clan. Les adversaires sont néanmoins vaincus; Rezmir est capturé puis se suicide. Le mage rouge survivant et le livre Derrière la Porte de Fer livrent les renseignements nécessaires à la poursuite de l’enquête."
+          }
+        }
+      ],
+      "observations": [
+        {
+          "id": "cumulus-kobolds",
+          "title": "Les kobolds écartés de la bataille",
+          "paragraphs": [
+            "Bjolnir a obtenu que les kobolds ne participent pas au combat. Leur retrait limite ceux que le Clan devra affronter, mais il ne les place pas à l’abri de tous les projets du maître du château. La compagnie n’a pas encore découvert ce qui se passe dans la caverne du dragon."
+          ],
+          "source": "JDR DD5 2023.xlsx — Tyranny of dragons!238:240"
+        },
+        {
+          "id": "cumulus-mages",
+          "title": "Les occupants des niveaux inférieurs",
+          "paragraphs": [
+            "Deux mages rouges et une gargouille se trouvent sur la route du Clan. Plus loin, Rezmir dispose de gardiens. La présence de ces adversaires donne au groupe deux objectifs : mettre fin à leur résistance et chercher des renseignements qu’une victoire dans le château, à elle seule, ne suffirait pas à obtenir."
+          ],
+          "source": "JDR DD5 2023.xlsx — Tyranny of dragons!240:249"
+        }
+      ],
+      "source": "JDR DD5 2023.xlsx — Tyranny of dragons!238:251",
+      "art": "skyreach",
+      "adventureLevel": 7,
+      "act": "ACT_III"
+    },
+    "skyreach_dragon": {
+      "id": "skyreach_dragon",
+      "title": "Glazael et le trésor de Cumulus",
+      "chapter": 9,
+      "description": "Le Clan descend vers la caverne où se tient Glazael. Dans les parois gelées, des objets et des restes rappellent que le dragon est nourri par les occupants du château. Au centre, une masse de richesses s’amoncelle sous la créature, repue, tandis que des traces de fourrure de kobolds demeurent alentour.\n\nLes hommes de Blagothkus viennent maîtriser le dragon pour leur maître. Le changement d’alliance du géant ne l’a pas détourné de l’idée de posséder des dragons. Pour Bjolnir, les kobolds qu’il espérait protéger et la captivité qui se prépare donnent à la victoire un autre visage.\n\nLes compagnons s’intéressent aux trophées et aux objets du trésor. Bjolnir cherche, lui, à empêcher qu’on touche au dragon et à ses richesses. Avant de négocier le départ vers Waterdeep, le Clan doit décider de la place qu’il prendra dans ce partage.",
+      "paragraphs": [
+        "Le Clan descend vers la caverne où se tient Glazael. Dans les parois gelées, des objets et des restes rappellent que le dragon est nourri par les occupants du château. Au centre, une masse de richesses s’amoncelle sous la créature, repue, tandis que des traces de fourrure de kobolds demeurent alentour.",
+        "Les hommes de Blagothkus viennent maîtriser le dragon pour leur maître. Le changement d’alliance du géant ne l’a pas détourné de l’idée de posséder des dragons. Pour Bjolnir, les kobolds qu’il espérait protéger et la captivité qui se prépare donnent à la victoire un autre visage.",
+        "Les compagnons s’intéressent aux trophées et aux objets du trésor. Bjolnir cherche, lui, à empêcher qu’on touche au dragon et à ses richesses. Avant de négocier le départ vers Waterdeep, le Clan doit décider de la place qu’il prendra dans ce partage."
+      ],
+      "objects": [
+        "Le dragon nourri dans la caverne",
+        "La limite du ralliement de Blagothkus"
+      ],
+      "exits": {},
+      "options": [
+        {
+          "id": "skyreach-proteger",
+          "label": "Chronique — Défendre Glazael et refuser le partage de son trésor",
+          "characterId": "bjolnir",
+          "skill": "leadership",
+          "intent": "Bjolnir défend une autre relation avec le dragon et s’oppose à la prise du trésor. Aucun jet : cette position suit le journal. Confiance des Ménestrels +1 dans l’adaptation; Glazael reste captif et Blagothkus ne renonce pas à d’autres captures.",
+          "riskText": "Défendre le dragon ne signifie pas obtenir sa libération. Le désaccord avec Blagothkus reste ouvert lorsque le Clan repart.",
+          "source": "JDR DD5 2023.xlsx — Tyranny of dragons!255:259",
+          "onSuccess": {
+            "gotoRoom": "act3_epilogue",
+            "setFlags": {
+              "skyreachDragonProtected": true
+            },
+            "variableDelta": {
+              "factionTrust": {
+                "harpers": 1
+              }
+            },
+            "message": "Bjolnir tente d’empêcher le prélèvement de trophées et défend une relation différente avec les dragons. Blagothkus garde Glazael captif et ne renonce pas à son projet. Le Clan négocie finalement une dépose près de Secomber."
+          }
+        },
+        {
+          "id": "skyreach-partage",
+          "label": "What If — Prélever une part du trésor avant de partir",
+          "intent": "Accepter que la compagnie se serve dans le trésor pendant que les hommes du géant maîtrisent Glazael. Pas de montant d’or inventé : cette variante donne moral +1, confiance des Ménestrels −1 et conserve la décision de prélèvement. Le dragon reste captif.",
+          "riskText": "Ce choix assume une variante du désaccord rapporté dans le journal. Il n’obtient ni la liberté du dragon ni la propriété de Cumulus.",
+          "source": "Variante de jeu inspirée de JDR DD5 2023.xlsx — Tyranny of dragons!255:259",
+          "onSuccess": {
+            "gotoRoom": "act3_epilogue",
+            "setFlags": {
+              "dragonTreasureClaimed": true
+            },
+            "variableDelta": {
+              "moraleGroupe": 1,
+              "factionTrust": {
+                "harpers": -1
+              }
+            },
+            "message": "Dans cette variante, la compagnie prélève une part des richesses et des trophées avant le départ. Glazael reste captif de Blagothkus. Le géant dépose ensuite les aventuriers près de Secomber, à quelques jours de Waterdeep."
+          }
+        }
+      ],
+      "observations": [
+        {
+          "id": "cumulus-glazael",
+          "title": "Le dragon nourri dans la caverne",
+          "paragraphs": [
+            "Glazael se tient sur un grand amas d’or. Les restes de kobolds montrent qu’avoir été écartés de la bataille ne les a pas tous protégés. Les hommes de Blagothkus ont pour tâche de maîtriser le dragon, et non de le libérer."
+          ],
+          "source": "JDR DD5 2023.xlsx — Tyranny of dragons!239;253:255"
+        },
+        {
+          "id": "cumulus-captures",
+          "title": "La limite du ralliement de Blagothkus",
+          "paragraphs": [
+            "Le géant a accepté de combattre le Culte, mais il veut encore capturer d’autres dragons. Bjolnir tente de lui faire entrevoir une autre relation avec eux; Blagothkus ne se laisse pas convaincre. Le Clan peut prendre position sur le traitement de Glazael et du trésor sans prétendre avoir obtenu sa liberté."
+          ],
+          "source": "JDR DD5 2023.xlsx — Tyranny of dragons!255:258"
+        }
+      ],
+      "source": "JDR DD5 2023.xlsx — Tyranny of dragons!253:259",
+      "art": "ice_cave",
+      "adventureLevel": 7,
+      "act": "ACT_III"
+    }
+  },
+  "rooms": {
+    "skyreach_chronicle": {
+      "paragraphs": [
+        "Blagothkus, le maître de Cumulus, explique que le château vole grâce à l’esprit de sa femme défunte, Eskarotha. Le géant des nuages soutient la résurrection de Tiamat parce qu’il espère ensuite la vaincre et rendre sa grandeur à son peuple. La compagnie cherche comment l’amener à renoncer à un projet qui sert déjà les intérêts du Culte.",
+        "Pour comprendre ce qui maintient le château dans les airs, les aventuriers gagnent la salle de ses commandes. Une porte haute de six mètres leur barre la route. Des ogres se trouvent à portée; le Clan peut chercher à obtenir leur aide plutôt que s’épuiser devant un obstacle fait à l’échelle des géants.",
+        "Au-delà de la porte, les compagnons espèrent rejoindre celle dont Blagothkus a évoqué la présence dans Cumulus. Eskarotha pourrait encore être entendue de son mari, à condition de parvenir jusqu’à elle."
+      ],
+      "observations": [
+        {
+          "id": "cumulus-porte",
+          "title": "La porte de six mètres",
+          "paragraphs": [
+            "L’accès à la salle des commandes est fermé. La hauteur de la porte dépasse de loin celle des compagnons et rend une ouverture par la seule force du groupe incertaine. Les ogres présents peuvent fournir l’aide nécessaire si la compagnie parvient à négocier avec eux."
+          ],
+          "source": "JDR DD5 2023.xlsx — Tyranny of dragons!224;227"
+        },
+        {
+          "id": "cumulus-projet",
+          "title": "L’ambition du géant",
+          "paragraphs": [
+            "Blagothkus espère rendre leur grandeur aux géants des nuages en vainquant Tiamat après son retour. Pour l’instant, son accord aide pourtant ceux qui veulent la rappeler. Le Clan doit trouver un argument capable de peser sur ce choix plutôt que supposer que son hôte combat déjà les cultistes."
+          ],
+          "source": "JDR DD5 2023.xlsx — Tyranny of dragons!220:224"
+        }
+      ],
+      "source": "JDR DD5 2023.xlsx — Tyranny of dragons!220:227"
+    }
+  },
+  "actions": {
+    "skyreach-return": {
+      "successTitle": "Les runes naines répondent à Bjolnir",
+      "success": [
+        "Après des négociations avec les ogres, la porte est enfoncée et les aventuriers peuvent monter vers la salle des commandes. Au sommet de l’escalier, des runes apparaissent et scintillent dans une chambre. Bjolnir en reconnaît la langue : elles sont naines.",
+        "Le paladin distingue les commandes qui gouvernent l’altitude, la direction, l’ancrage et les défenses de Cumulus. L’âme d’Eskarotha habite ces signes. Lorsqu’il s’adresse à elle, certaines runes avancent pour aider la compagnie.",
+        "Le Clan dispose désormais d’un moyen de parler à celle qui fait voler le château. Il reste à retourner auprès de Blagothkus pour chercher à lui faire entendre ce qu’Eskarotha pense de son ralliement."
+      ]
+    },
+    "skyreach-convaincre": {
+      "successTitle": "Blagothkus renonce à soutenir le Culte",
+      "success": [
+        "Bjolnir ramène l’entretien à l’orgueil des géants. Blagothkus prétend dominer les dragons et rendre sa grandeur à son peuple; le paladin cherche à lui faire mesurer ce que son alliance leur livre déjà. Il fait aussi valoir qu’Eskarotha n’approuverait probablement pas cette décision.",
+        "Le maître de Cumulus accepte d’aller entendre sa femme. Leur conversation obtient le retournement que la compagnie recherchait : Blagothkus renonce à soutenir le retour de Tiamat et se prépare à combattre les cultistes. Le Clan peut agir dans les niveaux inférieurs avec cet allié, sans avoir pris le contrôle du château."
+      ],
+      "failureTitle": "Le ralliement est obtenu au terme d’un entretien éprouvant",
+      "failure": [
+        "Bjolnir doit soutenir plus longtemps son raisonnement pour faire entendre à Blagothkus la contradiction entre la fierté des géants et le service rendu aux dragons. La discussion éprouve la compagnie et ajoute au désordre de ses préparatifs.",
+        "Le géant finit pourtant par accepter d’aller entendre Eskarotha. Après leur conversation, il renonce à soutenir le retour de Tiamat et se retourne contre les cultistes. Le ralliement suit l’issue de la chronique; le coût de cette discussion demeure pour le Clan."
+      ]
+    },
+    "skyreach-rezmir": {
+      "successTitle": "Les captifs et le livre révèlent le projet du Culte",
+      "success": [
+        "Le Clan descend dans le château et affronte deux mages rouges ainsi qu’une gargouille. Un mage et la créature sont tués; l’autre mage devient prisonnier. La progression conduit ensuite les aventuriers jusqu’à Rezmir et à ses gardiens.",
+        "Des boules de feu et un sort fracassant ouvrent l’assaut. Rezmir riposte avec son acide, mais les attaques du groupe finissent par le faire tomber inconscient. Les compagnons le ligotent et fouillent les lieux, tandis que le mage rouge survivant révèle les divisions de son ordre, ses liens avec Severin et son hostilité envers Szass Tam.",
+        "Un livre, Derrière la Porte de Fer, décrit le sacrifice de centaines d’âmes pour ramener Tiamat hors des Neuf Enfers. Rezmir ne livre aucune information et se suicide pendant sa captivité. Le mage rouge, lui, manifeste un repentir que la compagnie tient pour sincère.",
+        "Les aventuriers peuvent maintenant rejoindre la caverne de Glazael. Le projet du Culte est mieux connu, mais le sort du dragon et du trésor reste à considérer avant le départ."
+      ],
+      "failureTitle": "L’assaut aboutit malgré une coordination difficile",
+      "failure": [
+        "Les compagnons peinent à faire agir leurs forces ensemble dans les niveaux inférieurs. Les affrontements éprouvent leur moral et ajoutent au désordre à bord. Ils viennent néanmoins à bout de deux mages rouges et d’une gargouille, en gardant l’un des mages prisonnier.",
+        "Le combat contre Rezmir s’ouvre par des boules de feu et un sort fracassant, puis le demi-dragon riposte avec son acide. Il finit inconscient et ligoté. Les renseignements du mage rouge et le livre Derrière la Porte de Fer révèlent le sacrifice d’âmes préparé pour le retour de Tiamat.",
+        "Rezmir se suicide pendant sa captivité sans rien révéler. L’issue rapportée par la chronique est conservée; la coordination difficile a coûté moral et tranquillité au groupe. Le Clan peut encore descendre vers Glazael avant de négocier son départ."
+      ]
+    },
+    "skyreach-proteger": {
+      "successTitle": "Bjolnir défend Glazael, sans obtenir sa liberté",
+      "success": [
+        "Les hommes de Blagothkus maîtrisent Glazael et le capturent. Bjolnir cherche à convaincre le géant qu’une autre relation avec les dragons serait possible, mais son raisonnement ne le détourne pas de son désir d’en capturer davantage.",
+        "Tandis que ses compagnons s’intéressent aux trophées et aux richesses, le paladin tente d’empêcher qu’ils touchent au dragon et à son trésor. Son opposition reste nette, même si elle ne résout pas le désaccord avec le maître de Cumulus. Glazael demeure captif.",
+        "Le Clan négocie finalement son départ. Blagothkus accepte de déposer la compagnie près de Secomber; les derniers jours de voyage jusqu’à Waterdeep se feront hors du château."
+      ]
+    },
+    "skyreach-partage": {
+      "successTitle": "Le Clan emporte une part du trésor dans cette variante",
+      "success": [
+        "Les hommes de Blagothkus maîtrisent Glazael et le gardent captif. Dans cette variante, le Clan accepte de prélever des richesses et des trophées au lieu de soutenir jusqu’au bout l’opposition de Bjolnir au partage.",
+        "La prise satisfait une partie de la compagnie, mais l’adaptation conserve le coût de ce choix dans ses relations avec les Ménestrels. Aucun montant précis n’est ajouté aux ressources : le récit garde la décision, sans inventer un inventaire historique.",
+        "Le groupe reprend ensuite la négociation du départ. Blagothkus le dépose près de Secomber, à quelques jours de Waterdeep, en conservant son château et le dragon capturé."
+      ]
+    }
+  },
+  "options": {
+    "skyreach-return": {
+      "label": "Négocier l’ouverture de la porte et rejoindre les commandes",
+      "intent": "Suivre l’accès rapporté au journal : les ogres ouvrent la porte, Bjolnir lit les runes naines et échange avec Eskarotha. Cette lecture ouvre l’entretien avec Blagothkus; elle ne résout plus tout Cumulus d’un seul clic.",
+      "onSuccess": {
+        "gotoRoom": "skyreach_command"
+      }
+    }
+  },
+  "sourceNotes": [
+    {
+      "scope": "Arguments de Bjolnir",
+      "source": "Précision du MJ transmise le 30 octobre 2026",
+      "note": "L’arrogance des géants, leur prétention à dominer les dragons et l’opposition probable d’Eskarotha sont des arguments reformulés, pas une citation exacte."
+    },
+    {
+      "scope": "Chronologie",
+      "source": "JDR DD5 2023.xlsx — Tyranny of dragons!220:259",
+      "note": "Ordre conservé : Blagothkus expose son projet; porteouverteparogres; runesnaines/échangeEskarotha; BjolnirramèneBlagothkusàEskarotha; ralliementcontreCulte; koboldsécartés; mages/Rezmir; Glazaelcapturé; déposeSecomber."
+    },
+    {
+      "scope": "Tests et coûts",
+      "note": "DD14, moral/chaos, points de confiance et flags sont des conventions de jeu. Les branches d’échec conservent les issues canoniques sans ajouter de mortPJ. La capture deGlazael n’est jamais transformée enlibération; Blagothkus n’abandonne pas sonprojetdecapturer d’autresdragons."
+    },
+    {
+      "scope": "États du groupe",
+      "note": "L’entretienetlapositionprotectrice utilisent Bjolnir actif/blessé. L’assaut est collectif. Dans un parcoursnormal, Bjolnirvientde mener l’entretien avant l’assaut; aucun coûtproposéici ne le tue. Les textes évoquant sa persuasiondes kobolds doivent être neutralisés si une sauvegardeimportée place Bjolnir indisponible directement dans skyreach_cultists."
+    },
+    {
+      "scope": "Route de lecture",
+      "note": "Conserver skyreach-return commeancienID, mais modifier son gotoRoom. Ajouter les nouvelles salles à ACT_III et ADVENTURE_LEVELS7. Le chemin canonique de test devient skyreach-return,skyreach-convaincre,skyreach-rezmir,skyreach-proteger,act3-end."
+    }
+  ],
+  "status": "Brouillon préparé, non intégré au jeu. Arrêt des modifications demandé par le MJ le 30 octobre 2026. Relire et tester avant toute intégration."
+}

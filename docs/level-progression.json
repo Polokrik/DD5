@@ -1,0 +1,514 @@
+{
+  "schemaVersion": 1,
+  "language": "fr",
+  "scope": "Niveaux de projection pour le jeu, basés sur les jalons officiels. Ce ne sont pas les niveaux historiquement attestés de la table.",
+  "pdfPageConvention": "Pages physiques du PDF, à partir de 1; aucun numéro imprimé supposé.",
+  "sources": {
+    "hoard-intro": {
+      "file": "D&D 5E - Tyranny of Dragons - Hoard of the Dragon Queen.pdf",
+      "pdfPage": 6,
+      "section": "Character Advancement",
+      "evidence": "Début au niveau 1; un niveau gagné à la fin de chaque épisode, sauf épisode 5."
+    },
+    "greenest-end": {
+      "file": "D&D 5E - Tyranny of Dragons - Hoard of the Dragon Queen.pdf",
+      "pdfPage": 13,
+      "section": "Episode 1 — Developments",
+      "evidence": "Milestone: niveau 2 à la fin de cet épisode."
+    },
+    "camp-end": {
+      "file": "D&D 5E - Tyranny of Dragons - Hoard of the Dragon Queen.pdf",
+      "pdfPage": 20,
+      "section": "Episode 2 — Rewards",
+      "evidence": "Milestone: niveau 3 lorsque cet épisode est terminé."
+    },
+    "hatchery-end": {
+      "file": "D&D 5E - Tyranny of Dragons - Hoard of the Dragon Queen.pdf",
+      "pdfPage": 28,
+      "section": "Episode 3 — Rewards",
+      "evidence": "Milestone: niveau 4 à la fin de l’écloserie."
+    },
+    "caravan-end": {
+      "file": "D&D 5E - Tyranny of Dragons - Hoard of the Dragon Queen.pdf",
+      "pdfPage": 35,
+      "section": "Episode 4 — Random Road Events",
+      "evidence": "Milestone: niveau 5 à la fin de ce voyage."
+    },
+    "portal-opened": {
+      "file": "D&D 5E - Tyranny of Dragons - Hoard of the Dragon Queen.pdf",
+      "pdfPage": 62,
+      "section": "Episode 6 — Rewards",
+      "evidence": "Milestone: niveau 6 après activation du portail."
+    },
+    "talis-dealt": {
+      "file": "D&D 5E - Tyranny of Dragons - Hoard of the Dragon Queen.pdf",
+      "pdfPage": 69,
+      "section": "Episode 7 — Rewards",
+      "evidence": "Milestone: niveau 7 après avoir traité avec Talis, quel que soit le résultat."
+    },
+    "talis-confirmation": {
+      "file": "D&D 5E - Tyranny of Dragons - Hoard of the Dragon Queen.pdf",
+      "pdfPage": 72,
+      "section": "Traveling to Parnast",
+      "evidence": "Milestone niveau 7 après nettoyage du pavillon et défaite ou alliance avec Talis."
+    },
+    "skyreach-end": {
+      "file": "D&D 5E - Tyranny of Dragons - Hoard of the Dragon Queen.pdf",
+      "pdfPage": 87,
+      "section": "Developments",
+      "evidence": "Milestone: niveau 8 pour avoir terminé Hoard of the Dragon Queen."
+    },
+    "rise-intro": {
+      "file": "D&D 5E - Tyranny of Dragons - The Rise of Tiamat.pdf",
+      "pdfPage": 5,
+      "section": "Tyranny of Dragons",
+      "evidence": "Aventure prévue pour un groupe débutant au niveau 8 et se terminant vers le niveau 15."
+    },
+    "rise-advancement": {
+      "file": "D&D 5E - Tyranny of Dragons - The Rise of Tiamat.pdf",
+      "pdfPage": 7,
+      "section": "Advancement",
+      "evidence": "Début recommandé 7 ou 8; +1 par jalon listé: Varram, Mer de Glace, attaques 1/2/3, Neronvain, Xonthal; Thay optionnel."
+    },
+    "varram-end": {
+      "file": "D&D 5E - Tyranny of Dragons - The Rise of Tiamat.pdf",
+      "pdfPage": 49,
+      "section": "Episode 3 — Conclusion",
+      "evidence": "Les personnages gagnent un niveau à la fin de cet épisode."
+    },
+    "ice-end": {
+      "file": "D&D 5E - Tyranny of Dragons - The Rise of Tiamat.pdf",
+      "pdfPage": 38,
+      "section": "Episode 2 — Conclusion",
+      "evidence": "Les personnages gagnent un niveau à la fin de cet épisode."
+    },
+    "first-attack-end": {
+      "file": "D&D 5E - Tyranny of Dragons - The Rise of Tiamat.pdf",
+      "pdfPage": 56,
+      "section": "Episode 5 — First Attack / Conclusion",
+      "evidence": "Les personnages gagnent un niveau; la table de forces inclut un jeune dragon bleu."
+    },
+    "second-attack-end": {
+      "file": "D&D 5E - Tyranny of Dragons - The Rise of Tiamat.pdf",
+      "pdfPage": 57,
+      "section": "Episode 5 — Second Attack / Conclusion",
+      "evidence": "Les personnages gagnent un niveau à la fin de cet événement."
+    },
+    "third-attack-end": {
+      "file": "D&D 5E - Tyranny of Dragons - The Rise of Tiamat.pdf",
+      "pdfPage": 58,
+      "section": "Episode 5 — Third Attack / Conclusion",
+      "evidence": "Les personnages gagnent un niveau à la fin de cet événement."
+    },
+    "neronvain-end": {
+      "file": "D&D 5E - Tyranny of Dragons - The Rise of Tiamat.pdf",
+      "pdfPage": 54,
+      "section": "Episode 4 — Conclusion",
+      "evidence": "Les personnages gagnent un niveau à la fin de cet épisode."
+    },
+    "xonthal-end": {
+      "file": "D&D 5E - Tyranny of Dragons - The Rise of Tiamat.pdf",
+      "pdfPage": 75,
+      "section": "Episode 7 — Conclusion",
+      "evidence": "Les personnages gagnent un niveau à la fin de cet épisode."
+    },
+    "thay-end": {
+      "file": "D&D 5E - Tyranny of Dragons - The Rise of Tiamat.pdf",
+      "pdfPage": 78,
+      "section": "Episode 8 — Conclusion",
+      "evidence": "Le gain d’un niveau en fin de mission est au choix du MJ."
+    },
+    "finale-level": {
+      "file": "D&D 5E - Tyranny of Dragons - The Rise of Tiamat.pdf",
+      "pdfPage": 79,
+      "section": "Episode 9 — Tiamat’s Return",
+      "evidence": "L’épisode final suppose des personnages de niveau 14 ou 15."
+    }
+  },
+  "recommendedPolicy": {
+    "hoardStart": 1,
+    "riseStart": 8,
+    "note": "Le module autorise aussi Rise au niveau7, mais la chaîne complète Hoard se termine explicitement au niveau8.",
+    "countFirstCultAttack": true,
+    "firstCultAttackStatus": "choix de projection fortement étayé, pas niveau réel attesté",
+    "thayInvitationGivesLevel": false,
+    "optionalActV": {
+      "level": 14,
+      "allowedOfficialRange": [
+        14,
+        15
+      ],
+      "status": "What If; sélection de la borne basse recommandée par le module; ne prétend pas que les épisodes manquants ont été joués."
+    }
+  },
+  "chapters": [
+    {
+      "chapter": 1,
+      "title": "Verdure brûle",
+      "officialEpisode": "Hoard episode 1",
+      "recommendedEntryLevel": 1,
+      "recommendedExitLevel": 1,
+      "sources": [
+        "hoard-intro"
+      ],
+      "status": "explicit_milestone_projection"
+    },
+    {
+      "chapter": 2,
+      "title": "Une nuit pour tenir",
+      "officialEpisode": "Hoard episode 1",
+      "recommendedEntryLevel": 1,
+      "recommendedExitLevel": 2,
+      "sources": [
+        "greenest-end"
+      ],
+      "status": "explicit_milestone_projection"
+    },
+    {
+      "chapter": 3,
+      "title": "Dans le camp des pillards",
+      "officialEpisode": "Hoard episode 2",
+      "recommendedEntryLevel": 2,
+      "recommendedExitLevel": 3,
+      "sources": [
+        "camp-end"
+      ],
+      "status": "explicit_milestone_projection"
+    },
+    {
+      "chapter": 4,
+      "title": "La revanche sous la montagne",
+      "officialEpisode": "Hoard episode 3",
+      "recommendedEntryLevel": 3,
+      "recommendedExitLevel": 4,
+      "sources": [
+        "hatchery-end"
+      ],
+      "status": "explicit_milestone_projection"
+    },
+    {
+      "chapter": 5,
+      "title": "Les enfants de Bjolnir",
+      "officialEpisode": "Hoard episode 4 — Elturel et départ de la caravane",
+      "recommendedEntryLevel": 4,
+      "recommendedExitLevel": 4,
+      "sources": [
+        "hatchery-end",
+        "hoard-intro"
+      ],
+      "status": "explicit_milestone_projection"
+    },
+    {
+      "chapter": 6,
+      "title": "Sous les bâches de la caravane",
+      "officialEpisode": "Hoard episode 4 — Voyage vers Waterdeep",
+      "recommendedEntryLevel": 4,
+      "recommendedExitLevel": 5,
+      "sources": [
+        "caravan-end"
+      ],
+      "status": "explicit_milestone_projection"
+    },
+    {
+      "chapter": 7,
+      "title": "Le secret de Carnath",
+      "officialEpisode": "Hoard episodes 5 et 6",
+      "recommendedEntryLevel": 5,
+      "recommendedExitLevel": 6,
+      "sources": [
+        "hoard-intro",
+        "portal-opened"
+      ],
+      "status": "explicit_milestone_projection"
+    },
+    {
+      "chapter": 8,
+      "title": "Talis et les portes de Cumulus",
+      "officialEpisode": "Hoard episodes 7 et début 8",
+      "recommendedEntryLevel": 6,
+      "recommendedExitLevel": 7,
+      "sources": [
+        "talis-dealt",
+        "talis-confirmation"
+      ],
+      "status": "explicit_milestone_projection"
+    },
+    {
+      "chapter": 9,
+      "title": "La voix dans les runes",
+      "officialEpisode": "Hoard episode 8",
+      "recommendedEntryLevel": 7,
+      "recommendedExitLevel": 8,
+      "sources": [
+        "skyreach-end"
+      ],
+      "status": "explicit_milestone_projection"
+    },
+    {
+      "chapter": 10,
+      "title": "Les voix du Conseil",
+      "officialEpisode": "Rise episode 1 — Conseil",
+      "recommendedEntryLevel": 8,
+      "recommendedExitLevel": 8,
+      "sources": [
+        "rise-intro",
+        "rise-advancement"
+      ],
+      "status": "explicit_milestone_projection"
+    },
+    {
+      "chapter": 11,
+      "title": "Le sang de Diderius",
+      "officialEpisode": "Rise episode 3 — Varram",
+      "recommendedEntryLevel": 8,
+      "recommendedExitLevel": 9,
+      "sources": [
+        "varram-end"
+      ],
+      "status": "explicit_milestone_projection"
+    },
+    {
+      "chapter": 12,
+      "title": "La mer qui ne dort jamais",
+      "officialEpisode": "Rise episode 2 — Voyage vers Oyaviggaton",
+      "recommendedEntryLevel": 9,
+      "recommendedExitLevel": 9,
+      "sources": [
+        "ice-end"
+      ],
+      "status": "explicit_milestone_projection"
+    },
+    {
+      "chapter": 13,
+      "title": "Une armée sous la glace",
+      "officialEpisode": "Rise episode 2 — Arauthator et Maccath",
+      "recommendedEntryLevel": 9,
+      "recommendedExitLevel": 10,
+      "sources": [
+        "ice-end"
+      ],
+      "status": "explicit_milestone_projection"
+    },
+    {
+      "chapter": 14,
+      "title": "Les conditions des anciens",
+      "officialEpisode": "Rise episodes 1 et 6 — Conseils",
+      "recommendedEntryLevel": 10,
+      "recommendedExitLevel": 10,
+      "sources": [
+        "rise-advancement"
+      ],
+      "status": "explicit_milestone_projection"
+    },
+    {
+      "chapter": 15,
+      "title": "Le gardien d’Altorn",
+      "officialEpisode": "Rise episode 5 première attaque, puis episode 4",
+      "recommendedEntryLevel": 10,
+      "recommendedExitLevel": 11,
+      "sources": [
+        "first-attack-end"
+      ],
+      "status": "projection_assuming_first_cult_attack_counted",
+      "withoutFirstCultAttack": {
+        "entryLevel": 10,
+        "exitLevel": 10
+      },
+      "campaignSources": [
+        "JDR DD5 2023.xlsx — Rise of Tiamat!185:186"
+      ],
+      "note": "L’assaut cultistes + jeune dragon bleu correspond fortement à la première attaque du module. Le journal ne nomme pas le jalon ni le niveau obtenu. Le compter est un choix de projection pour le jeu, à afficher comme tel."
+    },
+    {
+      "chapter": 16,
+      "title": "Sous le regard d’Eldath",
+      "officialEpisode": "Rise episode 4 — Neronvain",
+      "recommendedEntryLevel": 11,
+      "recommendedExitLevel": 11,
+      "sources": [
+        "neronvain-end"
+      ],
+      "status": "projection_assuming_first_cult_attack_counted",
+      "withoutFirstCultAttack": {
+        "entryLevel": 10,
+        "exitLevel": 10
+      }
+    },
+    {
+      "chapter": 17,
+      "title": "La forêt reprend souffle",
+      "officialEpisode": "Rise episode 4 — Fin, puis invitation de Thay",
+      "recommendedEntryLevel": 11,
+      "recommendedExitLevel": 12,
+      "sources": [
+        "neronvain-end"
+      ],
+      "status": "projection_assuming_first_cult_attack_counted",
+      "withoutFirstCultAttack": {
+        "entryLevel": 10,
+        "exitLevel": 11
+      }
+    },
+    {
+      "chapter": 18,
+      "title": "L’histoire reste à écrire",
+      "officialEpisode": "Frontière de la campagne jouée; aucune mission à Thay terminée",
+      "recommendedEntryLevel": 12,
+      "recommendedExitLevel": 12,
+      "sources": [
+        "thay-end"
+      ],
+      "status": "projection_assuming_first_cult_attack_counted",
+      "withoutFirstCultAttack": {
+        "entryLevel": 11,
+        "exitLevel": 11
+      },
+      "note": "L’invitation seule ne donne PAS le niveau optionnel de fin de mission à Thay; ne pas appliquer ce jalon."
+    }
+  ],
+  "roomBaseLevels": {
+    "title_screen": 1,
+    "credits": 1,
+    "hill_overlook": 1,
+    "swift_street": 1,
+    "greenest_keep": 1,
+    "old_tunnel": 1,
+    "mill_approach": 1,
+    "sanctuary_approach": 1,
+    "dragon_assault": 1,
+    "duel_field": 1,
+    "cult_trail": 2,
+    "cult_camp_exterior": 2,
+    "cult_camp": 2,
+    "leosin_return": 3,
+    "hatchery_entry": 3,
+    "fungal_chamber": 3,
+    "act2_confrontation": 3,
+    "roper_lair": 3,
+    "egg_chamber": 3,
+    "mondath_chamber": 3,
+    "hatchery_exit": 4,
+    "elturel_road": 4,
+    "elturel_tournament": 4,
+    "northern_road": 4,
+    "carnath_roadhouse": 5,
+    "naerytar_swamp": 5,
+    "castle_naerytar": 5,
+    "portal_chamber": 5,
+    "hunting_lodge": 6,
+    "skyreach_castle": 7,
+    "skyreach_chronicle": 7,
+    "act3_epilogue": 8,
+    "waterdeep_council_hall": 8,
+    "council_defense_floor": 8,
+    "council_strategy_floor": 8,
+    "diderius_chronicle": 8,
+    "ice_sea_chronicle": 9,
+    "iceberg_rebellion": 9,
+    "second_council": 10,
+    "metallic_dragon_audience": 10,
+    "misty_forest_chronicle": 10,
+    "neronvein_chronicle": 11,
+    "neronvein_battle": 11,
+    "thay_invitation": 12,
+    "council_resolution": 12,
+    "campaign_frontier": 12,
+    "war_council_tent": 14,
+    "battle_plan_selection": 14,
+    "supply_lines": 14,
+    "warded_corridor": 14,
+    "ritual_components": 14,
+    "commander_tent": 14,
+    "champion_confrontation": 14,
+    "refugee_corridor": 14,
+    "burning_streets_finale": 14,
+    "ritual_chamber": 14,
+    "campaign_end": 14
+  },
+  "milestones": [
+    {
+      "id": "greenest-defended",
+      "level": 2,
+      "transition": "fin-acte",
+      "source": "greenest-end"
+    },
+    {
+      "id": "camp-escaped",
+      "level": 3,
+      "enterRoom": "leosin_return",
+      "source": "camp-end"
+    },
+    {
+      "id": "hatchery-completed",
+      "level": 4,
+      "transition": "mondath-retour",
+      "enterRoom": "hatchery_exit",
+      "source": "hatchery-end"
+    },
+    {
+      "id": "caravan-waterdeep",
+      "level": 5,
+      "transition": "caravane-arrivee",
+      "source": "caravan-end"
+    },
+    {
+      "id": "naerytar-portal",
+      "level": 6,
+      "enterRoom": "hunting_lodge",
+      "source": "portal-opened"
+    },
+    {
+      "id": "talis-dealt",
+      "level": 7,
+      "transition": "lodge-reunion",
+      "source": "talis-dealt"
+    },
+    {
+      "id": "skyreach-completed",
+      "level": 8,
+      "transition": "skyreach-return",
+      "source": "skyreach-end"
+    },
+    {
+      "id": "varram-completed",
+      "level": 9,
+      "transition": "diderius-retour",
+      "source": "varram-end"
+    },
+    {
+      "id": "moving-ice-completed",
+      "level": 10,
+      "transition": "glace-victoire",
+      "source": "ice-end"
+    },
+    {
+      "id": "first-cult-attack-completed",
+      "level": 11,
+      "suggestedTransition": "foret-temple",
+      "source": "first-attack-end",
+      "projectionChoice": true,
+      "note": "À placer après l’embuscade si celle-ci est développée dans sa propre scène. Le résumé actuel de la Forêt Brumeuse ne décompose pas son combat; ce point de passage est donc une borne d’adaptation."
+    },
+    {
+      "id": "neronvain-completed",
+      "level": 12,
+      "transition": "foret-retour",
+      "source": "neronvain-end",
+      "withoutFirstCultAttack": 11
+    }
+  ],
+  "implementationNotes": [
+    "Les niveaux se gagnent par jalon unique et doivent être sauvegardés/checkpointés: réentrer dans une salle ou rejouer une option ne doit jamais donner un niveau supplémentaire.",
+    "roomBaseLevels donne la borne de cette partie du récit, pas une règle de rétrogradation. Le retour dans une ancienne salle conserve les jalons acquis; seul undo restaure le niveau d’alors.",
+    "Greenest_keep doit afficher au moins2 après fin-acte et ne jamais régresser en cas de retour ultérieur.",
+    "ActeV14 est un réglage de simulation distinct; ni le niveau12 projeté de la frontière ni le canon ne sont validés comme progression jouée.",
+    "Ne pas calculer les niveaux réels depuis les XP des fiches: ces chiffres ne suivent pas tous les niveaux affichés.",
+    "Les Conseils, la diplomatie des dragons, l’invitation de Thay et le chapitre18 ne donnent pas de jalon supplémentaire."
+  ],
+  "uncertainties": [
+    "Le journal ne consigne pas de niveaux PJ par session; seules les fiches donnent des instantanés de niveau.",
+    "Le journal ne marque pas explicitement le nom de l’épisode Première attaque du Culte. Le rapprochement des lignes185–186 avec la table First Attack (jeune dragon bleu) est fortement étayé mais reste une classification d’adaptation.",
+    "Aucune seconde ou troisième attaque du Culte, tour de Xonthal ou mission achevée à Thay ne doit être ajoutée au canon pour atteindre14–15.",
+    "Les caractéristiques passées, ASI, dons et bonus d’objets ne se déduisent pas de ces niveaux et doivent rester distincts des valeurs PDF actuelles."
+  ]
+}
