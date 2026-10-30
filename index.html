@@ -56,6 +56,12 @@
     .party-person strong { display: block; font-size: 11px; font-weight: 500; margin-bottom: 5px; }
     .party-person small { display: block; color: #b2bcb9; font-size: 9px; }
     .party-person[data-state='injured'] small { color: #efba86; }
+    .portrait-stack { display: grid; gap: 4px; justify-items: stretch; }
+    .health { display: flex; gap: 2px; height: 4px; }
+    .health i { flex: 1; background: #3a3f3d; border-radius: 1px; }
+    .health[data-health='3'] i, .health[data-health='2'] i:nth-child(-n+2), .health[data-health='1'] i:first-child { background: #7fb685; }
+    .health[data-health='2'] i:nth-child(-n+2) { background: #efba86; }
+    .health[data-health='1'] i:first-child { background: #d9645a; }
     .journal-sheet { background: var(--paper); color: var(--ink); padding: 42px 52px 35px; border-radius: 0 0 12px 12px; }
     .chapter-rule { display: flex; align-items: center; gap: 17px; margin-bottom: 29px; color: #866c4d; }
     .chapter-rule::after { content: ''; height: 1px; background: #b9ad9a77; flex: 1; }
@@ -7881,6 +7887,15 @@
     const POINT_ROOMS = ['leosin_return','mondath_chamber','hatchery_exit','elturel_road','elturel_tournament','carnath_roadhouse',
       'hunting_lodge','skyreach_castle','skyreach_chronicle','diderius_chronicle','ice_sea_chronicle','iceberg_rebellion',
       'second_council','misty_forest_chronicle','neronvein_chronicle','neronvein_battle','thay_invitation'];
+    ['greenest_keep','cult_trail','northern_road','waterdeep_council_hall','supply_lines',...POINT_ROOMS].forEach(roomId => {
+      const room = rooms[roomId];
+      if (!room || !Number.isInteger(room.chapter) || room.options.some(option => option.onSelect === 'rest_company')) return;
+      room.options.push({ id: `repos-${roomId}`, label: 'Prendre un repos (une fois par chapitre)', onSelect: 'rest_company',
+        forbiddenFlag: `rested_${room.chapter}`, effects: { message: 'Le Clan se repose.' },
+        intent: 'Soigne les blessés et fait lutter ceux qui sont à terre (jets de mort : trois échecs, mort définitive). Un D20 décide d’un événement : attaque de cultistes, alerte, nuit calme ou aide.',
+        riskText: 'Un seul repos par chapitre. Le tirage est conservé; relire ou recharger ne le relance pas.' });
+      ACTION_NARRATION[`repos-${roomId}`] = { successTitle: 'Le Clan prend du repos' };
+    });
     POINT_ROOMS.forEach(roomId => {
       const room = rooms[roomId], titles = (room?.observations ?? []).map(observation => observation.title);
       if (!titles.length) return;
@@ -8502,6 +8517,8 @@
       return img;
     }
 
+    const HEALTH_POINTS = { active: 3, injured: 2, down: 1, dead: 0 };
+
     function renderParty() {
       const list = document.getElementById('partyList');
       list.replaceChildren();
@@ -8512,7 +8529,13 @@
         button.setAttribute('aria-label', `${c.name}, ${PRESENTATION.states[c.state]}. Voir la compagnie`);
         const text = document.createElement('span'), name = document.createElement('strong'), state = document.createElement('small');
         name.textContent = PRESENTATION.people[id]?.short ?? c.name; state.textContent = `N${getAdventureLevel()} · ${PRESENTATION.states[c.state]}`;
-        text.append(name, state); button.append(portraitImage(id), text);
+        const health = HEALTH_POINTS[c.state] ?? 0, bar = document.createElement('span'), stack = document.createElement('span');
+        bar.className = 'health'; bar.dataset.health = String(health); bar.setAttribute('role', 'img');
+        const saves = c.state === 'down' ? ` Jets de mort : ${c.deathSaves?.s ?? 0} réussite(s), ${c.deathSaves?.f ?? 0} échec(s).` : '';
+        bar.setAttribute('aria-label', `Santé ${health} sur 3.${saves}`); bar.title = `Santé ${health}/3.${saves}`;
+        for (let i = 0; i < 3; i++) bar.appendChild(document.createElement('i'));
+        stack.className = 'portrait-stack'; stack.append(portraitImage(id), bar);
+        text.append(name, state); button.append(stack, text);
         button.addEventListener('click', () => openCompany(id)); list.appendChild(button);
       });
     }
@@ -9525,6 +9548,50 @@
       return resolved.total;
     }
 
+    // Défaite totale : seulement quand plus aucun compagnon présent n'est vivant.
+    function checkTotalDefeat() {
+      const alive = Object.values(characters).some(c => ['active', 'injured', 'down', 'captured'].includes(c.state));
+      if (alive || !Object.values(characters).some(c => c.state === 'dead')) return false;
+      triggerGameOver('definitive', 'Tous les compagnons sont tombés.');
+      return true;
+    }
+
+    // Repos du Clan : un par chapitre. Jets de mort pour les compagnons à terre, soins, puis un événement
+    // tiré au D20. Chaque tirage est conservé dans le compte rendu; relire ou recharger ne relance rien.
+    function restCompany() {
+      const chapter = rooms[gameState.roomId]?.chapter ?? 0, lines = [];
+      const name = id => characters[id].name;
+      Object.entries(characters).filter(([, c]) => c.state === 'down').forEach(([id, c]) => {
+        const natural = rollD20(), saves = c.deathSaves = { s: c.deathSaves?.s ?? 0, f: c.deathSaves?.f ?? 0 };
+        if (natural === 20) { saves.s = 0; saves.f = 0; c.state = 'injured'; lines.push(`${name(id)} se redresse (jet de mort : 20).`); return; }
+        if (natural === 1) saves.f += 2; else if (natural >= 10) saves.s += 1; else saves.f += 1;
+        if (saves.f >= 3) { c.state = 'dead'; lines.push(`${name(id)} succombe (jet de mort : ${natural}, trois échecs).`); fireRosterTimelineTrigger('CHARACTER_DEATH', { characterId: id, deathType: 'replaceable' }); }
+        else if (saves.s >= 3) { saves.s = 0; saves.f = 0; c.state = 'injured'; lines.push(`${name(id)} est stabilisé (jet de mort : ${natural}, trois réussites).`); }
+        else lines.push(`${name(id)} lutte à terre (jet de mort : ${natural}; ${saves.s} réussite(s), ${saves.f} échec(s)).`);
+      });
+      Object.entries(characters).forEach(([id, c]) => { if (c.state === 'injured') { c.state = 'active'; lines.push(`${name(id)} reprend des forces.`); } });
+      const event = rollD20(), standing = Object.entries(characters).filter(([, c]) => ['active', 'injured'].includes(c.state));
+      if (event <= 5 && standing.length) {
+        const [id, c] = standing[event % standing.length];
+        c.state = c.state === 'active' ? 'injured' : 'down';
+        lines.push(`Événement de repos (D20 : ${event}) : des cultistes isolés surprennent le camp. ${name(id)} est ${c.state === 'injured' ? 'blessé' : 'mis à terre'} avant que l’attaque soit repoussée.`);
+      } else if (event <= 8) {
+        variables.chaos += 1;
+        lines.push(`Événement de repos (D20 : ${event}) : un bruit suspect trahit la présence du groupe. L’alerte monte.`);
+      } else if (event <= 14) lines.push(`Événement de repos (D20 : ${event}) : la nuit est calme.`);
+      else {
+        variables.moraleGroupe += 1;
+        const helped = Object.entries(characters).find(([, c]) => c.state === 'down');
+        if (helped) { helped[1].state = 'injured'; helped[1].deathSaves = { s: 0, f: 0 }; }
+        lines.push(`Événement de repos (D20 : ${event}) : des alliés de passage partagent leurs vivres${helped ? ` et soignent ${name(helped[0])}` : ''}. Le moral du groupe se renforce.`);
+      }
+      flags[`rested_${chapter}`] = true;
+      clampTrackedVariables();
+      uiState.feedback = lines.join(' ');
+      if (checkTotalDefeat()) return { endedByGameOver: true, handled: true };
+      return { endedByGameOver: false, handled: true };
+    }
+
     function handleDeath(characterId, deathType) {
       const character = characters[characterId];
       if (!character) return { message: 'Personnage introuvable.', endedByGameOver: false };
@@ -9687,11 +9754,13 @@
       if (outcome.message) writeContext(outcome.message);
       applyPostEffects(outcome.post);
       updateStatusStrip();
+      if (outcome.characterChanges.length && checkTotalDefeat()) return { endedByGameOver: true };
       return { endedByGameOver: false, success: outcome.success };
     }
 
 
     function handleSpecialSelection(selectionKey) {
+      if (selectionKey === 'rest_company') return restCompany();
       if (['recover_checkpoint','decision_back'].includes(selectionKey)) {
         restoreDecisionCheckpoint();
         return { endedByGameOver: false, handled: true };

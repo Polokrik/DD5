@@ -62,15 +62,19 @@ au runtime. La CI lance automatiquement les quatre suites Node.
   les remparts). Variantes de jeu, annoncées comme telles.
 - **Fiches des personnages** réécrites sans mention de fiche ni de MJ; les
   sources sont repliées. Bios de Bjolnir et Ellyjobell reprises des textes des joueurs.
-- Tests : **77 tests Node**, parcours Chromium inchangés.
+- Tests : **86 tests Node**, parcours Chromium inchangés.
 
-## Scènes de chronique : second choix
+## Santé, repos et défaite (règles de jeu, façon D&D)
 
-Les 17 scènes de chronique à un seul choix proposent maintenant « Faire le point
-avec la compagnie » : aucun jet, aucun coût, la scène reste ouverte, une seule
-fois. Il reprend les observations sourcées. Choix du MJ (option 2) : pas de
-nouvelles méthodes inventées pour ces épisodes. Bjolnir persuade bien les
-kobolds avant l’assaut de Cumulus (confirmé par le MJ).
+- Barre de santé sous chaque portrait : 3 segments (actif, blessé, à terre); mort = vide.
+- **Repos** : un par chapitre, dans les scènes sûres et de chronique. Les blessés se
+  relèvent. Les compagnons à terre font un **jet de mort** (3 échecs = mort définitive,
+  3 réussites = stabilisé, 20 = debout, 1 = deux échecs). Un D20 décide ensuite d’un
+  événement : attaque de cultistes (1-5), alerte (6-8), nuit calme (9-14), aide (15-20).
+  Tous les tirages sont écrits dans le compte rendu; rien n’est relancé à la relecture.
+- **Game over** seulement si tous les compagnons présents sont morts.
+- « Faire le point avec la compagnie » reste un choix de lecture, sans effet.
+- Ce sont des règles du jeu, pas des faits de la campagne jouée.
 
 ## À reprendre plus tard
 
