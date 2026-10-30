@@ -62,13 +62,15 @@ au runtime. La CI lance automatiquement les quatre suites Node.
   les remparts). Variantes de jeu, annoncées comme telles.
 - **Fiches des personnages** réécrites sans mention de fiche ni de MJ; les
   sources sont repliées. Bios de Bjolnir et Ellyjobell reprises des textes des joueurs.
-- Tests : **75 tests Node**, parcours Chromium inchangés.
+- Tests : **77 tests Node**, parcours Chromium inchangés.
 
-## Encore à un seul choix (scènes de chronique)
+## Scènes de chronique : second choix
 
-Leosin, Mondath, sortie de la couvée, route d’Elturel, tournoi, Carnath,
-pavillon, Cumulus (arrivée), Diderius, Mer de Glace, iceberg, second Conseil,
-forêt, Neronvein, invitation à Thay. À traiter une à une avec le journal.
+Les 17 scènes de chronique à un seul choix proposent maintenant « Faire le point
+avec la compagnie » : aucun jet, aucun coût, la scène reste ouverte, une seule
+fois. Il reprend les observations sourcées. Choix du MJ (option 2) : pas de
+nouvelles méthodes inventées pour ces épisodes. Bjolnir persuade bien les
+kobolds avant l’assaut de Cumulus (confirmé par le MJ).
 
 ## À reprendre plus tard
 

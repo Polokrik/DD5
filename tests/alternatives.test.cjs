@@ -88,3 +88,23 @@ test('aucune option ne confie une épreuve à un compagnon absent de l’aventur
     }
   }
 });
+
+test('les scènes de chronique offrent un second choix réel, sans dé, qui laisse la scène ouverte', () => {
+  const rooms = ['leosin_return','mondath_chamber','hatchery_exit','elturel_road','elturel_tournament','carnath_roadhouse','hunting_lodge',
+    'skyreach_castle','skyreach_chronicle','diderius_chronicle','ice_sea_chronicle','iceberg_rebellion','second_council',
+    'misty_forest_chronicle','neronvein_chronicle','neronvein_battle','thay_invitation'];
+  for (const room of rooms) {
+    const g = boot(); enter(g, room);
+    const ids = g.json('getAvailableOptions(gameState.roomId).map(o => o.id)');
+    assert.ok(ids.includes(`point-${room}`), `${room}: ${ids}`);
+    assert.ok(ids.filter(id => !id.startsWith('navigation-')).length >= 2, room);
+    const calls = g.dice.calls;
+    choose(g, `point-${room}`); settle(g);
+    assert.equal(g.dice.calls, calls, `${room}: aucun dé`);
+    assert.equal(g.run('gameState.roomId'), room, `${room}: la scène reste ouverte`);
+    continueReport(g);
+    const after = g.json('getAvailableOptions(gameState.roomId).map(o => o.id)');
+    assert.ok(!after.includes(`point-${room}`), `${room}: le point n’est proposé qu’une fois`);
+    assert.ok(after.filter(id => !id.startsWith('navigation-')).length >= 1, `${room}: la suite reste disponible`);
+  }
+});

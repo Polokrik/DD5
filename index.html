@@ -7876,6 +7876,20 @@
       if (patch.label) PRESENTATION.choices[option.id] = {...PRESENTATION.choices[option.id],title:patch.label};
     }));
     BOOK_EXPANSION.proposals.forEach(({roomId,option}) => rooms[roomId].options.push(option));
+    // Scènes de chronique à un seul choix : un second choix réel, sans jet ni coût, pour ne pas
+    // obliger à revenir en arrière. Il reprend les observations sourcées de la scène.
+    const POINT_ROOMS = ['leosin_return','mondath_chamber','hatchery_exit','elturel_road','elturel_tournament','carnath_roadhouse',
+      'hunting_lodge','skyreach_castle','skyreach_chronicle','diderius_chronicle','ice_sea_chronicle','iceberg_rebellion',
+      'second_council','misty_forest_chronicle','neronvein_chronicle','neronvein_battle','thay_invitation'];
+    POINT_ROOMS.forEach(roomId => {
+      const room = rooms[roomId], titles = (room?.observations ?? []).map(observation => observation.title);
+      if (!titles.length) return;
+      const id = `point-${roomId}`, message = `Avant de poursuivre, la compagnie reprend ce qu’elle sait : ${titles.join(' ; ')}. Rien n’est décidé; chacun peut maintenant dire ce qui lui paraît important.`;
+      room.options.push({ id, label: 'Faire le point avec la compagnie',
+        intent: 'Reprendre ce que le Clan sait avant de poursuivre. Aucun jet, aucun coût; la scène reste ouverte.',
+        effects: { message } });
+      ACTION_NARRATION[id] = { successTitle: 'Le Clan fait le point', success: [message] };
+    });
     const BOOK_ART = {
   "cult_trail": "cult_camp",
   "cult_camp_exterior": "cult_camp",
