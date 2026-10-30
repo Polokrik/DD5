@@ -69,3 +69,22 @@ test('le tunnel et le dragon offrent trois méthodes, toutes menant à l’issue
     }
   }
 });
+
+test('aucune option ne confie une épreuve à un compagnon absent de l’aventure à ce stade', () => {
+  const g = boot();
+  const order = g.json(`[...DATA.actRooms.ACT_I, ...Object.keys(ACT_II_ROOMS), ...DATA.actRooms.ACT_III, ...DATA.actRooms.ACT_IV, ...DATA.actRooms.ACT_V]`);
+  const index = id => order.indexOf(id);
+  const lodge = index('hunting_lodge'), skyreach = index('skyreach_castle');
+  for (const room of g.json('Object.values(rooms)')) {
+    const i = index(room.id);
+    if (i < 0) continue;
+    for (const option of room.options) {
+      const actors = [option.characterId, ...(option.requiresCharacters ?? [])].filter(Boolean);
+      for (const actor of actors) {
+        if (i > lodge) assert.ok(!['drekthar', 'sislay'].includes(actor), `${room.id}/${option.id}: ${actor} a quitté le Clan au pavillon`);
+        if (i <= lodge) assert.notEqual(actor, 'kairon', `${room.id}/${option.id}: Kairon n’a pas encore rejoint le Clan`);
+        if (i < skyreach) assert.notEqual(actor, 'malar', `${room.id}/${option.id}: Malar n’a pas encore rejoint le Clan`);
+      }
+    }
+  }
+});
