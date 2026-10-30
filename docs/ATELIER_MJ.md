@@ -136,6 +136,15 @@ question. La rédaction avance sur ces faits en attendant les précisions.
 
 ## Fiche de scène réutilisable
 
+### Entretien de Cumulus — précision intégrée
+
+Le MJ précise que Bjolnir s’est appuyé sur l’arrogance des géants et leur
+prétention à dominer les dragons. Il a aussi rappelé à Blagothkus que sa femme,
+Eskarotha, dont l’esprit anime le château, n’approuverait probablement pas sa
+décision de se rallier aux dragons. La chronique et la scène reprennent ces
+arguments par reformulation, sans fabriquer une citation ou une réaction du
+groupe. Source : réponse du MJ du 30 octobre 2026.
+
 | Élément | À préciser |
 | --- | --- |
 | Situation et enjeu | Ce que le groupe voit, sait et risque de perdre. |

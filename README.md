@@ -59,6 +59,12 @@ Les niveaux historiques et certaines augmentations restent inconnus. Voir les
 Les corrections de parcours et leur validation sont détaillées dans le
 [rapport D20 et embranchements](docs/D20_ET_PARCOURS.md).
 
+L’état arrêté au 30 octobre comprend aussi35scènes étoffées,70observations
+facultatives et14nouveaux décors au-delà de Verdure. Les observations se consultent
+dans « Observer les lieux » et n’ajoutent aucun jet ni coût. Les dernières
+validations totalisent64tests Node et quatre parcours Chromium. Les travaux
+restants et le brouillon non intégré de Cumulus figurent dans [progress.md](progress.md).
+
 ## Vérification
 
 Node.js 24, sans installation de dépendance:
@@ -72,7 +78,7 @@ les options avec des D20 de 1 et de 20, les parcours des cinq actes,
 les trois plans finaux, les sauvegardes, les états, les checkpoints, les numéros
 de choix, les résultats après action, les objectifs à reprendre après un échec
 et la fidélité du texte embarqué aux 18 chapitres du document. La CI
-exécute les trois suites à chaque push et pull request. Les dés fixes sont
+exécute les quatre suites à chaque push et pull request. Les dés fixes sont
 injectés uniquement par les outils de test; le jeu utilise le générateur
 cryptographique du navigateur.
 
@@ -83,6 +89,7 @@ ont été utilisés dans l'environnement cloud. Ces outils sont réservés aux t
 DD5_CHROMIUM_PATH=/usr/bin/chromium node tests/browser-smoke.cjs
 DD5_CHROMIUM_PATH=/usr/bin/chromium node tests/verdure-browser.cjs
 DD5_CHROMIUM_PATH=/usr/bin/chromium node tests/d20-browser.cjs
+DD5_CHROMIUM_PATH=/usr/bin/chromium node tests/book-browser.cjs
 ```
 
 Ce test vérifie aussi les clics, les fenêtres du journal et du groupe, l'import,
@@ -125,7 +132,7 @@ inventoriés mais ne sont pas traités comme un journal de partie.
 
 ## Notre Paris
 
-`paris-guide/` est une application indépendante Expo/React Native. Les commandes
-ci-dessus concernent uniquement DD5. Son contenu a été restauré à l'identique;
-voir le [plan de migration](docs/NOTRE_PARIS_MIGRATION.md). Aucun fichier DD5 ne
-doit être supprimé pour effectuer cette séparation.
+Le dossier `paris-guide/` a été supprimé de `main` et n’est pas réintroduit par
+cette publication de DD5. Une copie avait été conservée sur la branche d’audit,
+avec un [plan de migration](docs/NOTRE_PARIS_MIGRATION.md) et un snapshot séparé.
+Les commandes et le développement ci-dessus concernent uniquement DD5.

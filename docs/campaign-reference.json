@@ -536,9 +536,10 @@
     {
       "id": "blagothkus",
       "act": "ACT_III",
-      "fact": "Bjolnir communique avec Eskarotha; elle convainc Blagothkus d'abandonner son projet de résurrection de Tiamat.",
+      "fact": "Bjolnir communique avec Eskarotha, puis s’appuie sur l’orgueil des géants, leur prétention à dominer les dragons et le désaccord probable de l’esprit de son épouse pour convaincre Blagothkus d’aller l’entendre. Eskarotha le convainc d’abandonner son projet de résurrection de Tiamat.",
       "sources": [
-        "Tyranny of dragons!229:237"
+        "Tyranny of dragons!229:237",
+        "gmConfirmations.cumulusInterview"
       ],
       "implemented": "sourced-summary"
     },
@@ -730,6 +731,11 @@
       "darrin": "Puissant, dispose de nombreux sorts, tend à faire exploser les choses. Kloumsihande joue sur clumsy.",
       "kairon": "Assez sournois, intelligent, un peu froid et sarcastique, mais a un bon fond.",
       "sislay": "Discrète et peu bavarde, efficace et pleine de ressources."
+    },
+    "cumulusInterview": {
+      "argument": "Bjolnir joue sur l’arrogance des géants et sur leur prétention à dominer les dragons; il souligne qu’Eskarotha, esprit qui anime le château, n’approuverait probablement pas la décision de Blagothkus de se rallier aux dragons.",
+      "source": "Précision du MJ dans cette conversation, 30 octobre 2026",
+      "scope": "Argument confirmé, reformulé dans la narration; aucune citation exacte ni réaction supplémentaire inventée."
     },
     "source": "Réponses explicites du MJ dans cette conversation, 29 octobre 2026"
   },

@@ -155,7 +155,7 @@ Une porte haute de six mètres leur barre la route. Des négociations avec un gr
 
 L’esprit d’Eskarotha habite ces signes.
 
-Bjolnir lui parle dans sa langue. Les runes se déplacent pour aider les aventuriers. De retour auprès de Blagothkus, le Clan le convainc d’aller entendre sa femme. La conversation qui suit obtient ce que leurs seules objections n’avaient pu garantir: le géant abandonne son projet de résurrection et accepte de se retourner contre les cultistes.
+Bjolnir lui parle dans sa langue. Les runes se déplacent pour aider les aventuriers. De retour auprès de Blagothkus, le paladin s’appuie sur l’orgueil des géants et sur leur prétention à dominer les dragons. Il rappelle au maître de Cumulus que se rallier à eux ne sert guère cette ambition, puis l’invite à songer au jugement d’Eskarotha: sa femme, dont l’esprit anime le château, n’approuverait probablement pas sa décision. Le Clan le convainc d’aller l’entendre. La conversation qui suit obtient ce que leurs seules objections n’avaient pu garantir: le géant abandonne son projet de résurrection et accepte de se retourner contre les cultistes.
 
 La bataille se prépare. Bjolnir persuade les kobolds de ne pas y prendre part, espérant ainsi épargner des vies. Il ignore alors que Blagothkus compte en réserver certains au dragon qui vit dans le château.
 
