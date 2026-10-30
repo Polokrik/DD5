@@ -51,13 +51,26 @@ DD5_CHROMIUM_PATH=/usr/bin/chromium node tests/book-browser.cjs
 Playwright et Chromium sont des outils de test; le jeu ne dépend d’aucun paquet
 au runtime. La CI lance automatiquement les quatre suites Node.
 
-## Préparé mais non intégré
+## Intégré depuis la reprise du 30 octobre
 
-Le [brouillon de découpage de Cumulus](docs/drafts/CUMULUS_A_INTEGRER.json)
-prépare trois scènes : Eskarotha et Blagothkus, les cultistes et Rezmir, puis
-Glazael et son trésor. **Ce brouillon n’est pas chargé par le jeu.** Il doit être
-relu, intégré et testé avant utilisation. Le jeu conserve actuellement57 salles
-et traite encore une partie de Cumulus dans une longue résolution.
+- **Cumulus en trois scènes** : commandes et Eskarotha, assaut et Rezmir, Glazael
+  et trésor. Chemin canonique : `skyreach-return`, `skyreach-convaincre`,
+  `skyreach-rezmir`, `skyreach-proteger`. Sources : journal, lignes 220 à 259.
+  Le partage du trésor est un What If; Glazael reste captif dans tous les cas.
+- **Seize approches supplémentaires** confiées à d’autres compagnons (piste du
+  Culte, abords du camp, couvée, champignons, œufs, marais, tunnel, dragon sur
+  les remparts). Variantes de jeu, annoncées comme telles.
+- **Fiches des personnages** réécrites sans mention de fiche ni de MJ; les
+  sources sont repliées. Bios de Bjolnir et Ellyjobell reprises des textes des joueurs.
+- Tests : **77 tests Node**, parcours Chromium inchangés.
+
+## Scènes de chronique : second choix
+
+Les 17 scènes de chronique à un seul choix proposent maintenant « Faire le point
+avec la compagnie » : aucun jet, aucun coût, la scène reste ouverte, une seule
+fois. Il reprend les observations sourcées. Choix du MJ (option 2) : pas de
+nouvelles méthodes inventées pour ces épisodes. Bjolnir persuade bien les
+kobolds avant l’assaut de Cumulus (confirmé par le MJ).
 
 ## À reprendre plus tard
 
