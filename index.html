@@ -165,6 +165,15 @@
     .scene-observation[data-read='true'] summary::after { content: ' · consulté'; font-size: 10px; color: #7d7769; }
     .scene-observation p { font: 16px/1.95 Georgia,serif; margin: 14px 0 6px; }
     .report-changes.failure { background: #ead9cf; }
+    .report-effects { display: flex; flex-wrap: wrap; gap: 10px; margin: 24px 0 0; }
+    .fx { display: inline-flex; align-items: baseline; gap: 8px; padding: 7px 14px; border-radius: 6px; font-size: 15px; font-weight: 700; line-height: 1.3; }
+    .fx small { font-size: 11px; font-weight: 500; letter-spacing: .03em; text-transform: uppercase; opacity: .85; }
+    .fx.good { background: #dcebd7; color: #24562b; }
+    .fx.bad { background: #f0d8cd; color: #8b2f1c; }
+    .choice-fx { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; margin-top: 9px; }
+    .choice-fx .fx { padding: 3px 9px; font-size: 13px; }
+    .choice-fx-label { font-size: 10px; font-weight: 600; letter-spacing: .05em; text-transform: uppercase; color: #6f756c; margin-left: 4px; }
+    .choice-fx-label:first-child { margin-left: 0; }
     .action-scene { margin: 0 0 24px; background: #1c2a33; color: #ede6d9; border-radius: 4px; overflow: hidden; }
     .action-scene canvas { width: 100%; max-height: 240px; object-fit: cover; image-rendering: pixelated; display: block; }
     .action-scene figcaption { padding: 10px 14px; display: flex; align-items: center; justify-content: space-between; gap: 16px; font-size: 11px; line-height: 1.6; }
@@ -268,7 +277,7 @@
     <section class="journal-sheet" id="context" aria-label="Récit et décisions">
       <div class="chapter-rule eyebrow"><span class="page-number" id="pageNumber">I</span><span id="chapterLabel">Le commencement d’une chronique</span></div>
       <div class="story-grid">
-        <article><h2 id="sceneTitle">Sur la route de Verdure</h2><section id="checkPanel" class="check-panel" aria-label="Résultat de l’épreuve" hidden><div class="check-heading"><strong id="checkActor"></strong><span id="checkKind"></span></div><div class="check-main"><div id="d20Die" class="d20-die" aria-hidden="true"><svg viewBox="0 0 80 86"><path d="M40 3 74 24v38L40 83 6 62V24Z M6 24l34-7 34 7-17 35-17 24-17-24L6 24Zm17 35h34L40 17 23 59Z"/></svg><span id="d20Value">20</span></div><div id="checkSummary" class="check-summary" role="status"></div></div><p id="checkBreakdown" class="check-breakdown"></p></section><figure id="actionScene" class="action-scene" hidden><canvas id="actionCanvas" width="320" height="200" aria-label="Illustration du résultat de votre action"></canvas><figcaption><span id="actionCaption"></span><button id="replayActionButton" type="button">Revoir l’action ↻</button></figcaption></figure><div id="sceneNarrative" class="prose"></div><aside id="sceneMemories" class="scene-memories" aria-label="Conséquences de vos décisions" hidden></aside><section id="observationPanel" class="observation-panel" aria-label="Observer les lieux" hidden></section><ul id="reportChanges" class="report-changes" hidden></ul><div id="feedback" class="feedback" role="status" hidden></div></article>
+        <article><h2 id="sceneTitle">Sur la route de Verdure</h2><section id="checkPanel" class="check-panel" aria-label="Résultat de l’épreuve" hidden><div class="check-heading"><strong id="checkActor"></strong><span id="checkKind"></span></div><div class="check-main"><div id="d20Die" class="d20-die" aria-hidden="true"><svg viewBox="0 0 80 86"><path d="M40 3 74 24v38L40 83 6 62V24Z M6 24l34-7 34 7-17 35-17 24-17-24L6 24Zm17 35h34L40 17 23 59Z"/></svg><span id="d20Value">20</span></div><div id="checkSummary" class="check-summary" role="status"></div></div><p id="checkBreakdown" class="check-breakdown"></p></section><figure id="actionScene" class="action-scene" hidden><canvas id="actionCanvas" width="320" height="200" aria-label="Illustration du résultat de votre action"></canvas><figcaption><span id="actionCaption"></span><button id="replayActionButton" type="button">Revoir l’action ↻</button></figcaption></figure><div id="sceneNarrative" class="prose"></div><aside id="sceneMemories" class="scene-memories" aria-label="Conséquences de vos décisions" hidden></aside><section id="observationPanel" class="observation-panel" aria-label="Observer les lieux" hidden></section><div id="reportEffects" class="report-effects" hidden></div><ul id="reportChanges" class="report-changes" hidden></ul><div id="feedback" class="feedback" role="status" hidden></div></article>
         <section aria-labelledby="decisionTitle"><h3 id="decisionTitle" class="decision-title eyebrow">Votre prochaine aventure</h3><div id="choiceList" class="choice-list"></div><p class="choice-hint">Cliquez sur un choix ou utilisez les touches <kbd>1</kbd>, <kbd>2</kbd>, <kbd>3</kbd>.</p></section>
       </div>
       <div class="sheet-footer"><div id="statusStrip" aria-live="polite"></div><button id="undoButton" class="quiet-button">↶ Revenir sur ma décision</button></div>
@@ -5346,7 +5355,23 @@
         riskText: 'Le dragon est repoussé dans les deux cas, comme dans le journal. Le D20 fixe seulement le coût annoncé.',
         onSuccess: { gotoRoom: 'greenest_keep', setFlags: { dragonRepelled: true }, message: 'Les sorts de Darrin frappent le dragon, qui renonce à son assaut.' },
         onFailure: { gotoRoom: 'greenest_keep', setFlags: { dragonRepelled: true }, variableDelta: { chaos: 1 }, message: 'Un sort dévie et frappe les remparts. Les défenseurs finissent pourtant par chasser le dragon, mais le désordre laisse des traces.' },
-        source: 'Variante de jeu proposée; le journal (Tyranny of dragons!32) ne détaille pas la méthode.' } }
+        source: 'Variante de jeu proposée; le journal (Tyranny of dragons!32) ne détaille pas la méthode.' } },
+      { roomId: 'cult_camp_exterior', option: { id: 'chaos-mot-de-passe', label: 'Option absurde — Bjolnir: Réclamer poliment le mot de passe', onSelect: 'silly_cult_password',
+        intent: 'Aborder les sentinelles comme si l’on était attendu.', riskText: 'Choix chaotique : sans gravité, mais il peut attirer l’attention.' } },
+      { roomId: 'hatchery_entry', option: { id: 'chaos-frapper', label: 'Option absurde — Drek’Thar: Frapper à la porte et attendre', onSelect: 'silly_knock_door',
+        intent: 'Respecter les usages, même ici.', riskText: 'Choix chaotique : sans gravité, mais il peut attirer l’attention.' } },
+      { roomId: 'fungal_chamber', option: { id: 'chaos-champignon', label: 'Option absurde — Darrin: Goûter un champignon luminescent', onSelect: 'silly_taste_mushroom',
+        intent: 'La curiosité l’emporte sur la prudence.', riskText: 'Choix chaotique : sans gravité, mais il peut attirer l’attention.' } },
+      { roomId: 'roper_lair', option: { id: 'chaos-nommer', label: 'Option absurde — Ellyjobell: Donner un nom à la créature', onSelect: 'silly_name_roper',
+        intent: 'Parler d’abord, combattre ensuite.', riskText: 'Choix chaotique : sans gravité, mais il peut attirer l’attention.' } },
+      { roomId: 'egg_chamber', option: { id: 'chaos-berceuse', label: 'Option absurde — Ellyjobell: Chanter une berceuse aux œufs', onSelect: 'silly_egg_lullaby',
+        intent: 'Un instant de douceur au milieu de la grotte.', riskText: 'Choix chaotique : sans gravité, mais il peut attirer l’attention.' } },
+      { roomId: 'portal_chamber', option: { id: 'chaos-portail', label: 'Option absurde — Darrin: Demander poliment au portail de s’ouvrir', onSelect: 'silly_knock_portal',
+        intent: 'On ne sait jamais.', riskText: 'Choix chaotique : sans gravité, mais il peut attirer l’attention.' } },
+      { roomId: 'mill_approach', option: { id: 'chaos-farine', label: 'Option absurde — Drek’Thar: Charger en criant « Pour la farine ! »', onSelect: 'silly_flour_charge',
+        intent: 'Un cri de guerre inattendu.', riskText: 'Choix chaotique : sans gravité, mais il peut attirer l’attention.' } },
+      { roomId: 'old_tunnel', option: { id: 'chaos-rat', label: 'Option absurde — Ellyjobell: Nommer un rat éclaireur officiel', onSelect: 'silly_rat_scout',
+        intent: 'Les rats méritent des égards.', riskText: 'Choix chaotique : sans gravité, mais il peut attirer l’attention.' } }
     ];
     EXTRA_APPROACHES.forEach(({roomId,option}) => rooms[roomId].options.push(option));
 
@@ -7891,6 +7916,8 @@
       }
     };
     Object.entries(CUMULUS_ROOMS).forEach(([id,room]) => { rooms[id] = room; });
+    rooms.skyreach_command.options.push({ id: 'chaos-the', label: 'Option absurde — Darrin: Demander du thé à la mesure des géants', onSelect: 'silly_giant_tea',
+      intent: 'Rester courtois chez son hôte.', riskText: 'Choix chaotique : sans gravité, mais il peut attirer l’attention.' });
     Object.entries(BOOK_EXPANSION.rooms).forEach(([id,detail]) => {
       Object.assign(rooms[id],detail,{description:detail.paragraphs.join('\n\n')});
       PRESENTATION.scenes[id] = {...PRESENTATION.scenes[id],heading:rooms[id].title,paragraphs:detail.paragraphs,chapterNumber:rooms[id].chapter};
@@ -8527,7 +8554,8 @@
 
     function updateStatusStrip() {
       const morale = variables.moraleGroupe >= 2 ? 'Le groupe garde confiance' : variables.moraleGroupe < 0 ? 'Le groupe est éprouvé' : 'Le groupe reste uni';
-      statusEl.textContent = `${morale} · Niveau ${getAdventureLevel()} · ${hasSaveData() ? 'Progression enregistrée localement' : 'Votre aventure vous attend'}`;
+      const moralPct = Math.round((variables.moraleGroupe + 5) * 10), alertPct = Math.round(Math.max(0, Math.min(6, variables.chaos)) / 6 * 100);
+      statusEl.textContent = `Moral ${moralPct} % · Alerte ${alertPct} % · ${morale} · Niveau ${getAdventureLevel()} · ${hasSaveData() ? 'Progression enregistrée localement' : 'Votre aventure vous attend'}`;
       document.getElementById('undoButton').disabled = !findDecisionCheckpoint();
     }
 
@@ -8618,10 +8646,75 @@
       chooseOption(String(choice.index+1));
     }
 
+    // Effets chiffrés : chaque point de jauge est converti en pourcentage pour que le joueur voie ce qui change.
+    const FX_POINTS = { moraleGroupe: { label: 'Moral', pct: 10, good: 1 }, chaos: { label: 'Alerte', pct: 17, good: -1 },
+      castleAlertLevel: { label: 'Alerte du château', pct: 20, good: -1 }, publicTrust: { label: 'Confiance publique', pct: 5, good: 1 } };
+    const FACTION_LABELS = { harpers: 'Ménestrels', zhentarim: 'Zhentarim', cult: 'Culte', gauntlet: 'Gantelet', enclave: 'Enclave d’Émeraude', lords: 'Alliance des Seigneurs' };
+    const signedPct = value => `${value > 0 ? '+' : '−'}${Math.abs(value)} %`;
+
+    function chipsFromDeltas(delta) {
+      const chips = [];
+      Object.entries(FX_POINTS).forEach(([key, unit]) => {
+        const points = Number(delta[key]) || 0;
+        if (points) chips.push({ label: unit.label, text: signedPct(points * unit.pct), tone: points * unit.good > 0 ? 'good' : 'bad' });
+      });
+      Object.entries(delta.factions ?? {}).forEach(([faction, points]) => {
+        if (points) chips.push({ label: FACTION_LABELS[faction] ?? faction, text: signedPct(points * 5), tone: points > 0 ? 'good' : 'bad' });
+      });
+      return chips;
+    }
+
+    // Lit les variations annoncées par une option (effets immédiats, branche de réussite ou d'échec).
+    function collectDeltas(...sources) {
+      const total = { factions: {} };
+      sources.filter(Boolean).forEach(source => {
+        const delta = source.variableDelta ?? {};
+        ['moraleGroupe', 'chaos', 'publicTrust', 'castleAlertLevel'].forEach(key => {
+          total[key] = (total[key] ?? 0) + (Number(source[key]) || 0) + (Number(delta[key]) || 0);
+        });
+        [source.councilReputation, delta.councilReputation, source.factionTrust, delta.factionTrust].forEach(group => {
+          Object.entries(group ?? {}).forEach(([faction, points]) => { total.factions[faction] = (total.factions[faction] ?? 0) + (Number(points) || 0); });
+        });
+      });
+      return total;
+    }
+
+    function effectChips(option) {
+      const chaotic = CHAOTIC_CHOICES[option.onSelect];
+      if (chaotic) return { always: chipsFromDeltas(collectDeltas(chaotic)), success: [], failure: [] };
+      if (!option.resolution) return { always: chipsFromDeltas(collectDeltas(option.effects, option.onSuccess)), success: [], failure: [] };
+      return { always: [], success: chipsFromDeltas(collectDeltas(option.effects, option.onSuccess)), failure: chipsFromDeltas(collectDeltas(option.onFailure)) };
+    }
+
+    function chipElement(chip) {
+      const element = document.createElement('span'); element.className = `fx ${chip.tone}`;
+      const label = document.createElement('small'); label.textContent = chip.label;
+      element.append(label, document.createTextNode ? document.createTextNode(chip.text) : chip.text);
+      return element;
+    }
+
+    function effectsDiff(before) {
+      const factions = {};
+      ['councilReputation', 'factionTrust'].forEach(key => Object.entries(variables[key] ?? {}).forEach(([faction, value]) => {
+        const previous = (key === 'councilReputation' ? before.reputation : before.trust)?.[faction] ?? 0;
+        if (value !== previous) factions[faction] = (factions[faction] ?? 0) + value - previous;
+      }));
+      return chipsFromDeltas({ moraleGroupe: variables.moraleGroupe - before.morale, chaos: variables.chaos - before.chaos,
+        castleAlertLevel: (variables.castleAlertLevel ?? 0) - (before.castleAlert ?? 0), publicTrust: variables.publicTrust - (before.publicTrust ?? variables.publicTrust), factions });
+    }
+
+    // Les descriptions écrites en points deviennent des pourcentages à l'affichage.
+    function pointsToPercent(text) {
+      const unit = { moral: 10, alerte: 17, chaos: 17, confiance: 5 };
+      return text
+        .replace(/\b(moral|alerte|chaos)(\s+)([+−-])(\d+)(?![\d%])/gi, (m, word, gap, sign, n) => `${word.toLowerCase() === 'chaos' ? 'alerte' : word}${gap}${sign}${Number(n) * unit[word.toLowerCase()]} %`)
+        .replace(/\b(Ménestrels|Gantelet|Enclave|Seigneurs|Zhentarim|Culte|confiance(?: publique| générale)?)(\s+)([+−-])(\d+)(?![\d%])/g, (m, word, gap, sign, n) => `${word}${gap}${sign}${Number(n) * 5} %`);
+    }
+
     // Les descriptions de choix sont écrites pour l'équipe; le joueur lit une version sans référence au journal ni au jeu.
     function inWorldText(text) {
       if (typeof text !== 'string') return text;
-      return text
+      return pointsToPercent(text)
         .replace(/^(?:What If|Chronique)\s*[—–-]\s*/, '')
         .replace(/^(?:Variante|Suivre le journal|Suivre le récit|Suivre la route du journal|Suivre l’accès rapporté au journal|Suivre le déroulé attesté|Suivre le duel rapporté dans la chronique|Suivre la rencontre du journal dans le château volant|Lire la libération attestée des elfes|Recueillir les exigences attestées)\s*:\s*/, '')
         .replace(/\b(rapport[ée]e?s?|décrit|présent[ée]) (?:dans|par) (?:le journal|la chronique)/g, 'vécu dans la campagne')
@@ -8633,6 +8726,7 @@
         .replace(/\bcette variante\b/g, 'cette approche').replace(/\bles variantes\b/g, 'les approches').replace(/\bune variante\b/g, 'une approche')
         .replace(/^(.)/, c => c.toUpperCase());
     }
+
 
     function renderChoices() {
       const list = document.getElementById('choiceList'); list.replaceChildren();
@@ -8661,6 +8755,16 @@
           content.appendChild(hint);
         }
         if (option.riskText) { const risk = document.createElement('span'); risk.className = 'choice-risk'; risk.textContent = inWorldText(option.riskText); content.appendChild(risk); }
+        const fxGroups = effectChips(option);
+        if (fxGroups.always.length || fxGroups.success.length || fxGroups.failure.length) {
+          const row = document.createElement('span'); row.className = 'choice-fx';
+          [['', fxGroups.always], ['Réussite', fxGroups.success], ['Échec', fxGroups.failure]].forEach(([title, chips]) => {
+            if (!chips.length) return;
+            if (title) { const tag = document.createElement('span'); tag.className = 'choice-fx-label'; tag.textContent = title; row.appendChild(tag); }
+            chips.forEach(chip => row.appendChild(chipElement(chip)));
+          });
+          content.appendChild(row);
+        }
         const arrow = document.createElement('span'); arrow.className = 'choice-arrow'; arrow.textContent = '→'; arrow.setAttribute('aria-hidden', 'true'); card.appendChild(arrow);
         card.addEventListener('click', () => dispatchCommand(String(choice.shortcut))); list.appendChild(card);
       });
@@ -8777,7 +8881,10 @@
       text('decisionTitle', pending ? 'Le D20 roule…' : report ? 'La suite' : room.id === 'title_screen' ? 'Ouvrir le récit' : 'Que faites-vous ?');
       const narrative = document.getElementById('sceneNarrative'); narrative.replaceChildren();
       (pending ? [`${characters[report.check.actorId]?.name ?? 'Le compagnon'} tente cette épreuve. Le résultat et ses conséquences apparaîtront dès que le dé sera arrêté.`] : report?.paragraphs ?? view?.paragraphs ?? room.paragraphs ?? [room.description]).forEach(paragraph => { const p = document.createElement('p'); p.textContent = paragraph; narrative.appendChild(p); });
-      const changes = document.getElementById('reportChanges'); changes.replaceChildren(); changes.hidden = !report || pending;
+      const effectsBox = document.getElementById('reportEffects'); effectsBox.replaceChildren();
+      (report?.effects ?? []).forEach(chip => effectsBox.appendChild(chipElement(chip)));
+      effectsBox.hidden = !report || pending || !(report.effects ?? []).length;
+      const changes = document.getElementById('reportChanges'); changes.replaceChildren(); changes.hidden = !report || pending || !(report.changes ?? []).length;
       changes.classList.toggle('failure', Boolean(report?.failed));
       (report?.changes ?? []).forEach(change => { const li = document.createElement('li'); li.textContent = change; changes.appendChild(li); });
       document.getElementById('undoButton').hidden = ['title_screen', 'credits'].includes(room.id);
@@ -9618,7 +9725,9 @@
       if (standing.length >= 3 || !fallen.length || !candidates.length) return '';
       const vector = id => { const abilities = getAdventureStats(id)?.abilities ?? {}; return ['str', 'dex', 'con', 'int', 'wis', 'cha'].map(key => abilities[key] ?? 10); };
       const [lostId, lost] = fallen[0], lostVector = vector(lostId);
-      const distance = id => vector(id).reduce((sum, value, index) => sum + Math.abs(value - lostVector[index]), 0);
+      const family = id => ({ paladin: 'martial', fighter: 'martial', ranger: 'hybrid', rogue: 'skill', druid: 'caster', sorcerer: 'caster', warlock: 'caster' })[getAdventureStats(id)?.classKey] ?? 'hybrid';
+      const classGap = (a, b) => a === b ? 0 : [a, b].includes('caster') ? ([a, b].includes('hybrid') ? 8 : 12) : [a, b].includes('hybrid') ? 4 : 8;
+      const distance = id => vector(id).reduce((sum, value, index) => sum + Math.abs(value - lostVector[index]), 0) + classGap(family(id), family(lostId));
       const [backId, back] = candidates.sort((a, b) => distance(a[0]) - distance(b[0]))[0];
       back.state = 'active'; back.departed = false; lost.replacedBy = backId;
       return `${back.name} retrouve le Clan, appelé par la perte de ${lost.name}.`;
@@ -9841,25 +9950,35 @@
     }
 
 
+    const CHAOTIC_CHOICES = {
+      silly_cult_password: { text: 'Bjolnir réclame poliment le mot de passe aux sentinelles. L’une d’elles consulte vraiment sa liste. Le Clan s’éloigne avant qu’elle ne trouve.', moraleGroupe: 1, chaos: 1 },
+      silly_knock_door: { text: 'Drek’Thar frappe à la porte et attend qu’on lui ouvre. Personne ne vient, mais le silence qui suit est étrangement gêné.', chaos: 1 },
+      silly_taste_mushroom: { text: 'Darrin goûte un champignon luminescent et déclare le goût « étonnamment mémorable ». Il voit des couleurs jusqu’à la fin de la salle.', moraleGroupe: 1 },
+      silly_name_roper: { text: 'Ellyjobell donne un nom à la créature du couloir. Elle ne répond pas, mais ses vrilles se calment un instant, au grand étonnement de tous.', moraleGroupe: 1 },
+      silly_egg_lullaby: { text: 'Ellyjobell chante une berceuse aux œufs. Une coquille semble frémir, ce que chacun préfère mettre sur le compte de la fatigue.', moraleGroupe: 1 },
+      silly_knock_portal: { text: 'Darrin demande poliment au portail de s’ouvrir. Il ne se passe rien, puis une étincelle rétorque d’un air presque vexé.', chaos: 1 },
+      silly_giant_tea: { text: 'Darrin demande du thé, à la mesure des géants. On lui apporte une cuve; il faudra un moment pour en finir une gorgée.', moraleGroupe: 1, chaos: 1 },
+      silly_flour_charge: { text: 'Drek’Thar charge en criant « Pour la farine ! ». Les pillards n’y comprennent rien, et les gardes du moulin non plus.', moraleGroupe: 1, chaos: 1 },
+      silly_rat_scout: { text: 'Ellyjobell nomme un rat éclaireur officiel. Il s’en va, sérieux comme un messager, et ne reviendra jamais.', moraleGroupe: 1 },
+      silly_lennithon: { text: 'Votre diversion tourne à la farce. Les sentinelles se regardent, perplexes, puis reprennent leur ronde; le Clan retient un fou rire.', moraleGroupe: 1, chaos: 1 },
+      silly_wave_lennithon: { text: 'Vous saluez Lennithon. Il lève un sourcil, grogne et détourne le regard.', moraleGroupe: 1 },
+      silly_join_cult: { text: 'Votre offre de service enthousiasme les kobolds, qui exigent aussitôt un serment d’allégeance. Vous le bredouillez si mal qu’ils vous chassent d’un geste.', chaos: 1 },
+      silly_dance_cyanwrath: { text: 'Vous lancez un pas de danse martial. Cyanwrath vous toise sans un mot, tandis que ses hommes ricanent.', chaos: 1 },
+      silly_king_waterdeep: { text: 'Vous réclamez la couronne de Waterdeep. Le protocole vous écoute avec une politesse glaciale, puis passe à l’ordre du jour.', moraleGroupe: 1, publicTrust: -1 },
+      silly_dragon_selfie: { text: 'Vous exigez de poser pour un portrait en selle. Le dragon d’airain soupire, ce qui suffit à vous rappeler la gravité de l’audience.', publicTrust: -1 },
+      silly_accuse_dragons: { text: 'Vous accusez toute la caravane d’être draconique. Les marchands s’écartent, vexés, et le convoi vous regarde de travers pour le reste du trajet.', chaos: 1 },
+      silly_swamp_duck: { text: 'Le canard réclame un tribut en pain sec. Vous n’en avez pas; il s’éloigne, vexé, en cancanant bruyamment.', chaos: 1 },
+      silly_tax_inspection: { text: 'Votre inspection fiscale draconique ne révèle aucun reçu. Les cultistes vous regardent, interloqués, et leur vigilance flotte un instant.', moraleGroupe: 1 },
+      silly_riddle_duel: { text: 'Vous posez une énigme à voix haute. Personne ne répond, et l’écho s’en charge à votre place.', chaos: 1 },
+      silly_shout_stop: { text: 'Vous criez STOP. Le portail répond par un écho moqueur.', chaos: 1 }
+    };
+
     function handleSpecialSelection(selectionKey) {
       if (selectionKey === 'rest_company') return restCompany();
       if (['recover_checkpoint','decision_back'].includes(selectionKey)) {
         restoreDecisionCheckpoint();
         return { endedByGameOver: false, handled: true };
       }
-      const chaoticChoices = {
-        silly_lennithon: { text: 'Votre diversion tourne à la farce. Les sentinelles se regardent, perplexes, puis reprennent leur ronde; le Clan retient un fou rire.', moraleGroupe: 1, chaos: 1 },
-        silly_wave_lennithon: { text: 'Vous saluez Lennithon. Il lève un sourcil, grogne et détourne le regard.', moraleGroupe: 1 },
-        silly_join_cult: { text: 'Votre offre de service enthousiasme les kobolds, qui exigent aussitôt un serment d’allégeance. Vous le bredouillez si mal qu’ils vous chassent d’un geste.', chaos: 1 },
-        silly_dance_cyanwrath: { text: 'Vous lancez un pas de danse martial. Cyanwrath vous toise sans un mot, tandis que ses hommes ricanent.', chaos: 1 },
-        silly_king_waterdeep: { text: 'Vous réclamez la couronne de Waterdeep. Le protocole vous écoute avec une politesse glaciale, puis passe à l’ordre du jour.', moraleGroupe: 1, publicTrust: -1 },
-        silly_dragon_selfie: { text: 'Vous exigez de poser pour un portrait en selle. Le dragon d’airain soupire, ce qui suffit à vous rappeler la gravité de l’audience.', publicTrust: -1 },
-        silly_accuse_dragons: { text: 'Vous accusez toute la caravane d’être draconique. Les marchands s’écartent, vexés, et le convoi vous regarde de travers pour le reste du trajet.', chaos: 1 },
-        silly_swamp_duck: { text: 'Le canard réclame un tribut en pain sec. Vous n’en avez pas; il s’éloigne, vexé, en cancanant bruyamment.', chaos: 1 },
-        silly_tax_inspection: { text: 'Votre inspection fiscale draconique ne révèle aucun reçu. Les cultistes vous regardent, interloqués, et leur vigilance flotte un instant.', moraleGroupe: 1 },
-        silly_riddle_duel: { text: 'Vous posez une énigme à voix haute. Personne ne répond, et l’écho s’en charge à votre place.', chaos: 1 },
-        silly_shout_stop: { text: 'Vous criez STOP. Le portail répond par un écho moqueur.', chaos: 1 }
-      };
       const seriousMessages = {
         serious_reckless_bridge: 'Le pont cède sous la foule. Catastrophe stratégique: la manœuvre était explicitement insensée.'
       };
@@ -9867,8 +9986,8 @@
         triggerGameOver('definitive', seriousMessages[selectionKey]);
         return { endedByGameOver: true, handled: true };
       }
-      if (chaoticChoices[selectionKey]) {
-        const choice = chaoticChoices[selectionKey];
+      if (CHAOTIC_CHOICES[selectionKey]) {
+        const choice = CHAOTIC_CHOICES[selectionKey];
         variables.moraleGroupe += choice.moraleGroupe ?? 0; variables.chaos += choice.chaos ?? 0; variables.publicTrust += choice.publicTrust ?? 0;
         clampTrackedVariables();
         uiState.feedback = choice.text;
@@ -10020,7 +10139,7 @@
       try { if (option.resolution) check = performD20Check(option,option.characterId); }
       catch (error) { writeContext(error.message); return; }
       uiState.feedback = ''; uiState.effect = null; uiState.diceAnimation = null;
-      const before = { characters: safeClone(characters), flags: safeClone(flags), morale: variables.moraleGroupe, chaos: variables.chaos, reputation: safeClone(variables.councilReputation), trust: safeClone(variables.factionTrust) };
+      const before = { characters: safeClone(characters), flags: safeClone(flags), morale: variables.moraleGroupe, chaos: variables.chaos, reputation: safeClone(variables.councilReputation), trust: safeClone(variables.factionTrust), castleAlert: variables.castleAlertLevel ?? 0, publicTrust: variables.publicTrust };
       if (!menu) createCheckpoint(`Avant décision: ${option.id}`);
       const result = applyOptionEffects(option,check), message = result?.message ?? uiState.feedback;
       if (!menu && !option.repeatable && !result?.endedByGameOver && (result?.success || option.resolution)) gameState.resolvedOptions.push(`${origin}:${option.id}`);
@@ -10056,22 +10175,14 @@
       Object.entries(characters).forEach(([id, c]) => {
         if (before.characters[id]?.state !== c.state) changes.push(`${c.name}: ${stateLabel(id, c.state)}.`);
       });
-      if (before.morale !== variables.moraleGroupe) changes.push(variables.moraleGroupe > before.morale ? 'Le moral du groupe se renforce.' : 'Le moral du groupe est éprouvé.');
-      if (before.chaos !== variables.chaos) changes.push(variables.chaos > before.chaos ? 'L’alerte et le désordre augmentent.' : 'La pression diminue autour du groupe.');
+      const effects = effectsDiff(before);
       const objectives = { templeEvacuated: 'Les occupants du temple sont à l’abri.', millSaved: 'Le moulin est sécurisé.', dragonRepelled: 'Le dragon est repoussé de la forteresse.', leosinSaved: 'Leosin et les prisonniers sont libérés.', cyanwrathDead: 'Cyanwrath est mort; il ne participera plus à la suite du récit.', eggsStolen: 'Le groupe emporte les deux œufs noirs.', eggsDestroyed: 'Les œufs sont détruits: ils ne pourront pas éclore.', eggsLeft: 'Les œufs restent dans la grotte.', portalDamaged: 'Le portail est endommagé.', metallicAlliance: 'Les dragons ont accepté votre proposition.' };
       Object.entries(objectives).forEach(([flag, description]) => { if (flags[flag] && !before.flags[flag]) changes.push(description); });
       const factions = { harpers: 'les Ménestrels', zhentarim: 'le Zhentarim', cult: 'le Culte', gauntlet: 'le Gantelet', enclave: 'l’Enclave d’Émeraude', lords: 'l’Alliance des Seigneurs' };
-      ['reputation', 'trust'].forEach(key => {
-        const current = key === 'reputation' ? variables.councilReputation : variables.factionTrust;
-        Object.entries(current ?? {}).forEach(([faction, value]) => {
-          const delta = value - (before[key]?.[faction] ?? 0);
-          if (delta) changes.push(`Vos relations avec ${factions[faction] ?? faction} ${delta > 0 ? 's’améliorent' : 'se dégradent'}.`);
-        });
-      });
       if (gameState.reinforcement) { changes.push(gameState.reinforcement); gameState.reinforcement = null; }
       if (gameState.roomId !== roomId) changes.push(`Suite du parcours: ${rooms[gameState.roomId].title}.`);
-      if (!changes.length) changes.push(success ? 'L’action est accomplie. Le groupe peut poursuivre.' : 'L’objectif n’est pas encore atteint. Une autre approche ou un retour au checkpoint reste possible.');
-      return { roomId, optionId: option.id, check: result?.check ?? null, successWithCost: Boolean(result?.successWithCost), title: result?.successWithCost ? option.costTitle ?? 'L’objectif est atteint, au prix d’un effort supplémentaire' : stateStory?.title ?? story?.[success ? 'successTitle' : 'failureTitle'] ?? (success ? 'Le résultat de votre action' : 'La tentative rencontre un obstacle'), paragraphs, changes, failed: !success };
+      if (!changes.length && !effects.length) changes.push(success ? 'L’action est accomplie. Le groupe peut poursuivre.' : 'L’objectif n’est pas encore atteint. Une autre approche ou un retour au checkpoint reste possible.');
+      return { roomId, optionId: option.id, effects, check: result?.check ?? null, successWithCost: Boolean(result?.successWithCost), title: result?.successWithCost ? option.costTitle ?? 'L’objectif est atteint, au prix d’un effort supplémentaire' : stateStory?.title ?? story?.[success ? 'successTitle' : 'failureTitle'] ?? (success ? 'Le résultat de votre action' : 'La tentative rencontre un obstacle'), paragraphs, changes, failed: !success };
     }
 
     function showInventory() {

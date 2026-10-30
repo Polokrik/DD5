@@ -62,7 +62,7 @@ au runtime. La CI lance automatiquement les quatre suites Node.
   les remparts). Variantes de jeu, annoncées comme telles.
 - **Fiches des personnages** réécrites sans mention de fiche ni de MJ; les
   sources sont repliées. Bios de Bjolnir et Ellyjobell reprises des textes des joueurs.
-- Tests : **94 tests Node**, parcours Chromium inchangés.
+- Tests : **97 tests Node**, parcours Chromium inchangés.
 
 ## Santé, repos et défaite (règles de jeu, façon D&D)
 
@@ -111,6 +111,16 @@ au runtime. La CI lance automatiquement les quatre suites Node.
 - Mort d'un compagnon : pas de remplaçant obligatoire; les options liées à lui disparaissent.
   S'il ne reste que deux compagnons, un ancien compagnon parti du groupe (Drek'Thar,
   Sislay après le pavillon) revient, choisi par l'écart minimal des six caractéristiques.
+
+## Effets chiffrés
+
+- Chaque effet est donné en pourcentage : moral ±10 % par point, alerte ±17 % (château ±20 %),
+  confiance publique et factions ±5 %. Pastilles vertes (favorable) ou rouges (défavorable)
+  sur les cartes de choix (« Réussite » / « Échec »), dans le compte rendu et dans la barre d'état
+  (Moral X % · Alerte Y %). Les descriptions écrites en points sont converties à l'affichage.
+- Retour d'un ancien compagnon : écart des caractéristiques pondéré par la classe
+  (paladin–guerrier 0, martial–rôdeur 4, martial–voleur 8, lanceur de sorts 8 à 12).
+- 9 nouvelles options chaotiques (« Provocation ») dans autant de scènes.
 
 ## Ensuite (demandé par le MJ)
 
