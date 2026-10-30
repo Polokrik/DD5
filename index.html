@@ -5190,6 +5190,97 @@
 ];
     SAFE_ALTERNATIVES.forEach(({roomId,option}) => rooms[roomId].options.push(option));
 
+    // Approches supplémentaires confiées à d'autres compagnons : une blessure ou une capture ne doit pas
+    // laisser une seule porte ouverte. Ce sont des variantes de jeu; elles n'ajoutent aucun fait à la chronique.
+    const EXTRA_APPROACHES = [
+      { roomId: 'cult_trail', option: {
+        id: 'piste-betes', label: 'Option – Ellyjobell: Interroger les bêtes du sentier sur la colonne',
+        characterId: 'ellyjobell', skill: 'nature',
+        resolution: { difficulty: 3, skill: 'nature', risk: 'injury', deathType: 'replaceable' },
+        effects: { chaos: -1, message: 'Les bêtes ne disent pas tout, mais Ellyjobell comprend par où la colonne est passée et comment la suivre à distance sans éveiller les sentinelles.' },
+        intent: 'Ellyjobell se fie aux oiseaux et aux renards du sentier pour reconstituer le trajet de la colonne. Réussite: la piste se précise sans alerter le Culte. Échec: elle se blesse dans la broussaille et le groupe perd du temps.',
+        riskText: 'Un échec peut blesser l’intervenante.',
+        source: 'Variante de jeu proposée; événement non attesté dans la campagne jouée.' } },
+      { roomId: 'cult_camp_exterior', option: {
+        id: 'glisser-entre-rondes', label: 'Option – Sislay: Se glisser entre deux rondes',
+        characterId: 'sislay', skill: 'stealth',
+        resolution: { difficulty: 4, skill: 'stealth', risk: 'capture', deathType: 'replaceable' },
+        effects: { chaos: -1, message: 'Entre deux passages de sentinelles, Sislay repère une brèche dans la ligne des feux et y guide le groupe.' },
+        intent: 'Sislay attend le changement de garde pour trouver la brèche. Réussite: le groupe approche sans bruit et l’alerte diminue. Échec: elle peut être capturée par les sentinelles.',
+        riskText: 'Un échec peut entraîner sa capture.',
+        source: 'Variante de jeu proposée; événement non attesté dans la campagne jouée.' } },
+      { roomId: 'cult_camp_exterior', option: {
+        id: 'couvert-vegetal', label: 'Option – Ellyjobell: Mener le groupe par le couvert des pins',
+        characterId: 'ellyjobell', skill: 'nature',
+        resolution: { difficulty: 4, skill: 'nature', risk: 'injury', deathType: 'replaceable' },
+        effects: { chaos: -1, message: 'Ellyjobell conduit le groupe de fossé en taillis, là où la lueur des feux de garde ne porte pas.' },
+        intent: 'Ellyjobell choisit un chemin sous les branches, loin des feux. Réussite: le groupe se rapproche du camp à couvert. Échec: elle se blesse dans l’obscurité et fait du bruit.',
+        riskText: 'Un échec peut blesser l’intervenante.',
+        source: 'Variante de jeu proposée; événement non attesté dans la campagne jouée.' } },
+      { roomId: 'hatchery_entry', option: {
+        id: 'entree-magie', label: 'Option – Darrin: Faire sauter le verrou d’un trait de magie',
+        characterId: 'darrin', skill: 'wild_magic',
+        resolution: { difficulty: 6, skill: 'wild_magic', risk: 'injury', deathType: 'replaceable' },
+        effects: { chaos: 1, message: 'Un trait de magie fait sauter le verrou. L’éclat résonne dans la grotte, mais la voie est ouverte.' },
+        intent: 'Darrin libère l’entrée par la magie sauvage. Réussite: la porte s’ouvre, au prix d’un vacarme qui accroît l’alerte. Échec: le sort lui échappe et le blesse.',
+        riskText: 'Un échec peut blesser l’intervenant.',
+        source: 'Variante de jeu proposée; événement non attesté dans la campagne jouée.' } },
+      { roomId: 'hatchery_entry', option: {
+        id: 'entree-epaule', label: 'Option – Drek’Thar: Enfoncer l’entrée à l’épaule',
+        characterId: 'drekthar', skill: 'might',
+        resolution: { difficulty: 6, skill: 'might', risk: 'injury', deathType: 'replaceable' },
+        effects: { moraleGroupe: 1, chaos: 1, message: 'La porte cède sous l’épaule de Drek’Thar. Le fracas se répercute dans les galeries.' },
+        intent: 'Drek’Thar force le passage sans attendre. Réussite: la voie est ouverte et le groupe reprend confiance, mais l’alerte monte. Échec: il se blesse contre le battant.',
+        riskText: 'Un échec peut blesser l’intervenant.',
+        source: 'Variante de jeu proposée; événement non attesté dans la campagne jouée.' } },
+      { roomId: 'fungal_chamber', option: {
+        id: 'fonges-reconnaitre', label: 'Option – Ellyjobell: Reconnaître les nappes dangereuses',
+        characterId: 'ellyjobell', skill: 'nature',
+        resolution: { difficulty: 5, skill: 'nature', risk: 'injury', deathType: 'replaceable' },
+        effects: { chaos: -1, message: 'Ellyjobell distingue les nappes inoffensives de celles qui libèrent des spores et indique où poser le pied.' },
+        intent: 'Ellyjobell se fie à sa connaissance des plantes et des champignons pour tracer un passage. Réussite: le groupe traverse sans réveiller la salle. Échec: elle inhale des spores et se blesse.',
+        riskText: 'Un échec peut blesser l’intervenante.',
+        source: 'Variante de jeu proposée; événement non attesté dans la campagne jouée.' } },
+      { roomId: 'fungal_chamber', option: {
+        id: 'fonges-eclaireur', label: 'Option – Sislay: Ouvrir la marche entre les spores',
+        characterId: 'sislay', skill: 'tracking',
+        resolution: { difficulty: 6, skill: 'tracking', risk: 'injury', deathType: 'replaceable' },
+        effects: { chaos: -1, message: 'Sislay avance la première, éprouve chaque appui et le groupe suit ses pas sans soulever de nuage.' },
+        intent: 'Sislay éclaire la route en testant le sol avant chaque pas. Réussite: le groupe passe en silence. Échec: elle dérange les spores et se blesse.',
+        riskText: 'Un échec peut blesser l’intervenante.',
+        source: 'Variante de jeu proposée; événement non attesté dans la campagne jouée.' } },
+      { roomId: 'egg_chamber', option: {
+        id: 'detruire-oeufs-drekthar', label: 'What If — Drek’Thar: Détruire les œufs',
+        forbiddenFlag: 'eggsDecided', characterId: 'drekthar', skill: 'might',
+        resolution: { difficulty: 7, skill: 'might', risk: 'injury', deathType: 'replaceable' },
+        effects: { moraleGroupe: 1, chaos: 1, message: 'Drek’Thar brise les coquilles d’un coup d’épée; un cri rituel résonne dans tout le repaire.' },
+        onSuccess: { setFlags: { eggsDecided: true, eggsDestroyed: true, eggsStolen: false, eggsLeft: false }, gotoRoom: 'mondath_chamber' },
+        riskText: 'Un échec peut blesser l’intervenant.',
+        intent: 'Variante: Drek’Thar brise les œufs pour empêcher leur éclosion. Boule et Bill ne rejoindront pas le groupe dans ce parcours.',
+        source: 'Variante de jeu proposée; événement non attesté dans la campagne jouée.' } },
+      { roomId: 'egg_chamber', option: {
+        id: 'laisser-oeufs-ellyjobell', label: 'What If — Ellyjobell: Laisser les œufs',
+        forbiddenFlag: 'eggsDecided', characterId: 'ellyjobell', skill: 'nature',
+        resolution: { difficulty: 6, skill: 'nature', risk: 'injury', deathType: 'replaceable' },
+        effects: { chaos: -1, message: 'Ellyjobell referme le nid comme elle l’a trouvé et ramène le groupe dehors sans laisser de trace.' },
+        onSuccess: { setFlags: { eggsDecided: true, eggsLeft: true, eggsStolen: false, eggsDestroyed: false }, gotoRoom: 'mondath_chamber' },
+        riskText: 'Un échec peut blesser l’intervenante.',
+        intent: 'Variante: poursuivre sans emporter les œufs. Boule et Bill ne rejoindront pas le groupe dans ce parcours.',
+        source: 'Variante de jeu proposée; événement non attesté dans la campagne jouée.' } },
+      { roomId: 'naerytar_swamp', option: {
+        id: 'naerytar-piste', label: 'Option – Sislay: Repérer le sentier des relèves',
+        characterId: 'sislay', skill: 'tracking',
+        resolution: { difficulty: 3, skill: 'tracking', risk: 'injury', deathType: 'replaceable' },
+        effects: { message: 'Sislay relève les traces des gardes dans la vase et en déduit l’heure des relèves.' },
+        onSuccess: { variableDelta: { castleAlertLevel: -1 }, checkpoint: 'Repérage de Naerytar' },
+        onFailure: { variableDelta: { castleAlertLevel: 1 }, message: 'Une branche casse sous la botte de Sislay. Un guetteur lève sa lanterne et la paranoïa grimpe.' },
+        onFailurePost: { checkpoint: 'Repérage de Naerytar' },
+        intent: 'Sislay étudie les empreintes pour comprendre les rondes. Réussite: l’alerte du château diminue. Échec: elle est repérée, elle se blesse et l’alerte monte.',
+        riskText: 'Un échec peut blesser l’intervenante.',
+        source: 'Variante de jeu proposée; événement non attesté dans la campagne jouée.' } }
+    ];
+    EXTRA_APPROACHES.forEach(({roomId,option}) => rooms[roomId].options.push(option));
+
     const CHRONICLE_CHECKS = {
       'tunnel-temple': { actor:'darrin',skill:'arcana',ability:'int',skillKey:'investigation',label:'Ouvrir la porte du tunnel',dc:10,
         failure:'La porte résiste sous la rouille. Darrin finit par la dégager, mais les grincements portent au-delà du passage et donnent l’alerte.' },
@@ -8309,7 +8400,6 @@
       const name = document.createElement('h3'); name.textContent = person.name ?? characters[selected].name;
       const meta = document.createElement('div'); meta.className = 'profile-meta'; meta.textContent = `${person.race} · ${person.role} · ${PRESENTATION.states[characters[selected].state]}`;
       const identity = document.createElement('div'); identity.append(name, meta); heading.append(portraitImage(selected), identity); list.appendChild(heading);
-      renderCharacterStats(list,selected);
       const prose = document.createElement('div'); prose.className = 'profile-prose';
       [person.personality,...(person.biography??[])].forEach(text => {const p = document.createElement('p');p.textContent=text;prose.appendChild(p);}); list.appendChild(prose);
       const equipment = document.createElement('div'); equipment.className = 'profile-equipment';
@@ -8317,6 +8407,7 @@
       const items = document.createElement('p'); items.textContent = (person.equipment??[]).join(', '); equipment.appendChild(items);
       if (person.laterEquipment?.length) {const later=document.createElement('p');later.textContent=`Objets portés plus tard dans la campagne : ${person.laterEquipment.join(', ')}.`;equipment.appendChild(later);}
       const note=document.createElement('p');note.textContent='Tout cela n’est pas en leur possession dès l’arrivée à Verdure : certains objets ne viendront que plus tard.';equipment.appendChild(note);list.appendChild(equipment);
+      renderCharacterStats(list,selected);
       const sources=document.createElement('details');sources.className='profile-sources';const sourcesTitle=document.createElement('summary');sourcesTitle.textContent='Sources de la chronique (hors récit)';const sourcesText=document.createElement('p');sourcesText.textContent=(person.sources??[]).join(' · ');sources.append(sourcesTitle,sourcesText);list.appendChild(sources);
       list.scrollTop=0;
       showDialog('companyDialog');
