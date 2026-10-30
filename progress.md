@@ -62,7 +62,7 @@ au runtime. La CI lance automatiquement les quatre suites Node.
   les remparts). Variantes de jeu, annoncées comme telles.
 - **Fiches des personnages** réécrites sans mention de fiche ni de MJ; les
   sources sont repliées. Bios de Bjolnir et Ellyjobell reprises des textes des joueurs.
-- Tests : **90 tests Node**, parcours Chromium inchangés.
+- Tests : **94 tests Node**, parcours Chromium inchangés.
 
 ## Santé, repos et défaite (règles de jeu, façon D&D)
 
@@ -102,6 +102,15 @@ au runtime. La CI lance automatiquement les quatre suites Node.
   paragraphe recopié entre scènes.
 - Limites connues : si Bjolnir est mort, la scène des runes de Cumulus reste sans lui
   (le texte suppose son rôle); les scènes de chronique restent des restitutions.
+
+## Pertes et choix chaotiques
+
+- « Et si… » reste affiché : c'est une partie alternative assumée.
+- Les provocations (« Provocation ») sont des **choix chaotiques neutres** : jamais de
+  game over, un effet léger (moral, alerte, confiance), jouables une fois par scène.
+- Mort d'un compagnon : pas de remplaçant obligatoire; les options liées à lui disparaissent.
+  S'il ne reste que deux compagnons, un ancien compagnon parti du groupe (Drek'Thar,
+  Sislay après le pavillon) revient, choisi par l'écart minimal des six caractéristiques.
 
 ## Ensuite (demandé par le MJ)
 

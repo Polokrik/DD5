@@ -90,3 +90,42 @@ test('le repos est proposé dans les scènes de chronique et reste sauvegardé',
     assert.ok(Object.keys(saved.flags).some(k => k.startsWith('rested_')), room);
   }
 });
+
+test('une provocation est un choix chaotique sans game over, jouable une seule fois', () => {
+  const g = at('cult_trail');
+  const morale = g.run('variables.moraleGroupe'), chaos = g.run('variables.chaos');
+  choose(g, 'deguisement-kobold'); settle(g);
+  assert.equal(g.run('gameState.lastReport.title'), 'Un choix pour le moins inattendu');
+  assert.notEqual(g.run('gameState.lastReport.title'), 'Cette tentative a échoué');
+  assert.equal(g.run('variables.moraleGroupe'), morale + 1);
+  assert.equal(g.run('variables.chaos'), chaos + 1);
+  assert.equal(g.run('gameState.roomId'), 'cult_trail');
+  continueReport(g);
+  assert.ok(!ids(g).includes('deguisement-kobold'));
+});
+
+test('après plusieurs pertes, un ancien compagnon aux caractéristiques proches revient', () => {
+  const g = at('skyreach_castle', `fireRosterTimelineTrigger('LODGE_REUNION'); fireRosterTimelineTrigger('SKYREACH_REUNION');
+    characters.bjolnir.state = 'dead'; characters.darrin.state = 'dead'; characters.ellyjobell.state = 'dead'`);
+  assert.equal(states(g).drekthar, 'absent');
+  rest(g, 12, 12);
+  // Écart total des six caractéristiques avec Bjolnir : Sislay 14, Drek’Thar 16.
+  assert.equal(states(g).sislay, 'active', 'Sislay est la plus proche de Bjolnir');
+  assert.equal(states(g).drekthar, 'absent');
+  assert.match(g.run('gameState.lastReport.paragraphs.join(" ")'), /Sislay Baite retrouve le Clan, appelé par la perte de Bjolnir/);
+});
+
+test('avec trois compagnons debout, la perte réduit seulement les options', () => {
+  const g = at('skyreach_castle', `fireRosterTimelineTrigger('LODGE_REUNION'); fireRosterTimelineTrigger('SKYREACH_REUNION');
+    characters.bjolnir.state = 'dead'`);
+  rest(g, 12, 12);
+  assert.equal(states(g).drekthar, 'absent');
+  assert.equal(states(g).sislay, 'absent');
+});
+
+test('aucun renfort avant le départ de Drek’Thar et Sislay', () => {
+  const g = at('greenest_keep', `characters.bjolnir.state = 'dead'; characters.darrin.state = 'dead'; characters.ellyjobell.state = 'dead'; characters.drekthar.state = 'dead'`);
+  rest(g, 12, 12);
+  assert.equal(states(g).kairon, 'absent');
+  assert.equal(states(g).malar, 'absent');
+});

@@ -1366,7 +1366,7 @@
         "characterId": "darrin",
         "skill": "wild_magic",
         "onSelect": "silly_lennithon",
-        "riskText": "Provocation dangereuse: cette variante peut interrompre la tentative. Retour possible avant le choix."
+        "riskText": "Choix chaotique : sans gravité, mais il peut attirer l’attention."
       }
     ],
     "chapter": 3
@@ -1519,7 +1519,7 @@
         "characterId": "darrin",
         "skill": "wild_magic",
         "onSelect": "silly_lennithon",
-        "riskText": "Provocation dangereuse: cette variante peut interrompre la tentative. Retour possible avant le choix."
+        "riskText": "Choix chaotique : sans gravité, mais il peut attirer l’attention."
       },
       {
         "id": "camp-retour",
@@ -1661,7 +1661,7 @@
         "characterId": "darrin",
         "skill": "wild_magic",
         "onSelect": "silly_lennithon",
-        "riskText": "Provocation dangereuse: cette variante peut interrompre la tentative. Retour possible avant le choix."
+        "riskText": "Choix chaotique : sans gravité, mais il peut attirer l’attention."
       }
     ],
     "chapter": 4
@@ -2167,7 +2167,7 @@
         "id": "signe-dragon",
         "label": "Option – Faire un signe au dragon",
         "onSelect": "silly_wave_lennithon",
-        "riskText": "Provocation dangereuse: cette variante peut interrompre la tentative. Retour possible avant le choix."
+        "riskText": "Choix chaotique : sans gravité, mais il peut attirer l’attention."
       }
     ],
     "chapter": 1
@@ -2293,7 +2293,7 @@
         "id": "swift-culte",
         "label": "Option – Négocier avec les kobolds pour rejoindre le culte",
         "onSelect": "silly_join_cult",
-        "riskText": "Provocation dangereuse: cette variante peut interrompre la tentative. Retour possible avant le choix."
+        "riskText": "Choix chaotique : sans gravité, mais il peut attirer l’attention."
       }
     ],
     "chapter": 1
@@ -2718,7 +2718,7 @@
         "id": "duel-danse",
         "label": "Option – Proposer une danse",
         "onSelect": "silly_dance_cyanwrath",
-        "riskText": "Provocation dangereuse: cette variante peut interrompre la tentative. Retour possible avant le choix."
+        "riskText": "Choix chaotique : sans gravité, mais il peut attirer l’attention."
       }
     ],
     "chapter": 2,
@@ -2759,7 +2759,7 @@
         "id": "council-crown-self",
         "label": "Option absurde — Se déclarer Roi de Waterdeep",
         "onSelect": "silly_king_waterdeep",
-        "riskText": "Provocation dangereuse: cette variante peut interrompre la tentative. Retour possible avant le choix."
+        "riskText": "Choix chaotique : sans gravité, mais il peut attirer l’attention."
       }
     ],
     "chapter": 10
@@ -3255,7 +3255,7 @@
         "id": "dragons-ride-selfie",
         "label": "Option absurde — Exiger un portrait à dos de dragon",
         "onSelect": "silly_dragon_selfie",
-        "riskText": "Provocation dangereuse: cette variante peut interrompre la tentative. Retour possible avant le choix."
+        "riskText": "Choix chaotique : sans gravité, mais il peut attirer l’attention."
       }
     ],
     "chapter": 14
@@ -3403,7 +3403,7 @@
         "id": "caravane-dragon",
         "label": "Option – Accuser tout le monde d’être un dragon déguisé",
         "onSelect": "silly_accuse_dragons",
-        "riskText": "Provocation dangereuse: cette variante peut interrompre la tentative. Retour possible avant le choix."
+        "riskText": "Choix chaotique : sans gravité, mais il peut attirer l’attention."
       },
       {
         "id": "caravane-arrivee",
@@ -3464,7 +3464,7 @@
         "id": "naerytar-canard",
         "label": "Option – Négocier avec un canard du marais",
         "onSelect": "silly_swamp_duck",
-        "riskText": "Provocation dangereuse: cette variante peut interrompre la tentative. Retour possible avant le choix."
+        "riskText": "Choix chaotique : sans gravité, mais il peut attirer l’attention."
       },
       {
         "id": "naerytar-entree",
@@ -3606,7 +3606,7 @@
         "id": "naerytar-bouffon",
         "label": "Option – Déclarer une inspection fiscale draconique",
         "onSelect": "silly_tax_inspection",
-        "riskText": "Provocation dangereuse: cette variante peut interrompre la tentative. Retour possible avant le choix."
+        "riskText": "Choix chaotique : sans gravité, mais il peut attirer l’attention."
       },
       {
         "id": "naerytar-escape",
@@ -3964,7 +3964,7 @@
         "id": "plan-riddles",
         "label": "Option – Défier Tiamat à un duel d’énigmes",
         "onSelect": "silly_riddle_duel",
-        "riskText": "Provocation dangereuse: cette variante peut interrompre la tentative. Retour possible avant le choix."
+        "riskText": "Choix chaotique : sans gravité, mais il peut attirer l’attention."
       }
     ]
   },
@@ -4342,7 +4342,7 @@
         "id": "ritual-shout-stop",
         "label": "Option – Crier « STOP ! » très fort au portail",
         "onSelect": "silly_shout_stop",
-        "riskText": "Provocation dangereuse: cette variante peut interrompre la tentative. Retour possible avant le choix."
+        "riskText": "Choix chaotique : sans gravité, mais il peut attirer l’attention."
       },
       {
         "id": "ritual-resolve",
@@ -7907,6 +7907,10 @@
     BOOK_EXPANSION.proposals.forEach(({roomId,option}) => rooms[roomId].options.push(option));
     // Scènes de chronique à un seul choix : un second choix réel, sans jet ni coût, pour ne pas
     // obliger à revenir en arrière. Il reprend les observations sourcées de la scène.
+    Object.values(rooms).forEach(room => room.options.filter(option => String(option.onSelect).startsWith('silly_')).forEach(option => {
+      option.effects = { ...option.effects, message: 'Un choix pour le moins inattendu.' };
+      ACTION_NARRATION[option.id] = { successTitle: 'Un choix pour le moins inattendu' };
+    }));
     const POINT_ROOMS = ['leosin_return','mondath_chamber','hatchery_exit','elturel_road','elturel_tournament','carnath_roadhouse',
       'hunting_lodge','skyreach_castle','skyreach_chronicle','diderius_chronicle','ice_sea_chronicle','iceberg_rebellion',
       'second_council','misty_forest_chronicle','neronvein_chronicle','neronvein_battle','thay_invitation'];
@@ -9158,6 +9162,7 @@
       const character = characters[characterId];
       if (!character) return false;
       const allowedStates = new Set(['absent', 'captured', 'retired', 'dead']);
+      if (['active', 'injured', 'down'].includes(character.state)) character.departed = true;
       const nextState = allowedStates.has(state) ? state : 'absent';
       if (character.state === nextState) return false;
       character.state = nextState;
@@ -9604,6 +9609,21 @@
       return resolved.total;
     }
 
+    // Perte d'un compagnon : le Clan reste jouable avec moins d'options. S'il ne reste que deux compagnons,
+    // un ancien compagnon parti du groupe revient, choisi parmi ceux dont les caractéristiques sont les plus proches.
+    function reinforceAfterLoss() {
+      const standing = Object.values(characters).filter(c => ['active', 'injured', 'down'].includes(c.state));
+      const fallen = Object.entries(characters).filter(([, c]) => c.state === 'dead' && !c.replacedBy);
+      const candidates = Object.entries(characters).filter(([, c]) => c.state === 'absent' && c.departed);
+      if (standing.length >= 3 || !fallen.length || !candidates.length) return '';
+      const vector = id => { const abilities = getAdventureStats(id)?.abilities ?? {}; return ['str', 'dex', 'con', 'int', 'wis', 'cha'].map(key => abilities[key] ?? 10); };
+      const [lostId, lost] = fallen[0], lostVector = vector(lostId);
+      const distance = id => vector(id).reduce((sum, value, index) => sum + Math.abs(value - lostVector[index]), 0);
+      const [backId, back] = candidates.sort((a, b) => distance(a[0]) - distance(b[0]))[0];
+      back.state = 'active'; back.departed = false; lost.replacedBy = backId;
+      return `${back.name} retrouve le Clan, appelé par la perte de ${lost.name}.`;
+    }
+
     // Défaite totale : seulement quand plus aucun compagnon présent n'est vivant.
     function checkTotalDefeat() {
       const alive = Object.values(characters).some(c => ['active', 'injured', 'down', 'captured'].includes(c.state));
@@ -9643,6 +9663,8 @@
       }
       flags[`rested_${chapter}`] = true;
       clampTrackedVariables();
+      const reinforcement = reinforceAfterLoss();
+      if (reinforcement) lines.push(reinforcement);
       uiState.feedback = lines.join(' ');
       if (checkTotalDefeat()) return { endedByGameOver: true, handled: true };
       return { endedByGameOver: false, handled: true };
@@ -9810,7 +9832,11 @@
       if (outcome.message) writeContext(outcome.message);
       applyPostEffects(outcome.post);
       updateStatusStrip();
-      if (outcome.characterChanges.length && checkTotalDefeat()) return { endedByGameOver: true };
+      if (outcome.characterChanges.length) {
+        const reinforcement = reinforceAfterLoss();
+        if (reinforcement) { outcome.message = [outcome.message, reinforcement].filter(Boolean).join(' '); writeContext(reinforcement); gameState.reinforcement = reinforcement; }
+        if (checkTotalDefeat()) return { endedByGameOver: true };
+      }
       return { endedByGameOver: false, success: outcome.success };
     }
 
@@ -9821,18 +9847,18 @@
         restoreDecisionCheckpoint();
         return { endedByGameOver: false, handled: true };
       }
-      const sillyMessages = {
-        silly_lennithon: 'Votre diversion tourne à la farce. Les sentinelles vous encerclent avant la fin du spectacle.',
-        silly_wave_lennithon: 'Vous saluez Lennithon. Il répond par un souffle de foudre, protocolaire et terminal.',
-        silly_join_cult: 'Votre offre de service enthousiasme les kobolds: ils exigent d’abord un sacrifice. Vous.',
-        silly_dance_cyanwrath: 'Vous lancez un pas de danse martial. Cyanwrath, offensé artistiquement, met fin au spectacle.',
-        silly_king_waterdeep: 'Vous réclamez la couronne de Waterdeep. Le protocole vous couronne surtout d’un bannissement immédiat.',
-        silly_dragon_selfie: 'Vous exigez de poser pour un portrait en selle. Le dragon d’airain vous expédie dehors d’un souffle magistral.',
-        silly_accuse_dragons: 'Vous accusez toute la caravane d’être draconique. Les marchands votent votre exil immédiat.',
-        silly_swamp_duck: 'Le canard réclame un tribut impérial en pain sec. Votre refus déclenche une embuscade absurde.',
-        silly_tax_inspection: 'Votre inspection fiscale révèle zéro reçu. Les cultistes préfèrent vous jeter dehors.',
-        silly_riddle_duel: 'Tiamat accepte une seule énigme: « Combien de vies sacrifieras-tu? » Votre silence vaut défaite immédiate.',
-        silly_shout_stop: 'Vous criez STOP. Le portail répond par un écho moqueur, puis vous souffle hors du cercle.'
+      const chaoticChoices = {
+        silly_lennithon: { text: 'Votre diversion tourne à la farce. Les sentinelles se regardent, perplexes, puis reprennent leur ronde; le Clan retient un fou rire.', moraleGroupe: 1, chaos: 1 },
+        silly_wave_lennithon: { text: 'Vous saluez Lennithon. Il lève un sourcil, grogne et détourne le regard.', moraleGroupe: 1 },
+        silly_join_cult: { text: 'Votre offre de service enthousiasme les kobolds, qui exigent aussitôt un serment d’allégeance. Vous le bredouillez si mal qu’ils vous chassent d’un geste.', chaos: 1 },
+        silly_dance_cyanwrath: { text: 'Vous lancez un pas de danse martial. Cyanwrath vous toise sans un mot, tandis que ses hommes ricanent.', chaos: 1 },
+        silly_king_waterdeep: { text: 'Vous réclamez la couronne de Waterdeep. Le protocole vous écoute avec une politesse glaciale, puis passe à l’ordre du jour.', moraleGroupe: 1, publicTrust: -1 },
+        silly_dragon_selfie: { text: 'Vous exigez de poser pour un portrait en selle. Le dragon d’airain soupire, ce qui suffit à vous rappeler la gravité de l’audience.', publicTrust: -1 },
+        silly_accuse_dragons: { text: 'Vous accusez toute la caravane d’être draconique. Les marchands s’écartent, vexés, et le convoi vous regarde de travers pour le reste du trajet.', chaos: 1 },
+        silly_swamp_duck: { text: 'Le canard réclame un tribut en pain sec. Vous n’en avez pas; il s’éloigne, vexé, en cancanant bruyamment.', chaos: 1 },
+        silly_tax_inspection: { text: 'Votre inspection fiscale draconique ne révèle aucun reçu. Les cultistes vous regardent, interloqués, et leur vigilance flotte un instant.', moraleGroupe: 1 },
+        silly_riddle_duel: { text: 'Vous posez une énigme à voix haute. Personne ne répond, et l’écho s’en charge à votre place.', chaos: 1 },
+        silly_shout_stop: { text: 'Vous criez STOP. Le portail répond par un écho moqueur.', chaos: 1 }
       };
       const seriousMessages = {
         serious_reckless_bridge: 'Le pont cède sous la foule. Catastrophe stratégique: la manœuvre était explicitement insensée.'
@@ -9841,9 +9867,12 @@
         triggerGameOver('definitive', seriousMessages[selectionKey]);
         return { endedByGameOver: true, handled: true };
       }
-      if (sillyMessages[selectionKey]) {
-        triggerGameOver('silly', sillyMessages[selectionKey]);
-        return { endedByGameOver: true, handled: true };
+      if (chaoticChoices[selectionKey]) {
+        const choice = chaoticChoices[selectionKey];
+        variables.moraleGroupe += choice.moraleGroupe ?? 0; variables.chaos += choice.chaos ?? 0; variables.publicTrust += choice.publicTrust ?? 0;
+        clampTrackedVariables();
+        uiState.feedback = choice.text;
+        return { endedByGameOver: false, handled: true };
       }
       if (selectionKey === 'route_after_strategy') {
         ensureCouncilVariables();
@@ -10039,6 +10068,7 @@
           if (delta) changes.push(`Vos relations avec ${factions[faction] ?? faction} ${delta > 0 ? 's’améliorent' : 'se dégradent'}.`);
         });
       });
+      if (gameState.reinforcement) { changes.push(gameState.reinforcement); gameState.reinforcement = null; }
       if (gameState.roomId !== roomId) changes.push(`Suite du parcours: ${rooms[gameState.roomId].title}.`);
       if (!changes.length) changes.push(success ? 'L’action est accomplie. Le groupe peut poursuivre.' : 'L’objectif n’est pas encore atteint. Une autre approche ou un retour au checkpoint reste possible.');
       return { roomId, optionId: option.id, check: result?.check ?? null, successWithCost: Boolean(result?.successWithCost), title: result?.successWithCost ? option.costTitle ?? 'L’objectif est atteint, au prix d’un effort supplémentaire' : stateStory?.title ?? story?.[success ? 'successTitle' : 'failureTitle'] ?? (success ? 'Le résultat de votre action' : 'La tentative rencontre un obstacle'), paragraphs, changes, failed: !success };
