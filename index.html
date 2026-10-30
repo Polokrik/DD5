@@ -56,6 +56,12 @@
     .party-person strong { display: block; font-size: 11px; font-weight: 500; margin-bottom: 5px; }
     .party-person small { display: block; color: #b2bcb9; font-size: 9px; }
     .party-person[data-state='injured'] small { color: #efba86; }
+    .portrait-stack { display: grid; gap: 4px; justify-items: stretch; }
+    .health { display: flex; gap: 2px; height: 4px; }
+    .health i { flex: 1; background: #3a3f3d; border-radius: 1px; }
+    .health[data-health='3'] i, .health[data-health='2'] i:nth-child(-n+2), .health[data-health='1'] i:first-child { background: #7fb685; }
+    .health[data-health='2'] i:nth-child(-n+2) { background: #efba86; }
+    .health[data-health='1'] i:first-child { background: #d9645a; }
     .journal-sheet { background: var(--paper); color: var(--ink); padding: 42px 52px 35px; border-radius: 0 0 12px 12px; }
     .chapter-rule { display: flex; align-items: center; gap: 17px; margin-bottom: 29px; color: #866c4d; }
     .chapter-rule::after { content: ''; height: 1px; background: #b9ad9a77; flex: 1; }
@@ -75,6 +81,7 @@
     .choice-number { width: 22px; font: 12px Georgia, serif; color: #8f7758; flex-shrink: 0; }
     .primary .choice-number { color: #dfc398; }
     .choice-content { flex: 1; min-width: 0; }
+    .choice-tag { display: table; margin-bottom: 5px; padding: 1px 7px; border: 1px solid #b89868; border-radius: 9px; font-size: 10px; font-weight: 500; letter-spacing: .04em; color: #8a6a3a; }
     .choice-label { font-size: 13px; font-weight: 600; line-height: 1.5; display: block; }
     .choice-detail { display: block; font-size: 10px; color: #746c60; margin-top: 5px; line-height: 1.5; }
     .primary .choice-detail { color: #c0ccc6; }
@@ -287,6 +294,8 @@
       w: 'ouest', ouest: 'ouest'
     };
     const URL_PARAMS = new URLSearchParams(window.location.search);
+    // La bataille finale hypothétique reste dans le code, mais n'est pas proposée aux joueurs de la campagne.
+    const WHAT_IF_FINALE = URL_PARAMS.has('whatif');
 
     const CHRONICLE_CHAPTERS = [
   {
@@ -691,7 +700,7 @@
       "Bjolnir a grandi dans les montagnes, aux environs de Castelmithral. Baigné de l'amour de ses parents, c'était un nain particulièrement expansif, du moins pour un nain. Il passait ses journées à parcourir la forteresse et à tenter de rendre à chacun l'affection qu'on lui prodiguait.",
       "À l'adolescence, il découvre le culte d'Eldath, déesse de la paix, et entre dans ses ordres comme écuyer. Il approfondit ses connaissances divines et se voue à apporter la paix partout. Devenu adulte, il embrasse la carrière de paladin d'Eldath, puis part à la découverte des Royaumes oubliés pour y porter ses croyances. Après quelques années, il rejoint une compagnie de mercenaires pour ne plus voyager seul.",
       "Faire entendre sa foi à la compagnie sera déjà une rude épreuve, sans parler des territoires hostiles, mais il a confiance en sa déesse. Il croit parfois trop facilement ceux qui disent partager sa foi, et son souci des plus faibles, affirmé par son serment de rédemption, le pousse à prendre des risques pour leur venir en aide.",
-      "Son marteau et son bouclier accompagnent ses interventions. Au cours du sauvetage de Linan, il se porte au secours de la famille avec Drek'Thar, puis obtient par la persuasion que les kobolds survivants abandonnent le combat."
+      "Son marteau et son bouclier accompagnent ses interventions. Au cours du sauvetage de Linan, il se porte au secours de la famille avec Drek’Thar, puis obtient par la persuasion que les kobolds survivants abandonnent le combat."
     ],
     "sources": [
       "Bjolnir.pdf, pages 1–2",
@@ -701,11 +710,11 @@
   "drekthar": {
     "short": "Drek’Thar",
     "role": "Guerrier · Champion",
-    "personality": "Drek'Thar aime se battre et sait le faire. Ce guerrier demi-orc privilégie volontiers l'affrontement lorsqu'un danger se présente, mais respecte aussi ceux qui sont plus faibles que lui. Il défend l'égalité entre les peuples et veut trouver sa place auprès de ses compagnons.",
+    "personality": "Drek’Thar aime se battre et sait le faire. Ce guerrier demi-orc privilégie volontiers l'affrontement lorsqu'un danger se présente, mais respecte aussi ceux qui sont plus faibles que lui. Il défend l'égalité entre les peuples et veut trouver sa place auprès de ses compagnons.",
     "hair": "#212e37",
     "skin": "#839080",
     "coat": "#5c6a78",
-    "name": "Drek'Thar",
+    "name": "Drek’Thar",
     "race": "Demi-orc",
     "background": "Noble",
     "equipment": [
@@ -1133,7 +1142,7 @@
     "successTitle": "Darrin ouvre une brèche dans l’encerclement",
     "success": [
       "Darrin prépare son sort tandis que Bjolnir et Drek’Thar retiennent les kobolds loin de la famille. La décharge frappe la ligne des assaillants et les force à s’écarter, donnant aux aventuriers le passage qu’ils cherchaient.",
-      "Le Clan se rassemble autour de Linan et des siens, puis les accompagne jusqu’à la forteresse. Cette variante permet de sauver la famille par la magie; elle ne suit pas la reddition obtenue par Bjolnir dans la campagne."
+      "Le Clan se rassemble autour de Linan et des siens, puis les accompagne jusqu’à la forteresse. La famille est sauvée par la magie."
     ],
     "failureTitle": "Le sort complique l’évacuation",
     "failure": [
@@ -1145,7 +1154,7 @@
     "successTitle": "Drek’Thar dégage le passage",
     "success": [
       "Drek’Thar s’interpose entre la famille et les kobolds, puis engage ceux qui lui barrent la route. Ses compagnons profitent de la pression qu’il exerce pour se rapprocher de Linan et former une escorte autour des siens.",
-      "Lorsque le passage est suffisamment dégagé, le guerrier rejoint le repli du groupe vers la forteresse. La famille est sauvée; cette variante privilégie l’affrontement au lieu de la reddition rapportée par le MJ."
+      "Lorsque le passage est suffisamment dégagé, le guerrier rejoint le repli du groupe vers la forteresse. La famille est sauvée par la force des armes."
     ],
     "failureTitle": "Drek’Thar couvre un repli difficile",
     "failure": [
@@ -1157,7 +1166,7 @@
     "successTitle": "Une sortie discrète est ouverte",
     "success": [
       "Sislay examine les abords et s’approche d’un accès en profitant des déplacements des pillards. Elle parvient à ouvrir un passage sans entraîner la troupe qui surveille la porte principale.",
-      "Ses compagnons conduisent les occupants hors du bâtiment, puis les ramènent à la forteresse. Le temple est évacué dans cette variante du sauvetage."
+      "Ses compagnons conduisent les occupants hors du bâtiment, puis les ramènent à la forteresse. Le temple est évacué."
     ],
     "failureTitle": "La sortie ne peut pas être dégagée",
     "failure": [
@@ -1169,7 +1178,7 @@
     "successTitle": "La diversion éloigne les assaillants",
     "success": [
       "Bjolnir engage les pillards qui menacent la porte et les contraint à se tourner vers lui. Ses compagnons profitent de cette diversion pour rejoindre le prêtre et les habitants enfermés dans le bâtiment.",
-      "Le groupe rassemble les occupants et les ramène derrière les remparts. Cette variante a permis d’évacuer le temple par une attaque de diversion."
+      "Le groupe rassemble les occupants et les ramène derrière les remparts. L’attaque de diversion a permis d’évacuer le temple."
     ],
     "failureTitle": "Les pillards conservent leurs positions",
     "failure": [
@@ -1257,7 +1266,7 @@
     "successTitle": "Drek’Thar abat Cyanwrath",
     "success": [
       "Drek’Thar engage le duel et soutient les attaques du demi-dragon sans lui laisser imposer le combat. Le guerrier profite des ouvertures qui se présentent pour riposter, jusqu’à porter les coups qui font tomber Cyanwrath. Son adversaire ne se relève pas.",
-      "Les otages sont libérés et rejoignent les défenseurs de la forteresse. Drek’Thar revient auprès du Clan, vainqueur d’un affrontement qui se terminait autrement dans la campagne. Dans cette variante, Cyanwrath est mort à Verdure; le groupe ne pourra pas le retrouver vivant dans la grotte des pillards."
+      "Les otages sont libérés et rejoignent les défenseurs de la forteresse. Drek’Thar revient auprès du Clan, vainqueur d’un affrontement qui se terminait autrement dans la campagne. Cyanwrath est mort à Verdure; le groupe ne pourra pas le retrouver vivant dans la grotte des pillards."
     ],
     "failureTitle": "Drek’Thar tombe sous les coups de Cyanwrath",
     "failure": [
@@ -1357,7 +1366,7 @@
         "characterId": "darrin",
         "skill": "wild_magic",
         "onSelect": "silly_lennithon",
-        "riskText": "Provocation dangereuse: cette variante peut interrompre la tentative. Retour possible avant le choix."
+        "riskText": "Choix chaotique : sans gravité, mais il peut attirer l’attention."
       }
     ],
     "chapter": 3
@@ -1432,10 +1441,10 @@
         "id": "camp-liberation",
         "intent": "Suivre l’évasion rapportée dans le journal, puis ramener Leosin et les autres captifs à Verdure.",
         "requiresCharacters": ["darrin", "drekthar", "ellyjobell"],
-        "label": "Darrin et Drek'Thar entrent dans le camp pendant la diversion",
+        "label": "Darrin et Drek’Thar entrent dans le camp pendant la diversion",
         "source": "Tyranny of dragons!45:50",
         "effects": {
-          "message": "La diversion couvre l'entrée de Darrin et Drek'Thar tandis qu'Ellyjobell progresse à couvert. Leosin et les autres prisonniers sont libérés."
+          "message": "La diversion couvre l'entrée de Darrin et Drek’Thar tandis qu'Ellyjobell progresse à couvert. Leosin et les autres prisonniers sont libérés."
         },
         "onSuccess": {
           "setFlags": {
@@ -1510,7 +1519,7 @@
         "characterId": "darrin",
         "skill": "wild_magic",
         "onSelect": "silly_lennithon",
-        "riskText": "Provocation dangereuse: cette variante peut interrompre la tentative. Retour possible avant le choix."
+        "riskText": "Choix chaotique : sans gravité, mais il peut attirer l’attention."
       },
       {
         "id": "camp-retour",
@@ -1652,15 +1661,15 @@
         "characterId": "darrin",
         "skill": "wild_magic",
         "onSelect": "silly_lennithon",
-        "riskText": "Provocation dangereuse: cette variante peut interrompre la tentative. Retour possible avant le choix."
+        "riskText": "Choix chaotique : sans gravité, mais il peut attirer l’attention."
       }
     ],
     "chapter": 4
   },
   "act2_confrontation": {
     "id": "act2_confrontation",
-    "title": "La revanche de Drek'Thar",
-    "description": "Après les premiers pièges et les salles occupées par les kobolds, le groupe retrouve Cyanwrath et deux berserkers. Drek'Thar demande un nouveau duel tandis que ses compagnons prennent en charge les autres adversaires. Les œufs ne sont découverts qu'après cet affrontement.",
+    "title": "La revanche de Drek’Thar",
+    "description": "Après les premiers pièges et les salles occupées par les kobolds, le groupe retrouve Cyanwrath et deux berserkers. Drek’Thar demande un nouveau duel tandis que ses compagnons prennent en charge les autres adversaires. Les œufs ne sont découverts qu'après cet affrontement.",
     "objects": [
       "champion cultiste",
       "garde rapprochée",
@@ -1673,7 +1682,7 @@
       {
         "id": "revanche-drekthar",
         "requiresCharacters": ["bjolnir"],
-        "label": "Drek'Thar affronte Cyanwrath pendant que le groupe combat les berserkers",
+        "label": "Drek’Thar affronte Cyanwrath pendant que le groupe combat les berserkers",
         "characterId": "drekthar",
         "skill": "duel",
         "forbiddenFlag": "cyanwrathDead",
@@ -2158,7 +2167,7 @@
         "id": "signe-dragon",
         "label": "Option – Faire un signe au dragon",
         "onSelect": "silly_wave_lennithon",
-        "riskText": "Provocation dangereuse: cette variante peut interrompre la tentative. Retour possible avant le choix."
+        "riskText": "Choix chaotique : sans gravité, mais il peut attirer l’attention."
       }
     ],
     "chapter": 1
@@ -2284,7 +2293,7 @@
         "id": "swift-culte",
         "label": "Option – Négocier avec les kobolds pour rejoindre le culte",
         "onSelect": "silly_join_cult",
-        "riskText": "Provocation dangereuse: cette variante peut interrompre la tentative. Retour possible avant le choix."
+        "riskText": "Choix chaotique : sans gravité, mais il peut attirer l’attention."
       }
     ],
     "chapter": 1
@@ -2633,7 +2642,7 @@
     "options": [
       {
         "id": "duel-campagne",
-        "label": "Drek'Thar accepte le duel pour libérer les otages",
+        "label": "Drek’Thar accepte le duel pour libérer les otages",
         "characterId": "drekthar",
         "skill": "duel",
         "source": "JDR DD5 2023.xlsx — Tyranny of dragons!33:35",
@@ -2651,7 +2660,7 @@
           "message": "Drek’Thar tombe sous les coups de Cyanwrath. Les otages sont libérés; le champion du Clan survit."
         },
         "repeatable": true,
-        "intent": "Suivre le duel rapporté dans la chronique: Drek'Thar sera vaincu mais survivra."
+        "intent": "Suivre le duel rapporté dans la chronique: Drek’Thar sera vaincu mais survivra."
       },
       {
         "id": "duel-accept",
@@ -2709,7 +2718,7 @@
         "id": "duel-danse",
         "label": "Option – Proposer une danse",
         "onSelect": "silly_dance_cyanwrath",
-        "riskText": "Provocation dangereuse: cette variante peut interrompre la tentative. Retour possible avant le choix."
+        "riskText": "Choix chaotique : sans gravité, mais il peut attirer l’attention."
       }
     ],
     "chapter": 2,
@@ -2750,7 +2759,7 @@
         "id": "council-crown-self",
         "label": "Option absurde — Se déclarer Roi de Waterdeep",
         "onSelect": "silly_king_waterdeep",
-        "riskText": "Provocation dangereuse: cette variante peut interrompre la tentative. Retour possible avant le choix."
+        "riskText": "Choix chaotique : sans gravité, mais il peut attirer l’attention."
       }
     ],
     "chapter": 10
@@ -3024,7 +3033,7 @@
           "onSelect": "route_after_strategy",
           "checkpoint": "Scène 3 résolue — Vote stratégique"
         },
-        "intent": "Privilégier une offensive militaire dans cette adaptation, au risque de diviser les factions."
+        "intent": "Privilégier une offensive militaire, au risque de diviser les factions."
       },
       {
         "id": "strategy-espionnage",
@@ -3246,7 +3255,7 @@
         "id": "dragons-ride-selfie",
         "label": "Option absurde — Exiger un portrait à dos de dragon",
         "onSelect": "silly_dragon_selfie",
-        "riskText": "Provocation dangereuse: cette variante peut interrompre la tentative. Retour possible avant le choix."
+        "riskText": "Choix chaotique : sans gravité, mais il peut attirer l’attention."
       }
     ],
     "chapter": 14
@@ -3394,7 +3403,7 @@
         "id": "caravane-dragon",
         "label": "Option – Accuser tout le monde d’être un dragon déguisé",
         "onSelect": "silly_accuse_dragons",
-        "riskText": "Provocation dangereuse: cette variante peut interrompre la tentative. Retour possible avant le choix."
+        "riskText": "Choix chaotique : sans gravité, mais il peut attirer l’attention."
       },
       {
         "id": "caravane-arrivee",
@@ -3455,7 +3464,7 @@
         "id": "naerytar-canard",
         "label": "Option – Négocier avec un canard du marais",
         "onSelect": "silly_swamp_duck",
-        "riskText": "Provocation dangereuse: cette variante peut interrompre la tentative. Retour possible avant le choix."
+        "riskText": "Choix chaotique : sans gravité, mais il peut attirer l’attention."
       },
       {
         "id": "naerytar-entree",
@@ -3597,7 +3606,7 @@
         "id": "naerytar-bouffon",
         "label": "Option – Déclarer une inspection fiscale draconique",
         "onSelect": "silly_tax_inspection",
-        "riskText": "Provocation dangereuse: cette variante peut interrompre la tentative. Retour possible avant le choix."
+        "riskText": "Choix chaotique : sans gravité, mais il peut attirer l’attention."
       },
       {
         "id": "naerytar-escape",
@@ -3834,6 +3843,7 @@
     "options": [
       {
         "id": "simulate-finale",
+        "whatIfFinale": true,
         "label": "What If — Explorer une bataille finale hypothétique",
         "onSuccess": {
           "setAct": "ACT_V",
@@ -3877,7 +3887,7 @@
   "credits": {
     "id": "credits",
     "title": "Crédits",
-    "description": "D’après D&D 5e — Tyranny of Dragons, adapté pour le Clan d’Estain. Journal de campagne fourni par le MJ. Cette version abrège les événements; la bataille finale reste une simulation.",
+    "description": "D’après D&D 5e — Tyranny of Dragons, adapté pour le Clan d’Estain. Journal de campagne fourni par le MJ. Cette version abrège les événements.",
     "objects": [
       "rideau"
     ],
@@ -3893,7 +3903,7 @@
   "title_screen": {
     "id": "title_screen",
     "title": "Clan d’Estain — Tyranny of Dragons",
-    "description": "Une adaptation abrégée de la campagne du Clan d’Estain. Les options « Chronique » suivent des faits attestés; les chemins « What If » sont des variantes. La véritable campagne est en cours, à l’invitation à Thay. La bataille finale proposée est hypothétique.",
+    "description": "La chronique du Clan d’Estain, telle qu’elle a été vécue jusqu’à l’invitation à Thay. Les choix « Chronique » suivent ce qui s’est réellement passé; les « What If » explorent ce qui aurait pu arriver.",
     "objects": [
       "menu principal"
     ],
@@ -3954,7 +3964,7 @@
         "id": "plan-riddles",
         "label": "Option – Défier Tiamat à un duel d’énigmes",
         "onSelect": "silly_riddle_duel",
-        "riskText": "Provocation dangereuse: cette variante peut interrompre la tentative. Retour possible avant le choix."
+        "riskText": "Choix chaotique : sans gravité, mais il peut attirer l’attention."
       }
     ]
   },
@@ -4332,7 +4342,7 @@
         "id": "ritual-shout-stop",
         "label": "Option – Crier « STOP ! » très fort au portail",
         "onSelect": "silly_shout_stop",
-        "riskText": "Provocation dangereuse: cette variante peut interrompre la tentative. Retour possible avant le choix."
+        "riskText": "Choix chaotique : sans gravité, mais il peut attirer l’attention."
       },
       {
         "id": "ritual-resolve",
@@ -4451,10 +4461,10 @@
     "id": "elturel_tournament",
     "title": "Le tournoi du Gantelet",
     "chapter": 5,
-    "description": "À Elturel, le tournoi donne aux aventuriers l'occasion de se mesurer aux représentants du Gantelet. Bjolnir gagne l'épreuve de force après la demi-finale contre Drek'Thar; Darrin remporte l'épreuve de magie et le groupe s'impose dans l'arène.\n\nOntharr et Leosin exposent ensuite leur plan. Le Clan doit gagner Baldur's Gate et se faire engager dans une caravane qui remonte vers Waterdeep. Drek'Thar rejoint le Gantelet, Darrin les Ménestrels.",
+    "description": "À Elturel, le tournoi donne aux aventuriers l'occasion de se mesurer aux représentants du Gantelet. Bjolnir gagne l'épreuve de force après la demi-finale contre Drek’Thar; Darrin remporte l'épreuve de magie et le groupe s'impose dans l'arène.\n\nOntharr et Leosin exposent ensuite leur plan. Le Clan doit gagner Baldur's Gate et se faire engager dans une caravane qui remonte vers Waterdeep. Drek’Thar rejoint le Gantelet, Darrin les Ménestrels.",
     "paragraphs": [
-      "À Elturel, le tournoi donne aux aventuriers l'occasion de se mesurer aux représentants du Gantelet. Bjolnir gagne l'épreuve de force après la demi-finale contre Drek'Thar; Darrin remporte l'épreuve de magie et le groupe s'impose dans l'arène.",
-      "Ontharr et Leosin exposent ensuite leur plan. Le Clan doit gagner Baldur's Gate et se faire engager dans une caravane qui remonte vers Waterdeep. Drek'Thar rejoint le Gantelet, Darrin les Ménestrels."
+      "À Elturel, le tournoi donne aux aventuriers l'occasion de se mesurer aux représentants du Gantelet. Bjolnir gagne l'épreuve de force après la demi-finale contre Drek’Thar; Darrin remporte l'épreuve de magie et le groupe s'impose dans l'arène.",
+      "Ontharr et Leosin exposent ensuite leur plan. Le Clan doit gagner Baldur's Gate et se faire engager dans une caravane qui remonte vers Waterdeep. Drek’Thar rejoint le Gantelet, Darrin les Ménestrels."
     ],
     "objects": [],
     "exits": {},
@@ -5196,17 +5206,36 @@
       { roomId: 'cult_trail', option: {
         id: 'piste-betes', label: 'Option – Ellyjobell: Interroger les bêtes du sentier sur la colonne',
         characterId: 'ellyjobell', skill: 'nature',
-        resolution: { difficulty: 3, skill: 'nature', risk: 'injury', deathType: 'replaceable' },
+        resolution: { difficulty: 2, skill: 'nature', risk: 'cost', deathType: 'replaceable' },
+        onFailure: { variableDelta: { chaos: 1 }, message: 'Les bêtes s’égaillent à l’approche d’Ellyjobell et leur envol signale la présence du groupe.' },
         effects: { chaos: -1, message: 'Les bêtes ne disent pas tout, mais Ellyjobell comprend par où la colonne est passée et comment la suivre à distance sans éveiller les sentinelles.' },
-        intent: 'Ellyjobell se fie aux oiseaux et aux renards du sentier pour reconstituer le trajet de la colonne. Réussite: la piste se précise sans alerter le Culte. Échec: elle se blesse dans la broussaille et le groupe perd du temps.',
-        riskText: 'Un échec peut blesser l’intervenante.',
+        intent: 'Ellyjobell se fie aux oiseaux et aux renards du sentier pour reconstituer le trajet de la colonne. Réussite: la piste se précise sans alerter le Culte. Échec: les bêtes s’enfuient et l’alerte monte, sans blessure.',
+        riskText: 'Approche prudente : un échec augmente seulement l’alerte.',
+        source: 'Variante de jeu proposée; événement non attesté dans la campagne jouée.' } },
+      { roomId: 'cult_trail', option: {
+        id: 'suivre-a-distance', label: 'Option – Sislay: Suivre la piste à distance',
+        characterId: 'sislay', skill: 'tracking',
+        resolution: { difficulty: 3, skill: 'tracking', risk: 'cost', deathType: 'replaceable' },
+        effects: { chaos: -1, message: 'Sislay garde la colonne à la limite de la vue, note les fumées du camp au sud et ramène le groupe sans quitter le couvert.' },
+        onFailure: { variableDelta: { chaos: 1 }, message: 'Sislay perd la trace un moment. Le groupe rattrape son retard en hâte et fait assez de bruit pour que des pillards se retournent.' },
+        intent: 'Sislay suit les traces sans se montrer, loin derrière la colonne. Réussite: le groupe approche du camp sans éveiller de soupçon. Échec: la piste est perdue un moment et l’alerte monte, sans que personne soit blessé ni capturé.',
+        riskText: 'Approche prudente : un échec augmente seulement l’alerte.',
+        source: 'Variante de jeu proposée; le survivant interrogé (Tyranny of dragons!42:43) situe le camp au sud, près des falaises.' } },
+      { roomId: 'cult_trail', option: {
+        id: 'observer-crete', label: 'Option – Bjolnir: Observer la colonne depuis une crête',
+        characterId: 'bjolnir', skill: 'strategy',
+        resolution: { difficulty: 3, skill: 'strategy', risk: 'cost', deathType: 'replaceable' },
+        effects: { moraleGroupe: 1, message: 'Depuis la crête, Bjolnir compte les hommes et l’ordre de marche, puis redescend avant que le soleil ne le trahisse.' },
+        onFailure: { variableDelta: { chaos: 1 }, message: 'La silhouette de Bjolnir se découpe un instant sur le ciel. Personne ne donne l’alerte, mais la colonne accélère.' },
+        intent: 'Bjolnir étudie la colonne depuis les hauteurs, puis rejoint ses compagnons. Réussite: le Clan sait à quoi s’attendre et son moral se renforce. Échec: il est aperçu et l’alerte monte, sans blessure.',
+        riskText: 'Approche prudente : un échec augmente seulement l’alerte.',
         source: 'Variante de jeu proposée; événement non attesté dans la campagne jouée.' } },
       { roomId: 'cult_camp_exterior', option: {
         id: 'glisser-entre-rondes', label: 'Option – Sislay: Se glisser entre deux rondes',
         characterId: 'sislay', skill: 'stealth',
-        resolution: { difficulty: 4, skill: 'stealth', risk: 'capture', deathType: 'replaceable' },
-        effects: { chaos: -1, message: 'Entre deux passages de sentinelles, Sislay repère une brèche dans la ligne des feux et y guide le groupe.' },
-        intent: 'Sislay attend le changement de garde pour trouver la brèche. Réussite: le groupe approche sans bruit et l’alerte diminue. Échec: elle peut être capturée par les sentinelles.',
+        resolution: { difficulty: 5, skill: 'stealth', risk: 'capture', deathType: 'replaceable' },
+        effects: { chaos: -2, message: 'Entre deux passages de sentinelles, Sislay repère une brèche dans la ligne des feux et y guide le groupe.' },
+        intent: 'Sislay attend le changement de garde pour trouver la brèche. Réussite: le groupe approche sans bruit et l’alerte baisse nettement. Échec: elle peut être capturée par les sentinelles. Épreuve plus difficile que les autres approches.',
         riskText: 'Un échec peut entraîner sa capture.',
         source: 'Variante de jeu proposée; événement non attesté dans la campagne jouée.' } },
       { roomId: 'cult_camp_exterior', option: {
@@ -5228,15 +5257,15 @@
       { roomId: 'hatchery_entry', option: {
         id: 'entree-epaule', label: 'Option – Drek’Thar: Enfoncer l’entrée à l’épaule',
         characterId: 'drekthar', skill: 'might',
-        resolution: { difficulty: 6, skill: 'might', risk: 'injury', deathType: 'replaceable' },
-        effects: { moraleGroupe: 1, chaos: 1, message: 'La porte cède sous l’épaule de Drek’Thar. Le fracas se répercute dans les galeries.' },
-        intent: 'Drek’Thar force le passage sans attendre. Réussite: la voie est ouverte et le groupe reprend confiance, mais l’alerte monte. Échec: il se blesse contre le battant.',
+        resolution: { difficulty: 4, skill: 'might', risk: 'injury', deathType: 'replaceable' },
+        effects: { chaos: 1, message: 'La porte cède sous l’épaule de Drek’Thar. Le fracas se répercute dans les galeries.' },
+        intent: 'Drek’Thar force le passage sans attendre. Réussite: la voie est ouverte, mais l’alerte monte. Épreuve plus facile que les autres approches. Échec: il se blesse contre le battant.',
         riskText: 'Un échec peut blesser l’intervenant.',
         source: 'Variante de jeu proposée; événement non attesté dans la campagne jouée.' } },
       { roomId: 'fungal_chamber', option: {
         id: 'fonges-reconnaitre', label: 'Option – Ellyjobell: Reconnaître les nappes dangereuses',
         characterId: 'ellyjobell', skill: 'nature',
-        resolution: { difficulty: 5, skill: 'nature', risk: 'injury', deathType: 'replaceable' },
+        resolution: { difficulty: 4, skill: 'nature', risk: 'injury', deathType: 'replaceable' },
         effects: { chaos: -1, message: 'Ellyjobell distingue les nappes inoffensives de celles qui libèrent des spores et indique où poser le pied.' },
         intent: 'Ellyjobell se fie à sa connaissance des plantes et des champignons pour tracer un passage. Réussite: le groupe traverse sans réveiller la salle. Échec: elle inhale des spores et se blesse.',
         riskText: 'Un échec peut blesser l’intervenante.',
@@ -5245,8 +5274,8 @@
         id: 'fonges-eclaireur', label: 'Option – Sislay: Ouvrir la marche entre les spores',
         characterId: 'sislay', skill: 'tracking',
         resolution: { difficulty: 6, skill: 'tracking', risk: 'injury', deathType: 'replaceable' },
-        effects: { chaos: -1, message: 'Sislay avance la première, éprouve chaque appui et le groupe suit ses pas sans soulever de nuage.' },
-        intent: 'Sislay éclaire la route en testant le sol avant chaque pas. Réussite: le groupe passe en silence. Échec: elle dérange les spores et se blesse.',
+        effects: { moraleGroupe: 1, message: 'Sislay avance la première, éprouve chaque appui et le groupe suit ses pas sans soulever de nuage.' },
+        intent: 'Sislay éclaire la route en testant le sol avant chaque pas. Réussite: le groupe passe en silence et prend confiance. Échec: elle dérange les spores et se blesse.',
         riskText: 'Un échec peut blesser l’intervenante.',
         source: 'Variante de jeu proposée; événement non attesté dans la campagne jouée.' } },
       { roomId: 'egg_chamber', option: {
@@ -6152,7 +6181,7 @@
           "id": "changement-waterdeep",
           "title": "Identifier le changement à la tête de Waterdeep",
           "paragraphs": [
-            "Laeral Silverhand a remplacé Dagult Neverember. Le journal la présente comme l’une des sept sœurs, filles de Mystra. Le Clan retrouve une partie des représentants connus, mais il doit désormais présenter ses demandes à cette nouvelle dirigeante."
+            "Laeral Silverhand a remplacé Dagult Neverember. On la présente comme l’une des sept sœurs, filles de Mystra. Le Clan retrouve une partie des représentants connus, mais il doit désormais présenter ses demandes à cette nouvelle dirigeante."
           ],
           "source": "JDR DD5 2023.xlsx — Rise of Tiamat!159:162"
         },
@@ -6300,8 +6329,8 @@
     "council_resolution": {
       "paragraphs": [
         "Les compagnons peuvent désormais mesurer le chemin parcouru depuis Verdure. Le trésor suivi jusqu’à Cumulus, la recherche des masques, le soulèvement contre Arauthator et la délivrance de la Forêt Brumeuse ont fourni au Conseil des renseignements et des occasions de s’unir. Les conditions des dragons et l’invitation de Thay montrent aussi ce qui demande encore une réponse.",
-        "Le bilan proposé ici rassemble les appuis obtenus par vos décisions dans le jeu. Il permet de voir si les factions soutiennent suffisamment le Clan pour la bataille hypothétique accessible ensuite. Ce calcul ne signifie pas qu’un vote final a eu lieu à la table ni que les événements encore absents du journal sont accomplis.",
-        "Le récit de la campagne peut se refermer sur l’invitation à Thay. La simulation suivante reste facultative et distincte : elle explore ce que ces choix pourraient produire dans un affrontement qui n’a pas encore été joué."
+        "Le bilan proposé ici rassemble les appuis obtenus par vos décisions. Il permet de voir si les factions soutiennent le Clan. Rien n’est encore décidé : la suite reste à vivre.",
+        "Le récit de la campagne peut se refermer sur l’invitation à Thay."
       ],
       "observations": [
         {
@@ -6316,7 +6345,7 @@
           "id": "bilan-soutien",
           "title": "Comprendre ce que mesure le bilan des factions",
           "paragraphs": [
-            "Les réputations et la confiance réunies au cours des choix de cette adaptation déterminent son niveau de soutien militaire. Elles permettent de comparer des parcours alternatifs. Ces valeurs sont des mécanismes du jeu; elles ne prétendent pas chiffrer les relations historiques de la compagnie."
+            "Les réputations et la confiance réunies au fil des choix déterminent le soutien militaire dont le Clan disposera. Elles permettent de comparer des parcours alternatifs."
           ],
           "source": "Mécanique de jeu existante, distincte du journal de campagne"
         }
@@ -6461,7 +6490,7 @@
       "successTitle": "Darrin ouvre le passage par le feu",
       "success": [
         "Darrin concentre sa magie sur la végétation qui gêne l’avancée et retient son effet à l’endroit où les compagnons ont besoin de passer. Les champignons brûlent suffisamment pour dégager un couloir utilisable.",
-        "Cette variante laisse une trace impossible à dissimuler. Le passage est praticable, mais le feu et l’agitation avertissent les occupants de la grotte; la discrétion du groupe en souffre."
+        "Cette méthode laisse une trace impossible à dissimuler. Le passage est praticable, mais le feu et l’agitation avertissent les occupants de la grotte; la discrétion du groupe en souffre."
       ],
       "failureTitle": "La magie de Darrin ne dégage pas un passage sûr",
       "failure": [
@@ -6542,7 +6571,7 @@
       ]
     },
     "detruire-oeufs": {
-      "successTitle": "Les œufs sont détruits dans cette variante",
+      "successTitle": "Les œufs sont détruits",
       "success": [
         "Bjolnir et les compagnons engagés dans cette décision brisent les coquilles au lieu de préparer leur transport. Le bruit se répercute dans le nid et annonce une intervention que les autres occupants pourront entendre.",
         "Les œufs ne pourront plus éclore. Le groupe reprend l’exploration sans rien charger, tandis que le bruit de leur destruction ajoute à l’alerte dans la grotte."
@@ -6610,19 +6639,19 @@
     "caravane-espionner": {
       "successTitle": "Une approche discrète des chariots suspects",
       "success": [
-        "Dans cette variante, Ellyjobell profite de son travail au sein du convoi pour s’approcher du chargement surveillé. Elle observe les déplacements autour des chariots et revient avec des renseignements sans attirer les gardes jusqu’à ses compagnons.",
+        "Ellyjobell profite de son travail au sein du convoi pour s’approcher du chargement surveillé. Elle observe les déplacements autour des chariots et revient avec des renseignements sans attirer les gardes jusqu’à ses compagnons.",
         "Le groupe peut poursuivre son voyage en sachant mieux quels véhicules garder à l’œil. Son enquête reste dissimulée pour cette étape."
       ],
       "failureTitle": "Ellyjobell est repérée et capturée",
       "failure": [
         "Ellyjobell ne peut approcher des chariots sans être vue. Un guetteur la repère avant qu’elle ne regagne les siens, et les cultistes la capturent. Le reste du Clan sait que sa couverture est désormais fragilisée.",
-        "Le convoi poursuit néanmoins sa route. Continuer cette variante laisse Ellyjobell indisponible pour les prochaines actions; revenir avant la tentative permet d’essayer une autre approche."
+        "Le convoi poursuit néanmoins sa route. Ellyjobell reste mobilisée par cette tâche et ne pourra pas agir lors des prochaines actions."
       ]
     },
     "caravane-confronter": {
       "successTitle": "Le suspect cède devant Bjolnir",
       "success": [
-        "Dans cette variante, Bjolnir choisit d’aborder directement un agent suspect. Il maintient la pression jusqu’à obtenir que l’homme recule, sans entraîner tout le convoi dans un affrontement ouvert.",
+        "Bjolnir choisit d’aborder directement un agent suspect. Il maintient la pression jusqu’à obtenir que l’homme recule, sans entraîner tout le convoi dans un affrontement ouvert.",
         "Cette intervention marque les esprits. Le Clan peut poursuivre son enquête, mais l’agent et ses soutiens savent désormais qui s’intéresse à eux; l’alerte augmente autour du chargement."
       ],
       "failureTitle": "La confrontation compromet la couverture du Clan",
@@ -6648,7 +6677,7 @@
     "naerytar-reco": {
       "successTitle": "Ellyjobell repère une approche moins exposée",
       "success": [
-        "Dans cette variante, Ellyjobell prend le temps d’observer les abords de Naerytar sans se montrer. Elle distingue les déplacements des gardes et rapporte les moments où le groupe pourra progresser plus discrètement.",
+        "Ellyjobell prend le temps d’observer les abords de Naerytar sans se montrer. Elle distingue les déplacements des gardes et rapporte les moments où le groupe pourra progresser plus discrètement.",
         "Ces renseignements réduisent l’alerte avant l’entrée. Ils donnent au Clan une meilleure approche, sans supprimer la présence des adversaires à l’intérieur du château."
       ],
       "failureTitle": "La reconnaissance attire les guetteurs",
@@ -6661,13 +6690,13 @@
       "successTitle": "La compagnie gagne Naerytar",
       "success": [
         "Guidé jusqu’aux abords du château, le Clan peut maintenant chercher à poursuivre la route du trésor dans les bâtiments. Les hommes-lézards lui ont décrit leurs ennemis et les forces qui occupent les lieux.",
-        "Dans le déroulé du journal, l’entrée se fait en se cachant dans des caisses du butin. Les autres approches proposées dans la scène du château sont des variantes de jeu; elles modifient les conditions de l’infiltration."
+        "L’entrée s’est faite en se cachant dans des caisses du butin."
       ]
     },
     "naerytar-allie": {
       "successTitle": "La couverture de Bjolnir tient pour cette étape",
       "success": [
-        "Dans cette variante, Bjolnir se présente comme un allié du Culte et soutient sa couverture assez longtemps pour détourner les premiers soupçons. Le groupe évite de provoquer immédiatement l’ensemble des gardes.",
+        "Bjolnir se présente comme un allié du Culte et soutient sa couverture assez longtemps pour détourner les premiers soupçons. Le groupe évite de provoquer immédiatement l’ensemble des gardes.",
         "Le passage devient moins surveillé, mais entretenir ce mensonge éprouve la compagnie. L’avantage est limité à cette approche : il ne transforme pas les membres du Clan en véritables serviteurs de Tiamat."
       ],
       "failureTitle": "La couverture ne trompe pas les gardes",
@@ -6679,14 +6708,14 @@
     "naerytar-factions": {
       "successTitle": "L’appui des Ménestrels facilite le passage",
       "success": [
-        "Dans cette variante, les relations entretenues avec les Ménestrels permettent au Clan d’obtenir un appui pour son approche du château. Les compagnons profitent de cette aide pour réduire la pression des gardes autour de leur progression.",
+        "Les relations entretenues avec les Ménestrels permettent au Clan d’obtenir un appui pour son approche du château. Les compagnons profitent de cette aide pour réduire la pression des gardes autour de leur progression.",
         "L’aide obtenue réduit l’alerte autour de leur progression. Les compagnons conservent ce lien avec les Ménestrels pour la suite de leur lutte contre le Culte."
       ]
     },
     "naerytar-saboter": {
       "successTitle": "Le transport du butin est retardé",
       "success": [
-        "Dans cette variante, Darrin dirige sa magie contre les moyens de transport du trésor. Les essieux se fendent et les convois ne peuvent plus repartir dans les mêmes conditions.",
+        "Darrin dirige sa magie contre les moyens de transport du trésor. Les essieux se fendent et les convois ne peuvent plus repartir dans les mêmes conditions.",
         "Le sabotage relève le moral du groupe, mais sa violence donne l’alerte dans le château. Les compagnons ont retardé l’ennemi au prix d’une présence désormais plus difficile à dissimuler."
       ],
       "failureTitle": "Le sabotage attire la garnison",
@@ -6698,7 +6727,7 @@
     "naerytar-prisonniers": {
       "successTitle": "Drek’Thar ouvre les chaînes des captifs",
       "success": [
-        "Dans cette variante, Drek’Thar force le passage jusqu’aux prisonniers et brise leurs entraves. Les captifs peuvent quitter leur détention, tandis que le Clan prépare sa propre poursuite vers les sous-sols.",
+        "Drek’Thar force le passage jusqu’aux prisonniers et brise leurs entraves. Les captifs peuvent quitter leur détention, tandis que le Clan prépare sa propre poursuite vers les sous-sols.",
         "La libération renforce le moral des compagnons, mais le bruit de l’intervention donne l’alerte dans les tours. Il faut désormais agir en sachant que les gardes se mobilisent."
       ],
       "failureTitle": "L’assaut contre les chaînes échoue",
@@ -6731,8 +6760,8 @@
     "portal-saboter": {
       "successTitle": "Le groupe endommage le portail avant de passer",
       "success": [
-        "Dans cette variante, Darrin s’attaque aux glyphes du cercle sans détruire le passage dont le Clan a encore besoin. La magie résiste, puis une partie de ses protections se fissure.",
-        "Les compagnons traversent et atteignent le pavillon de chasse. Le portail reste endommagé derrière eux; cette modification sera conservée pour la suite de leur variante."
+        "Darrin s’attaque aux glyphes du cercle sans détruire le passage dont le Clan a encore besoin. La magie résiste, puis une partie de ses protections se fissure.",
+        "Les compagnons traversent et atteignent le pavillon de chasse. Le portail reste endommagé derrière eux; ce dégât restera pour la suite du voyage."
       ],
       "failureTitle": "Le passage reste intact après la tentative",
       "failure": [
@@ -6743,7 +6772,7 @@
     "portal-observer": {
       "successTitle": "Les compagnons consignent le cercle avant de traverser",
       "success": [
-        "Dans cette variante, le Clan prend le temps de relever les signes du cercle avant son départ. Les compagnons conservent ce qu’ils ont pu observer de sa structure, sans prétendre connaître tous les passages auxquels il pourrait donner accès.",
+        "Le Clan prend le temps de relever les signes du cercle avant son départ. Les compagnons conservent ce qu’ils ont pu observer de sa structure, sans prétendre connaître tous les passages auxquels il pourrait donner accès.",
         "Ils utilisent ensuite le mot-clé trouvé dans les papiers et franchissent le portail. Le groupe atteint le pavillon de chasse en laissant le cercle intact."
       ]
     },
@@ -6805,10 +6834,10 @@
       ]
     },
     "skyreach-partage": {
-      "successTitle": "Le Clan emporte une part du trésor dans cette variante",
+      "successTitle": "Le Clan emporte une part du trésor",
       "success": [
-        "Les hommes de Blagothkus maîtrisent Glazael et le gardent captif. Dans cette variante, le Clan accepte de prélever des richesses et des trophées au lieu de soutenir jusqu’au bout l’opposition de Bjolnir au partage.",
-        "La prise satisfait une partie de la compagnie, mais l’adaptation conserve le coût de ce choix dans ses relations avec les Ménestrels. Aucun montant précis n’est ajouté aux ressources : le récit garde la décision, sans inventer un inventaire historique.",
+        "Les hommes de Blagothkus maîtrisent Glazael et le gardent captif. Le Clan accepte de prélever des richesses et des trophées au lieu de soutenir jusqu’au bout l’opposition de Bjolnir au partage.",
+        "La prise satisfait une partie de la compagnie, mais ce choix pèse sur les relations du Clan avec les Ménestrels. Aucun montant précis n’est ajouté aux ressources : le récit garde la décision, sans inventer un inventaire historique.",
         "Le groupe reprend ensuite la négociation du départ. Blagothkus le dépose près de Secomber, à quelques jours de Waterdeep, en conservant son château et le dragon capturé."
       ]
     },
@@ -6830,14 +6859,14 @@
       "successTitle": "Le Clan prend la parole devant le Conseil",
       "success": [
         "Les compagnons exposent le chemin qui les a menés des rues de Verdure aux opérations du Culte dans le nord. Leurs renseignements donnent aux représentants une matière commune, mais ne font pas taire les objections : chacun les rapporte aux pertes subies et aux moyens qu’il pourrait engager.",
-        "Le Conseil écoute désormais la défense du groupe. Dans cette adaptation, la convocation ouvre un premier espace de confiance; il reste à choisir comment répondre aux questions qui lui sont adressées."
+        "Le Conseil écoute désormais la défense du groupe. La convocation ouvre un premier espace de confiance; il reste à choisir comment répondre aux questions qui lui sont adressées."
       ]
     },
     "defense-honnete": {
       "successTitle": "La franchise du groupe trouve des appuis",
       "success": [
         "Bjolnir reprend les décisions du Clan sans chercher à en dissimuler les conséquences. Les réussites sont exposées avec les difficultés qui les ont accompagnées, afin que les représentants puissent juger ce que le groupe sait réellement et ce qu’il lui reste à découvrir.",
-        "Les Ménestrels, le Gantelet, l’Enclave d’Émeraude et l’Alliance des Seigneurs accordent davantage de crédit au Clan dans cette variante. Le Zhentarim apprécie moins cette manière de tout porter à la connaissance de la salle. Les discussions peuvent avancer vers les propositions stratégiques."
+        "Les Ménestrels, le Gantelet, l’Enclave d’Émeraude et l’Alliance des Seigneurs accordent davantage de crédit au Clan. Le Zhentarim apprécie moins cette manière de tout porter à la connaissance de la salle. Les discussions peuvent avancer vers les propositions stratégiques."
       ],
       "failureTitle": "La franchise ne suffit pas à convaincre la salle",
       "failure": [
@@ -6849,7 +6878,7 @@
       "successTitle": "L’efficacité du Clan convainc certains représentants",
       "success": [
         "Bjolnir reprend les renseignements obtenus, les moyens employés et les menaces écartées. Il organise son rapport autour de ce que les opérations ont rendu possible contre le Culte, plutôt que de demander l’approbation de chaque décision prise en chemin.",
-        "Le Gantelet, l’Alliance des Seigneurs et le Zhentarim se montrent plus favorables à cette argumentation dans la variante proposée. Les Ménestrels s’en détournent davantage. Les appuis se répartissent autrement, tandis que la réunion se poursuit."
+        "Le Gantelet, l’Alliance des Seigneurs et le Zhentarim se montrent plus favorables à cette argumentation. Les Ménestrels s’en détournent davantage. Les appuis se répartissent autrement, tandis que la réunion se poursuit."
       ],
       "failureTitle": "Les objections résistent à l’argument d’efficacité",
       "failure": [
@@ -6861,7 +6890,7 @@
       "successTitle": "Les preuves orientées déplacent les appuis",
       "success": [
         "Darrin choisit avec soin les éléments qu’il présente et la manière dont ils se répondent. Le rapport reste assez construit pour écarter certaines objections, tout en donnant davantage de poids aux conclusions que le groupe souhaite faire accepter.",
-        "Dans cette variante, l’Enclave d’Émeraude et surtout le Zhentarim accordent davantage d’appui au Clan. Les Ménestrels et l’Alliance des Seigneurs restent méfiants; la confiance générale diminue. La manœuvre obtient des soutiens, mais laisse une dette de crédibilité."
+        "L’Enclave d’Émeraude et surtout le Zhentarim accordent davantage d’appui au Clan. Les Ménestrels et l’Alliance des Seigneurs restent méfiants; la confiance générale diminue. La manœuvre obtient des soutiens, mais laisse une dette de crédibilité."
       ],
       "failureTitle": "Les preuves orientées sont contestées",
       "failure": [
@@ -6873,7 +6902,7 @@
       "successTitle": "L’assurance du Clan divise davantage la salle",
       "success": [
         "Bjolnir exige que les représentants accordent au Clan le poids de ses succès. Il porte son récit sans laisser de place aux hésitations qui pourraient être retournées contre lui, mais cette assurance éloigne ceux qui attendaient des réponses à leurs objections.",
-        "Le Zhentarim gagne en considération pour le groupe dans cette variante. Les Ménestrels, l’Enclave et l’Alliance des Seigneurs se montrent moins disposés à le soutenir, et la confiance générale recule. Une épreuve réussie ne rend pas cette attitude favorable à toutes les factions."
+        "Le Zhentarim gagne en considération pour le groupe. Les Ménestrels, l’Enclave et l’Alliance des Seigneurs se montrent moins disposés à le soutenir, et la confiance générale recule. Une épreuve réussie ne rend pas cette attitude favorable à toutes les factions."
       ],
       "failureTitle": "Le Conseil refuse d’accorder un blanc-seing au Clan",
       "failure": [
@@ -6885,7 +6914,7 @@
       "successTitle": "Le Clan défend la recherche d’une alliance draconique",
       "success": [
         "Le groupe propose de chercher l’appui des dragons métalliques et de ménager les relations qui pourraient rendre cette rencontre possible. Il n’annonce ni leur accord, ni la présence de leurs forces dans une future bataille.",
-        "Cette priorité renforce les appuis des Ménestrels, de l’Enclave et de l’Alliance des Seigneurs dans le jeu, au détriment du Zhentarim. L’enquête sur Varam reste le prochain départ du Clan."
+        "Cette priorité renforce les appuis des Ménestrels, de l’Enclave et de l’Alliance des Seigneurs, au détriment du Zhentarim. L’enquête sur Varam reste le prochain départ du Clan."
       ]
     },
     "strategy-assault": {
@@ -6906,7 +6935,7 @@
       "successTitle": "Le groupe veut ralentir les moyens du Culte",
       "success": [
         "Les aventuriers proposent de viser les transports et les approvisionnements qui permettent au Culte de réunir ses richesses. Cette orientation privilégie l’entrave et la préparation d’un affrontement ultérieur.",
-        "Le Gantelet, l’Enclave et le Zhentarim soutiennent davantage le groupe dans cette variante. L’Alliance des Seigneurs se montre moins favorable, tandis que la confiance générale recule légèrement. La recherche de Varam demeure la prochaine enquête."
+        "Le Gantelet, l’Enclave et le Zhentarim soutiennent davantage le groupe. L’Alliance des Seigneurs se montre moins favorable, tandis que la confiance générale recule légèrement. La recherche de Varam demeure la prochaine enquête."
       ]
     },
     "diderius-retour": {
@@ -6947,38 +6976,38 @@
       ]
     },
     "dragons-persuade": {
-      "successTitle": "Le plaidoyer obtient une alliance dans cette variante",
+      "successTitle": "Le plaidoyer obtient une alliance",
       "success": [
-        "Bjolnir expose aux anciens ce que le Clan a découvert et l’intérêt de combattre ensemble avant que le Culte mène son projet à terme. Dans cette variante, ses arguments obtiennent immédiatement l’engagement des dragons; les appuis de plusieurs factions et la confiance générale augmentent.",
-        "Le Clan poursuit ensuite vers la Forêt Brumeuse. Cet accord immédiat appartient au chemin alternatif du jeu; il ne remplace pas les conditions rapportées dans le journal."
+        "Bjolnir expose aux anciens ce que le Clan a découvert et l’intérêt de combattre ensemble avant que le Culte mène son projet à terme. Ses arguments obtiennent immédiatement l’engagement des dragons; les appuis de plusieurs factions et la confiance générale augmentent.",
+        "Le Clan poursuit ensuite vers la Forêt Brumeuse."
       ],
       "failureTitle": "Les dragons diffèrent leur engagement",
       "failure": [
-        "Bjolnir expose la menace et demande aux anciens de s’engager sans attendre. Son plaidoyer ne suffit pas à lever leurs réserves. Dans cette variante, l’alliance immédiate n’est pas obtenue et les appuis de l’Enclave ainsi que de l’Alliance des Seigneurs diminuent.",
+        "Bjolnir expose la menace et demande aux anciens de s’engager sans attendre. Son plaidoyer ne suffit pas à lever leurs réserves. L’alliance immédiate n’est pas obtenue et les appuis de l’Enclave ainsi que de l’Alliance des Seigneurs diminuent.",
         "Le Clan peut poursuivre son enquête dans la Forêt Brumeuse. L’échec a un coût diplomatique, sans blessure physique de l’orateur."
       ]
     },
     "dragons-offer-alliance": {
-      "successTitle": "Les dragons acceptent le pacte proposé dans cette variante",
+      "successTitle": "Les dragons acceptent le pacte proposé",
       "success": [
-        "Bjolnir propose de coordonner l’action du Clan et des dragons dans la lutte contre le Culte. Dans cette variante, les anciens acceptent cet engagement militaire immédiat. Les Ménestrels, le Gantelet, l’Enclave et l’Alliance des Seigneurs accordent davantage d’appui au groupe.",
-        "Le Clan poursuit ensuite vers la Forêt Brumeuse. Cet accord immédiat appartient au chemin alternatif du jeu; il ne remplace pas les conditions rapportées dans le journal."
+        "Bjolnir propose de coordonner l’action du Clan et des dragons dans la lutte contre le Culte. Les anciens acceptent cet engagement militaire immédiat. Les Ménestrels, le Gantelet, l’Enclave et l’Alliance des Seigneurs accordent davantage d’appui au groupe.",
+        "Le Clan poursuit ensuite vers la Forêt Brumeuse."
       ],
       "failureTitle": "Les dragons diffèrent leur engagement",
       "failure": [
-        "Les anciens examinent la proposition de Bjolnir, mais jugent l’engagement prématuré. Le Clan n’obtient pas l’alliance immédiate espérée; son appui auprès de l’Alliance des Seigneurs diminue légèrement dans cette variante.",
+        "Les anciens examinent la proposition de Bjolnir, mais jugent l’engagement prématuré. Le Clan n’obtient pas l’alliance immédiate espérée; son appui auprès de l’Alliance des Seigneurs diminue légèrement.",
         "Le Clan peut poursuivre son enquête dans la Forêt Brumeuse. L’échec a un coût diplomatique, sans blessure physique de l’orateur."
       ]
     },
     "dragons-threaten-cult": {
-      "successTitle": "Le plan d’encerclement convainc les anciens dans cette variante",
+      "successTitle": "Le plan d’encerclement convainc les anciens",
       "success": [
-        "Bjolnir défend un plan destiné à isoler le Culte et à réduire le coût d’un engagement des dragons. Dans cette variante, les anciens acceptent de soutenir la coalition. Le Gantelet, l’Enclave, le Zhentarim et l’Alliance des Seigneurs accordent davantage d’appui au Clan.",
-        "Le Clan poursuit ensuite vers la Forêt Brumeuse. Cet accord immédiat appartient au chemin alternatif du jeu; il ne remplace pas les conditions rapportées dans le journal."
+        "Bjolnir défend un plan destiné à isoler le Culte et à réduire le coût d’un engagement des dragons. Les anciens acceptent de soutenir la coalition. Le Gantelet, l’Enclave, le Zhentarim et l’Alliance des Seigneurs accordent davantage d’appui au Clan.",
+        "Le Clan poursuit ensuite vers la Forêt Brumeuse."
       ],
       "failureTitle": "Les dragons diffèrent leur engagement",
       "failure": [
-        "Le plan présenté par Bjolnir ne convainc pas les anciens de s’engager. Leur décision demeure différée; l’Enclave et l’Alliance des Seigneurs accordent moins de soutien au groupe dans cette variante.",
+        "Le plan présenté par Bjolnir ne convainc pas les anciens de s’engager. Leur décision demeure différée; l’Enclave et l’Alliance des Seigneurs accordent moins de soutien au groupe.",
         "Le Clan peut poursuivre son enquête dans la Forêt Brumeuse. L’échec a un coût diplomatique, sans blessure physique de l’orateur."
       ]
     },
@@ -7010,7 +7039,7 @@
       "successTitle": "Le récit rejoint l’invitation de Thay",
       "success": [
         "Les compagnons disposent du message de Thay, de la demande de Lady Silverhand et des explications d’Islabus. Ils doivent encore déterminer la réponse qu’ils souhaitent porter; aucune décision de voyage ni audience n’est ajoutée à la campagne.",
-        "Le jeu propose de faire le bilan des appuis obtenus pendant ce parcours. Vous pourrez ensuite laisser le livre à cette frontière ou ouvrir séparément la simulation d’une bataille finale."
+        "Le Clan peut maintenant faire le bilan des appuis obtenus pendant ce parcours. Le livre s’arrête ensuite à cette frontière, en attendant la suite de la campagne."
       ]
     }
   },
@@ -7377,7 +7406,7 @@
         },
         "gotoRoom": "misty_forest_chronicle",
         "checkpoint": "Scène 4 résolue — Dragons neutres",
-        "message": "Bjolnir expose la menace et demande aux anciens de s’engager sans attendre. Son plaidoyer ne suffit pas à lever leurs réserves. Dans cette variante, l’alliance immédiate n’est pas obtenue et les appuis de l’Enclave ainsi que de l’Alliance des Seigneurs diminuent. Le Clan peut poursuivre son enquête dans la Forêt Brumeuse. L’échec a un coût diplomatique, sans blessure physique de l’orateur.",
+        "message": "Bjolnir expose la menace et demande aux anciens de s’engager sans attendre. Son plaidoyer ne suffit pas à lever leurs réserves. L’alliance immédiate n’est pas obtenue et les appuis de l’Enclave ainsi que de l’Alliance des Seigneurs diminuent. Le Clan peut poursuivre son enquête dans la Forêt Brumeuse. L’échec a un coût diplomatique, sans blessure physique de l’orateur.",
         "councilReputation": {
           "enclave": -1,
           "lords": -1
@@ -7385,7 +7414,7 @@
       }
     },
     "dragons-offer-alliance": {
-      "intent": "Proposer un pacte militaire immédiat dans cette variante. Réussite : alliance obtenue, Ménestrels, Gantelet et Enclave +1, Seigneurs +2, confiance +1. Échec : alliance différée, Seigneurs −1. Le récit continue vers la forêt.",
+      "intent": "Proposer un pacte militaire immédiat. Réussite : alliance obtenue, Ménestrels, Gantelet et Enclave +1, Seigneurs +2, confiance +1. Échec : alliance différée, Seigneurs −1. Le récit continue vers la forêt.",
       "riskText": "Échec diplomatique, sans blessure physique de Bjolnir.",
       "resolution": {
         "difficulty": 2,
@@ -7402,14 +7431,14 @@
         },
         "gotoRoom": "misty_forest_chronicle",
         "checkpoint": "Scène 4 résolue — Dragons neutres",
-        "message": "Les anciens examinent la proposition de Bjolnir, mais jugent l’engagement prématuré. Le Clan n’obtient pas l’alliance immédiate espérée; son appui auprès de l’Alliance des Seigneurs diminue légèrement dans cette variante. Le Clan peut poursuivre son enquête dans la Forêt Brumeuse. L’échec a un coût diplomatique, sans blessure physique de l’orateur.",
+        "message": "Les anciens examinent la proposition de Bjolnir, mais jugent l’engagement prématuré. Le Clan n’obtient pas l’alliance immédiate espérée; son appui auprès de l’Alliance des Seigneurs diminue légèrement. Le Clan peut poursuivre son enquête dans la Forêt Brumeuse. L’échec a un coût diplomatique, sans blessure physique de l’orateur.",
         "councilReputation": {
           "lords": -1
         }
       }
     },
     "dragons-threaten-cult": {
-      "intent": "Présenter un plan d’encerclement dans cette variante. Réussite : alliance obtenue; Gantelet, Enclave, Zhentarim et Seigneurs +1. Échec : pas d’alliance immédiate, Enclave et Seigneurs −1. Le récit continue vers la forêt.",
+      "intent": "Présenter un plan d’encerclement. Réussite : alliance obtenue; Gantelet, Enclave, Zhentarim et Seigneurs +1. Échec : pas d’alliance immédiate, Enclave et Seigneurs −1. Le récit continue vers la forêt.",
       "riskText": "Échec diplomatique, sans blessure physique de Bjolnir.",
       "resolution": {
         "difficulty": 3,
@@ -7426,7 +7455,7 @@
         },
         "gotoRoom": "misty_forest_chronicle",
         "checkpoint": "Scène 4 résolue — Dragons neutres",
-        "message": "Le plan présenté par Bjolnir ne convainc pas les anciens de s’engager. Leur décision demeure différée; l’Enclave et l’Alliance des Seigneurs accordent moins de soutien au groupe dans cette variante. Le Clan peut poursuivre son enquête dans la Forêt Brumeuse. L’échec a un coût diplomatique, sans blessure physique de l’orateur.",
+        "message": "Le plan présenté par Bjolnir ne convainc pas les anciens de s’engager. Leur décision demeure différée; l’Enclave et l’Alliance des Seigneurs accordent moins de soutien au groupe. Le Clan peut poursuivre son enquête dans la Forêt Brumeuse. L’échec a un coût diplomatique, sans blessure physique de l’orateur.",
         "councilReputation": {
           "enclave": -1,
           "lords": -1
@@ -7446,11 +7475,11 @@
       "label": "Terminer l’affrontement et annoncer la mort du dragon"
     },
     "thay-conseil": {
-      "intent": "Faire le bilan des appuis acquis dans le jeu. Ce bouton ne décide pas d’accepter l’invitation de Thay et ne raconte ni voyage ni audience.",
+      "intent": "Faire le bilan des appuis acquis au fil du parcours. Ce bouton ne décide pas d’accepter l’invitation de Thay et ne raconte ni voyage ni audience.",
       "label": "Faire le bilan avant de refermer la chronique"
     },
     "resolve-council-session": {
-      "intent": "Calculer le soutien des factions d’après vos choix de jeu et rejoindre la fin du récit disponible. La bataille finale reste une simulation facultative, accessible séparément.",
+      "intent": "Calculer le soutien des factions d’après vos choix de jeu et rejoindre la fin du récit disponible.",
       "label": "Calculer les appuis et rejoindre la fin du récit disponible"
     }
   },
@@ -7854,7 +7883,7 @@
                   "harpers": -1
                 }
               },
-              "message": "Dans cette variante, la compagnie prélève une part des richesses et des trophées avant le départ. Glazael reste captif de Blagothkus. Le géant dépose ensuite les aventuriers près de Secomber, à quelques jours de Waterdeep."
+              "message": "La compagnie prélève une part des richesses et des trophées avant le départ. Glazael reste captif de Blagothkus. Le géant dépose ensuite les aventuriers près de Secomber, à quelques jours de Waterdeep."
             }
           }
         ],
@@ -7878,17 +7907,30 @@
     BOOK_EXPANSION.proposals.forEach(({roomId,option}) => rooms[roomId].options.push(option));
     // Scènes de chronique à un seul choix : un second choix réel, sans jet ni coût, pour ne pas
     // obliger à revenir en arrière. Il reprend les observations sourcées de la scène.
+    Object.values(rooms).forEach(room => room.options.filter(option => String(option.onSelect).startsWith('silly_')).forEach(option => {
+      option.effects = { ...option.effects, message: 'Un choix pour le moins inattendu.' };
+      ACTION_NARRATION[option.id] = { successTitle: 'Un choix pour le moins inattendu' };
+    }));
     const POINT_ROOMS = ['leosin_return','mondath_chamber','hatchery_exit','elturel_road','elturel_tournament','carnath_roadhouse',
       'hunting_lodge','skyreach_castle','skyreach_chronicle','diderius_chronicle','ice_sea_chronicle','iceberg_rebellion',
       'second_council','misty_forest_chronicle','neronvein_chronicle','neronvein_battle','thay_invitation'];
+    ['greenest_keep','cult_trail','northern_road','waterdeep_council_hall','supply_lines',...POINT_ROOMS].forEach(roomId => {
+      const room = rooms[roomId];
+      if (!room || !Number.isInteger(room.chapter) || room.options.some(option => option.onSelect === 'rest_company')) return;
+      room.options.push({ id: `repos-${roomId}`, label: 'Prendre un repos (une fois par chapitre)', onSelect: 'rest_company',
+        forbiddenFlag: `rested_${room.chapter}`, effects: { message: 'Le Clan se repose.' },
+        intent: 'Soigne les blessés et fait lutter ceux qui sont à terre (jets de mort : trois échecs, mort définitive). Un D20 décide d’un événement : attaque de cultistes, alerte, nuit calme ou aide.',
+        riskText: 'Un seul repos par chapitre. Le tirage est conservé; relire ou recharger ne le relance pas.' });
+      ACTION_NARRATION[`repos-${roomId}`] = { successTitle: 'Le Clan prend du repos' };
+    });
     POINT_ROOMS.forEach(roomId => {
       const room = rooms[roomId], titles = (room?.observations ?? []).map(observation => observation.title);
       if (!titles.length) return;
-      const id = `point-${roomId}`, message = `Avant de poursuivre, la compagnie reprend ce qu’elle sait : ${titles.join(' ; ')}. Rien n’est décidé; chacun peut maintenant dire ce qui lui paraît important.`;
-      room.options.push({ id, label: 'Faire le point avec la compagnie',
-        intent: 'Reprendre ce que le Clan sait avant de poursuivre. Aucun jet, aucun coût; la scène reste ouverte.',
-        effects: { message } });
-      ACTION_NARRATION[id] = { successTitle: 'Le Clan fait le point', success: [message] };
+      const id = `point-${roomId}`, recalled = room.observations.slice(0, 2).flatMap(observation => observation.paragraphs);
+      room.options.push({ id, label: `Faire le point : ${titles[0]}`, requiresFlag: `rested_${room.chapter}`,
+        intent: `Revenir sur ${titles.slice(0, 2).map(title => `« ${title} »`).join(' et ')}. Aucun jet, aucun coût; la scène reste ouverte.`,
+        effects: { message: recalled[0] } });
+      ACTION_NARRATION[id] = { successTitle: 'Le Clan fait le point', success: recalled };
     });
     const BOOK_ART = {
   "cult_trail": "cult_camp",
@@ -8017,7 +8059,7 @@
       {id:'oeufs-emportes',rooms:['elturel_road'],flags:{eggsStolen:true},
         paragraphs:['Vous avez emporté les deux œufs noirs. Leur transport et la protection des petits dragons feront désormais partie du voyage du Clan.']},
       {id:'oeufs-detruits',rooms:['elturel_road','northern_road'],flags:{eggsDestroyed:true},
-        paragraphs:['Dans cette variante, vous avez détruit les œufs. Boule et Bill ne peuvent pas éclore ni accompagner le Clan.']},
+        paragraphs:['Vous avez détruit les œufs. Boule et Bill ne peuvent pas éclore ni accompagner le Clan.']},
       {id:'oeufs-laisses',rooms:['elturel_road','northern_road'],flags:{eggsLeft:true},
         paragraphs:['Vous avez laissé les œufs dans la grotte. Le Clan poursuit sa route sans dragonnets à protéger ou à confier à la guilde.']},
       {id:'portail-sabote',rooms:['hunting_lodge','skyreach_castle'],flags:{portalDamaged:true},
@@ -8029,7 +8071,7 @@
       {id:'dragon-protege',rooms:['act3_epilogue'],flags:{skyreachDragonProtected:true},
         paragraphs:['Au trésor de Glazael, vous avez privilégié la protection du captif. Cette décision renforce la confiance des Ménestrels dans votre parcours.']},
       {id:'dragon-butin',rooms:['act3_epilogue'],flags:{dragonTreasureClaimed:true},
-        paragraphs:['Vous avez choisi de prélever du butin dans cette variante. Le moral du groupe s’en trouve renforcé, au prix de la confiance des Ménestrels.']}
+        paragraphs:['Vous avez choisi de prélever du butin. Le moral du groupe s’en trouve renforcé, au prix de la confiance des Ménestrels.']}
     ];
     // Un retrait volontaire ne constitue pas une épreuve physique.
     const leaveEggs = rooms.egg_chamber.options.find(option => option.id === 'laisser-oeufs');
@@ -8502,6 +8544,13 @@
       return img;
     }
 
+    const FEMALE_COMPANIONS = new Set(['ellyjobell', 'sislay']);
+    const agree = (id, masculine, feminine) => FEMALE_COMPANIONS.has(id) ? feminine : masculine;
+    const stateLabel = (id, state) => FEMALE_COMPANIONS.has(id)
+      ? { injured: 'Blessée', captured: 'Capturée', dead: 'Décédée', retired: 'Retirée' }[state] ?? PRESENTATION.states[state]
+      : PRESENTATION.states[state];
+    const HEALTH_POINTS = { active: 3, injured: 2, down: 1, dead: 0 };
+
     function renderParty() {
       const list = document.getElementById('partyList');
       list.replaceChildren();
@@ -8509,13 +8558,24 @@
       document.getElementById('partyCount').textContent = `${present.length} compagnons`;
       present.forEach(([id, c]) => {
         const button = document.createElement('button'); button.className = 'party-person'; button.dataset.state = c.state;
-        button.setAttribute('aria-label', `${c.name}, ${PRESENTATION.states[c.state]}. Voir la compagnie`);
+        button.setAttribute('aria-label', `${c.name}, ${stateLabel(id, c.state)}. Voir la compagnie`);
         const text = document.createElement('span'), name = document.createElement('strong'), state = document.createElement('small');
-        name.textContent = PRESENTATION.people[id]?.short ?? c.name; state.textContent = `N${getAdventureLevel()} · ${PRESENTATION.states[c.state]}`;
-        text.append(name, state); button.append(portraitImage(id), text);
+        name.textContent = PRESENTATION.people[id]?.short ?? c.name; state.textContent = `N${getAdventureLevel()} · ${stateLabel(id, c.state)}`;
+        const health = HEALTH_POINTS[c.state] ?? 0, bar = document.createElement('span'), stack = document.createElement('span');
+        bar.className = 'health'; bar.dataset.health = String(health); bar.setAttribute('role', 'img');
+        const saves = c.state === 'down' ? ` Jets de mort : ${c.deathSaves?.s ?? 0} réussite(s), ${c.deathSaves?.f ?? 0} échec(s).` : '';
+        bar.setAttribute('aria-label', `Santé ${health} sur 3.${saves}`); bar.title = `Santé ${health}/3.${saves}`;
+        for (let i = 0; i < 3; i++) bar.appendChild(document.createElement('i'));
+        stack.className = 'portrait-stack'; stack.append(portraitImage(id), bar);
+        text.append(name, state); button.append(stack, text);
         button.addEventListener('click', () => openCompany(id)); list.appendChild(button);
       });
     }
+
+    // Les marques de méthode (« What If », « Chronique ») deviennent un repère discret plutôt qu'un préfixe du titre.
+    const CHOICE_TAG = /^(Option absurde|What If|Chronique)\s*[–—-]\s*/;
+    const CHOICE_BADGES = { 'What If': 'Et si…', 'Option absurde': 'Provocation' };
+    const EXIT_LABELS = { nord: 'Continuer vers le nord', sud: 'Revenir vers le sud', est: 'Aller vers l’est', ouest: 'Aller vers l’ouest' };
 
     function getPresentedChoices() {
       if (gameState.lastReport) {
@@ -8526,7 +8586,15 @@
         ];
       }
       const options = getAvailableOptions(gameState.roomId);
-      if (gameState.roomId !== 'title_screen') return options.map((option,index) => ({ option,index,shortcut:index+1 }));
+      if (gameState.roomId !== 'title_screen') {
+        const choices = options.map((option,index) => ({ option,index,shortcut:index+1 }));
+        const canTravel = Object.values(characters).some(c => ['active', 'injured'].includes(c.state));
+        Object.keys(canTravel ? getCurrentRoom()?.exits ?? {} : {}).forEach(direction => choices.push({
+          direction, index: -2, shortcut: choices.length + 1,
+          option: { id: `exit-${direction}`, label: EXIT_LABELS[direction] ?? `Aller vers ${direction}`,
+            intent: direction === 'sud' ? 'Quitter la scène et revenir sur ses pas. Rien n’est perdu.' : 'Quitter la scène et poursuivre le chemin, sans autre épreuve.' } }));
+        return choices;
+      }
       return [
         { option: { id:'title-new',label:'Commencer l’aventure' },index:options.findIndex(o=>o.id==='title-new'),shortcut:1 },
         { option: { id:'title-continue',label:'Reprendre ma partie' },index:options.findIndex(o=>o.id==='title-continue'),shortcut:2 },
@@ -8538,6 +8606,7 @@
       const choice = getPresentedChoices().find(c => c.shortcut === Number(shortcut));
       if (!choice || choice.index === -1) return;
       if (choice.skipDice) { finishD20Animation(); return; }
+      if (choice.direction) { handleCommand(`go ${choice.direction}`); return; }
       if (choice.restart) { handleSpecialSelection('restart_campaign'); refreshInterface(); focusNarrative(); return; }
       if (choice.decisionBack) { restoreDecisionCheckpoint(); saveGame(); refreshInterface(); focusNarrative(); return; }
       if (choice.home) { handleSpecialSelection('return_title'); refreshInterface(); focusNarrative(); return; }
@@ -8549,20 +8618,40 @@
       chooseOption(String(choice.index+1));
     }
 
+    // Les descriptions de choix sont écrites pour l'équipe; le joueur lit une version sans référence au journal ni au jeu.
+    function inWorldText(text) {
+      if (typeof text !== 'string') return text;
+      return text
+        .replace(/^(?:What If|Chronique)\s*[—–-]\s*/, '')
+        .replace(/^(?:Variante|Suivre le journal|Suivre le récit|Suivre la route du journal|Suivre l’accès rapporté au journal|Suivre le déroulé attesté|Suivre le duel rapporté dans la chronique|Suivre la rencontre du journal dans le château volant|Lire la libération attestée des elfes|Recueillir les exigences attestées)\s*:\s*/, '')
+        .replace(/\b(rapport[ée]e?s?|décrit|présent[ée]) (?:dans|par) (?:le journal|la chronique)/g, 'vécu dans la campagne')
+        .replace(/\bdu journal(?! de Neronvein)/g, 'de la campagne').replace(/\ble journal(?! de Neronvein)/g, 'la campagne')
+        .replace(/\bdans la chronique\b/g, 'dans la campagne')
+        .replace(/\battest(ées|és|ée|é)(?![a-zà-ÿ])/g, (m, e) => ({ 'é': 'réel', 'ée': 'réelle', 'és': 'réels', 'ées': 'réelles' })[e])
+        .replace(/ dans l’adaptation/g, '').replace(/Pas de montant d’or inventé : /g, '')
+        .replace(/\bvariantes collectives?\b/g, m => m.endsWith('s') ? 'approches collectives' : 'approche collective')
+        .replace(/\bcette variante\b/g, 'cette approche').replace(/\bles variantes\b/g, 'les approches').replace(/\bune variante\b/g, 'une approche')
+        .replace(/^(.)/, c => c.toUpperCase());
+    }
+
     function renderChoices() {
       const list = document.getElementById('choiceList'); list.replaceChildren();
       getPresentedChoices().forEach((choice, slot) => {
         const { option } = choice;
         const card = document.createElement('button'); card.type = 'button'; card.className = `choice-card${slot === 0 && (gameState.roomId === 'title_screen' || gameState.lastReport) ? ' primary' : ''}`;
         card.dataset.choice = option.id; card.dataset.shortcut = choice.shortcut; card.disabled = choice.index === -1;
+        if (choice.direction) card.dataset.direction = choice.direction;
         const number = document.createElement('span'); number.className = 'choice-number'; number.textContent = String(choice.shortcut).padStart(2, '0');
         const content = document.createElement('span'), title = document.createElement('span'), detail = document.createElement('span');
         content.className = 'choice-content'; title.className = 'choice-label'; detail.className = 'choice-detail';
-        title.textContent = PRESENTATION.choices[option.id]?.title ?? option.label.replace(/^(Option\s*[–—-]\s*|Mission\s*[–—-]\s*)/, '');
+        const rawTitle = PRESENTATION.choices[option.id]?.title ?? option.label, tag = rawTitle.match(CHOICE_TAG);
+        title.textContent = rawTitle.replace(CHOICE_TAG, '').replace(/^(Option|Mission|Décision|Scène \d+)\s*[–—-]\s*/, '');
+        let badge = null;
+        if (tag && CHOICE_BADGES[tag[1]]) { badge = document.createElement('span'); badge.className = 'choice-tag'; badge.textContent = CHOICE_BADGES[tag[1]]; }
         const skill = PRESENTATION.skills[option.skill] ?? '';
-        detail.textContent = option.intent ?? PRESENTATION.choices[option.id]?.detail ?? (option.characterId ? `${PRESENTATION.people[option.characterId]?.short ?? ''} · ${skill}`
+        detail.textContent = inWorldText(option.intent) ?? PRESENTATION.choices[option.id]?.detail ?? (option.characterId ? `${PRESENTATION.people[option.characterId]?.short ?? ''} · ${skill}`
           : { 'title-new': 'Commencer avec le groupe à son arrivée à Verdure.', 'title-continue': choice.index === -1 ? 'Aucune sauvegarde disponible.' : 'Reprendre la progression enregistrée.', 'read-chronicle': 'Lire les dix-huit chapitres du récit de campagne.' }[option.id] ?? '');
-        content.append(title, detail); card.appendChild(number);
+        content.append(...(badge ? [badge] : []), title, detail); card.appendChild(number);
         if (option.characterId) card.appendChild(portraitImage(option.characterId));
         card.appendChild(content);
         if (option.resolution && option.characterId) {
@@ -8571,16 +8660,9 @@
           hint.textContent = `${characters[preview.actorId].name} · niveau ${preview.level} · ${preview.label} : D20 ${preview.bonus < 0 ? '−' : '+'}${Math.abs(preview.bonus)} · ${preview.kind === 'attack' ? 'CA' : 'DD'} ${preview.dc}`;
           content.appendChild(hint);
         }
-        if (option.riskText) { const risk = document.createElement('span'); risk.className = 'choice-risk'; risk.textContent = option.riskText; content.appendChild(risk); }
+        if (option.riskText) { const risk = document.createElement('span'); risk.className = 'choice-risk'; risk.textContent = inWorldText(option.riskText); content.appendChild(risk); }
         const arrow = document.createElement('span'); arrow.className = 'choice-arrow'; arrow.textContent = '→'; arrow.setAttribute('aria-hidden', 'true'); card.appendChild(arrow);
         card.addEventListener('click', () => dispatchCommand(String(choice.shortcut))); list.appendChild(card);
-      });
-      const room = getCurrentRoom();
-      const canTravel = Object.values(characters).some(c => ['active', 'injured'].includes(c.state));
-      Object.entries(gameState.lastReport || !canTravel ? {} : room?.exits ?? {}).forEach(([direction]) => {
-        const button = document.createElement('button'); button.className = 'choice-card'; button.textContent = `Continuer vers le ${direction} →`;
-        button.dataset.direction = direction;
-        button.addEventListener('click', () => { uiState.feedback = ''; handleCommand(`go ${direction}`); }); list.appendChild(button);
       });
     }
 
@@ -8652,9 +8734,9 @@
     function getScenePresentation(room) {
       const view = PRESENTATION.scenes[room.id];
       if (room.id === 'northern_road' && !flags.eggsStolen) return {...view,paragraphs:view.paragraphs.map(paragraph => /Boule|Bill|dragonnet/i.test(paragraph)
-        ? 'Dans cette variante, aucun dragonnet ne doit être confié à la guilde. Bjolnir voyage avec les autres compagnons; le Clan partage les emplois d’escorte et suit les chariots du Culte vers le nord.' : paragraph)};
-      if (room.id === 'act2_confrontation' && flags.WHAT_IF_CYANWRATH_DEAD) return { ...view, hero: 'Le passage\nvers les œufs', heading: 'Le passage gardé dans la grotte', paragraphs: ['Dans cette variante, Cyanwrath est mort lors du duel de Verdure. Il ne peut donc pas attendre les aventuriers dans la grotte. Le Clan poursuit son exploration au-delà de la salle gardée, en direction des œufs.'], chapterNumber: 4 };
-      if (room.id === 'elturel_road' && !flags.eggsStolen) return { heading: room.title, paragraphs: ['Le Clan quitte Verdure après avoir transmis les renseignements trouvés dans la grotte. Un message de Leosin oriente les aventuriers vers Elturel, où ils doivent retrouver le moine et rencontrer Ontharr Frume.', flags.eggsDestroyed ? 'Dans cette variante, les œufs ont été détruits. Aucun dragonnet ne naît pendant le voyage.' : 'Dans cette variante, les œufs sont restés dans la grotte. Le voyage se poursuit sans les dragonnets Boule et Bill.'], chapterNumber: 5 };
+        ? 'Aucun dragonnet ne doit être confié à la guilde. Bjolnir voyage avec les autres compagnons; le Clan partage les emplois d’escorte et suit les chariots du Culte vers le nord.' : paragraph)};
+      if (room.id === 'act2_confrontation' && flags.WHAT_IF_CYANWRATH_DEAD) return { ...view, hero: 'Le passage\nvers les œufs', heading: 'Le passage gardé dans la grotte', paragraphs: ['Cyanwrath est mort lors du duel de Verdure. Il ne peut donc pas attendre les aventuriers dans la grotte. Le Clan poursuit son exploration au-delà de la salle gardée, en direction des œufs.'], chapterNumber: 4 };
+      if (room.id === 'elturel_road' && !flags.eggsStolen) return { heading: room.title, paragraphs: ['Le Clan quitte Verdure après avoir transmis les renseignements trouvés dans la grotte. Un message de Leosin oriente les aventuriers vers Elturel, où ils doivent retrouver le moine et rencontrer Ontharr Frume.', flags.eggsDestroyed ? 'Les œufs ont été détruits. Aucun dragonnet ne naît pendant le voyage.' : 'Les œufs sont restés dans la grotte. Le voyage se poursuit sans les dragonnets Boule et Bill.'], chapterNumber: 5 };
       if (room.id === 'campaign_end') {
         const conclusions = {
           simulated_victory: ['Le Clan et ses alliés parviennent à interrompre le rituel avant que Tiamat puisse franchir le portail. Les forces rassemblées devant le cercle ont donné aux aventuriers le temps d’atteindre les cultistes et de mettre fin à leur invocation.', 'Cette victoire conclut votre bataille hypothétique. Les décisions prises pour rassembler les alliés, affaiblir le Culte et protéger les civils ont déterminé cette issue.'],
@@ -8746,7 +8828,7 @@
       const person = PRESENTATION.people[selected], list = document.getElementById('companyDetails'); list.replaceChildren();
       const heading = document.createElement('div'); heading.className = 'profile-heading';
       const name = document.createElement('h3'); name.textContent = person.name ?? characters[selected].name;
-      const meta = document.createElement('div'); meta.className = 'profile-meta'; meta.textContent = `${person.race} · ${person.role} · ${PRESENTATION.states[characters[selected].state]}`;
+      const meta = document.createElement('div'); meta.className = 'profile-meta'; meta.textContent = `${person.race} · ${person.role} · ${stateLabel(selected, characters[selected].state)}`;
       const identity = document.createElement('div'); identity.append(name, meta); heading.append(portraitImage(selected), identity); list.appendChild(heading);
       const prose = document.createElement('div'); prose.className = 'profile-prose';
       [person.personality,...(person.biography??[])].forEach(text => {const p = document.createElement('p');p.textContent=text;prose.appendChild(p);}); list.appendChild(prose);
@@ -9052,6 +9134,7 @@
       const available = candidates.filter(option => {
         if (!['title_screen', 'credits'].includes(roomId) && !option.onSelect && !canAct && option.id !== 'ritual-resolve') return false;
         if (option.requiresAnyAvailableCharacter && !option.characterId) return false;
+        if (option.whatIfFinale && !WHAT_IF_FINALE) return false;
         if (!option.repeatable && gameState.resolvedOptions.includes(`${roomId}:${option.id}`)) return false;
         if (!isSkillAvailable(option.characterId, option.groupAction ? null : option.skill)) return false;
         if (option.requiresCharacters && !option.requiresCharacters.every(id => isSkillAvailable(id))) return false;
@@ -9079,6 +9162,7 @@
       const character = characters[characterId];
       if (!character) return false;
       const allowedStates = new Set(['absent', 'captured', 'retired', 'dead']);
+      if (['active', 'injured', 'down'].includes(character.state)) character.departed = true;
       const nextState = allowedStates.has(state) ? state : 'absent';
       if (character.state === nextState) return false;
       character.state = nextState;
@@ -9411,7 +9495,7 @@
       if (room.id === 'castle_naerytar') {
         writeContext(flags.cyanwrathDead
           ? 'Les renseignements obtenus dans le château doivent permettre de suivre les chefs du Culte au-delà de Naerytar.'
-          : 'Dans cette variante, Cyanwrath a survécu aux rencontres précédentes et demeure une menace pour le groupe.');
+          : 'Cyanwrath a survécu aux rencontres précédentes et demeure une menace pour le groupe.');
         if (variables.castleAlertLevel >= 3) writeContext(`Alerte du château: ${variables.castleAlertLevel}/5. La fuite vers le portail devient prioritaire.`);
       }
 
@@ -9525,6 +9609,67 @@
       return resolved.total;
     }
 
+    // Perte d'un compagnon : le Clan reste jouable avec moins d'options. S'il ne reste que deux compagnons,
+    // un ancien compagnon parti du groupe revient, choisi parmi ceux dont les caractéristiques sont les plus proches.
+    function reinforceAfterLoss() {
+      const standing = Object.values(characters).filter(c => ['active', 'injured', 'down'].includes(c.state));
+      const fallen = Object.entries(characters).filter(([, c]) => c.state === 'dead' && !c.replacedBy);
+      const candidates = Object.entries(characters).filter(([, c]) => c.state === 'absent' && c.departed);
+      if (standing.length >= 3 || !fallen.length || !candidates.length) return '';
+      const vector = id => { const abilities = getAdventureStats(id)?.abilities ?? {}; return ['str', 'dex', 'con', 'int', 'wis', 'cha'].map(key => abilities[key] ?? 10); };
+      const [lostId, lost] = fallen[0], lostVector = vector(lostId);
+      const distance = id => vector(id).reduce((sum, value, index) => sum + Math.abs(value - lostVector[index]), 0);
+      const [backId, back] = candidates.sort((a, b) => distance(a[0]) - distance(b[0]))[0];
+      back.state = 'active'; back.departed = false; lost.replacedBy = backId;
+      return `${back.name} retrouve le Clan, appelé par la perte de ${lost.name}.`;
+    }
+
+    // Défaite totale : seulement quand plus aucun compagnon présent n'est vivant.
+    function checkTotalDefeat() {
+      const alive = Object.values(characters).some(c => ['active', 'injured', 'down', 'captured'].includes(c.state));
+      if (alive || !Object.values(characters).some(c => c.state === 'dead')) return false;
+      triggerGameOver('definitive', 'Tous les compagnons sont tombés.');
+      return true;
+    }
+
+    // Repos du Clan : un par chapitre. Jets de mort pour les compagnons à terre, soins, puis un événement
+    // tiré au D20. Chaque tirage est conservé dans le compte rendu; relire ou recharger ne relance rien.
+    function restCompany() {
+      const chapter = rooms[gameState.roomId]?.chapter ?? 0, lines = [];
+      const name = id => characters[id].name;
+      Object.entries(characters).filter(([, c]) => c.state === 'down').forEach(([id, c]) => {
+        const natural = rollD20(), saves = c.deathSaves = { s: c.deathSaves?.s ?? 0, f: c.deathSaves?.f ?? 0 };
+        if (natural === 20) { saves.s = 0; saves.f = 0; c.state = 'injured'; lines.push(`${name(id)} se redresse (jet de mort : 20).`); return; }
+        if (natural === 1) saves.f += 2; else if (natural >= 10) saves.s += 1; else saves.f += 1;
+        if (saves.f >= 3) { c.state = 'dead'; lines.push(`${name(id)} succombe (jet de mort : ${natural}, trois échecs).`); fireRosterTimelineTrigger('CHARACTER_DEATH', { characterId: id, deathType: 'replaceable' }); }
+        else if (saves.s >= 3) { saves.s = 0; saves.f = 0; c.state = 'injured'; lines.push(`${name(id)} est ${agree(id, 'stabilisé', 'stabilisée')} (jet de mort : ${natural}, trois réussites).`); }
+        else lines.push(`${name(id)} lutte à terre (jet de mort : ${natural}; ${saves.s} réussite(s), ${saves.f} échec(s)).`);
+      });
+      Object.entries(characters).forEach(([id, c]) => { if (c.state === 'injured') { c.state = 'active'; lines.push(`${name(id)} reprend des forces.`); } });
+      const event = rollD20(), standing = Object.entries(characters).filter(([, c]) => ['active', 'injured'].includes(c.state));
+      if (event <= 5 && standing.length) {
+        const [id, c] = standing[event % standing.length];
+        c.state = c.state === 'active' ? 'injured' : 'down';
+        lines.push(`Événement de repos (D20 : ${event}) : des cultistes isolés surprennent le camp. ${name(id)} est ${c.state === 'injured' ? agree(id, 'blessé', 'blessée') : agree(id, 'mis', 'mise') + ' à terre'} avant que l’attaque soit repoussée.`);
+      } else if (event <= 8) {
+        variables.chaos += 1;
+        lines.push(`Événement de repos (D20 : ${event}) : un bruit suspect trahit la présence du groupe. L’alerte monte.`);
+      } else if (event <= 14) lines.push(`Événement de repos (D20 : ${event}) : la nuit est calme.`);
+      else {
+        variables.moraleGroupe += 1;
+        const helped = Object.entries(characters).find(([, c]) => c.state === 'down');
+        if (helped) { helped[1].state = 'injured'; helped[1].deathSaves = { s: 0, f: 0 }; }
+        lines.push(`Événement de repos (D20 : ${event}) : des alliés de passage partagent leurs vivres${helped ? ` et soignent ${name(helped[0])}` : ''}. Le moral du groupe se renforce.`);
+      }
+      flags[`rested_${chapter}`] = true;
+      clampTrackedVariables();
+      const reinforcement = reinforceAfterLoss();
+      if (reinforcement) lines.push(reinforcement);
+      uiState.feedback = lines.join(' ');
+      if (checkTotalDefeat()) return { endedByGameOver: true, handled: true };
+      return { endedByGameOver: false, handled: true };
+    }
+
     function handleDeath(characterId, deathType) {
       const character = characters[characterId];
       if (!character) return { message: 'Personnage introuvable.', endedByGameOver: false };
@@ -9626,13 +9771,13 @@
 
       let baseOutcome = { success: false, endedByGameOver: false, message: 'Échec sans conséquence définie.', variableDelta: { moraleGroupe: 0, chaos: 0, publicTrust: 0, councilReputation: {}, castleAlertLevel: 0, factionTrust: {}, ritualProgress: 0 }, characterChanges: [] };
       if (option.resolution.risk === 'injury') {
-        if (character.state === 'active') baseOutcome = { ...baseOutcome, message: `${character.name} est blessé.`, characterChanges: [{ id: option.characterId, toState: 'injured' }] };
+        if (character.state === 'active') baseOutcome = { ...baseOutcome, message: `${character.name} est ${agree(option.characterId, 'blessé', 'blessée')}.`, characterChanges: [{ id: option.characterId, toState: 'injured' }] };
         else if (character.state === 'injured') baseOutcome = { ...baseOutcome, message: `${character.name} est à terre.`, characterChanges: [{ id: option.characterId, toState: 'down' }] };
         else baseOutcome = { ...baseOutcome, message: `${character.name} succombe à ses blessures.`, characterChanges: [{ id: option.characterId, toState: 'dead', deathType: option.resolution.deathType ?? 'replaceable' }] };
       } else if (option.resolution.risk === 'capture') {
-        baseOutcome = { ...baseOutcome, message: `${character.name} est capturé.`, characterChanges: [{ id: option.characterId, toState: 'captured' }] };
+        baseOutcome = { ...baseOutcome, message: `${character.name} est ${agree(option.characterId, 'capturé', 'capturée')}.`, characterChanges: [{ id: option.characterId, toState: 'captured' }] };
       } else if (option.resolution.risk === 'death') {
-        if (character.state === 'active') baseOutcome = { ...baseOutcome, message: `${character.name} est grièvement blessé.`, characterChanges: [{ id: option.characterId, toState: 'injured' }] };
+        if (character.state === 'active') baseOutcome = { ...baseOutcome, message: `${character.name} est ${agree(option.characterId, 'grièvement blessé', 'grièvement blessée')}.`, characterChanges: [{ id: option.characterId, toState: 'injured' }] };
         else baseOutcome = { ...baseOutcome, message: `${character.name} affronte un risque mortel.`, characterChanges: [{ id: option.characterId, toState: 'dead', deathType: option.resolution.deathType ?? 'replaceable' }] };
       }
 
@@ -9687,27 +9832,33 @@
       if (outcome.message) writeContext(outcome.message);
       applyPostEffects(outcome.post);
       updateStatusStrip();
+      if (outcome.characterChanges.length) {
+        const reinforcement = reinforceAfterLoss();
+        if (reinforcement) { outcome.message = [outcome.message, reinforcement].filter(Boolean).join(' '); writeContext(reinforcement); gameState.reinforcement = reinforcement; }
+        if (checkTotalDefeat()) return { endedByGameOver: true };
+      }
       return { endedByGameOver: false, success: outcome.success };
     }
 
 
     function handleSpecialSelection(selectionKey) {
+      if (selectionKey === 'rest_company') return restCompany();
       if (['recover_checkpoint','decision_back'].includes(selectionKey)) {
         restoreDecisionCheckpoint();
         return { endedByGameOver: false, handled: true };
       }
-      const sillyMessages = {
-        silly_lennithon: 'Votre diversion tourne à la farce. Les sentinelles vous encerclent avant la fin du spectacle.',
-        silly_wave_lennithon: 'Vous saluez Lennithon. Il répond par un souffle de foudre, protocolaire et terminal.',
-        silly_join_cult: 'Votre offre de service enthousiasme les kobolds: ils exigent d’abord un sacrifice. Vous.',
-        silly_dance_cyanwrath: 'Vous lancez un pas de danse martial. Cyanwrath, offensé artistiquement, met fin au spectacle.',
-        silly_king_waterdeep: 'Vous réclamez la couronne de Waterdeep. Le protocole vous couronne surtout d’un bannissement immédiat.',
-        silly_dragon_selfie: 'Vous exigez de poser pour un portrait en selle. Le dragon d’airain vous expédie dehors d’un souffle magistral.',
-        silly_accuse_dragons: 'Vous accusez toute la caravane d’être draconique. Les marchands votent votre exil immédiat.',
-        silly_swamp_duck: 'Le canard réclame un tribut impérial en pain sec. Votre refus déclenche une embuscade absurde.',
-        silly_tax_inspection: 'Votre inspection fiscale révèle zéro reçu. Les cultistes préfèrent vous jeter dehors.',
-        silly_riddle_duel: 'Tiamat accepte une seule énigme: « Combien de vies sacrifieras-tu? » Votre silence vaut défaite immédiate.',
-        silly_shout_stop: 'Vous criez STOP. Le portail répond par un écho moqueur, puis vous souffle hors du cercle.'
+      const chaoticChoices = {
+        silly_lennithon: { text: 'Votre diversion tourne à la farce. Les sentinelles se regardent, perplexes, puis reprennent leur ronde; le Clan retient un fou rire.', moraleGroupe: 1, chaos: 1 },
+        silly_wave_lennithon: { text: 'Vous saluez Lennithon. Il lève un sourcil, grogne et détourne le regard.', moraleGroupe: 1 },
+        silly_join_cult: { text: 'Votre offre de service enthousiasme les kobolds, qui exigent aussitôt un serment d’allégeance. Vous le bredouillez si mal qu’ils vous chassent d’un geste.', chaos: 1 },
+        silly_dance_cyanwrath: { text: 'Vous lancez un pas de danse martial. Cyanwrath vous toise sans un mot, tandis que ses hommes ricanent.', chaos: 1 },
+        silly_king_waterdeep: { text: 'Vous réclamez la couronne de Waterdeep. Le protocole vous écoute avec une politesse glaciale, puis passe à l’ordre du jour.', moraleGroupe: 1, publicTrust: -1 },
+        silly_dragon_selfie: { text: 'Vous exigez de poser pour un portrait en selle. Le dragon d’airain soupire, ce qui suffit à vous rappeler la gravité de l’audience.', publicTrust: -1 },
+        silly_accuse_dragons: { text: 'Vous accusez toute la caravane d’être draconique. Les marchands s’écartent, vexés, et le convoi vous regarde de travers pour le reste du trajet.', chaos: 1 },
+        silly_swamp_duck: { text: 'Le canard réclame un tribut en pain sec. Vous n’en avez pas; il s’éloigne, vexé, en cancanant bruyamment.', chaos: 1 },
+        silly_tax_inspection: { text: 'Votre inspection fiscale draconique ne révèle aucun reçu. Les cultistes vous regardent, interloqués, et leur vigilance flotte un instant.', moraleGroupe: 1 },
+        silly_riddle_duel: { text: 'Vous posez une énigme à voix haute. Personne ne répond, et l’écho s’en charge à votre place.', chaos: 1 },
+        silly_shout_stop: { text: 'Vous criez STOP. Le portail répond par un écho moqueur.', chaos: 1 }
       };
       const seriousMessages = {
         serious_reckless_bridge: 'Le pont cède sous la foule. Catastrophe stratégique: la manœuvre était explicitement insensée.'
@@ -9716,9 +9867,12 @@
         triggerGameOver('definitive', seriousMessages[selectionKey]);
         return { endedByGameOver: true, handled: true };
       }
-      if (sillyMessages[selectionKey]) {
-        triggerGameOver('silly', sillyMessages[selectionKey]);
-        return { endedByGameOver: true, handled: true };
+      if (chaoticChoices[selectionKey]) {
+        const choice = chaoticChoices[selectionKey];
+        variables.moraleGroupe += choice.moraleGroupe ?? 0; variables.chaos += choice.chaos ?? 0; variables.publicTrust += choice.publicTrust ?? 0;
+        clampTrackedVariables();
+        uiState.feedback = choice.text;
+        return { endedByGameOver: false, handled: true };
       }
       if (selectionKey === 'route_after_strategy') {
         ensureCouncilVariables();
@@ -9738,16 +9892,16 @@
         if (totalSupport >= 9) {
           variables.allianceStrength = 'high';
           flags.strongAlliance = true;
-          writeContext('Dans cette adaptation, vos choix obtiennent un soutien important. Ce soutien renforcera les alliés si vous choisissez de simuler la bataille finale.');
+          writeContext('Vos choix obtiennent un soutien important.');
         } else if (totalSupport >= 3) {
           variables.allianceStrength = 'medium';
           flags.fragileAlliance = true;
-          writeContext('Dans cette adaptation, vos choix réunissent une coalition partielle. Elle fournira un soutien limité dans la simulation de la bataille finale.');
+          writeContext('Vos choix réunissent une coalition partielle.');
         } else {
           variables.allianceStrength = 'low';
           flags.fracturedAlliance = true;
           flags.limitedMilitarySupport = true;
-          writeContext('Dans cette adaptation, vos choix divisent les factions. L’appui militaire sera faible dans la simulation de la bataille finale.');
+          writeContext('Vos choix divisent les factions.');
         }
         flags.actIVCompleted = true;
         gameState.roomId = 'campaign_frontier';
@@ -9869,7 +10023,7 @@
       const before = { characters: safeClone(characters), flags: safeClone(flags), morale: variables.moraleGroupe, chaos: variables.chaos, reputation: safeClone(variables.councilReputation), trust: safeClone(variables.factionTrust) };
       if (!menu) createCheckpoint(`Avant décision: ${option.id}`);
       const result = applyOptionEffects(option,check), message = result?.message ?? uiState.feedback;
-      if (!menu && result?.success && !option.repeatable) gameState.resolvedOptions.push(`${origin}:${option.id}`);
+      if (!menu && !option.repeatable && !result?.endedByGameOver && (result?.success || option.resolution)) gameState.resolvedOptions.push(`${origin}:${option.id}`);
       if (check) gameState.rollHistory = [...(gameState.rollHistory ?? []),safeClone(check)].slice(-100);
       if (!result?.endedByGameOver) describeCurrentRoom();
       if (!menu && !result?.endedByGameOver && (option.resolution || option.effects?.message || option.onSuccess?.message || ACTION_NARRATION[option.id])) {
@@ -9883,18 +10037,28 @@
       refreshInterface(); focusNarrative();
     }
 
+    // Échec sans récit propre : annonce l'approche tentée, son coût, puis rappelle qu'elle est épuisée.
+    function failureParagraphs(option, actor, message) {
+      const approach = option.label.replace(/^(Option|What If|Chronique|Mission|Décision)\s*[–—-]\s*(?:[^:]{1,30}:\s*)?/, '').trim();
+      const lowered = approach.charAt(0).toLowerCase() + approach.slice(1);
+      const who = PRESENTATION.people[option.characterId]?.short ?? actor.name;
+      return [`${who} échoue dans sa tentative : ${lowered}.`,
+        message || 'La tentative n’aboutit pas.',
+        'Cette approche ne peut plus être rejouée dans cette scène; une autre reste possible, ou le Clan peut poursuivre sa route.'];
+    }
+
     function buildActionReport(option, roomId, result, before, message) {
       const success = Boolean(result?.success), story = ACTION_NARRATION[option.id];
       const actor = characters[option.characterId];
       const stateStory = success ? null : story?.failureByState?.[actor?.state] ?? (actor?.state === 'dead' ? {title: `${actor.name} ne survit pas à cette tentative`, paragraphs: [`${actor.name} ne parvient pas à mener son action à bien. Déjà blessé, il reçoit des coups auxquels il ne survit pas.`, 'Le groupe doit désormais compter avec sa mort: il ne pourra plus participer aux actions suivantes. Le retour à la décision précédente permet de reprendre avant cette tentative.']} : null);
-      const paragraphs = result?.successWithCost ? [message] : stateStory?.paragraphs ?? story?.[success ? 'success' : 'failure'] ?? [message || (success ? 'Le groupe accomplit cette action.' : 'La tentative échoue; le groupe doit choisir une autre approche.')];
+      const paragraphs = result?.successWithCost ? [message] : stateStory?.paragraphs ?? story?.[success ? 'success' : 'failure'] ?? (!success && actor && option.label ? failureParagraphs(option, actor, message) : null) ?? [message || (success ? 'Le groupe accomplit cette action.' : 'La tentative échoue; le groupe doit choisir une autre approche.')];
       const changes = [];
       Object.entries(characters).forEach(([id, c]) => {
-        if (before.characters[id]?.state !== c.state) changes.push(`${c.name}: ${PRESENTATION.states[c.state]}.`);
+        if (before.characters[id]?.state !== c.state) changes.push(`${c.name}: ${stateLabel(id, c.state)}.`);
       });
       if (before.morale !== variables.moraleGroupe) changes.push(variables.moraleGroupe > before.morale ? 'Le moral du groupe se renforce.' : 'Le moral du groupe est éprouvé.');
       if (before.chaos !== variables.chaos) changes.push(variables.chaos > before.chaos ? 'L’alerte et le désordre augmentent.' : 'La pression diminue autour du groupe.');
-      const objectives = { templeEvacuated: 'Les occupants du temple sont à l’abri.', millSaved: 'Le moulin est sécurisé.', dragonRepelled: 'Le dragon est repoussé de la forteresse.', leosinSaved: 'Leosin et les prisonniers sont libérés.', cyanwrathDead: 'Cyanwrath est mort; il ne participera plus à la suite du récit.', eggsStolen: 'Le groupe emporte les deux œufs noirs.', eggsDestroyed: 'Les œufs sont détruits: ils ne pourront pas éclore.', eggsLeft: 'Les œufs restent dans la grotte.', portalDamaged: 'Le portail est endommagé.', metallicAlliance: 'Les dragons ont accepté votre proposition dans cette variante.' };
+      const objectives = { templeEvacuated: 'Les occupants du temple sont à l’abri.', millSaved: 'Le moulin est sécurisé.', dragonRepelled: 'Le dragon est repoussé de la forteresse.', leosinSaved: 'Leosin et les prisonniers sont libérés.', cyanwrathDead: 'Cyanwrath est mort; il ne participera plus à la suite du récit.', eggsStolen: 'Le groupe emporte les deux œufs noirs.', eggsDestroyed: 'Les œufs sont détruits: ils ne pourront pas éclore.', eggsLeft: 'Les œufs restent dans la grotte.', portalDamaged: 'Le portail est endommagé.', metallicAlliance: 'Les dragons ont accepté votre proposition.' };
       Object.entries(objectives).forEach(([flag, description]) => { if (flags[flag] && !before.flags[flag]) changes.push(description); });
       const factions = { harpers: 'les Ménestrels', zhentarim: 'le Zhentarim', cult: 'le Culte', gauntlet: 'le Gantelet', enclave: 'l’Enclave d’Émeraude', lords: 'l’Alliance des Seigneurs' };
       ['reputation', 'trust'].forEach(key => {
@@ -9904,6 +10068,7 @@
           if (delta) changes.push(`Vos relations avec ${factions[faction] ?? faction} ${delta > 0 ? 's’améliorent' : 'se dégradent'}.`);
         });
       });
+      if (gameState.reinforcement) { changes.push(gameState.reinforcement); gameState.reinforcement = null; }
       if (gameState.roomId !== roomId) changes.push(`Suite du parcours: ${rooms[gameState.roomId].title}.`);
       if (!changes.length) changes.push(success ? 'L’action est accomplie. Le groupe peut poursuivre.' : 'L’objectif n’est pas encore atteint. Une autre approche ou un retour au checkpoint reste possible.');
       return { roomId, optionId: option.id, check: result?.check ?? null, successWithCost: Boolean(result?.successWithCost), title: result?.successWithCost ? option.costTitle ?? 'L’objectif est atteint, au prix d’un effort supplémentaire' : stateStory?.title ?? story?.[success ? 'successTitle' : 'failureTitle'] ?? (success ? 'Le résultat de votre action' : 'La tentative rencontre un obstacle'), paragraphs, changes, failed: !success };

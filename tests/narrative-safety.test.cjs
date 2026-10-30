@@ -23,7 +23,7 @@ test('sans checkpoint après un Game Over, le résultat propose aussi de recomme
 });
 
 test('le parcours des cinq actes et chaque résultat présentent deux choix utilisables', () => {
-  const g = boot();
+  const g = boot(null, null, '?whatif=1');
   const route = [...path.opening, ...path.camp, ...path.north, ...path.council,
     'plan-sabotage', 'sabotage-identify', 'sabotage-stealth', 'sabotage-arcana',
     'ritual-rally', 'ritual-rally', 'ritual-rally', 'ritual-resolve'];

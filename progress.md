@@ -62,15 +62,60 @@ au runtime. La CI lance automatiquement les quatre suites Node.
   les remparts). Variantes de jeu, annoncées comme telles.
 - **Fiches des personnages** réécrites sans mention de fiche ni de MJ; les
   sources sont repliées. Bios de Bjolnir et Ellyjobell reprises des textes des joueurs.
-- Tests : **77 tests Node**, parcours Chromium inchangés.
+- Tests : **94 tests Node**, parcours Chromium inchangés.
 
-## Scènes de chronique : second choix
+## Santé, repos et défaite (règles de jeu, façon D&D)
 
-Les 17 scènes de chronique à un seul choix proposent maintenant « Faire le point
-avec la compagnie » : aucun jet, aucun coût, la scène reste ouverte, une seule
-fois. Il reprend les observations sourcées. Choix du MJ (option 2) : pas de
-nouvelles méthodes inventées pour ces épisodes. Bjolnir persuade bien les
-kobolds avant l’assaut de Cumulus (confirmé par le MJ).
+- Barre de santé sous chaque portrait : 3 segments (actif, blessé, à terre); mort = vide.
+- **Repos** : un par chapitre, dans les scènes sûres et de chronique. Les blessés se
+  relèvent. Les compagnons à terre font un **jet de mort** (3 échecs = mort définitive,
+  3 réussites = stabilisé, 20 = debout, 1 = deux échecs). Un D20 décide ensuite d’un
+  événement : attaque de cultistes (1-5), alerte (6-8), nuit calme (9-14), aide (15-20).
+  Tous les tirages sont écrits dans le compte rendu; rien n’est relancé à la relecture.
+- **Game over** seulement si tous les compagnons présents sont morts.
+- « Faire le point avec la compagnie » reste un choix de lecture, sans effet.
+- Ce sont des règles du jeu, pas des faits de la campagne jouée.
+
+## Corrections de jeu après les premiers essais (30 octobre)
+
+- Les sorties (« Continuer vers le nord ») sont de vrais choix numérotés, avec leur touche.
+- Une approche ratée est épuisée dans la scène : plus de boucle sur la même épreuve.
+  Les échecs ont un texte propre et s’accordent au féminin (Ellyjobell, Sislay).
+- Approches prudentes à la piste du camp (suivre à distance, observer depuis une
+  crête) : un échec augmente seulement l’alerte. Effets et difficultés différenciés.
+- « Faire le point » devient propre à chaque scène et n’apparaît qu’une fois le repos
+  du chapitre pris.
+- **La bataille finale hypothétique est masquée** pour les joueurs. Elle reste dans le
+  code; pour la tester : ouvrir `index.html?whatif=1`. Les textes qui l’annonçaient
+  sont retirés.
+- 90 tests Node; parcours Chromium à lancer avec `?whatif=1` pour les cinq actes.
+
+## Contrôle de cohérence et d’immersion (30 octobre)
+
+- Comptes rendus : retrait des formules de jeu (« dans cette variante », « dans cette
+  adaptation », « rapporté par le MJ », « le journal », « le jeu »). Environ 50 phrases.
+- Cartes de choix : « What If » devient un repère « Et si… », « Option absurde » un repère
+  « Provocation », « Chronique » disparaît (c’est le cas normal). Les descriptions
+  n’emploient plus « journal », « attesté », « variante » à l’affichage.
+- « Faire le point » rappelle le texte réel des observations de la scène.
+- Vérifiés sans écart : noms des personnages, arrivées et départs du roster, aucun
+  paragraphe recopié entre scènes.
+- Limites connues : si Bjolnir est mort, la scène des runes de Cumulus reste sans lui
+  (le texte suppose son rôle); les scènes de chronique restent des restitutions.
+
+## Pertes et choix chaotiques
+
+- « Et si… » reste affiché : c'est une partie alternative assumée.
+- Les provocations (« Provocation ») sont des **choix chaotiques neutres** : jamais de
+  game over, un effet léger (moral, alerte, confiance), jouables une fois par scène.
+- Mort d'un compagnon : pas de remplaçant obligatoire; les options liées à lui disparaissent.
+  S'il ne reste que deux compagnons, un ancien compagnon parti du groupe (Drek'Thar,
+  Sislay après le pavillon) revient, choisi par l'écart minimal des six caractéristiques.
+
+## Ensuite (demandé par le MJ)
+
+Animations plus variées (scènes souvent figées ou répétitives), décors pixel art plus
+fidèles (références à fournir), musique et effets sonores (fichiers à fournir).
 
 ## À reprendre plus tard
 

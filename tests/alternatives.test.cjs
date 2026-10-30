@@ -95,6 +95,8 @@ test('les scènes de chronique offrent un second choix réel, sans dé, qui lais
     'misty_forest_chronicle','neronvein_chronicle','neronvein_battle','thay_invitation'];
   for (const room of rooms) {
     const g = boot(); enter(g, room);
+    assert.ok(!g.json('getAvailableOptions(gameState.roomId).map(o => o.id)').includes(`point-${room}`), `${room}: pas avant le repos`);
+    g.run(`flags['rested_' + rooms[gameState.roomId].chapter] = true; prepareCurrentRoom(); refreshInterface();`);
     const ids = g.json('getAvailableOptions(gameState.roomId).map(o => o.id)');
     assert.ok(ids.includes(`point-${room}`), `${room}: ${ids}`);
     assert.ok(ids.filter(id => !id.startsWith('navigation-')).length >= 2, room);
@@ -107,4 +109,40 @@ test('les scènes de chronique offrent un second choix réel, sans dé, qui lais
     assert.ok(!after.includes(`point-${room}`), `${room}: le point n’est proposé qu’une fois`);
     assert.ok(after.filter(id => !id.startsWith('navigation-')).length >= 1, `${room}: la suite reste disponible`);
   }
+});
+
+test('la bataille finale hypothétique n’est pas proposée aux joueurs', () => {
+  const g = boot();
+  g.run(`resetCampaignState(); gameState.roomId = 'campaign_frontier'; prepareCurrentRoom(); refreshInterface();`);
+  const ids = g.json('getPresentedChoices().map(c => c.option.id)');
+  assert.ok(!ids.includes('simulate-finale'), ids.join(','));
+  assert.ok(ids.length >= 2, ids.join(','));
+  const hidden = boot(null, null, '?whatif=1');
+  hidden.run(`resetCampaignState(); gameState.roomId = 'campaign_frontier'; prepareCurrentRoom(); refreshInterface();`);
+  assert.ok(hidden.json('getPresentedChoices().map(c => c.option.id)').includes('simulate-finale'));
+});
+
+test('« continuer vers le nord » est un vrai choix, numéroté, avec sa touche', () => {
+  const g = boot(); enter(g, 'cult_trail');
+  const choices = g.json('getPresentedChoices().map(c => ({ id: c.option.id, shortcut: c.shortcut, direction: c.direction ?? null }))');
+  const exit = choices.find(c => c.direction === 'nord');
+  assert.ok(exit, JSON.stringify(choices));
+  assert.deepEqual(choices.map(c => c.shortcut), choices.map((_, i) => i + 1));
+  g.run(`executePresentedChoice(${exit.shortcut})`);
+  assert.equal(g.run('gameState.roomId'), 'cult_camp_exterior');
+});
+
+test('une approche échouée ne peut pas être rejouée en boucle', () => {
+  const g = boot(); enter(g, 'cult_camp_exterior');
+  g.setRolls(1); choose(g, 'couvert-vegetal'); settle(g); continueReport(g);
+  const ids = g.json('getAvailableOptions(gameState.roomId).map(o => o.id)');
+  assert.ok(!ids.includes('couvert-vegetal'), ids.join(','));
+  assert.ok(ids.includes('glisser-entre-rondes'));
+});
+
+test('les échecs s’accordent au féminin', () => {
+  const g = boot(); enter(g, 'cult_camp_exterior');
+  g.setRolls(1); choose(g, 'couvert-vegetal'); settle(g);
+  assert.match(g.run('gameState.lastReport.paragraphs.join(" ")'), /blessée/);
+  assert.match(g.run('gameState.lastReport.changes.join(" ")'), /Blessée/);
 });
