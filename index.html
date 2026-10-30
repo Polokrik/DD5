@@ -5278,6 +5278,46 @@
         intent: 'Sislay étudie les empreintes pour comprendre les rondes. Réussite: l’alerte du château diminue. Échec: elle est repérée, elle se blesse et l’alerte monte.',
         riskText: 'Un échec peut blesser l’intervenante.',
         source: 'Variante de jeu proposée; événement non attesté dans la campagne jouée.' } }
+      ,{ roomId: 'old_tunnel', option: {
+        id: 'tunnel-epaule', label: 'What If — Drek’Thar: Forcer la porte rouillée et chasser les rats',
+        characterId: 'drekthar', skill: 'might', failForward: true, repeatable: true,
+        resolution: { difficulty: 4, skill: 'might', risk: 'cost', dc: 12 },
+        check: { ability: 'str', skillKey: 'athletics', kind: 'ability', label: 'Athlétisme', dc: 12 },
+        intent: 'Sans attendre qu’Ellyjobell et Darrin soient prêts, Drek’Thar avance en tête, repousse les rats et enfonce la porte. Réussite: le passage s’ouvre sans bruit inutile. Échec: le vacarme porte jusqu’aux pillards et l’alerte monte, mais le Clan atteint tout de même la rivière.',
+        riskText: 'Le Clan avance dans les deux cas. Le D20 fixe seulement le coût annoncé.',
+        onSuccess: { gotoRoom: 'sanctuary_approach', message: 'Drek’Thar dégage le tunnel et la porte cède. Le Clan rejoint la rivière.' },
+        onFailure: { gotoRoom: 'sanctuary_approach', variableDelta: { chaos: 1 }, message: 'La porte cède dans un fracas qui résonne sous la forteresse. Le Clan rejoint la rivière, mais les pillards ont pu l’entendre.' },
+        source: 'Variante de jeu proposée; le journal (Tyranny of dragons!24:25) rapporte une autre méthode.' } }
+      ,{ roomId: 'old_tunnel', option: {
+        id: 'tunnel-crochetage', label: 'What If — Sislay: Crocheter la porte rouillée',
+        characterId: 'sislay', skill: 'stealth', failForward: true, repeatable: true,
+        resolution: { difficulty: 4, skill: 'stealth', risk: 'cost', dc: 12 },
+        check: { ability: 'dex', skillKey: null, kind: 'ability', label: 'Outils de voleur', dc: 12 },
+        intent: 'Sislay prend ses outils de voleur et s’attaque à la serrure pendant que les autres tiennent les rats à distance. Réussite: la porte s’ouvre sans un bruit. Échec: la serrure cède après de longs essais et le groupe perd du temps.',
+        riskText: 'Le Clan avance dans les deux cas. Le D20 fixe seulement le coût annoncé.',
+        onSuccess: { gotoRoom: 'sanctuary_approach', message: 'La serrure cède sous les outils de Sislay. Le Clan rejoint la rivière.' },
+        onFailure: { gotoRoom: 'sanctuary_approach', variableDelta: { chaos: 1 }, message: 'La serrure résiste longtemps avant de céder. Le Clan rejoint la rivière après un délai qui laisse aux pillards le temps de resserrer leurs lignes.' },
+        source: 'Variante de jeu proposée; le journal (Tyranny of dragons!24:25) rapporte une autre méthode.' } }
+      ,{ roomId: 'dragon_assault', option: {
+        id: 'dragon-brouillard', label: 'What If — Ellyjobell: Voiler les remparts pour désorienter le dragon',
+        characterId: 'ellyjobell', skill: 'arcana', failForward: true,
+        resolution: { difficulty: 4, skill: 'arcana', risk: 'cost', dc: 12 },
+        check: { ability: 'int', skillKey: 'arcana', kind: 'ability', label: 'Arcanes', dc: 12 },
+        intent: 'Ellyjobell étend un brouillard sur les remparts pendant que les gardes tirent à couvert. Réussite: le dragon perd ses cibles et s’éloigne. Échec: le brouillard gêne aussi les défenseurs; le dragon est chassé, mais le moral du groupe en souffre.',
+        riskText: 'Le dragon est repoussé dans les deux cas, comme dans le journal. Le D20 fixe seulement le coût annoncé.',
+        onSuccess: { gotoRoom: 'greenest_keep', setFlags: { dragonRepelled: true }, message: 'Le brouillard d’Ellyjobell égare le dragon, qui s’éloigne sous les tirs des défenseurs.' },
+        onFailure: { gotoRoom: 'greenest_keep', setFlags: { dragonRepelled: true }, variableDelta: { moraleGroupe: -1 }, message: 'Le brouillard gêne autant les défenseurs que le dragon. L’assaut est repoussé, mais au prix d’une défense confuse qui éprouve le groupe.' },
+        source: 'Variante de jeu proposée; le journal (Tyranny of dragons!32) ne détaille pas la méthode.' } }
+      ,{ roomId: 'dragon_assault', option: {
+        id: 'dragon-magie', label: 'What If — Darrin: Frapper le dragon de magie sauvage depuis les remparts',
+        characterId: 'darrin', skill: 'wild_magic', failForward: true,
+        resolution: { difficulty: 4, skill: 'wild_magic', risk: 'cost', dc: 14 },
+        check: { ability: 'cha', skillKey: null, kind: 'attack', label: 'Attaque de sort', dc: 14 },
+        intent: 'Darrin concentre ses sorts sur le dragon pendant que les gardes tirent. Réussite: l’assaut contraint la créature à s’éloigner. Échec: la magie sauvage dévie sur les remparts; le dragon est tout de même chassé, mais l’alerte monte.',
+        riskText: 'Le dragon est repoussé dans les deux cas, comme dans le journal. Le D20 fixe seulement le coût annoncé.',
+        onSuccess: { gotoRoom: 'greenest_keep', setFlags: { dragonRepelled: true }, message: 'Les sorts de Darrin frappent le dragon, qui renonce à son assaut.' },
+        onFailure: { gotoRoom: 'greenest_keep', setFlags: { dragonRepelled: true }, variableDelta: { chaos: 1 }, message: 'Un sort dévie et frappe les remparts. Les défenseurs finissent pourtant par chasser le dragon, mais le désordre laisse des traces.' },
+        source: 'Variante de jeu proposée; le journal (Tyranny of dragons!32) ne détaille pas la méthode.' } }
     ];
     EXTRA_APPROACHES.forEach(({roomId,option}) => rooms[roomId].options.push(option));
 

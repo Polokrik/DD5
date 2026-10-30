@@ -8,7 +8,9 @@ const ROOMS = {
   hatchery_entry: ['entree-magie', 'entree-epaule'],
   fungal_chamber: ['fonges-reconnaitre', 'fonges-eclaireur'],
   egg_chamber: ['detruire-oeufs-drekthar', 'laisser-oeufs-ellyjobell'],
-  naerytar_swamp: ['naerytar-piste']
+  naerytar_swamp: ['naerytar-piste'],
+  old_tunnel: ['tunnel-epaule', 'tunnel-crochetage'],
+  dragon_assault: ['dragon-brouillard', 'dragon-magie']
 };
 
 function enter(g, room) {
@@ -54,4 +56,16 @@ test('détruire ou laisser les œufs par un autre compagnon applique les mêmes 
   g = boot(); enter(g, 'egg_chamber'); g.setRolls(20); choose(g, 'laisser-oeufs-ellyjobell');
   assert.equal(g.run('flags.eggsLeft'), true);
   assert.equal(g.run('flags.eggsDestroyed'), false);
+});
+
+test('le tunnel et le dragon offrent trois méthodes, toutes menant à l’issue du journal', () => {
+  for (const [room, ids, next] of [['old_tunnel', ['tunnel-temple', 'tunnel-epaule', 'tunnel-crochetage'], 'sanctuary_approach'],
+    ['dragon_assault', ['dragon-defendre', 'dragon-brouillard', 'dragon-magie'], 'greenest_keep']]) {
+    for (const id of ids) for (const roll of [20, 1]) {
+      const g = boot(); enter(g, room); g.setRolls(roll);
+      assert.ok(g.json('getAvailableOptions(gameState.roomId).map(o => o.id)').includes(id), `${room}: ${id}`);
+      choose(g, id); settle(g); continueReport(g);
+      assert.equal(g.run('gameState.roomId'), next, `${id} (${roll})`);
+    }
+  }
 });
