@@ -97,7 +97,7 @@ test('rendu déterministe, aucune dépendance externe, saisie séparée', () => 
 });
 
 function journeyToFinale() {
-  const g = boot();
+  const g = boot(null, null, "?whatif=1");
   const path = require('./campaign-path.cjs');
   for (const id of path.opening) choose(g, id);
   assert.equal(g.run('acts.current'), 'ACT_II');
@@ -143,7 +143,7 @@ test('parcours des cinq actes avec D20 contrôlés, œufs, recrutement et fins d
 });
 
 test('menu: continuer, effacer et consulter les crédits préservent le stockage attendu', () => {
-  const g = boot(); choose(g, 'title-new'); choose(g, 'charge-civils');
+  const g = boot(null, null, '?whatif=1'); choose(g, 'title-new'); choose(g, 'charge-civils');
   const saved = g.storage.get('clanDestain.save.v1');
   const menu = boot(saved);
   menu.run('gameState.lastReport = null; gameState.roomId = "title_screen"; configureTitleOptions()');
@@ -164,7 +164,7 @@ test('look reste sans effet sur les variables, les actes et les checkpoints', ()
 });
 
 test('undo revient avant une décision, y compris ses effets différés', () => {
-  const g = boot(); choose(g, 'title-new');
+  const g = boot(null, null, '?whatif=1'); choose(g, 'title-new');
   const before = g.json('({flags, variables, room: gameState.roomId, characters})');
   choose(g, 'charge-civils'); g.run('handleCommand("undo")');
   assert.deepEqual(g.json('({flags, variables, room: gameState.roomId, characters})'), before);

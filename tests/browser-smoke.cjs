@@ -26,7 +26,7 @@ const html = fs.readFileSync(require('node:path').join(__dirname, '../index.html
       window.__testD20 = 20;
       window.crypto.getRandomValues = array => { array.fill(window.__testD20 - 1); return array; };
     });
-    await page.goto(`http://127.0.0.1:${server.address().port}`);
+    await page.goto(`http://127.0.0.1:${server.address().port}/?whatif=1`);
     const input = page.locator('#commandInput');
     async function command(value) { await page.locator('#commandPanel').evaluate(e => e.open = true); await input.fill(value); await input.press('Enter'); }
     async function resume() {

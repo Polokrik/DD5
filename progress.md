@@ -62,7 +62,7 @@ au runtime. La CI lance automatiquement les quatre suites Node.
   les remparts). Variantes de jeu, annoncées comme telles.
 - **Fiches des personnages** réécrites sans mention de fiche ni de MJ; les
   sources sont repliées. Bios de Bjolnir et Ellyjobell reprises des textes des joueurs.
-- Tests : **86 tests Node**, parcours Chromium inchangés.
+- Tests : **90 tests Node**, parcours Chromium inchangés.
 
 ## Santé, repos et défaite (règles de jeu, façon D&D)
 
@@ -75,6 +75,24 @@ au runtime. La CI lance automatiquement les quatre suites Node.
 - **Game over** seulement si tous les compagnons présents sont morts.
 - « Faire le point avec la compagnie » reste un choix de lecture, sans effet.
 - Ce sont des règles du jeu, pas des faits de la campagne jouée.
+
+## Corrections de jeu après les premiers essais (30 octobre)
+
+- Les sorties (« Continuer vers le nord ») sont de vrais choix numérotés, avec leur touche.
+- Une approche ratée est épuisée dans la scène : plus de boucle sur la même épreuve.
+  Les échecs ont un texte propre et s’accordent au féminin (Ellyjobell, Sislay).
+- Approches prudentes à la piste du camp (suivre à distance, observer depuis une
+  crête) : un échec augmente seulement l’alerte. Effets et difficultés différenciés.
+- « Faire le point » devient propre à chaque scène et n’apparaît qu’une fois le repos
+  du chapitre pris.
+- **La bataille finale hypothétique est masquée** pour les joueurs. Elle reste dans le
+  code; pour la tester : ouvrir `index.html?whatif=1`. Les textes qui l’annonçaient
+  sont retirés.
+- 90 tests Node; parcours Chromium à lancer avec `?whatif=1` pour les cinq actes.
+
+## Ensuite (demandé par le MJ)
+
+Animations, décors pixel art plus fidèles, musique et effets sonores.
 
 ## À reprendre plus tard
 

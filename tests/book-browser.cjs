@@ -25,7 +25,7 @@ const html = fs.readFileSync(require('node:path').join(__dirname, '../index.html
       window.__entropyRequests = 0;
       window.crypto.getRandomValues = array => { window.__entropyRequests++; array.fill(19); return array; };
     });
-    await page.goto(url);
+    await page.goto(url + "/?whatif=1");
 
     async function continueReport() {
       await page.evaluate(() => finishD20Animation());

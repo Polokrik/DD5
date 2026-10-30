@@ -293,6 +293,8 @@
       w: 'ouest', ouest: 'ouest'
     };
     const URL_PARAMS = new URLSearchParams(window.location.search);
+    // La bataille finale hypothétique reste dans le code, mais n'est pas proposée aux joueurs de la campagne.
+    const WHAT_IF_FINALE = URL_PARAMS.has('whatif');
 
     const CHRONICLE_CHAPTERS = [
   {
@@ -3840,6 +3842,7 @@
     "options": [
       {
         "id": "simulate-finale",
+        "whatIfFinale": true,
         "label": "What If — Explorer une bataille finale hypothétique",
         "onSuccess": {
           "setAct": "ACT_V",
@@ -3883,7 +3886,7 @@
   "credits": {
     "id": "credits",
     "title": "Crédits",
-    "description": "D’après D&D 5e — Tyranny of Dragons, adapté pour le Clan d’Estain. Journal de campagne fourni par le MJ. Cette version abrège les événements; la bataille finale reste une simulation.",
+    "description": "D’après D&D 5e — Tyranny of Dragons, adapté pour le Clan d’Estain. Journal de campagne fourni par le MJ. Cette version abrège les événements.",
     "objects": [
       "rideau"
     ],
@@ -3899,7 +3902,7 @@
   "title_screen": {
     "id": "title_screen",
     "title": "Clan d’Estain — Tyranny of Dragons",
-    "description": "Une adaptation abrégée de la campagne du Clan d’Estain. Les options « Chronique » suivent des faits attestés; les chemins « What If » sont des variantes. La véritable campagne est en cours, à l’invitation à Thay. La bataille finale proposée est hypothétique.",
+    "description": "Une adaptation abrégée de la campagne du Clan d’Estain. Les options « Chronique » suivent des faits attestés; les chemins « What If » sont des variantes. La véritable campagne est en cours, à l’invitation à Thay.",
     "objects": [
       "menu principal"
     ],
@@ -5202,17 +5205,36 @@
       { roomId: 'cult_trail', option: {
         id: 'piste-betes', label: 'Option – Ellyjobell: Interroger les bêtes du sentier sur la colonne',
         characterId: 'ellyjobell', skill: 'nature',
-        resolution: { difficulty: 3, skill: 'nature', risk: 'injury', deathType: 'replaceable' },
+        resolution: { difficulty: 2, skill: 'nature', risk: 'cost', deathType: 'replaceable' },
+        onFailure: { variableDelta: { chaos: 1 }, message: 'Les bêtes s’égaillent à l’approche d’Ellyjobell et leur envol signale la présence du groupe.' },
         effects: { chaos: -1, message: 'Les bêtes ne disent pas tout, mais Ellyjobell comprend par où la colonne est passée et comment la suivre à distance sans éveiller les sentinelles.' },
-        intent: 'Ellyjobell se fie aux oiseaux et aux renards du sentier pour reconstituer le trajet de la colonne. Réussite: la piste se précise sans alerter le Culte. Échec: elle se blesse dans la broussaille et le groupe perd du temps.',
-        riskText: 'Un échec peut blesser l’intervenante.',
+        intent: 'Ellyjobell se fie aux oiseaux et aux renards du sentier pour reconstituer le trajet de la colonne. Réussite: la piste se précise sans alerter le Culte. Échec: les bêtes s’enfuient et l’alerte monte, sans blessure.',
+        riskText: 'Approche prudente : un échec augmente seulement l’alerte.',
+        source: 'Variante de jeu proposée; événement non attesté dans la campagne jouée.' } },
+      { roomId: 'cult_trail', option: {
+        id: 'suivre-a-distance', label: 'Option – Sislay: Suivre la piste à distance',
+        characterId: 'sislay', skill: 'tracking',
+        resolution: { difficulty: 3, skill: 'tracking', risk: 'cost', deathType: 'replaceable' },
+        effects: { chaos: -1, message: 'Sislay garde la colonne à la limite de la vue, note les fumées du camp au sud et ramène le groupe sans quitter le couvert.' },
+        onFailure: { variableDelta: { chaos: 1 }, message: 'Sislay perd la trace un moment. Le groupe rattrape son retard en hâte et fait assez de bruit pour que des pillards se retournent.' },
+        intent: 'Sislay suit les traces sans se montrer, loin derrière la colonne. Réussite: le groupe approche du camp sans éveiller de soupçon. Échec: la piste est perdue un moment et l’alerte monte, sans que personne soit blessé ni capturé.',
+        riskText: 'Approche prudente : un échec augmente seulement l’alerte.',
+        source: 'Variante de jeu proposée; le survivant interrogé (Tyranny of dragons!42:43) situe le camp au sud, près des falaises.' } },
+      { roomId: 'cult_trail', option: {
+        id: 'observer-crete', label: 'Option – Bjolnir: Observer la colonne depuis une crête',
+        characterId: 'bjolnir', skill: 'strategy',
+        resolution: { difficulty: 3, skill: 'strategy', risk: 'cost', deathType: 'replaceable' },
+        effects: { moraleGroupe: 1, message: 'Depuis la crête, Bjolnir compte les hommes et l’ordre de marche, puis redescend avant que le soleil ne le trahisse.' },
+        onFailure: { variableDelta: { chaos: 1 }, message: 'La silhouette de Bjolnir se découpe un instant sur le ciel. Personne ne donne l’alerte, mais la colonne accélère.' },
+        intent: 'Bjolnir étudie la colonne depuis les hauteurs, puis rejoint ses compagnons. Réussite: le Clan sait à quoi s’attendre et son moral se renforce. Échec: il est aperçu et l’alerte monte, sans blessure.',
+        riskText: 'Approche prudente : un échec augmente seulement l’alerte.',
         source: 'Variante de jeu proposée; événement non attesté dans la campagne jouée.' } },
       { roomId: 'cult_camp_exterior', option: {
         id: 'glisser-entre-rondes', label: 'Option – Sislay: Se glisser entre deux rondes',
         characterId: 'sislay', skill: 'stealth',
-        resolution: { difficulty: 4, skill: 'stealth', risk: 'capture', deathType: 'replaceable' },
-        effects: { chaos: -1, message: 'Entre deux passages de sentinelles, Sislay repère une brèche dans la ligne des feux et y guide le groupe.' },
-        intent: 'Sislay attend le changement de garde pour trouver la brèche. Réussite: le groupe approche sans bruit et l’alerte diminue. Échec: elle peut être capturée par les sentinelles.',
+        resolution: { difficulty: 5, skill: 'stealth', risk: 'capture', deathType: 'replaceable' },
+        effects: { chaos: -2, message: 'Entre deux passages de sentinelles, Sislay repère une brèche dans la ligne des feux et y guide le groupe.' },
+        intent: 'Sislay attend le changement de garde pour trouver la brèche. Réussite: le groupe approche sans bruit et l’alerte baisse nettement. Échec: elle peut être capturée par les sentinelles. Épreuve plus difficile que les autres approches.',
         riskText: 'Un échec peut entraîner sa capture.',
         source: 'Variante de jeu proposée; événement non attesté dans la campagne jouée.' } },
       { roomId: 'cult_camp_exterior', option: {
@@ -5234,15 +5256,15 @@
       { roomId: 'hatchery_entry', option: {
         id: 'entree-epaule', label: 'Option – Drek’Thar: Enfoncer l’entrée à l’épaule',
         characterId: 'drekthar', skill: 'might',
-        resolution: { difficulty: 6, skill: 'might', risk: 'injury', deathType: 'replaceable' },
-        effects: { moraleGroupe: 1, chaos: 1, message: 'La porte cède sous l’épaule de Drek’Thar. Le fracas se répercute dans les galeries.' },
-        intent: 'Drek’Thar force le passage sans attendre. Réussite: la voie est ouverte et le groupe reprend confiance, mais l’alerte monte. Échec: il se blesse contre le battant.',
+        resolution: { difficulty: 4, skill: 'might', risk: 'injury', deathType: 'replaceable' },
+        effects: { chaos: 1, message: 'La porte cède sous l’épaule de Drek’Thar. Le fracas se répercute dans les galeries.' },
+        intent: 'Drek’Thar force le passage sans attendre. Réussite: la voie est ouverte, mais l’alerte monte. Épreuve plus facile que les autres approches. Échec: il se blesse contre le battant.',
         riskText: 'Un échec peut blesser l’intervenant.',
         source: 'Variante de jeu proposée; événement non attesté dans la campagne jouée.' } },
       { roomId: 'fungal_chamber', option: {
         id: 'fonges-reconnaitre', label: 'Option – Ellyjobell: Reconnaître les nappes dangereuses',
         characterId: 'ellyjobell', skill: 'nature',
-        resolution: { difficulty: 5, skill: 'nature', risk: 'injury', deathType: 'replaceable' },
+        resolution: { difficulty: 4, skill: 'nature', risk: 'injury', deathType: 'replaceable' },
         effects: { chaos: -1, message: 'Ellyjobell distingue les nappes inoffensives de celles qui libèrent des spores et indique où poser le pied.' },
         intent: 'Ellyjobell se fie à sa connaissance des plantes et des champignons pour tracer un passage. Réussite: le groupe traverse sans réveiller la salle. Échec: elle inhale des spores et se blesse.',
         riskText: 'Un échec peut blesser l’intervenante.',
@@ -5251,8 +5273,8 @@
         id: 'fonges-eclaireur', label: 'Option – Sislay: Ouvrir la marche entre les spores',
         characterId: 'sislay', skill: 'tracking',
         resolution: { difficulty: 6, skill: 'tracking', risk: 'injury', deathType: 'replaceable' },
-        effects: { chaos: -1, message: 'Sislay avance la première, éprouve chaque appui et le groupe suit ses pas sans soulever de nuage.' },
-        intent: 'Sislay éclaire la route en testant le sol avant chaque pas. Réussite: le groupe passe en silence. Échec: elle dérange les spores et se blesse.',
+        effects: { moraleGroupe: 1, message: 'Sislay avance la première, éprouve chaque appui et le groupe suit ses pas sans soulever de nuage.' },
+        intent: 'Sislay éclaire la route en testant le sol avant chaque pas. Réussite: le groupe passe en silence et prend confiance. Échec: elle dérange les spores et se blesse.',
         riskText: 'Un échec peut blesser l’intervenante.',
         source: 'Variante de jeu proposée; événement non attesté dans la campagne jouée.' } },
       { roomId: 'egg_chamber', option: {
@@ -7016,7 +7038,7 @@
       "successTitle": "Le récit rejoint l’invitation de Thay",
       "success": [
         "Les compagnons disposent du message de Thay, de la demande de Lady Silverhand et des explications d’Islabus. Ils doivent encore déterminer la réponse qu’ils souhaitent porter; aucune décision de voyage ni audience n’est ajoutée à la campagne.",
-        "Le jeu propose de faire le bilan des appuis obtenus pendant ce parcours. Vous pourrez ensuite laisser le livre à cette frontière ou ouvrir séparément la simulation d’une bataille finale."
+        "Le jeu propose de faire le bilan des appuis obtenus pendant ce parcours. Le livre s’arrête ensuite à cette frontière, en attendant la suite de la campagne."
       ]
     }
   },
@@ -7456,7 +7478,7 @@
       "label": "Faire le bilan avant de refermer la chronique"
     },
     "resolve-council-session": {
-      "intent": "Calculer le soutien des factions d’après vos choix de jeu et rejoindre la fin du récit disponible. La bataille finale reste une simulation facultative, accessible séparément.",
+      "intent": "Calculer le soutien des factions d’après vos choix de jeu et rejoindre la fin du récit disponible.",
       "label": "Calculer les appuis et rejoindre la fin du récit disponible"
     }
   },
@@ -7899,11 +7921,12 @@
     POINT_ROOMS.forEach(roomId => {
       const room = rooms[roomId], titles = (room?.observations ?? []).map(observation => observation.title);
       if (!titles.length) return;
-      const id = `point-${roomId}`, message = `Avant de poursuivre, la compagnie reprend ce qu’elle sait : ${titles.join(' ; ')}. Rien n’est décidé; chacun peut maintenant dire ce qui lui paraît important.`;
-      room.options.push({ id, label: 'Faire le point avec la compagnie',
-        intent: 'Reprendre ce que le Clan sait avant de poursuivre. Aucun jet, aucun coût; la scène reste ouverte.',
+      const id = `point-${roomId}`, lower = text => text.charAt(0).toLowerCase() + text.slice(1);
+      const message = `Avant de poursuivre, la compagnie reprend ce qu’elle sait : ${titles.map(lower).join(' ; ')}. Rien n’est décidé.`;
+      room.options.push({ id, label: `Faire le point : ${titles[0]}`, requiresFlag: `rested_${room.chapter}`,
+        intent: `Revenir sur ${titles.map(lower).join(' et ')}. Aucun jet, aucun coût; la scène reste ouverte.`,
         effects: { message } });
-      ACTION_NARRATION[id] = { successTitle: 'Le Clan fait le point', success: [message] };
+      ACTION_NARRATION[id] = { successTitle: titles[0], success: [message] };
     });
     const BOOK_ART = {
   "cult_trail": "cult_camp",
@@ -8517,6 +8540,11 @@
       return img;
     }
 
+    const FEMALE_COMPANIONS = new Set(['ellyjobell', 'sislay']);
+    const agree = (id, masculine, feminine) => FEMALE_COMPANIONS.has(id) ? feminine : masculine;
+    const stateLabel = (id, state) => FEMALE_COMPANIONS.has(id)
+      ? { injured: 'Blessée', captured: 'Capturée', dead: 'Décédée', retired: 'Retirée' }[state] ?? PRESENTATION.states[state]
+      : PRESENTATION.states[state];
     const HEALTH_POINTS = { active: 3, injured: 2, down: 1, dead: 0 };
 
     function renderParty() {
@@ -8526,9 +8554,9 @@
       document.getElementById('partyCount').textContent = `${present.length} compagnons`;
       present.forEach(([id, c]) => {
         const button = document.createElement('button'); button.className = 'party-person'; button.dataset.state = c.state;
-        button.setAttribute('aria-label', `${c.name}, ${PRESENTATION.states[c.state]}. Voir la compagnie`);
+        button.setAttribute('aria-label', `${c.name}, ${stateLabel(id, c.state)}. Voir la compagnie`);
         const text = document.createElement('span'), name = document.createElement('strong'), state = document.createElement('small');
-        name.textContent = PRESENTATION.people[id]?.short ?? c.name; state.textContent = `N${getAdventureLevel()} · ${PRESENTATION.states[c.state]}`;
+        name.textContent = PRESENTATION.people[id]?.short ?? c.name; state.textContent = `N${getAdventureLevel()} · ${stateLabel(id, c.state)}`;
         const health = HEALTH_POINTS[c.state] ?? 0, bar = document.createElement('span'), stack = document.createElement('span');
         bar.className = 'health'; bar.dataset.health = String(health); bar.setAttribute('role', 'img');
         const saves = c.state === 'down' ? ` Jets de mort : ${c.deathSaves?.s ?? 0} réussite(s), ${c.deathSaves?.f ?? 0} échec(s).` : '';
@@ -8540,6 +8568,8 @@
       });
     }
 
+    const EXIT_LABELS = { nord: 'Continuer vers le nord', sud: 'Revenir vers le sud', est: 'Aller vers l’est', ouest: 'Aller vers l’ouest' };
+
     function getPresentedChoices() {
       if (gameState.lastReport) {
         const pending = getD20AnimationPending(), back = findDecisionCheckpoint(), restart = !back && gameState.roomId === 'title_screen';
@@ -8549,7 +8579,15 @@
         ];
       }
       const options = getAvailableOptions(gameState.roomId);
-      if (gameState.roomId !== 'title_screen') return options.map((option,index) => ({ option,index,shortcut:index+1 }));
+      if (gameState.roomId !== 'title_screen') {
+        const choices = options.map((option,index) => ({ option,index,shortcut:index+1 }));
+        const canTravel = Object.values(characters).some(c => ['active', 'injured'].includes(c.state));
+        Object.keys(canTravel ? getCurrentRoom()?.exits ?? {} : {}).forEach(direction => choices.push({
+          direction, index: -2, shortcut: choices.length + 1,
+          option: { id: `exit-${direction}`, label: EXIT_LABELS[direction] ?? `Aller vers ${direction}`,
+            intent: direction === 'sud' ? 'Quitter la scène et revenir sur ses pas. Rien n’est perdu.' : 'Quitter la scène et poursuivre le chemin, sans autre épreuve.' } }));
+        return choices;
+      }
       return [
         { option: { id:'title-new',label:'Commencer l’aventure' },index:options.findIndex(o=>o.id==='title-new'),shortcut:1 },
         { option: { id:'title-continue',label:'Reprendre ma partie' },index:options.findIndex(o=>o.id==='title-continue'),shortcut:2 },
@@ -8561,6 +8599,7 @@
       const choice = getPresentedChoices().find(c => c.shortcut === Number(shortcut));
       if (!choice || choice.index === -1) return;
       if (choice.skipDice) { finishD20Animation(); return; }
+      if (choice.direction) { handleCommand(`go ${choice.direction}`); return; }
       if (choice.restart) { handleSpecialSelection('restart_campaign'); refreshInterface(); focusNarrative(); return; }
       if (choice.decisionBack) { restoreDecisionCheckpoint(); saveGame(); refreshInterface(); focusNarrative(); return; }
       if (choice.home) { handleSpecialSelection('return_title'); refreshInterface(); focusNarrative(); return; }
@@ -8578,6 +8617,7 @@
         const { option } = choice;
         const card = document.createElement('button'); card.type = 'button'; card.className = `choice-card${slot === 0 && (gameState.roomId === 'title_screen' || gameState.lastReport) ? ' primary' : ''}`;
         card.dataset.choice = option.id; card.dataset.shortcut = choice.shortcut; card.disabled = choice.index === -1;
+        if (choice.direction) card.dataset.direction = choice.direction;
         const number = document.createElement('span'); number.className = 'choice-number'; number.textContent = String(choice.shortcut).padStart(2, '0');
         const content = document.createElement('span'), title = document.createElement('span'), detail = document.createElement('span');
         content.className = 'choice-content'; title.className = 'choice-label'; detail.className = 'choice-detail';
@@ -8597,13 +8637,6 @@
         if (option.riskText) { const risk = document.createElement('span'); risk.className = 'choice-risk'; risk.textContent = option.riskText; content.appendChild(risk); }
         const arrow = document.createElement('span'); arrow.className = 'choice-arrow'; arrow.textContent = '→'; arrow.setAttribute('aria-hidden', 'true'); card.appendChild(arrow);
         card.addEventListener('click', () => dispatchCommand(String(choice.shortcut))); list.appendChild(card);
-      });
-      const room = getCurrentRoom();
-      const canTravel = Object.values(characters).some(c => ['active', 'injured'].includes(c.state));
-      Object.entries(gameState.lastReport || !canTravel ? {} : room?.exits ?? {}).forEach(([direction]) => {
-        const button = document.createElement('button'); button.className = 'choice-card'; button.textContent = `Continuer vers le ${direction} →`;
-        button.dataset.direction = direction;
-        button.addEventListener('click', () => { uiState.feedback = ''; handleCommand(`go ${direction}`); }); list.appendChild(button);
       });
     }
 
@@ -8769,7 +8802,7 @@
       const person = PRESENTATION.people[selected], list = document.getElementById('companyDetails'); list.replaceChildren();
       const heading = document.createElement('div'); heading.className = 'profile-heading';
       const name = document.createElement('h3'); name.textContent = person.name ?? characters[selected].name;
-      const meta = document.createElement('div'); meta.className = 'profile-meta'; meta.textContent = `${person.race} · ${person.role} · ${PRESENTATION.states[characters[selected].state]}`;
+      const meta = document.createElement('div'); meta.className = 'profile-meta'; meta.textContent = `${person.race} · ${person.role} · ${stateLabel(selected, characters[selected].state)}`;
       const identity = document.createElement('div'); identity.append(name, meta); heading.append(portraitImage(selected), identity); list.appendChild(heading);
       const prose = document.createElement('div'); prose.className = 'profile-prose';
       [person.personality,...(person.biography??[])].forEach(text => {const p = document.createElement('p');p.textContent=text;prose.appendChild(p);}); list.appendChild(prose);
@@ -9075,6 +9108,7 @@
       const available = candidates.filter(option => {
         if (!['title_screen', 'credits'].includes(roomId) && !option.onSelect && !canAct && option.id !== 'ritual-resolve') return false;
         if (option.requiresAnyAvailableCharacter && !option.characterId) return false;
+        if (option.whatIfFinale && !WHAT_IF_FINALE) return false;
         if (!option.repeatable && gameState.resolvedOptions.includes(`${roomId}:${option.id}`)) return false;
         if (!isSkillAvailable(option.characterId, option.groupAction ? null : option.skill)) return false;
         if (option.requiresCharacters && !option.requiresCharacters.every(id => isSkillAvailable(id))) return false;
@@ -9566,7 +9600,7 @@
         if (natural === 20) { saves.s = 0; saves.f = 0; c.state = 'injured'; lines.push(`${name(id)} se redresse (jet de mort : 20).`); return; }
         if (natural === 1) saves.f += 2; else if (natural >= 10) saves.s += 1; else saves.f += 1;
         if (saves.f >= 3) { c.state = 'dead'; lines.push(`${name(id)} succombe (jet de mort : ${natural}, trois échecs).`); fireRosterTimelineTrigger('CHARACTER_DEATH', { characterId: id, deathType: 'replaceable' }); }
-        else if (saves.s >= 3) { saves.s = 0; saves.f = 0; c.state = 'injured'; lines.push(`${name(id)} est stabilisé (jet de mort : ${natural}, trois réussites).`); }
+        else if (saves.s >= 3) { saves.s = 0; saves.f = 0; c.state = 'injured'; lines.push(`${name(id)} est ${agree(id, 'stabilisé', 'stabilisée')} (jet de mort : ${natural}, trois réussites).`); }
         else lines.push(`${name(id)} lutte à terre (jet de mort : ${natural}; ${saves.s} réussite(s), ${saves.f} échec(s)).`);
       });
       Object.entries(characters).forEach(([id, c]) => { if (c.state === 'injured') { c.state = 'active'; lines.push(`${name(id)} reprend des forces.`); } });
@@ -9574,7 +9608,7 @@
       if (event <= 5 && standing.length) {
         const [id, c] = standing[event % standing.length];
         c.state = c.state === 'active' ? 'injured' : 'down';
-        lines.push(`Événement de repos (D20 : ${event}) : des cultistes isolés surprennent le camp. ${name(id)} est ${c.state === 'injured' ? 'blessé' : 'mis à terre'} avant que l’attaque soit repoussée.`);
+        lines.push(`Événement de repos (D20 : ${event}) : des cultistes isolés surprennent le camp. ${name(id)} est ${c.state === 'injured' ? agree(id, 'blessé', 'blessée') : agree(id, 'mis', 'mise') + ' à terre'} avant que l’attaque soit repoussée.`);
       } else if (event <= 8) {
         variables.chaos += 1;
         lines.push(`Événement de repos (D20 : ${event}) : un bruit suspect trahit la présence du groupe. L’alerte monte.`);
@@ -9693,13 +9727,13 @@
 
       let baseOutcome = { success: false, endedByGameOver: false, message: 'Échec sans conséquence définie.', variableDelta: { moraleGroupe: 0, chaos: 0, publicTrust: 0, councilReputation: {}, castleAlertLevel: 0, factionTrust: {}, ritualProgress: 0 }, characterChanges: [] };
       if (option.resolution.risk === 'injury') {
-        if (character.state === 'active') baseOutcome = { ...baseOutcome, message: `${character.name} est blessé.`, characterChanges: [{ id: option.characterId, toState: 'injured' }] };
+        if (character.state === 'active') baseOutcome = { ...baseOutcome, message: `${character.name} est ${agree(option.characterId, 'blessé', 'blessée')}.`, characterChanges: [{ id: option.characterId, toState: 'injured' }] };
         else if (character.state === 'injured') baseOutcome = { ...baseOutcome, message: `${character.name} est à terre.`, characterChanges: [{ id: option.characterId, toState: 'down' }] };
         else baseOutcome = { ...baseOutcome, message: `${character.name} succombe à ses blessures.`, characterChanges: [{ id: option.characterId, toState: 'dead', deathType: option.resolution.deathType ?? 'replaceable' }] };
       } else if (option.resolution.risk === 'capture') {
-        baseOutcome = { ...baseOutcome, message: `${character.name} est capturé.`, characterChanges: [{ id: option.characterId, toState: 'captured' }] };
+        baseOutcome = { ...baseOutcome, message: `${character.name} est ${agree(option.characterId, 'capturé', 'capturée')}.`, characterChanges: [{ id: option.characterId, toState: 'captured' }] };
       } else if (option.resolution.risk === 'death') {
-        if (character.state === 'active') baseOutcome = { ...baseOutcome, message: `${character.name} est grièvement blessé.`, characterChanges: [{ id: option.characterId, toState: 'injured' }] };
+        if (character.state === 'active') baseOutcome = { ...baseOutcome, message: `${character.name} est ${agree(option.characterId, 'grièvement blessé', 'grièvement blessée')}.`, characterChanges: [{ id: option.characterId, toState: 'injured' }] };
         else baseOutcome = { ...baseOutcome, message: `${character.name} affronte un risque mortel.`, characterChanges: [{ id: option.characterId, toState: 'dead', deathType: option.resolution.deathType ?? 'replaceable' }] };
       }
 
@@ -9807,16 +9841,16 @@
         if (totalSupport >= 9) {
           variables.allianceStrength = 'high';
           flags.strongAlliance = true;
-          writeContext('Dans cette adaptation, vos choix obtiennent un soutien important. Ce soutien renforcera les alliés si vous choisissez de simuler la bataille finale.');
+          writeContext('Dans cette adaptation, vos choix obtiennent un soutien important.');
         } else if (totalSupport >= 3) {
           variables.allianceStrength = 'medium';
           flags.fragileAlliance = true;
-          writeContext('Dans cette adaptation, vos choix réunissent une coalition partielle. Elle fournira un soutien limité dans la simulation de la bataille finale.');
+          writeContext('Dans cette adaptation, vos choix réunissent une coalition partielle.');
         } else {
           variables.allianceStrength = 'low';
           flags.fracturedAlliance = true;
           flags.limitedMilitarySupport = true;
-          writeContext('Dans cette adaptation, vos choix divisent les factions. L’appui militaire sera faible dans la simulation de la bataille finale.');
+          writeContext('Dans cette adaptation, vos choix divisent les factions.');
         }
         flags.actIVCompleted = true;
         gameState.roomId = 'campaign_frontier';
@@ -9938,7 +9972,7 @@
       const before = { characters: safeClone(characters), flags: safeClone(flags), morale: variables.moraleGroupe, chaos: variables.chaos, reputation: safeClone(variables.councilReputation), trust: safeClone(variables.factionTrust) };
       if (!menu) createCheckpoint(`Avant décision: ${option.id}`);
       const result = applyOptionEffects(option,check), message = result?.message ?? uiState.feedback;
-      if (!menu && result?.success && !option.repeatable) gameState.resolvedOptions.push(`${origin}:${option.id}`);
+      if (!menu && !option.repeatable && !result?.endedByGameOver && (result?.success || option.resolution)) gameState.resolvedOptions.push(`${origin}:${option.id}`);
       if (check) gameState.rollHistory = [...(gameState.rollHistory ?? []),safeClone(check)].slice(-100);
       if (!result?.endedByGameOver) describeCurrentRoom();
       if (!menu && !result?.endedByGameOver && (option.resolution || option.effects?.message || option.onSuccess?.message || ACTION_NARRATION[option.id])) {
@@ -9952,14 +9986,24 @@
       refreshInterface(); focusNarrative();
     }
 
+    // Échec sans récit propre : annonce l'approche tentée, son coût, puis rappelle qu'elle est épuisée.
+    function failureParagraphs(option, actor, message) {
+      const approach = option.label.replace(/^(Option|What If|Chronique|Mission|Décision)\s*[–—-]\s*(?:[^:]{1,30}:\s*)?/, '').trim();
+      const lowered = approach.charAt(0).toLowerCase() + approach.slice(1);
+      const who = PRESENTATION.people[option.characterId]?.short ?? actor.name;
+      return [`${who} échoue dans sa tentative : ${lowered}.`,
+        message || 'La tentative n’aboutit pas.',
+        'Cette approche ne peut plus être rejouée dans cette scène; une autre reste possible, ou le Clan peut poursuivre sa route.'];
+    }
+
     function buildActionReport(option, roomId, result, before, message) {
       const success = Boolean(result?.success), story = ACTION_NARRATION[option.id];
       const actor = characters[option.characterId];
       const stateStory = success ? null : story?.failureByState?.[actor?.state] ?? (actor?.state === 'dead' ? {title: `${actor.name} ne survit pas à cette tentative`, paragraphs: [`${actor.name} ne parvient pas à mener son action à bien. Déjà blessé, il reçoit des coups auxquels il ne survit pas.`, 'Le groupe doit désormais compter avec sa mort: il ne pourra plus participer aux actions suivantes. Le retour à la décision précédente permet de reprendre avant cette tentative.']} : null);
-      const paragraphs = result?.successWithCost ? [message] : stateStory?.paragraphs ?? story?.[success ? 'success' : 'failure'] ?? [message || (success ? 'Le groupe accomplit cette action.' : 'La tentative échoue; le groupe doit choisir une autre approche.')];
+      const paragraphs = result?.successWithCost ? [message] : stateStory?.paragraphs ?? story?.[success ? 'success' : 'failure'] ?? (!success && actor && option.label ? failureParagraphs(option, actor, message) : null) ?? [message || (success ? 'Le groupe accomplit cette action.' : 'La tentative échoue; le groupe doit choisir une autre approche.')];
       const changes = [];
       Object.entries(characters).forEach(([id, c]) => {
-        if (before.characters[id]?.state !== c.state) changes.push(`${c.name}: ${PRESENTATION.states[c.state]}.`);
+        if (before.characters[id]?.state !== c.state) changes.push(`${c.name}: ${stateLabel(id, c.state)}.`);
       });
       if (before.morale !== variables.moraleGroupe) changes.push(variables.moraleGroupe > before.morale ? 'Le moral du groupe se renforce.' : 'Le moral du groupe est éprouvé.');
       if (before.chaos !== variables.chaos) changes.push(variables.chaos > before.chaos ? 'L’alerte et le désordre augmentent.' : 'La pression diminue autour du groupe.');

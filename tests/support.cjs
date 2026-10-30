@@ -7,7 +7,7 @@ const html = fs.readFileSync(path.join(__dirname, '../index.html'), 'utf8');
 const source = html.match(/<script>([\s\S]*?)<\/script>/)[1];
 
 // Le hasard n'est fixé que dans ce banc de test. L'application conserve crypto.
-function boot(saved = null, preferences = null) {
+function boot(saved = null, preferences = null, search = '') {
   const storage = new Map(saved ? [['clanDestain.save.v1', saved]] : []);
   storage.set('clanDestain.preferences.v1', preferences ?? JSON.stringify({ diceAnimation: false }));
   const dice = { queue: [], fallback: 20, calls: 0 };
@@ -35,7 +35,7 @@ function boot(saved = null, preferences = null) {
   const lines = [];
   elements.eventLog.appendChild = line => lines.push(line.textContent);
   const sandbox = vm.createContext({ URLSearchParams, structuredClone, console, crypto,
-    window: { crypto, location: { search: '' } }, navigator: {},
+    window: { crypto, location: { search } }, navigator: {},
     document: { getElementById: id => elements[id], createElement: element, querySelectorAll: () => [], addEventListener() {} },
     localStorage: { getItem: k => storage.get(k) ?? null, setItem: (k, v) => storage.set(k, v), removeItem: k => storage.delete(k) },
     requestAnimationFrame() {}

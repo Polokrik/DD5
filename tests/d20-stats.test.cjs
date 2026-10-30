@@ -89,7 +89,7 @@ test('Carnath ne donne pas de niveau répétable et le rollback restaure le nive
 });
 
 test('le parcours réel rejoint les jalons et la simulation finale garde le niveau canonique 12', () => {
-  const g = boot();
+  const g = boot(null, null, '?whatif=1');
   const route = require('./campaign-path.cjs');
   for (const id of route.opening) choose(g, id);
   assert.equal(g.run('gameState.adventureLevel'), 2);
