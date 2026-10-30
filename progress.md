@@ -90,9 +90,23 @@ au runtime. La CI lance automatiquement les quatre suites Node.
   sont retirés.
 - 90 tests Node; parcours Chromium à lancer avec `?whatif=1` pour les cinq actes.
 
+## Contrôle de cohérence et d’immersion (30 octobre)
+
+- Comptes rendus : retrait des formules de jeu (« dans cette variante », « dans cette
+  adaptation », « rapporté par le MJ », « le journal », « le jeu »). Environ 50 phrases.
+- Cartes de choix : « What If » devient un repère « Et si… », « Option absurde » un repère
+  « Provocation », « Chronique » disparaît (c’est le cas normal). Les descriptions
+  n’emploient plus « journal », « attesté », « variante » à l’affichage.
+- « Faire le point » rappelle le texte réel des observations de la scène.
+- Vérifiés sans écart : noms des personnages, arrivées et départs du roster, aucun
+  paragraphe recopié entre scènes.
+- Limites connues : si Bjolnir est mort, la scène des runes de Cumulus reste sans lui
+  (le texte suppose son rôle); les scènes de chronique restent des restitutions.
+
 ## Ensuite (demandé par le MJ)
 
-Animations, décors pixel art plus fidèles, musique et effets sonores.
+Animations plus variées (scènes souvent figées ou répétitives), décors pixel art plus
+fidèles (références à fournir), musique et effets sonores (fichiers à fournir).
 
 ## À reprendre plus tard
 
