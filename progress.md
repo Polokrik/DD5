@@ -122,10 +122,21 @@ au runtime. La CI lance automatiquement les quatre suites Node.
   (paladin–guerrier 0, martial–rôdeur 4, martial–voleur 8, lanceur de sorts 8 à 12).
 - 9 nouvelles options chaotiques (« Provocation ») dans autant de scènes.
 
-## Ensuite (demandé par le MJ)
+## Pixel art : première passe (brief « Tyranny of Dragons — Pixel Art & Animation Polish »)
 
-Animations plus variées (scènes souvent figées ou répétitives), décors pixel art plus
-fidèles (références à fournir), musique et effets sonores (fichiers à fournir).
+- **Verdure en flammes / Lennithon** : flammes à cinq images avec cadence et phase propres à chaque foyer,
+  braises, colonnes de fumée qui montent, dragon redessiné (six images d'ailes, queue, tête qui oscille),
+  éclair rare qui change la lumière de toute la scène (même décor, couleurs bleutées; les feux restent orange),
+  premier plan en silhouettes (charrette brisée, réfugiés, pillards à la torche). Bande noire à l'horizon corrigée.
+- **Drek'Thar contre Langdedrosa I** (à l'aube, comme dans le journal) : deux combattants redessinés
+  (respiration, arme qui se déplace, étoffe, rare étincelle sur la corne), spectateurs en anneau,
+  fumées de la ville derrière l'enceinte, élans de coups seulement pendant le duel.
+- **Langdedrosa II** : rapports inversés (Drek'Thar plus grand, Langdedrosa plus petit) et berserkers redessinés.
+- Mouvement réduit : image fixe complète, sans éclair. Aucun hasard : tout dépend du tick.
+- Aperçus : `docs/previews/pixel-*.png`.
+- Prochains décors (§9 du brief) : camp des pillards, salle des œufs, caravane, marais, Naerytar.
+- Easter egg à garder en tête : Boule et Bill, à cacher quelque part.
+- Soulèvement des hommes-lézards à Naerytar : provoqué par les aventuriers (confirmé par le MJ).
 
 ## À reprendre plus tard
 

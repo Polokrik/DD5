@@ -10472,10 +10472,7 @@
 
     function drawVerdure(g) {
       drawNightSky(g);
-      for (let i = 0; i < 9; i++) {
-        const x = 132 + i * 19, y = 92 - (i % 3) * 11;
-        for (let j = 0; j < 4; j++) pixelDisc(g, x + (j % 2) * 6, y - j * 8, 7 + j * 2, j % 2 ? ART.smoke : ART.smokeLight);
-      }
+      paint(g, ART.ridge, 0, 112, 320, 14);
       paint(g, ART.river, 0, 125, 320, 75);
       for (let i = 0; i < 19; i++) paint(g, i % 2 ? ART.waterLight : ART.glow, 120 + i * 10, 145 + (i * 7) % 35, 5 + i % 9, 1);
       for (let row = 0; row < 3; row++) for (let i = 0; i < 10; i++) drawHouse(g, 107 + i * 23 + (row % 2) * 9, 107 + row * 13, 13 + i % 6, 15 + (i * 7) % 11, i + row);
@@ -10495,6 +10492,7 @@
         paint(g, ART.shadow, x - 1, y, 5, 11); paint(g, i % 2 ? ART.cloak : ART.armor, x, y, 2, 8);
         paint(g, ART.pathLight, x, y - 3, 3, 3); pixelLine(g, x + 4, y, x + 5, y + 12, ART.stoneLight);
       });
+      drawVerdureForeground(g);
     }
 
     function drawStreet(g) {
@@ -10680,18 +10678,6 @@
       pixelPolygon(g, [[88,200],[147,161],[230,151],[287,167],[320,200]], ART.path);
       pixelPolygon(g, [[125,191],[154,174],[221,162],[265,169],[292,190],[260,198],[167,198]], ART.pathLight);
       for (let i = 0; i < 35; i++) paint(g, i % 2 ? ART.wallDark : ART.path, 128 + i * 19 % 169, 171 + i * 7 % 28, 2 + i % 4, 1);
-      for (let i = 0; i < 5; i++) {
-        const x = 273 + i * 5, y = 147 + i % 2;
-        paint(g, ART.cloak, x,y,3,8); paint(g, ART.wall, x,y - 3,3,3);
-      }
-      [[264,148],[304,149]].forEach(([x,y]) => {
-        paint(g, ART.armor, x,y,4,10); paint(g, ART.shadow, x + 1,y - 3,3,3);
-        pixelLine(g, x - 2,y - 7, x - 2,y + 11, ART.stoneLight);
-      });
-      for (let i = 0; i < 9; i++) {
-        const x = 113 + i * 8;
-        paint(g, i % 2 ? ART.cloak : ART.armor, x,148,4,8); paint(g, ART.wallDark, x,145,3,3);
-      }
       drawPine(g, 19, 187, 75); drawPine(g, 60, 176, 49);
       pixelPolygon(g, [[0,195],[54,180],[101,190],[128,200],[0,200]], ART.tree);
     }
@@ -11198,13 +11184,14 @@
       paint(g,ART.shadow,0,0,65,200);paint(g,ART.stoneDark,61,0,8,200);paint(g,ART.stone,68,0,2,200);
     }
 
-    function getSceneArt(key) {
-      if (!uiState.art[key]) {
+    function getSceneArt(key, fresh = false) {
+      if (fresh || !uiState.art[key]) {
         const layer = document.createElement('canvas'); layer.width = LOGICAL_WIDTH; layer.height = LOGICAL_HEIGHT;
         const g = layer.getContext('2d'); g.imageSmoothingEnabled = false;
         if(key!=='dragon-flight') ({ street: drawStreet, keep: drawKeep, wall: drawKeep, tunnel: drawTunnel, temple: drawTemple, mill: drawMill, duel: drawDuel, cave_duel: drawCaveDuel,
           cult_camp:drawCampArt,hatchery:drawHatcheryArt,caravan:drawCaravanArt,carnath:drawRoadhouseArt,marsh:drawMarshArt,skyreach:drawSkyreachArt,lodge:drawLodgeArt,portal:drawPortalArt,
           council:drawCouncilArt,tomb:drawTombArt,ice_sea:drawIceSeaArt,ice_cave:drawIceCaveArt,forest:drawForestArt,dragon_audience:drawDragonAudienceArt }[key] ?? drawVerdure)(g);
+        if (fresh) return layer;
         uiState.art[key] = layer;
       }
       return uiState.art[key];
@@ -11277,15 +11264,39 @@
       if (orc) { paint(g,ART.moon,x + 1,y - height + 4,1,2); paint(g,ART.moon,x + 5,y - height + 4,1,2); }
     }
 
-    function drawDuelActors(g, direction, progress) {
-      const finished = direction?.kind === 'duel' && progress > .55;
-      const fallen = finished ? direction.fallen : null;
-      if (['active','injured'].includes(characters.drekthar.state) || direction?.actor === 'drekthar') drawSmallPerson(g,'drekthar',190,168,fallen === 'hero' || characters.drekthar.state === 'dead');
-      if (fallen === 'enemy') { paint(g,ART.blueDark,238,169,19,5); paint(g,ART.blueLight,255,168,5,5); return; }
-      pixelPolygon(g,[[242,140],[247,131],[252,133],[255,141],[252,148],[245,149]],ART.blueDark);
-      paint(g,ART.blueLight,249,136,3,2); paint(g,ART.armor,241,147,14,17);
-      paint(g,ART.shadow,241,162,4,12); paint(g,ART.shadow,253,162,4,12);
-      pixelLine(g,242,151,231,147,ART.armor); pixelLine(g,232,147,224,127,ART.stoneLight);
+    // Coups : élans brefs et décalés pendant la durée du duel (0 hors des élans).
+    const strikeAt = (progress, centers) => Math.max(0, ...centers.map(c => 1 - Math.abs((progress - c) / .05)));
+    function drawFallenFigure(g, x, y, kind) {
+      if (kind === 'hero') {
+        paint(g, ART.armor, x - 14, y - 7, 24, 7); paint(g, ART.stoneDark, x - 14, y - 2, 24, 2); paint(g, ART.grassLight, x + 10, y - 8, 7, 7);
+        paint(g, ART.moon, x + 15, y - 4, 1, 2); pixelLine(g, x - 20, y - 1, x - 38, y - 3, ART.stoneLight);
+      } else {
+        paint(g, ART.stoneDark, x - 8, y - 10, 38, 10); paint(g, ART.blueDark, x + 30, y - 10, 10, 9); paint(g, ART.blue, x + 31, y - 10, 8, 2);
+        pixelLine(g, x - 10, y - 5, x - 26, y - 3, ART.blueDark); pixelLine(g, x - 12, y - 8, x - 36, y - 4, ART.stoneLight);
+      }
+    }
+
+    function drawDuelActors(g, direction, progress, reversed = false) {
+      const t = uiState.reducedMotion ? 0 : gameState.tick, finished = direction?.kind === 'duel' && progress > .55;
+      const fallen = finished ? direction.fallen : null, dueling = direction?.kind === 'duel' && !finished;
+      const heroScale = reversed ? 1.12 : 1, foeScale = reversed ? .88 : 1.06;
+      const heroX = reversed ? 207 : 182, foeX = reversed ? 258 : 250, baseY = reversed ? 174 : 172;
+      const heroStrike = dueling ? strikeAt(progress, [.1, .28, .46]) : 0, foeStrike = dueling ? strikeAt(progress, [.19, .37]) : 0;
+      if (['active','injured'].includes(characters.drekthar.state) || direction?.actor === 'drekthar') {
+        if (fallen === 'hero' || characters.drekthar.state === 'dead') drawFallenFigure(g, heroX, baseY, 'hero');
+        else drawDrekthar(g, heroX, baseY, t, heroStrike, heroScale);
+      }
+      if (fallen === 'enemy') drawFallenFigure(g, foeX - 18, baseY + 2, 'foe');
+      else drawLangdedrosa(g, foeX, baseY, t, foeStrike, foeScale);
+    }
+
+    // Ville encore fumante à l'aube : colonnes lentes derrière l'enceinte, spectateurs en anneau.
+    function drawDuelBackdrop(g, t) {
+      drawSmokeColumns(g, t, [[146, 108, 1], [176, 108, 1], [226, 106, 2]]);
+      drawSpectators(g, t, [[150, 154, 11], [160, 153, 12], [196, 152, 11], [292, 152, 13]]);
+    }
+    function drawDuelForeground(g, t) {
+      drawSpectators(g, t, [[112, 172, 22], [123, 168, 24], [134, 165, 21], [286, 176, 24], [298, 172, 26], [-2, 204, 38], [304, 206, 34]]);
     }
 
     function drawSceneAction(g, direction, progress) {
@@ -11315,6 +11326,253 @@
       }
     }
 
+    // ───────────────────────── Direction artistique : Verdure en flammes ─────────────────────────
+    // Feu orange contre foudre bleue. Tout est déterministe : le temps est le tick du jeu, jamais le hasard.
+    const VOLT = { deep: '#3f7fb5', mid: '#7fd0ff', core: '#eaf7ff' };
+    // Trame clairsemée (1 pixel sur 4) dans la palette : éclaire sans créer de couleurs intermédiaires.
+    function ditherRect(g, color, x, y, w, h) {
+      g.fillStyle = color;
+      for (let yy = y; yy < y + h; yy++) for (let xx = x + ((yy % 4 === 0 ? 0 : yy % 4 === 2 ? 2 : 4) - x % 4 + 4) % 4; xx < x + w; xx += 4) {
+        if (yy % 2 === 0) g.fillRect(xx, yy, 1, 1);
+      }
+    }
+
+    // Cycle de foudre : deux impulsions brèves, rarement. Renvoie 0 (rien), 1 (faible) ou 2 (fort).
+    function lightningLevel(t) {
+      const m = (Math.floor(t) + 330) % 540;
+      return m < 3 ? 2 : m >= 6 && m < 8 ? 1 : 0;
+    }
+
+    // Flamme à cinq images. Chaque foyer a sa phase et sa cadence : jamais deux feux synchronisés.
+    const FLAME_FRAMES = [
+      { tip: 8, lean: 0, wide: 5 }, { tip: 11, lean: 1, wide: 4 }, { tip: 7, lean: -1, wide: 5 }, { tip: 12, lean: 0, wide: 4 }, { tip: 9, lean: 2, wide: 5 }
+    ];
+    function drawFlame(g, x, y, t, i, scale = 1) {
+      const rate = 5 + i % 3, frame = FLAME_FRAMES[(Math.floor(t / rate) + i * 2 + (i % 2 ? 1 : 0)) % FLAME_FRAMES.length];
+      const tip = Math.round(frame.tip * scale), w = Math.round(frame.wide * scale);
+      const reach = w + 3;
+      for (let dy = -tip - 2; dy <= 5; dy += 1) {
+        const k = 1 - Math.pow((dy + tip * .35) / (tip + 3), 2); if (k <= 0) continue;
+        const half = Math.round(Math.sqrt(k) * reach); ditherRect(g, ART.glow, x - half + 1, y + dy, half * 2, 1);
+      }
+      pixelPolygon(g, [[x - w, y + 4], [x - w + 1, y - Math.round(tip * .45)], [x - 1, y - Math.round(tip * .7)], [x + frame.lean, y - tip],
+        [x + w - 1, y - Math.round(tip * .55)], [x + w + 1, y + 4]], ART.flame);
+      pixelPolygon(g, [[x - 2, y + 4], [x - 1, y - Math.round(tip * .4)], [x + frame.lean, y - Math.round(tip * .62)], [x + 2, y - Math.round(tip * .3)], [x + 3, y + 4]], ART.hot);
+      paint(g, ART.ember, x - w, y + 3, w * 2 + 1, 2);
+    }
+
+    const EMBER_DRIFT = [0, 1, 1, 2, 1, 0, -1, -1];
+    function drawEmbers(g, x, y, t, i) {
+      for (let e = 0; e < 4; e++) {
+        const life = (Math.floor(t / 3) + e * 13 + i * 19) % 44;
+        if (life > 40) continue;
+        paint(g, life < 14 ? ART.hot : life < 28 ? ART.flame : ART.ember, x + 2 + EMBER_DRIFT[(e * 3 + Math.floor(life / 5) + i) % 8] * 2 + (e - 2) * 3, y - 6 - life, 1, 1);
+      }
+    }
+
+    // Colonnes de fumée qui montent et s'étirent : lentes, décalées, de plus en plus pâles.
+    function drawSmokeColumns(g, t, columns = [[148, 100, 1], [206, 110, 2], [228, 92, 3], [286, 106, 2], [182, 122, 1]]) {
+      columns.forEach(([x, y, speed], c) => {
+        for (let p = 0; p < 7; p++) {
+          const life = (Math.floor(t * speed / 6) + p * 9 + c * 17) % 63, h = life, r = 4 + Math.floor(life / 8);
+          pixelDisc(g, x + [0, 1, 2, 3, 2, 1][(p + c + Math.floor(life / 10)) % 6] * 2 + Math.floor(life / 5) - p, y - h, r, life < 30 ? ART.smoke : ART.smokeLight);
+        }
+      });
+    }
+
+    // Lennithon : silhouette lisible dès la miniature. Ailes en six images, tête qui oscille, queue qui suit.
+    const WING_BEAT = [-18, -10, 0, 12, 19, 8];
+    function drawLennithon(g, t, flash) {
+      const sway = [0, 1, 2, 3, 3, 2, 1, 0, -1, -2, -3, -3, -2, -1], step = Math.floor(t / 7), w = WING_BEAT[step % 6];
+      const cx = 226 + sway[Math.floor(t / 11) % 14] * 3, cy = 70 + sway[(Math.floor(t / 13) + 4) % 14];
+      const P = flash ? { body: VOLT.deep, mid: VOLT.mid, light: VOLT.core, far: ART.blueDark, bone: VOLT.mid }
+        : { body: ART.blueDark, mid: ART.blue, light: ART.blueLight, far: ART.shadow, bone: ART.blue };
+      const poly = (pts, color) => pixelPolygon(g, pts.map(([x, y]) => [cx + x, cy + y]), color);
+      const line = (x1, y1, x2, y2, color) => pixelLine(g, cx + x1, cy + y1, cx + x2, cy + y2, color);
+      // aile éloignée : plus petite, dans l'ombre
+      poly([[-2, -7], [-14, -22 - w * .3], [-34, -20 + w * .6], [-46, -8 + w], [-36, -4 + w * .8], [-40, 5 + w * .6], [-26, 2 + w * .4], [-22, 9], [-6, 3]], P.far);
+      line(-2, -7, -14, -22 - w * .3, P.body); line(-14, -22 - w * .3, -46, -8 + w, P.body);
+      // queue en trois segments qui suivent le battement
+      const sw = [0, 2, 3, 2, 0, -2][(step + 3) % 6];
+      poly([[-15, 1], [-16, 8], [-30, 12 + sw], [-30, 7 + sw]], P.body);
+      poly([[-30, 7 + sw], [-30, 12 + sw], [-44, 15 + sw * 2], [-44, 11 + sw * 2]], P.body);
+      poly([[-44, 11 + sw * 2], [-44, 15 + sw * 2], [-56, 12 + sw * 3], [-50, 10 + sw * 2]], P.body);
+      poly([[-56, 10 + sw * 3], [-60, 14 + sw * 3], [-55, 14 + sw * 3], [-52, 12 + sw * 3]], P.mid);
+      // pattes arrière repliées
+      poly([[-6, 8], [-11, 16], [-5, 15], [-2, 10]], P.body); poly([[2, 9], [0, 17], [5, 15], [6, 10]], P.body);
+      // torse, ventre clair
+      poly([[-17, 0], [-12, -7], [-2, -9], [10, -8], [19, -4], [21, 2], [13, 8], [0, 11], [-11, 8]], P.mid);
+      poly([[-12, 4], [0, 8], [12, 5], [8, 9], [0, 11], [-9, 8]], P.light);
+      poly([[-12, -7], [-2, -9], [10, -8], [12, -5], [-2, -6], [-10, -3]], P.body);
+      // cou et tête
+      poly([[11, -7], [17, -17], [24, -24], [30, -22], [26, -14], [22, -4]], P.mid);
+      poly([[18, -16], [24, -24], [28, -22], [22, -13]], P.body);
+      poly([[25, -25], [36, -26], [44, -22], [42, -18], [33, -17], [28, -15]], P.mid);
+      poly([[30, -17], [42, -18], [39, -14], [30, -13]], P.body);
+      poly([[36, -26], [44, -22], [42, -21], [35, -23]], P.light);
+      line(27, -25, 21, -33, P.light); line(28, -25, 22, -33, P.mid); line(31, -26, 27, -34, P.light); line(32, -26, 28, -34, P.mid);
+      paint(g, VOLT.core, cx + 37, cy - 23, 2, 1); paint(g, VOLT.mid, cx + 36, cy - 22, 1, 1);
+      if (Math.floor(t / 9) % 5 === 2) paint(g, VOLT.mid, cx + 43, cy - 18, 3, 1);
+      // aile proche : os, doigts, membrane festonnée, bord éclairé
+      const S = [2, -8], E = [16, -22 - w * .35], Wr = [34, -28 + w * .55], T = [64, -14 + w], F1 = [58, 2 + w * .9], F2 = [46, 11 + w * .75], F3 = [30, 12 + w * .45];
+      poly([S, E, Wr, T, [55, -3 + w * .85], F1, [50, 7 + w * .75], F2, [38, 9 + w * .5], F3, [22, 7], [8, 2]], P.body);
+      poly([Wr, T, [55, -3 + w * .85], [42, -8 + w * .4]], P.mid);
+      [[Wr, F1], [Wr, F2], [Wr, F3]].forEach(([a, b]) => line(a[0], a[1], b[0], b[1], P.bone));
+      line(S[0], S[1], E[0], E[1], P.light); line(E[0], E[1], Wr[0], Wr[1], P.light); line(Wr[0], Wr[1], T[0], T[1], P.light);
+      paint(g, P.light, cx + T[0], cy + Math.round(T[1]), 2, 2);
+      return { x: cx + 44, y: cy - 19 };
+    }
+
+    // Éclair déterministe : zigzag fixe partant de la gueule.
+    function drawBolt(g, from, level) {
+      const zig = [[0, 0], [-5, 9], [3, 17], [-4, 27], [4, 36], [-2, 46], [3, 56]];
+      for (let i = 1; i < zig.length; i++) {
+        pixelLine(g, from.x + zig[i - 1][0] - 1, from.y + zig[i - 1][1], from.x + zig[i][0] - 1, from.y + zig[i][1], VOLT.deep);
+        pixelLine(g, from.x + zig[i - 1][0], from.y + zig[i - 1][1], from.x + zig[i][0], from.y + zig[i][1], level > 1 ? VOLT.core : VOLT.mid);
+      }
+      paint(g, VOLT.core, from.x + 2, from.y + 56, 3, 2);
+    }
+
+    // Lumière de foudre sur toute la scène : le même décor redessiné dans des couleurs bleutées, les feux gardent leur orange.
+    function tintToward(hex, amount, target = [150, 205, 255]) {
+      const channel = index => parseInt(hex.slice(1 + index * 2, 3 + index * 2), 16);
+      return '#' + [0, 1, 2].map(i => Math.min(255, Math.round(channel(i) * (1 - amount) + target[i] * amount + 6)).toString(16).padStart(2, '0')).join('');
+    }
+    function getLitScene(key, level) {
+      const id = `${key}:lit${level}`;
+      if (!uiState.art[id]) {
+        const saved = { ...ART };
+        Object.keys(ART).forEach(name => { if (!['flame', 'hot', 'ember', 'glow', 'window'].includes(name)) ART[name] = tintToward(saved[name], level > 1 ? .5 : .28); });
+        try { uiState.art[id] = getSceneArt(key, true); } finally { Object.assign(ART, saved); }
+      }
+      return uiState.art[id];
+    }
+
+    const REFUGEE_SHAPES = [[0, 8, 5, 2], [1, 6, 4, 0], [0, 7, 3, 1]];
+    // Premier plan : silhouettes d'une charrette brisée, de réfugiés et de pillards à la torche (cache).
+    function drawVerdureForeground(g) {
+      pixelPolygon(g, [[4, 200], [8, 186], [30, 182], [56, 186], [64, 200]], ART.shadow);
+      paint(g, ART.shadow, 14, 176, 40, 8); pixelLine(g, 14, 176, 4, 168, ART.shadow); pixelLine(g, 54, 176, 66, 166, ART.shadow);
+      pixelDisc(g, 20, 190, 7, ART.shadow); pixelDisc(g, 44, 192, 7, ART.shadow); paint(g, ART.stoneDark, 19, 189, 3, 3);
+      pixelPolygon(g, [[18, 176], [24, 168], [38, 166], [50, 172], [52, 176]], ART.shadow);
+      [[78, 188], [88, 192], [98, 187]].forEach(([x, y], i) => {
+        paint(g, ART.shadow, x, y - 14, 6, 14); pixelDisc(g, x + 3, y - 17, 3, ART.shadow);
+        if (i === 1) { paint(g, ART.shadow, x - 4, y - 10, 5, 8); }
+      });
+      [[286, 196], [302, 198]].forEach(([x, y]) => {
+        paint(g, ART.shadow, x, y - 22, 7, 22); pixelDisc(g, x + 3, y - 26, 4, ART.shadow);
+        pixelLine(g, x + 7, y - 18, x + 13, y - 30, ART.shadow);
+      });
+    }
+
+    // Couche animée de Verdure : fumée, foyers, braises, dragon, foudre, torches.
+    function drawVerdureLife(g, t) {
+      const flash = lightningLevel(t);
+      drawSmokeColumns(g, t);
+      [[141, 102], [203, 115], [224, 95], [294, 111], [180, 125], [166, 108], [262, 128]].forEach(([x, y], i) => { drawFlame(g, x, y, t, i); drawEmbers(g, x, y, t, i); });
+      const mouth = drawLennithon(g, t, flash);
+      if (flash) drawBolt(g, mouth, flash);
+      [[299, 170], [315, 168]].forEach(([x, y], i) => drawFlame(g, x, y, t + i * 9, i + 2, .6));
+      pixelLine(g, 299, 172, 299, 178, ART.shadow);
+    }
+
+    // ───────────────────────── Direction artistique : duels de Drek’Thar et de Langdedrosa ─────────────────────────
+    // Silhouettes d'abord, puis masses de couleur, puis lumière. Gestes de repos sobres : respiration, arme qui se déplace,
+    // étoffe, rare étincelle. Les coups, eux, ne partent qu'au déclenchement du duel.
+    function polyAt(g, ox, oy, scale, flip, points, color) {
+      pixelPolygon(g, points.map(([px, py]) => [ox + Math.round(px * scale) * (flip ? -1 : 1), oy + Math.round(py * scale)]), color);
+    }
+    function lineAt(g, ox, oy, scale, flip, x1, y1, x2, y2, color) {
+      pixelLine(g, ox + Math.round(x1 * scale) * (flip ? -1 : 1), oy + Math.round(y1 * scale), ox + Math.round(x2 * scale) * (flip ? -1 : 1), oy + Math.round(y2 * scale), color);
+    }
+
+    // Langdedrosa Cyanwrath, demi-dragon bleu : colosse, cornes, étincelle de foudre à la corne. Regarde vers la gauche.
+    function drawLangdedrosa(g, x, y, t, strike = 0, scale = 1) {
+      const breath = [0, 0, -1, -1][Math.floor(t / 22) % 4], glaive = [0, -2, -3, -2, 0, 1][Math.floor(t / 38) % 6], cape = Math.floor(t / 15) % 3;
+      const lunge = -Math.round(strike * 12 * scale), by = y + Math.round(breath * scale);
+      const p = (pts, color, ox = x + lunge, oy = by) => polyAt(g, ox, oy, scale, false, pts, color);
+      const l = (x1, y1, x2, y2, color) => lineAt(g, x + lunge, by, scale, false, x1, y1, x2, y2, color);
+      // queue et ailes repliées, derrière le corps
+      p([[10, -16], [24, -10], [38, -14], [42, -22], [36, -18], [24, -17], [12, -22]], ART.blueDark);
+      p([[8, -44], [22, -56], [27, -48], [20, -40], [26, -33], [12, -36]], ART.blueDark); l(10, -44, 22, -55, ART.blue);
+      // jambes et bottes
+      p([[-10, 0], [-10, -20], [-2, -20], [-2, 0]], ART.stoneDark); p([[-12, 0], [-12, -4], [-1, -4], [-1, 0]], ART.shadow);
+      p([[3, 0], [3, -20], [11, -20], [11, 0]], ART.stoneDark); p([[1, 0], [1, -4], [13, -4], [13, 0]], ART.shadow);
+      // tabard d'étoffe qui bat doucement
+      p([[-10, -20], [-12, -9 + cape], [-4, -6 - cape], [2, -9 + cape], [9, -6 - cape], [12, -10], [11, -20]], ART.roofDark);
+      // torse cuirassé, ceinture, épaulières
+      p([[-12, -20], [-15, -36], [-9, -45], [9, -45], [15, -36], [12, -20]], ART.armor);
+      p([[-12, -20], [12, -20], [12, -23], [-12, -23]], ART.stoneDark); paint(g, ART.accent, x + lunge - 2, by - Math.round(22 * scale), 4, 3);
+      p([[-8, -42], [8, -42], [6, -28], [-6, -28]], ART.stoneLight);
+      p([[-20, -41], [-12, -47], [-8, -41], [-12, -34], [-19, -35]], ART.blueDark); p([[8, -41], [12, -47], [20, -41], [19, -35], [12, -34]], ART.blueDark);
+      // tête de dragon, profil gauche, cornes
+      p([[-12, -52], [-5, -57], [6, -57], [8, -50], [2, -45], [-9, -46]], ART.blue);
+      p([[-12, -52], [-8, -49], [-2, -49], [-9, -46]], ART.blueDark); p([[-5, -57], [6, -57], [4, -55], [-4, -55]], ART.blueLight);
+      l(1, -57, -3, -65, ART.blueLight); l(2, -57, -2, -65, ART.blue); l(6, -56, 9, -64, ART.blueLight); l(7, -56, 10, -64, ART.blue);
+      paint(g, VOLT.core, x + lunge - Math.round(6 * scale), by - Math.round(53 * scale), 2, 1);
+      // glaive tenu à deux mains, pointe qui oscille
+      const tipY = -58 + glaive - Math.round(strike * -6);
+      l(14, -22, -34, tipY + 16, ART.bark); l(15, -23, -33, tipY + 15, ART.timber);
+      p([[-34, tipY + 17], [-46, tipY + 6], [-37, tipY + 10], [-30, tipY + 17]], ART.stoneLight);
+      p([[-14, -34], [-4, -31], [-6, -28], [-15, -31]], ART.blue); // avant-bras
+      // rare étincelle de foudre à la corne
+      if (Math.floor(t / 130) % 3 === 1 && Math.floor(t / 4) % 8 < 3) {
+        const sx = x + lunge - Math.round(3 * scale), sy = by - Math.round(66 * scale);
+        paint(g, VOLT.core, sx, sy, 1, 2); paint(g, VOLT.mid, sx + 1, sy + 2, 2, 1); paint(g, VOLT.core, sx - 1, sy + 3, 1, 2);
+      }
+    }
+
+    // Drek’Thar, demi-orc en cotte de mailles, épée à deux mains, défenses claires. Regarde vers la droite.
+    function drawDrekthar(g, x, y, t, strike = 0, scale = 1) {
+      const breath = [0, 0, -1, -1][Math.floor(t / 20) % 4], blade = [0, -2, -3, -1, 1, 0][Math.floor(t / 34) % 6], cape = Math.floor(t / 17) % 3;
+      const lunge = Math.round(strike * 11 * scale), by = y + Math.round(breath * scale);
+      const p = (pts, color) => polyAt(g, x + lunge, by, scale, false, pts, color);
+      const l = (x1, y1, x2, y2, color) => lineAt(g, x + lunge, by, scale, false, x1, y1, x2, y2, color);
+      // écharpe d'étoffe derrière l'épaule
+      p([[-4, -29], [-14, -24 + cape * 2], [-18, -16 + cape], [-9, -20], [-3, -23]], ART.roof);
+      // jambes, bottes
+      p([[-6, 0], [-6, -13], [-1, -13], [-1, 0]], ART.stoneDark); p([[0, 0], [0, -13], [5, -13], [5, 0]], ART.stoneDark);
+      p([[-8, 0], [-8, -3], [-1, -3], [-1, 0]], ART.shadow); p([[0, 0], [0, -3], [7, -3], [7, 0]], ART.shadow);
+      // cotte de mailles, ceinture, épaulières
+      p([[-8, -13], [-10, -25], [-6, -31], [6, -31], [10, -25], [8, -13]], ART.armor);
+      p([[-8, -13], [8, -13], [8, -15], [-8, -15]], ART.bark); p([[-8, -22], [8, -22], [8, -21], [-8, -21]], ART.stoneDark);
+      p([[-11, -29], [-6, -33], [-3, -29], [-8, -25]], ART.stoneDark); p([[3, -29], [6, -33], [11, -29], [8, -25]], ART.stoneDark);
+      // tête de demi-orc et défenses
+      p([[-4, -38], [4, -38], [6, -33], [3, -30], [-3, -30], [-6, -33]], ART.grassLight);
+      p([[-5, -39], [5, -39], [6, -36], [-6, -36]], ART.shadow);
+      paint(g, ART.moon, x + lunge + Math.round(3 * scale), by - Math.round(32 * scale), 1, 2); paint(g, ART.moon, x + lunge - Math.round(4 * scale), by - Math.round(32 * scale), 1, 2);
+      paint(g, ART.shadow, x + lunge + Math.round(2 * scale), by - Math.round(36 * scale), 1, 1);
+      // épée à deux mains, pointe qui oscille
+      const tipY = -55 + blade - Math.round(strike * 8);
+      l(6, -22, 22, tipY + 3, ART.stoneLight); l(7, -22, 23, tipY + 3, ART.moon); l(5, -22, 21, tipY + 3, ART.stoneDark);
+      l(4, -20, 10, -25, ART.bark); l(1, -23, 11, -18, ART.bark);
+      p([[0, -22], [8, -26], [9, -24], [1, -20]], ART.armor);
+    }
+
+    // Berserker du Culte : torse nu, casque à cornes, hache lourde. Souffle et arme décalés par la position.
+    function drawBerserker(g, x, y, t, fallen = false, facing = 1) {
+      if (fallen) { paint(g, ART.roofLight, x - 10, y - 6, 20, 6); paint(g, ART.pathLight, x + 10 * facing, y - 7, 6, 6); pixelLine(g, x - 14, y - 1, x - 24, y - 2, ART.stoneLight); return; }
+      const breath = [0, -1][Math.floor((t + x) / 24) % 2], sway = [0, -2, -1][Math.floor((t + x) / 31) % 3], f = facing, by = y + breath;
+      const poly = pts => pts.map(([px, py]) => [x + px * f, by + py]);
+      pixelPolygon(g, poly([[-5, 0], [-5, -13], [-1, -13], [-1, 0]]), ART.timber); pixelPolygon(g, poly([[1, 0], [1, -13], [5, -13], [5, 0]]), ART.timber);
+      pixelPolygon(g, poly([[-7, -13], [-8, -27], [-4, -31], [4, -31], [8, -27], [7, -13]]), ART.roofLight);
+      pixelPolygon(g, poly([[-7, -13], [7, -13], [7, -16], [-7, -16]]), ART.bark);
+      pixelPolygon(g, poly([[-4, -41], [4, -41], [5, -33], [-5, -33]]), ART.pathLight); pixelPolygon(g, poly([[-5, -41], [5, -41], [6, -37], [-6, -37]]), ART.stoneDark);
+      pixelLine(g, x - 6 * f, by - 40, x - 9 * f, by - 47, ART.stoneLight); pixelLine(g, x + 6 * f, by - 40, x + 9 * f, by - 47, ART.stoneLight);
+      pixelLine(g, x + 4 * f, by - 26, x + 15 * f, by - 36 + sway, ART.bark);
+      pixelPolygon(g, poly([[11, -43 + sway], [19, -40 + sway], [17, -33 + sway], [12, -35 + sway]]), ART.stoneLight);
+    }
+
+    // Spectateurs en anneau autour du cercle de combat : silhouettes, souffle d'étoffe décalé pour chacun.
+    function drawSpectators(g, t, ringXs) {
+      ringXs.forEach(([x, y, tall], i) => {
+        const sway = Math.floor((t + i * 23) / 40) % 5 === 0 ? 1 : 0, hy = y - tall - sway;
+        paint(g, ART.shadow, x, hy + 5, 6, tall - 4 + sway); pixelDisc(g, x + 3, hy + 3, 3, ART.shadow);
+        if (i % 3 === 0) { pixelLine(g, x + 7, y - tall + 6, x + 8, y - tall - 6, ART.stoneDark); }
+        paint(g, i % 2 ? ART.roofDark : ART.cloak, x + 1, hy + 8, 4, 2);
+      });
+    }
+
     function drawBookAmbience(g,key,phase) {
       if (key === 'marsh') {
         for (let i=0;i<8;i++) {
@@ -11341,25 +11599,29 @@
       const key = PRESENTATION.scenes[gameState.lastReport?.roomId ?? gameState.roomId]?.art ?? 'keep';
       const phase = uiState.reducedMotion ? 0 : Math.floor(Math.max(0,gameState.tick) / 14);
       const direction=getActionDirection(), progress=effectProgress();
-      ctx.imageSmoothingEnabled=false; ctx.drawImage(getSceneArt(key),0,0);
+      ctx.imageSmoothingEnabled=false;
+      const lightning = key === 'verdure' && !uiState.reducedMotion ? lightningLevel(gameState.tick) : 0;
+      ctx.drawImage(lightning ? getLitScene(key, lightning) : getSceneArt(key),0,0);
       const shownRoom = gameState.lastReport?.roomId ?? gameState.roomId;
       if (shownRoom === 'egg_chamber' && !flags.eggsStolen && !flags.eggsDestroyed) drawHatcheryEggs(ctx);
       if (key === 'portal' && flags.portalDamaged) drawPortalDamage(ctx);
       drawBookAmbience(ctx,key,phase);
-      if (SCENE_DIRECTIONS.scenes[key]?.dragon) {
+      if (key === 'verdure') drawVerdureLife(ctx, uiState.reducedMotion ? 0 : gameState.tick);
+      else if (SCENE_DIRECTIONS.scenes[key]?.dragon) {
         if (direction?.kind === 'dragon') {
           const layer=getSceneArt('dragon-flight'), g=layer.getContext('2d');
-          g.clearRect(0,0,320,200); drawDragon(g,phase); ctx.drawImage(layer,Math.round(progress*155),-Math.round(progress*20));
-        } else drawDragon(ctx,phase);
+          g.clearRect(0,0,320,200); drawLennithon(g, uiState.reducedMotion ? 0 : gameState.tick, false); ctx.drawImage(layer,Math.round(progress*155),-Math.round(progress*20));
+        } else drawLennithon(ctx, uiState.reducedMotion ? 0 : gameState.tick, false);
       }
-      (SCENE_DIRECTIONS.scenes[key]?.fires ?? []).forEach(([x,y],i)=>{
-        const height=6+[0,2,1,3,1,2][(phase+i)%6];
-        pixelPolygon(ctx,[[x-3,y+4],[x-2,y-3],[x,y],[x+2,y-height],[x+4,y-1],[x+5,y+4]],ART.flame);
-        paint(ctx,ART.hot,x,y-2,2,6);
+      if (key !== 'verdure') (SCENE_DIRECTIONS.scenes[key]?.fires ?? []).forEach(([x,y],i)=>{
+        const t = uiState.reducedMotion ? 0 : gameState.tick;
+        drawFlame(ctx,x,y,t,i,.8);
       });
+      if (key==='duel') drawDuelBackdrop(ctx, uiState.reducedMotion ? 0 : gameState.tick);
       if (key==='duel' || (key==='cave_duel' && (!flags.cyanwrathDead || direction?.kind==='duel'))) {
-        drawDuelActors(ctx,direction,progress);
-        if(key==='cave_duel') [151,276].forEach(x=>drawSmallPerson(ctx,'berserker',x,174,direction?.kind==='duel' && progress>.55));
+        drawDuelActors(ctx,direction,progress,key==='cave_duel');
+        if (key==='duel') drawDuelForeground(ctx, uiState.reducedMotion ? 0 : gameState.tick);
+        if(key==='cave_duel') [148,294].forEach((x,i)=>drawBerserker(ctx,x,175,uiState.reducedMotion ? 0 : gameState.tick,direction?.kind==='duel' && progress>.55,i ? -1 : 1));
       }
       if (key==='temple' && (!gameState.lastReport || gameState.lastReport.failed)) for(let i=0;i<3;i++) {
         paint(ctx,ART.wall,243+i*4,135+i%2,2,2);paint(ctx,ART.cloak,242+i*4,137+i%2,4,9);
