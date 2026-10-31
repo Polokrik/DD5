@@ -134,9 +134,18 @@ au runtime. La CI lance automatiquement les quatre suites Node.
 - **Langdedrosa II** : rapports inversés (Drek'Thar plus grand, Langdedrosa plus petit) et berserkers redessinés.
 - **Atelier de sprites** (`tools/sprite-lab.cjs`) : dessine un personnage sur fond neutre en couleur, en niveaux
   de gris (étude de valeurs) et en silhouette, agrandi 4×. Usage : `node tools/sprite-lab.cjs sortie.png langdedrosa drekthar`.
-- **Langdedrosa et Drek'Thar redessinés** d'après la référence fournie par le MJ (silhouette, violet/or/bleu pour
-  Langdedrosa; demi-orc en mailles pour Drek'Thar), avec contour noir sélectif. Pas de reprise pixel pour pixel.
-  Langdedrosa : ~78 px de haut dans la scène, Drek'Thar ~66 px; au second duel, les tailles s'inversent.
+- **Sprites des sept protagonistes** portés depuis la *Character Sprite Bible* (grille 64×96, `SPRITE_MODELS`) :
+  Bjolnir, Drek'Thar, Ellyjobell, Darrin, Sislay, Kairon, Malar. Même centre de gravité et même ancrage de silhouette
+  que la bible (marteau + bouclier, diagonale de l'épée, bâton courbe, mains ouvertes, arc + rapière, cornes + bâton,
+  corps bas + rapière). Rasterisation en pixels entiers (arêtes arrondies, aucun lissage ni rotation CSS) à l'échelle
+  de la scène (×0,5 en action, ×0,7 au duel, ×0,86 au second duel).
+- **Poses explicites** au lieu des décalages d'aperçu : souffle (2 images), mouvement secondaire, action rare par
+  personnage (prise du marteau, roulement d'épaule, spore, étincelle, regard, éclat de corne, dague), garde, puis
+  `ATTACK_FRAMES` : anticipation → frappe → impact (étincelle) → récupération. Au duel, la garde de Drek'Thar répond à
+  la frappe de Langdedrosa.
+- Langdedrosa (non protagoniste) reste ma version : violet/or/bleu, queue, lance à lame en croissant.
+- Atelier : `node tools/sprite-lab.cjs sortie.png [--mode color|value|shape] bjolnir drekthar ...` (planches de sept images).
+- 102 tests Node (dont `tests/sprites.test.cjs`), parcours Chromium inchangés.
 - Mouvement réduit : image fixe complète, sans éclair. Aucun hasard : tout dépend du tick.
 - Aperçus : `docs/previews/pixel-*.png`.
 - Prochains décors (§9 du brief) : camp des pillards, salle des œufs, caravane, marais, Naerytar.
