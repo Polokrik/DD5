@@ -287,7 +287,7 @@
   </main>
   <dialog id="journalDialog" aria-labelledby="journalTitle"><div class="dialog-header"><h2 id="journalTitle">Les chroniques du Clan</h2><button class="close-dialog" data-close="journalDialog" aria-label="Fermer le journal">×</button></div><div class="journal-tabs"><button id="chronicleTab" aria-pressed="true">La campagne · 18 chapitres</button><button id="historyTab" aria-pressed="false">Votre aventure</button></div><div id="chroniclePanel" class="chronicle-layout"><nav id="chapterList" class="chapter-list" aria-label="Chapitres de la chronique"></nav><article id="chapterReader" class="chapter-reader"></article></div><div id="eventLog" hidden></div></dialog>
   <dialog id="companyDialog" aria-labelledby="companyTitle"><div class="dialog-header"><h2 id="companyTitle">La compagnie</h2><button class="close-dialog" data-close="companyDialog" aria-label="Fermer la compagnie">×</button></div><div class="company-layout"><nav id="companyRoster" class="company-roster" aria-label="Choisir un personnage"></nav><article id="companyDetails" class="party-detail-list"></article></div></dialog>
-  <dialog id="ambianceDialog" aria-labelledby="ambianceTitle"><div class="dialog-header"><h2 id="ambianceTitle">L’ambiance du récit</h2><button class="close-dialog" data-close="ambianceDialog" aria-label="Fermer les réglages d’ambiance">×</button></div><div class="ambiance-body"><p>Les illustrations accompagnent les gestes des compagnons. Vous pouvez garder une lecture calme ou ajouter une ambiance sonore discrète.</p><label class="ambiance-setting" for="diceSetting">Animer les jets de D20<input id="diceSetting" type="checkbox" /></label><label class="ambiance-setting" for="effectsSetting">Effets liés aux actions<input id="effectsSetting" type="checkbox" /></label><label class="ambiance-setting" for="motionSetting">Mouvements<select id="motionSetting"><option value="auto">Selon l’appareil</option><option value="reduced">Réduits</option></select></label><p class="ambiance-notice" id="motionNotice"></p><label class="ambiance-setting" for="soundSetting">Sons d’ambiance et d’action<input id="soundSetting" type="checkbox" /></label><label class="ambiance-setting" for="volumeSetting">Volume<input id="volumeSetting" type="range" min="0" max="100" step="5" aria-valuetext="25 %" /></label><p id="soundNotice" class="ambiance-notice" role="status">Le son est désactivé au départ. Le récit reste entièrement compréhensible sans lui.</p></div></dialog>
+  <dialog id="ambianceDialog" aria-labelledby="ambianceTitle"><div class="dialog-header"><h2 id="ambianceTitle">L’ambiance du récit</h2><button class="close-dialog" data-close="ambianceDialog" aria-label="Fermer les réglages d’ambiance">×</button></div><div class="ambiance-body"><p>Les illustrations accompagnent les gestes des compagnons. Vous pouvez garder une lecture calme ou ajouter une ambiance sonore discrète.</p><label class="ambiance-setting" for="diceSetting">Animer les jets de D20<input id="diceSetting" type="checkbox" /></label><label class="ambiance-setting" for="effectsSetting">Effets liés aux actions<input id="effectsSetting" type="checkbox" /></label><label class="ambiance-setting" for="partySetting">Compagnie visible à l’écran<input id="partySetting" type="checkbox" /></label><label class="ambiance-setting" for="motionSetting">Mouvements<select id="motionSetting"><option value="auto">Selon l’appareil</option><option value="reduced">Réduits</option></select></label><p class="ambiance-notice" id="motionNotice"></p><label class="ambiance-setting" for="soundSetting">Sons d’ambiance et d’action<input id="soundSetting" type="checkbox" /></label><label class="ambiance-setting" for="volumeSetting">Volume<input id="volumeSetting" type="range" min="0" max="100" step="5" aria-valuetext="25 %" /></label><p id="soundNotice" class="ambiance-notice" role="status">Le son est désactivé au départ. Le récit reste entièrement compréhensible sans lui.</p></div></dialog>
   <dialog id="importDialog" aria-labelledby="importTitle"><div class="dialog-header"><h2 id="importTitle">Reprendre une autre chronique</h2><button class="close-dialog" data-close="importDialog" aria-label="Fermer l’import">×</button></div><div class="import-body"><p>Collez le contenu de votre sauvegarde exportée. Votre partie actuelle sera remplacée uniquement si cette sauvegarde est valide.</p><label for="importPayload" class="eyebrow">Votre sauvegarde</label><textarea id="importPayload" spellcheck="false"></textarea><p id="importResult" role="status"></p><button id="importButton" class="choice-card primary">Importer et reprendre l’aventure <span aria-hidden="true">→</span></button></div></dialog>
 
   <script>
@@ -8357,13 +8357,13 @@
     uiState.reducedMotion = uiState.systemReducedMotion || uiState.preferences.motion === 'reduced';
 
     function readPreferences() {
-      const defaults = { effects: true, motion: 'auto', sound: false, volume: 0.25, diceAnimation: true };
+      const defaults = { effects: true, motion: 'auto', sound: false, volume: 0.25, diceAnimation: true, party: true };
       try {
         const saved = JSON.parse(localStorage.getItem(PREFERENCES_KEY));
         if (!saved || typeof saved !== 'object') return defaults;
         return { effects: typeof saved.effects === 'boolean' ? saved.effects : true,
           motion: saved.motion === 'reduced' ? 'reduced' : 'auto', sound: saved.sound === true,
-          diceAnimation: saved.diceAnimation !== false,
+          diceAnimation: saved.diceAnimation !== false, party: saved.party !== false,
           volume: typeof saved.volume === 'number' && Number.isFinite(saved.volume) ? Math.max(0, Math.min(1,saved.volume)) : 0.25 };
       } catch { return defaults; }
     }
@@ -11508,7 +11508,7 @@
     // ───────────────────────── Sprites des protagonistes (référence : Character Sprite Bible, grille 64×96) ─────────────────────────
     // Chaque personnage garde son centre de gravité et son ancrage de silhouette. Le modèle canonique fait 64×96;
     // en scène il est réduit par un facteur d'échelle appliqué aux coordonnées (arêtes arrondies, jamais d'interpolation).
-    const SB = { ink: '#15131a', deep: '#282330', skin: '#a77759', skin2: '#d0a075', steel: '#637980', steel2: '#aabfc0', white: '#e9e3d4', leather: '#66432d', leather2: '#9a6240',
+    const SB = { ink: '#172c3d', deep: '#282330', skin: '#a77759', skin2: '#d0a075', steel: '#637980', steel2: '#aabfc0', white: '#e9e3d4', leather: '#66432d', leather2: '#9a6240',
       gold: '#c59a43', gold2: '#f0cf72', red: '#7d3338', red2: '#b9564f', green: '#526d44', green2: '#80a25b', blue: '#354d78', blue2: '#6685b7', purple: '#452756', purple2: '#78418a',
       ice2: '#bde5e5', acid: '#83b94e', black: '#26242c', brown: '#4b3228' };
 
@@ -11866,6 +11866,35 @@
       (SCENE_LIFE[key] ?? []).forEach(([type, ...args], i) => LIFE[type]?.(g, t, i, ...args));
     }
 
+    // Compagnie à l'écran : les sprites des protagonistes présents, en petit au premier plan, avec leur souffle et leur report de poids.
+    // Un blessé se tient en garde, plus bas; un compagnon à terre est couché. Même code et mêmes modèles que les duels.
+    const PARTY_SCALE = .36;
+    // En petit, la compagnie prend les couleurs du décor : chaque teinte de sprite devient la teinte de ART la plus proche.
+    let partyPalette = null;
+    function getPartyPalette() {
+      if (partyPalette) return partyPalette;
+      const rgb = hex => [1, 3, 5].map(i => parseInt(hex.slice(i, i + 2), 16)), artColors = Object.values(ART);
+      partyPalette = Object.fromEntries(Object.entries(SB).map(([name, hex]) => {
+        const [r, g, b] = rgb(hex); let best = artColors[0], bestDistance = Infinity;
+        artColors.forEach(candidate => { const [cr, cg, cb] = rgb(candidate), d = (r - cr) ** 2 + (g - cg) ** 2 + (b - cb) ** 2; if (d < bestDistance) { bestDistance = d; best = candidate; } });
+        return [name, best];
+      }));
+      return partyPalette;
+    }
+    function drawPartyPresence(g, t) {
+      const original = { ...SB };
+      try { Object.assign(SB, getPartyPalette()); drawPartyRow(g, t); } finally { Object.assign(SB, original); }
+    }
+    function drawPartyRow(g, t) {
+      const present = Object.entries(characters).filter(([id, c]) => SPRITE_MODELS[id] && ['active', 'injured', 'down'].includes(c.state));
+      present.forEach(([id, c], i) => {
+        const x = 20 + i * 21, y = 197;
+        paint(g, ART.shadow, x - 6, y - 1, 13, 2);
+        if (c.state === 'down') { paint(g, ART.shadow, x - 7, y - 5, 14, 5); paint(g, ART.armor, x - 6, y - 4, 10, 3); paint(g, ART.pathLight, x + 4, y - 5, 3, 3); return; }
+        drawProtagonist(g, id, x, y + (c.state === 'injured' ? 1 : 0), { t, guard: c.state === 'injured', scale: PARTY_SCALE });
+      });
+    }
+
     function drawBookAmbience(g,key,phase) {
       if (key === 'marsh') {
         for (let i=0;i<8;i++) {
@@ -11900,6 +11929,7 @@
       if (key === 'portal' && flags.portalDamaged) drawPortalDamage(ctx);
       drawBookAmbience(ctx,key,phase);
       if (key !== 'verdure') drawSceneLife(ctx, key, uiState.reducedMotion ? 0 : gameState.tick);
+      if (uiState.preferences.party && !['duel', 'cave_duel'].includes(key) && !direction && !['title_screen', 'credits'].includes(shownRoom)) drawPartyPresence(ctx, uiState.reducedMotion ? 0 : gameState.tick);
       if (key === 'verdure') drawVerdureLife(ctx, uiState.reducedMotion ? 0 : gameState.tick);
       else if (SCENE_DIRECTIONS.scenes[key]?.dragon) {
         if (direction?.kind === 'dragon') {
@@ -11951,6 +11981,7 @@
     function syncAmbianceControls() {
       document.getElementById('diceSetting').checked=uiState.preferences.diceAnimation;
       document.getElementById('effectsSetting').checked=uiState.preferences.effects;
+      document.getElementById('partySetting').checked=uiState.preferences.party;
       document.getElementById('motionSetting').value=uiState.preferences.motion;
       document.getElementById('soundSetting').checked=uiState.preferences.sound;
       const volume=document.getElementById('volumeSetting');volume.value=Math.round(uiState.preferences.volume*100);
@@ -12174,6 +12205,7 @@
       document.getElementById('diceSetting').addEventListener('change',event=>{uiState.preferences.diceAnimation=event.target.checked;applyAmbiancePreferences();});
       onClick('replayActionButton',()=>{startSceneEffect();document.getElementById('actionScene').scrollIntoView?.({block:'center',behavior:'auto'});});
       document.getElementById('effectsSetting').addEventListener('change',event=>{uiState.preferences.effects=event.target.checked;applyAmbiancePreferences();});
+      document.getElementById('partySetting').addEventListener('change',event=>{uiState.preferences.party=event.target.checked;applyAmbiancePreferences();});
       document.getElementById('motionSetting').addEventListener('change',event=>{uiState.preferences.motion=event.target.value==='reduced'?'reduced':'auto';applyAmbiancePreferences();});
       document.getElementById('soundSetting').addEventListener('change',event=>{uiState.preferences.sound=event.target.checked;storePreferences();activateSound();});
       document.getElementById('volumeSetting').addEventListener('input',event=>{uiState.preferences.volume=Math.max(0,Math.min(1,Number(event.target.value)/100));soundscape.setVolume(uiState.preferences.volume);storePreferences();syncAmbianceControls();});

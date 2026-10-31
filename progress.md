@@ -152,6 +152,11 @@ au runtime. La CI lance automatiquement les quatre suites Node.
   pour animer un décor, on ajoute une ligne dans `SCENE_LIFE`. Les décors gardent leur composition.
 - **Mouvement de repos des sprites** partagé : souffle sur 4 images, report de poids d'un pied sur l'autre toutes les
   ~1 s, mouvement secondaire décalé par personnage.
+- **Compagnie à l'écran** (réglage « Compagnie visible à l'écran » dans Ambiance, activé par défaut) : les protagonistes
+  présents apparaissent en petit (×0,36) au premier plan de chaque scène, avec leur souffle et leur report de poids.
+  Un blessé se tient en garde, plus bas; un compagnon à terre est couché; absents et morts ne sont pas dessinés.
+  Elle prend les couleurs du décor (couleur de ART la plus proche), donc aucune couleur ajoutée. Masquée pendant les
+  duels et les scènes d'action (où le protagoniste est déjà dessiné en grand).
 - Mouvement réduit : image fixe complète, sans éclair. Aucun hasard : tout dépend du tick.
 - Aperçus : `docs/previews/pixel-*.png`.
 - Prochains décors (§9 du brief) : camp des pillards, salle des œufs, caravane, marais, Naerytar.
