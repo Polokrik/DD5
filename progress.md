@@ -146,6 +146,12 @@ au runtime. La CI lance automatiquement les quatre suites Node.
 - Langdedrosa (non protagoniste) reste ma version : violet/or/bleu, queue, lance à lame en croissant.
 - Atelier : `node tools/sprite-lab.cjs sortie.png [--mode color|value|shape] bjolnir drekthar ...` (planches de sept images).
 - 102 tests Node (dont `tests/sprites.test.cjs`), parcours Chromium inchangés.
+- **Kit d'ambiance réutilisable** (`LIFE` + `SCENE_LIFE`) : une quinzaine d'éléments déterministes (feu, torche, fumée,
+  brume, neige, gouttes, ondulations, oiseaux, fanions, étoiles, nuages, lueur de fenêtre, lucioles, poussières, feuilles,
+  pulsation, éclat, chauves-souris, vaguelettes) et une table par décor. Aucun code ni image propre à une scène;
+  pour animer un décor, on ajoute une ligne dans `SCENE_LIFE`. Les décors gardent leur composition.
+- **Mouvement de repos des sprites** partagé : souffle sur 4 images, report de poids d'un pied sur l'autre toutes les
+  ~1 s, mouvement secondaire décalé par personnage.
 - Mouvement réduit : image fixe complète, sans éclair. Aucun hasard : tout dépend du tick.
 - Aperçus : `docs/previews/pixel-*.png`.
 - Prochains décors (§9 du brief) : camp des pillards, salle des œufs, caravane, marais, Naerytar.
