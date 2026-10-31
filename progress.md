@@ -132,6 +132,11 @@ au runtime. La CI lance automatiquement les quatre suites Node.
   (respiration, arme qui se déplace, étoffe, rare étincelle sur la corne), spectateurs en anneau,
   fumées de la ville derrière l'enceinte, élans de coups seulement pendant le duel.
 - **Langdedrosa II** : rapports inversés (Drek'Thar plus grand, Langdedrosa plus petit) et berserkers redessinés.
+- **Atelier de sprites** (`tools/sprite-lab.cjs`) : dessine un personnage sur fond neutre en couleur, en niveaux
+  de gris (étude de valeurs) et en silhouette, agrandi 4×. Usage : `node tools/sprite-lab.cjs sortie.png langdedrosa drekthar`.
+- **Langdedrosa et Drek'Thar redessinés** d'après la référence fournie par le MJ (silhouette, violet/or/bleu pour
+  Langdedrosa; demi-orc en mailles pour Drek'Thar), avec contour noir sélectif. Pas de reprise pixel pour pixel.
+  Langdedrosa : ~78 px de haut dans la scène, Drek'Thar ~66 px; au second duel, les tailles s'inversent.
 - Mouvement réduit : image fixe complète, sans éclair. Aucun hasard : tout dépend du tick.
 - Aperçus : `docs/previews/pixel-*.png`.
 - Prochains décors (§9 du brief) : camp des pillards, salle des œufs, caravane, marais, Naerytar.
