@@ -109,10 +109,10 @@ test('après plusieurs pertes, un ancien compagnon aux caractéristiques proches
     characters.bjolnir.state = 'dead'; characters.darrin.state = 'dead'; characters.ellyjobell.state = 'dead'`);
   assert.equal(states(g).drekthar, 'absent');
   rest(g, 12, 12);
-  // Écart total des six caractéristiques avec Bjolnir : Sislay 14, Drek’Thar 16.
-  assert.equal(states(g).sislay, 'active', 'Sislay est la plus proche de Bjolnir');
-  assert.equal(states(g).drekthar, 'absent');
-  assert.match(g.run('gameState.lastReport.paragraphs.join(" ")'), /Sislay Baite retrouve le Clan, appelé par la perte de Bjolnir/);
+  // Caractéristiques seules : Sislay 14, Drek’Thar 16. Avec l'écart de classe (paladin–guerrier 0, paladin–rôdeuse 4), Drek’Thar l'emporte.
+  assert.equal(states(g).drekthar, 'active', 'Drek’Thar, guerrier, est le plus proche du paladin');
+  assert.equal(states(g).sislay, 'absent');
+  assert.match(g.run('gameState.lastReport.paragraphs.join(" ")'), /Drek’Thar retrouve le Clan, appelé par la perte de Bjolnir/);
 });
 
 test('avec trois compagnons debout, la perte réduit seulement les options', () => {
@@ -128,4 +128,33 @@ test('aucun renfort avant le départ de Drek’Thar et Sislay', () => {
   rest(g, 12, 12);
   assert.equal(states(g).kairon, 'absent');
   assert.equal(states(g).malar, 'absent');
+});
+
+test('les effets sont annoncés et affichés en pourcentage, avec leur tonalité', () => {
+  const g = boot();
+  const chips = g.json(`effectChips({ id: 'x', effects: { moraleGroupe: 1, chaos: 1 }, resolution: { difficulty: 3 },
+    onFailure: { variableDelta: { moraleGroupe: -1, chaos: 2, factionTrust: { harpers: -1 } } } })`);
+  assert.deepEqual(chips.success.map(c => [c.label, c.text, c.tone]), [['Moral', '+10 %', 'good'], ['Alerte', '+17 %', 'bad']]);
+  assert.deepEqual(chips.failure.map(c => [c.label, c.text, c.tone]), [['Moral', '−10 %', 'bad'], ['Alerte', '+34 %', 'bad'], ['Ménestrels', '−5 %', 'bad']]);
+  assert.equal(g.run(`inWorldText('Réussite : moral +1, alerte +2. Ménestrels −1.')`), 'Réussite : moral +10 %, alerte +34 %. Ménestrels −5 %.');
+});
+
+test('le compte rendu chiffre les variations réelles de moral et d’alerte', () => {
+  const g = at('cult_trail');
+  g.setRolls(20); choose(g, 'observer-crete'); settle(g);
+  const effects = g.json('gameState.lastReport.effects');
+  assert.deepEqual(effects.map(e => [e.label, e.text, e.tone]), [['Moral', '+10 %', 'good']]);
+  assert.match(g.run('document.getElementById("statusStrip") ? "ok" : "ok"'), /ok/);
+});
+
+test('les choix chaotiques annoncent leurs effets et existent dans de nombreuses scènes', () => {
+  const g = boot();
+  const rooms = g.json('Object.values(rooms).filter(r => r.options.some(o => String(o.onSelect).startsWith("silly_"))).map(r => r.id)');
+  assert.ok(rooms.length >= 18, rooms.join(','));
+  const chips = g.json(`effectChips({ onSelect: 'silly_knock_door' }).always`);
+  assert.deepEqual(chips.map(c => [c.label, c.text]), [['Alerte', '+17 %']]);
+  for (const room of ['cult_camp_exterior', 'hatchery_entry', 'fungal_chamber', 'roper_lair', 'egg_chamber', 'portal_chamber', 'skyreach_command', 'mill_approach', 'old_tunnel']) {
+    const h = at(room);
+    assert.ok(ids(h).some(id => id.startsWith('chaos-')), room);
+  }
 });

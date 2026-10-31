@@ -62,7 +62,7 @@ au runtime. La CI lance automatiquement les quatre suites Node.
   les remparts). Variantes de jeu, annoncées comme telles.
 - **Fiches des personnages** réécrites sans mention de fiche ni de MJ; les
   sources sont repliées. Bios de Bjolnir et Ellyjobell reprises des textes des joueurs.
-- Tests : **94 tests Node**, parcours Chromium inchangés.
+- Tests : **97 tests Node**, parcours Chromium inchangés.
 
 ## Santé, repos et défaite (règles de jeu, façon D&D)
 
@@ -112,10 +112,36 @@ au runtime. La CI lance automatiquement les quatre suites Node.
   S'il ne reste que deux compagnons, un ancien compagnon parti du groupe (Drek'Thar,
   Sislay après le pavillon) revient, choisi par l'écart minimal des six caractéristiques.
 
-## Ensuite (demandé par le MJ)
+## Effets chiffrés
 
-Animations plus variées (scènes souvent figées ou répétitives), décors pixel art plus
-fidèles (références à fournir), musique et effets sonores (fichiers à fournir).
+- Chaque effet est donné en pourcentage : moral ±10 % par point, alerte ±17 % (château ±20 %),
+  confiance publique et factions ±5 %. Pastilles vertes (favorable) ou rouges (défavorable)
+  sur les cartes de choix (« Réussite » / « Échec »), dans le compte rendu et dans la barre d'état
+  (Moral X % · Alerte Y %). Les descriptions écrites en points sont converties à l'affichage.
+- Retour d'un ancien compagnon : écart des caractéristiques pondéré par la classe
+  (paladin–guerrier 0, martial–rôdeur 4, martial–voleur 8, lanceur de sorts 8 à 12).
+- 9 nouvelles options chaotiques (« Provocation ») dans autant de scènes.
+
+## Pixel art : première passe (brief « Tyranny of Dragons — Pixel Art & Animation Polish »)
+
+- **Verdure en flammes / Lennithon** : flammes à cinq images avec cadence et phase propres à chaque foyer,
+  braises, colonnes de fumée qui montent, dragon redessiné (six images d'ailes, queue, tête qui oscille),
+  éclair rare qui change la lumière de toute la scène (même décor, couleurs bleutées; les feux restent orange),
+  premier plan en silhouettes (charrette brisée, réfugiés, pillards à la torche). Bande noire à l'horizon corrigée.
+- **Drek'Thar contre Langdedrosa I** (à l'aube, comme dans le journal) : deux combattants redessinés
+  (respiration, arme qui se déplace, étoffe, rare étincelle sur la corne), spectateurs en anneau,
+  fumées de la ville derrière l'enceinte, élans de coups seulement pendant le duel.
+- **Langdedrosa II** : rapports inversés (Drek'Thar plus grand, Langdedrosa plus petit) et berserkers redessinés.
+- **Atelier de sprites** (`tools/sprite-lab.cjs`) : dessine un personnage sur fond neutre en couleur, en niveaux
+  de gris (étude de valeurs) et en silhouette, agrandi 4×. Usage : `node tools/sprite-lab.cjs sortie.png langdedrosa drekthar`.
+- **Langdedrosa et Drek'Thar redessinés** d'après la référence fournie par le MJ (silhouette, violet/or/bleu pour
+  Langdedrosa; demi-orc en mailles pour Drek'Thar), avec contour noir sélectif. Pas de reprise pixel pour pixel.
+  Langdedrosa : ~78 px de haut dans la scène, Drek'Thar ~66 px; au second duel, les tailles s'inversent.
+- Mouvement réduit : image fixe complète, sans éclair. Aucun hasard : tout dépend du tick.
+- Aperçus : `docs/previews/pixel-*.png`.
+- Prochains décors (§9 du brief) : camp des pillards, salle des œufs, caravane, marais, Naerytar.
+- Easter egg à garder en tête : Boule et Bill, à cacher quelque part.
+- Soulèvement des hommes-lézards à Naerytar : provoqué par les aventuriers (confirmé par le MJ).
 
 ## À reprendre plus tard
 
