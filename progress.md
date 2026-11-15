@@ -163,6 +163,17 @@ au runtime. La CI lance automatiquement les quatre suites Node.
 - Easter egg à garder en tête : Boule et Bill, à cacher quelque part.
 - Soulèvement des hommes-lézards à Naerytar : provoqué par les aventuriers (confirmé par le MJ).
 
+## Décisions du Clan et nouvelles options
+
+- **Décisions mises en avant** : chaque choix est consigné (auteur, issue ✓/✗, nature « Et si… », « Provocation », « Repos »)
+  dans `gameState.decisions`, qui suit les checkpoints (un retour efface la décision annulée), la sauvegarde et la
+  validation d'import. Bandeau « Le Clan a choisi » (trois derniers choix) au-dessus des propositions, et onglet
+  « Décisions du Clan » du journal, rangé par chapitre, avec le décompte des choix « Et si… » (parcours alternatif).
+- **11 nouvelles options « Et si… »** à la personnalité des compagnons : faux feu de Darrin, eau offerte à un pillard blessé
+  (Bjolnir), mirage de relève, bras de fer de Drek'Thar, chauves-souris d'Ellyjobell, prière à Eldath, héron guetteur,
+  pèlerins d'Eldath à Naerytar, bêtes de somme libérées, spectacle d'étincelles. Effets chiffrés en %.
+- 108 tests Node.
+
 ## À reprendre plus tard
 
 - Découper les épisodes encore condensés en situations et décisions distinctes,

@@ -165,6 +165,17 @@
     .scene-observation[data-read='true'] summary::after { content: ' · consulté'; font-size: 10px; color: #7d7769; }
     .scene-observation p { font: 16px/1.95 Georgia,serif; margin: 14px 0 6px; }
     .report-changes.failure { background: #ead9cf; }
+    .decision-strip { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin: 0 0 16px; }
+    .decision-strip-label { font-size: 10px; letter-spacing: .08em; text-transform: uppercase; color: #6f756c; }
+    .decision-chip { display: inline-flex; align-items: center; gap: 8px; max-width: 100%; padding: 5px 11px 5px 6px; border: 1px solid #d6cebf; border-radius: 20px; background: #f4efe3; color: #2e3a3c; font-size: 12px; text-align: left; cursor: pointer; }
+    .decision-chip img { width: 20px; height: 30px; flex: none; }
+    .decision-chip small { font-size: 10px; font-weight: 600; letter-spacing: .03em; color: #7a5a2a; white-space: nowrap; }
+    .decision-chip[data-kind='etsi'] { border-color: #b89868; }
+    .decision-chip[data-kind='chaos'] { border-style: dashed; }
+    .decisions-panel { padding: 8px 30px 30px; overflow-y: auto; max-height: 68dvh; }
+    .decisions-summary { font-size: 13px; color: #5b6258; line-height: 1.7; }
+    .decisions-panel h3 { margin: 22px 0 8px; font: 17px/1.4 Georgia,serif; }
+    .decisions-list { list-style: none; margin: 0; padding: 0; display: grid; gap: 6px; }
     .report-effects { display: flex; flex-wrap: wrap; gap: 10px; margin: 24px 0 0; }
     .fx { display: inline-flex; align-items: baseline; gap: 8px; padding: 7px 14px; border-radius: 6px; font-size: 15px; font-weight: 700; line-height: 1.3; }
     .fx small { font-size: 11px; font-weight: 500; letter-spacing: .03em; text-transform: uppercase; opacity: .85; }
@@ -278,14 +289,14 @@
       <div class="chapter-rule eyebrow"><span class="page-number" id="pageNumber">I</span><span id="chapterLabel">Le commencement d’une chronique</span></div>
       <div class="story-grid">
         <article><h2 id="sceneTitle">Sur la route de Verdure</h2><section id="checkPanel" class="check-panel" aria-label="Résultat de l’épreuve" hidden><div class="check-heading"><strong id="checkActor"></strong><span id="checkKind"></span></div><div class="check-main"><div id="d20Die" class="d20-die" aria-hidden="true"><svg viewBox="0 0 80 86"><path d="M40 3 74 24v38L40 83 6 62V24Z M6 24l34-7 34 7-17 35-17 24-17-24L6 24Zm17 35h34L40 17 23 59Z"/></svg><span id="d20Value">20</span></div><div id="checkSummary" class="check-summary" role="status"></div></div><p id="checkBreakdown" class="check-breakdown"></p></section><figure id="actionScene" class="action-scene" hidden><canvas id="actionCanvas" width="320" height="200" aria-label="Illustration du résultat de votre action"></canvas><figcaption><span id="actionCaption"></span><button id="replayActionButton" type="button">Revoir l’action ↻</button></figcaption></figure><div id="sceneNarrative" class="prose"></div><aside id="sceneMemories" class="scene-memories" aria-label="Conséquences de vos décisions" hidden></aside><section id="observationPanel" class="observation-panel" aria-label="Observer les lieux" hidden></section><div id="reportEffects" class="report-effects" hidden></div><ul id="reportChanges" class="report-changes" hidden></ul><div id="feedback" class="feedback" role="status" hidden></div></article>
-        <section aria-labelledby="decisionTitle"><h3 id="decisionTitle" class="decision-title eyebrow">Votre prochaine aventure</h3><div id="choiceList" class="choice-list"></div><p class="choice-hint">Cliquez sur un choix ou utilisez les touches <kbd>1</kbd>, <kbd>2</kbd>, <kbd>3</kbd>.</p></section>
+        <section aria-labelledby="decisionTitle"><h3 id="decisionTitle" class="decision-title eyebrow">Votre prochaine aventure</h3><div id="decisionStrip" class="decision-strip" hidden></div><div id="choiceList" class="choice-list"></div><p class="choice-hint">Cliquez sur un choix ou utilisez les touches <kbd>1</kbd>, <kbd>2</kbd>, <kbd>3</kbd>.</p></section>
       </div>
       <div class="sheet-footer"><div id="statusStrip" aria-live="polite"></div><button id="undoButton" class="quiet-button">↶ Revenir sur ma décision</button></div>
       <details class="command-panel" id="commandPanel"><summary>Commandes clavier et outils</summary><form id="promptLine"><input id="commandInput" type="text" aria-label="Commande de jeu" autocomplete="off" placeholder="Un numéro, une direction ou une commande…" /><button class="command-submit" type="submit">Envoyer</button></form></details>
     </section>
     <footer class="game-footer"><span id="campaignNote">Chronique du Clan d’Estain</span></footer>
   </main>
-  <dialog id="journalDialog" aria-labelledby="journalTitle"><div class="dialog-header"><h2 id="journalTitle">Les chroniques du Clan</h2><button class="close-dialog" data-close="journalDialog" aria-label="Fermer le journal">×</button></div><div class="journal-tabs"><button id="chronicleTab" aria-pressed="true">La campagne · 18 chapitres</button><button id="historyTab" aria-pressed="false">Votre aventure</button></div><div id="chroniclePanel" class="chronicle-layout"><nav id="chapterList" class="chapter-list" aria-label="Chapitres de la chronique"></nav><article id="chapterReader" class="chapter-reader"></article></div><div id="eventLog" hidden></div></dialog>
+  <dialog id="journalDialog" aria-labelledby="journalTitle"><div class="dialog-header"><h2 id="journalTitle">Les chroniques du Clan</h2><button class="close-dialog" data-close="journalDialog" aria-label="Fermer le journal">×</button></div><div class="journal-tabs"><button id="chronicleTab" aria-pressed="true">La campagne · 18 chapitres</button><button id="decisionsTab" aria-pressed="false">Décisions du Clan</button><button id="historyTab" aria-pressed="false">Votre aventure</button></div><div id="chroniclePanel" class="chronicle-layout"><nav id="chapterList" class="chapter-list" aria-label="Chapitres de la chronique"></nav><article id="chapterReader" class="chapter-reader"></article></div><div id="decisionsPanel" class="decisions-panel" hidden></div><div id="eventLog" hidden></div></dialog>
   <dialog id="companyDialog" aria-labelledby="companyTitle"><div class="dialog-header"><h2 id="companyTitle">La compagnie</h2><button class="close-dialog" data-close="companyDialog" aria-label="Fermer la compagnie">×</button></div><div class="company-layout"><nav id="companyRoster" class="company-roster" aria-label="Choisir un personnage"></nav><article id="companyDetails" class="party-detail-list"></article></div></dialog>
   <dialog id="ambianceDialog" aria-labelledby="ambianceTitle"><div class="dialog-header"><h2 id="ambianceTitle">L’ambiance du récit</h2><button class="close-dialog" data-close="ambianceDialog" aria-label="Fermer les réglages d’ambiance">×</button></div><div class="ambiance-body"><p>Les illustrations accompagnent les gestes des compagnons. Vous pouvez garder une lecture calme ou ajouter une ambiance sonore discrète.</p><label class="ambiance-setting" for="diceSetting">Animer les jets de D20<input id="diceSetting" type="checkbox" /></label><label class="ambiance-setting" for="effectsSetting">Effets liés aux actions<input id="effectsSetting" type="checkbox" /></label><label class="ambiance-setting" for="partySetting">Compagnie visible à l’écran<input id="partySetting" type="checkbox" /></label><label class="ambiance-setting" for="motionSetting">Mouvements<select id="motionSetting"><option value="auto">Selon l’appareil</option><option value="reduced">Réduits</option></select></label><p class="ambiance-notice" id="motionNotice"></p><label class="ambiance-setting" for="soundSetting">Sons d’ambiance et d’action<input id="soundSetting" type="checkbox" /></label><label class="ambiance-setting" for="volumeSetting">Volume<input id="volumeSetting" type="range" min="0" max="100" step="5" aria-valuetext="25 %" /></label><p id="soundNotice" class="ambiance-notice" role="status">Le son est désactivé au départ. Le récit reste entièrement compréhensible sans lui.</p></div></dialog>
   <dialog id="importDialog" aria-labelledby="importTitle"><div class="dialog-header"><h2 id="importTitle">Reprendre une autre chronique</h2><button class="close-dialog" data-close="importDialog" aria-label="Fermer l’import">×</button></div><div class="import-body"><p>Collez le contenu de votre sauvegarde exportée. Votre partie actuelle sera remplacée uniquement si cette sauvegarde est valide.</p><label for="importPayload" class="eyebrow">Votre sauvegarde</label><textarea id="importPayload" spellcheck="false"></textarea><p id="importResult" role="status"></p><button id="importButton" class="choice-card primary">Importer et reprendre l’aventure <span aria-hidden="true">→</span></button></div></dialog>
@@ -5371,7 +5382,350 @@
       { roomId: 'mill_approach', option: { id: 'chaos-farine', label: 'Option absurde — Drek’Thar: Charger en criant « Pour la farine ! »', onSelect: 'silly_flour_charge',
         intent: 'Un cri de guerre inattendu.', riskText: 'Choix chaotique : sans gravité, mais il peut attirer l’attention.' } },
       { roomId: 'old_tunnel', option: { id: 'chaos-rat', label: 'Option absurde — Ellyjobell: Nommer un rat éclaireur officiel', onSelect: 'silly_rat_scout',
-        intent: 'Les rats méritent des égards.', riskText: 'Choix chaotique : sans gravité, mais il peut attirer l’attention.' } }
+        intent: 'Les rats méritent des égards.', riskText: 'Choix chaotique : sans gravité, mais il peut attirer l’attention.' } },
+      {
+        "roomId": "cult_trail",
+        "option": {
+          "id": "piste-faux-feu",
+          "label": "What If — Darrin: Faire naître un faux feu de camp à l’écart de la piste",
+          "characterId": "darrin",
+          "skill": "arcana",
+          "resolution": {
+            "difficulty": 3,
+            "skill": "arcana",
+            "risk": "cost",
+            "deathType": "replaceable"
+          },
+          "effects": {
+            "chaos": -1,
+            "moraleGroupe": 1,
+            "message": "Darrin fait naître un feu de camp qui n’existe pas. Deux traînards s’y précipitent, et le Clan avance sans bruit pendant qu’ils cherchent la braise."
+          },
+          "onFailure": {
+            "variableDelta": {
+              "chaos": 1
+            },
+            "message": "L’illusion crépite beaucoup trop fort. Une sentinelle se retourne, perplexe, puis hausse les épaules; la tension monte quand même."
+          },
+          "intent": "Darrin crée l’illusion d’un feu de camp loin de la piste. Réussite: les traînards s’y précipitent et le Clan passe sans bruit. Échec: l’illusion crépite trop fort et attire l’attention.",
+          "riskText": "Approche prudente : un échec augmente seulement l’alerte.",
+          "source": "Variante de jeu proposée; événement non attesté dans la campagne jouée."
+        }
+      },
+      {
+        "roomId": "cult_trail",
+        "option": {
+          "id": "piste-eau-blesse",
+          "label": "What If — Bjolnir: Offrir de l’eau à un pillard blessé laissé en arrière",
+          "characterId": "bjolnir",
+          "skill": "diplomacy",
+          "resolution": {
+            "difficulty": 3,
+            "skill": "diplomacy",
+            "risk": "cost",
+            "deathType": "replaceable"
+          },
+          "effects": {
+            "chaos": -1,
+            "moraleGroupe": 1,
+            "message": "Surpris par tant de douceur, le pillard blessé confirme que le camp est au sud, près des falaises, puis s’endort sans résister. Le Clan repart plus léger."
+          },
+          "onFailure": {
+            "variableDelta": {
+              "chaos": 1
+            },
+            "message": "Le blessé crie au secours avant que Bjolnir ait pu le calmer. L’alerte se répand dans les collines."
+          },
+          "intent": "Bjolnir refuse de laisser un blessé sans soin et lui tend sa gourde. Réussite: le pillard confirme le camp au sud, près des falaises, et le Clan reprend confiance. Échec: le blessé appelle à l’aide.",
+          "riskText": "Approche prudente : un échec augmente seulement l’alerte.",
+          "source": "Variante de jeu proposée; événement non attesté dans la campagne jouée."
+        }
+      },
+      {
+        "roomId": "cult_camp_exterior",
+        "option": {
+          "id": "camp-mirage-releve",
+          "label": "What If — Darrin: Projeter l’image d’une relève qui s’éloigne",
+          "characterId": "darrin",
+          "skill": "arcana",
+          "resolution": {
+            "difficulty": 4,
+            "skill": "arcana",
+            "risk": "cost",
+            "deathType": "replaceable"
+          },
+          "effects": {
+            "chaos": -1,
+            "message": "Une relève fantôme s’éloigne au fond du chemin. Les sentinelles quittent leur poste pour l’inspecter, et le Clan se rapproche à couvert."
+          },
+          "onFailure": {
+            "variableDelta": {
+              "chaos": 1
+            },
+            "message": "L’image se déchire au milieu du chemin. Les sentinelles se regardent, resserrent leur garde et font signe aux autres."
+          },
+          "intent": "Darrin projette une relève fantôme au fond du chemin. Réussite: les sentinelles quittent leur poste pour l’inspecter. Échec: l’image vacille et les rend méfiantes.",
+          "riskText": "Approche prudente : un échec augmente seulement l’alerte.",
+          "source": "Variante de jeu proposée; événement non attesté dans la campagne jouée."
+        }
+      },
+      {
+        "roomId": "cult_camp_exterior",
+        "option": {
+          "id": "camp-bras-de-fer",
+          "label": "What If — Drek’Thar: Défier une sentinelle à un bras de fer silencieux",
+          "characterId": "drekthar",
+          "skill": "might",
+          "resolution": {
+            "difficulty": 4,
+            "skill": "might",
+            "risk": "injury",
+            "deathType": "replaceable"
+          },
+          "effects": {
+            "moraleGroupe": 1,
+            "chaos": 1,
+            "message": "Sur un tronc couché, Drek’Thar plaque le bras de la sentinelle sans que personne prononce un mot. Elle s’incline, beau joueur, et les compagnons reprennent confiance."
+          },
+          "onFailure": {
+            "variableDelta": {
+              "chaos": 1
+            },
+            "message": "Le tronc craque et Drek’Thar se tord l’épaule en perdant. La sentinelle ricane trop fort : l’alerte monte."
+          },
+          "intent": "Drek’Thar défie une sentinelle à un bras de fer, sans un mot. Réussite: il l’emporte et le Clan reprend confiance, au prix d’un peu de bruit. Échec: il se blesse.",
+          "riskText": "Un échec peut blesser l’intervenant.",
+          "source": "Variante de jeu proposée; événement non attesté dans la campagne jouée."
+        }
+      },
+      {
+        "roomId": "hatchery_entry",
+        "option": {
+          "id": "entree-chauves-souris",
+          "label": "What If — Ellyjobell: Demander aux chauves-souris du seuil de les guider",
+          "characterId": "ellyjobell",
+          "skill": "nature",
+          "resolution": {
+            "difficulty": 4,
+            "skill": "nature",
+            "risk": "cost",
+            "deathType": "replaceable"
+          },
+          "effects": {
+            "chaos": -1,
+            "message": "Ellyjobell siffle, et les chauves-souris s’envolent en une spirale qui masque l’ouverture. Le Clan se glisse dans leur ombre."
+          },
+          "onFailure": {
+            "variableDelta": {
+              "chaos": 1
+            },
+            "message": "Les chauves-souris s’égaillent en criant, et leur envol trahit la présence du groupe à l’entrée."
+          },
+          "intent": "Ellyjobell siffle aux chauves-souris du seuil. Réussite: elles s’envolent en spirale et masquent l’entrée du Clan. Échec: elles s’égaillent en criant.",
+          "riskText": "Approche prudente : un échec augmente seulement l’alerte.",
+          "source": "Variante de jeu proposée; événement non attesté dans la campagne jouée."
+        }
+      },
+      {
+        "roomId": "hatchery_entry",
+        "option": {
+          "id": "entree-priere",
+          "label": "What If — Bjolnir: Prier Eldath avant de descendre",
+          "characterId": "bjolnir",
+          "skill": "redemption",
+          "resolution": {
+            "difficulty": 4,
+            "skill": "redemption",
+            "risk": "cost",
+            "deathType": "replaceable"
+          },
+          "effects": {
+            "moraleGroupe": 1,
+            "message": "Bjolnir s’agenouille et prie Eldath pour que la paix accompagne ceux qui descendent. Le Clan avance, plus serein."
+          },
+          "onFailure": {
+            "variableDelta": {
+              "moraleGroupe": -1
+            },
+            "message": "Sa prière résonne trop fort dans la grotte. Chacun se demande qui d’autre l’a entendue."
+          },
+          "intent": "Bjolnir s’agenouille devant l’entrée et prie Eldath pour que la paix accompagne ceux qui descendent. Réussite: le moral du Clan se renforce. Échec: la prière résonne trop fort dans la grotte.",
+          "riskText": "Approche prudente : un échec n’affecte que le moral.",
+          "source": "Variante de jeu proposée; événement non attesté dans la campagne jouée."
+        }
+      },
+      {
+        "roomId": "fungal_chamber",
+        "option": {
+          "id": "fonges-epee",
+          "label": "What If — Drek’Thar: Tailler la voie à grands coups d’épée dans les fonges",
+          "characterId": "drekthar",
+          "skill": "might",
+          "resolution": {
+            "difficulty": 5,
+            "skill": "might",
+            "risk": "injury",
+            "deathType": "replaceable"
+          },
+          "effects": {
+            "moraleGroupe": 1,
+            "chaos": 1,
+            "message": "Les fonges tombent sous l’épée de Drek’Thar dans un nuage de spores violettes. Le couloir s’ouvre, et le Clan avance en toussant."
+          },
+          "onFailure": {
+            "variableDelta": {
+              "chaos": 1
+            },
+            "message": "Un nuage de spores lui saute au visage. Drek’Thar titube, et le bruit de sa quinte résonne dans la salle."
+          },
+          "intent": "Drek’Thar tranche les fonges à grands coups d’épée. Réussite: un couloir s’ouvre et le Clan reprend confiance, mais les spores donnent l’alerte. Échec: il se blesse dans le nuage.",
+          "riskText": "Un échec peut blesser l’intervenant.",
+          "source": "Variante de jeu proposée; événement non attesté dans la campagne jouée."
+        }
+      },
+      {
+        "roomId": "fungal_chamber",
+        "option": {
+          "id": "fonges-lueur",
+          "label": "What If — Darrin: Allumer une lueur froide qui fait reculer les spores",
+          "characterId": "darrin",
+          "skill": "arcana",
+          "resolution": {
+            "difficulty": 4,
+            "skill": "arcana",
+            "risk": "cost",
+            "deathType": "replaceable"
+          },
+          "effects": {
+            "chaos": -1,
+            "message": "Une lueur froide jaillit du focalisateur de Darrin. Les nappes de spores reculent d’un pas, et le passage se dégage sans un bruit."
+          },
+          "onFailure": {
+            "variableDelta": {
+              "chaos": 1
+            },
+            "message": "La lueur fait gonfler les champignons au lieu de les repousser. Un grondement sourd court sous la voûte."
+          },
+          "intent": "Darrin allume une lueur froide au bout de son focalisateur. Réussite: les nappes de spores reculent et le passage se dégage sans bruit. Échec: la lueur attire les champignons.",
+          "riskText": "Approche prudente : un échec augmente seulement l’alerte.",
+          "source": "Variante de jeu proposée; événement non attesté dans la campagne jouée."
+        }
+      },
+      {
+        "roomId": "naerytar_swamp",
+        "option": {
+          "id": "naerytar-heron",
+          "label": "What If — Ellyjobell: Charmer un héron pour qu’il guette les rondes",
+          "characterId": "ellyjobell",
+          "skill": "nature",
+          "resolution": {
+            "difficulty": 3,
+            "skill": "nature",
+            "risk": "cost",
+            "deathType": "replaceable"
+          },
+          "effects": {
+            "castleAlertLevel": -1,
+            "message": "Le héron, perché sur une souche, bat des ailes à l’approche de chaque patrouille. Ellyjobell n’a plus qu’à regarder l’oiseau."
+          },
+          "onFailure": {
+            "variableDelta": {
+              "castleAlertLevel": 1
+            },
+            "message": "Le héron s’envole en criant. Une lanterne se tourne lentement vers les roseaux."
+          },
+          "intent": "Ellyjobell charme un héron pour qu’il guette les rondes. Réussite: il bat des ailes dès qu’une patrouille approche, l’alerte du château baisse. Échec: il s’envole en criant.",
+          "riskText": "Approche prudente : un échec augmente seulement l’alerte du château.",
+          "source": "Variante de jeu proposée; événement non attesté dans la campagne jouée."
+        }
+      },
+      {
+        "roomId": "castle_naerytar",
+        "option": {
+          "id": "naerytar-pelerins",
+          "label": "What If — Bjolnir: Faire passer le Clan pour des pèlerins d’Eldath égarés",
+          "characterId": "bjolnir",
+          "skill": "diplomacy",
+          "resolution": {
+            "difficulty": 5,
+            "skill": "diplomacy",
+            "risk": "cost",
+            "deathType": "replaceable"
+          },
+          "effects": {
+            "castleAlertLevel": -1,
+            "message": "Bjolnir bénit les gardes d’un geste large et les remercie de leur accueil. Gênés, ils détournent le regard et laissent passer le groupe."
+          },
+          "onFailure": {
+            "variableDelta": {
+              "castleAlertLevel": 2,
+              "moraleGroupe": -1
+            },
+            "message": "Personne n’est dupe : la bénédiction sonne faux dans une cour de brutes. Les gardes se resserrent et le Clan perd de sa superbe."
+          },
+          "intent": "Bjolnir présente le Clan comme des pèlerins égarés de la déesse de la paix. Réussite: les gardes détournent le regard et l’alerte baisse. Échec: personne n’est dupe, l’alerte monte et le moral souffre.",
+          "riskText": "Le Clan avance dans les deux cas; un échec coûte de l’alerte et du moral.",
+          "source": "Variante de jeu proposée; événement non attesté dans la campagne jouée."
+        }
+      },
+      {
+        "roomId": "castle_naerytar",
+        "option": {
+          "id": "naerytar-betes",
+          "label": "What If — Ellyjobell: Libérer les bêtes de somme pour semer le désordre",
+          "characterId": "ellyjobell",
+          "skill": "nature",
+          "resolution": {
+            "difficulty": 5,
+            "skill": "nature",
+            "risk": "cost",
+            "deathType": "replaceable"
+          },
+          "effects": {
+            "castleAlertLevel": 1,
+            "moraleGroupe": 1,
+            "message": "La cour se remplit de cris, de poussière et de bêtes affolées. Le Clan se faufile dans le tumulte, avec le sourire."
+          },
+          "onFailure": {
+            "variableDelta": {
+              "castleAlertLevel": 2
+            },
+            "message": "Les bêtes affolées se ruent droit sur le Clan. Les gardes accourent, et l’alerte grimpe d’un cran de plus."
+          },
+          "intent": "Ellyjobell ouvre les enclos des bêtes de somme. Réussite: la cour se remplit de cris et de poussière, le Clan rit sous cape, mais l’alerte monte un peu. Échec: les bêtes se ruent vers le Clan.",
+          "riskText": "Désordre assumé : même en cas de succès, l’alerte du château monte.",
+          "source": "Variante de jeu proposée; événement non attesté dans la campagne jouée."
+        }
+      },
+      {
+        "roomId": "northern_road",
+        "option": {
+          "id": "caravane-spectacle",
+          "label": "What If — Darrin: Offrir un spectacle d’étincelles aux marchands",
+          "characterId": "darrin",
+          "skill": "arcana",
+          "resolution": {
+            "difficulty": 3,
+            "skill": "arcana",
+            "risk": "cost",
+            "deathType": "replaceable"
+          },
+          "effects": {
+            "moraleGroupe": 1,
+            "chaos": -1,
+            "message": "Darrin tire de ses doigts des gerbes d’étincelles colorées. Les marchands applaudissent, parlent à voix haute, et le Clan glane quelques ragots."
+          },
+          "onFailure": {
+            "variableDelta": {
+              "chaos": 1
+            },
+            "message": "Une étincelle égarée met le feu à une bâche. On l’éteint à grands cris, et plusieurs regards se tournent vers le groupe."
+          },
+          "intent": "Darrin amuse les marchands d’étincelles colorées pendant que les autres écoutent. Réussite: on parle volontiers et la route paraît plus légère. Échec: une étincelle met le feu à une bâche.",
+          "riskText": "Approche prudente : un échec augmente seulement l’alerte.",
+          "source": "Variante de jeu proposée; événement non attesté dans la campagne jouée."
+        }
+      }
     ];
     EXTRA_APPROACHES.forEach(({roomId,option}) => rooms[roomId].options.push(option));
 
@@ -8342,6 +8696,7 @@
       adventureLevel: 1,
       rollHistory: [],
       observations: [],
+      decisions: [],
       debugMode: URL_PARAMS.get('debug') === '1'
     };
 
@@ -8428,6 +8783,8 @@
         if (!record(state) || !Object.hasOwn(rooms, state.roomId)) return false;
         if (!strings(state.inventory) || !strings(state.commandHistory) || !strings(state.timelineApplied)) return false;
         if (state.resolvedOptions !== undefined && !strings(state.resolvedOptions)) return false;
+        if (state.decisions !== undefined && (!Array.isArray(state.decisions) || state.decisions.length > 300 || !state.decisions.every(entry => record(entry)
+          && ['room', 'id', 'title', 'actor', 'kind'].every(key => typeof entry[key] === 'string') && Number.isInteger(entry.chapter) && (entry.won === null || typeof entry.won === 'boolean')))) return false;
         if (state.observations !== undefined && (!strings(state.observations) || state.observations.length > 300
           || !state.observations.every(key => {
             const [roomId,id] = key.split(':');
@@ -8500,6 +8857,7 @@
       gameState.adventureLevel = 1;
       gameState.rollHistory = [];
       gameState.observations = [];
+      gameState.decisions = [];
     }
 
     function exportSaveToClipboard() {
@@ -8729,6 +9087,7 @@
 
 
     function renderChoices() {
+      renderDecisionStrip();
       const list = document.getElementById('choiceList'); list.replaceChildren();
       getPresentedChoices().forEach((choice, slot) => {
         const { option } = choice;
@@ -8902,12 +9261,15 @@
     function showDialog(id) { const dialog = document.getElementById(id); if (!dialog.open) dialog.showModal(); }
 
     function openJournal(tab = 'history') {
-      const chronicle = tab === 'chronicle';
+      const chronicle = tab === 'chronicle', decisions = tab === 'decisions';
       document.getElementById('chroniclePanel').hidden = !chronicle;
-      document.getElementById('eventLog').hidden = chronicle;
+      document.getElementById('decisionsPanel').hidden = !decisions;
+      document.getElementById('eventLog').hidden = chronicle || decisions;
       document.getElementById('chronicleTab').setAttribute('aria-pressed', String(chronicle));
-      document.getElementById('historyTab').setAttribute('aria-pressed', String(!chronicle));
+      document.getElementById('decisionsTab').setAttribute('aria-pressed', String(decisions));
+      document.getElementById('historyTab').setAttribute('aria-pressed', String(!chronicle && !decisions));
       if (chronicle) renderChapter(uiState.chapter);
+      if (decisions) renderDecisions();
       showDialog('journalDialog');
     }
 
@@ -9358,6 +9720,7 @@
         gameState.timelineApplied = restoredGameState.timelineApplied ?? [];
         gameState.rollHistory = restoredGameState.rollHistory ?? [];
         gameState.observations = restoredGameState.observations ?? [];
+        gameState.decisions = restoredGameState.decisions ?? [];
         gameState.resolvedOptions = restoredGameState.resolvedOptions ?? [];
         gameState.lastReport = restoredGameState.lastReport ?? null;
         uiState.effect = null;
@@ -9440,6 +9803,7 @@
       gameState.timelineApplied = restoredGameState.timelineApplied || [];
       gameState.rollHistory = restoredGameState.rollHistory || [];
       gameState.observations = restoredGameState.observations || [];
+      gameState.decisions = restoredGameState.decisions || [];
       gameState.resolvedOptions = restoredGameState.resolvedOptions || [];
       gameState.lastReport = null;
       uiState.effect = null;
@@ -10142,6 +10506,7 @@
       const before = { characters: safeClone(characters), flags: safeClone(flags), morale: variables.moraleGroupe, chaos: variables.chaos, reputation: safeClone(variables.councilReputation), trust: safeClone(variables.factionTrust), castleAlert: variables.castleAlertLevel ?? 0, publicTrust: variables.publicTrust };
       if (!menu) createCheckpoint(`Avant décision: ${option.id}`);
       const result = applyOptionEffects(option,check), message = result?.message ?? uiState.feedback;
+      if (!menu && !result?.endedByGameOver) recordDecision(option, origin, check ? check.success : Boolean(result?.success));
       if (!menu && !option.repeatable && !result?.endedByGameOver && (result?.success || option.resolution)) gameState.resolvedOptions.push(`${origin}:${option.id}`);
       if (check) gameState.rollHistory = [...(gameState.rollHistory ?? []),safeClone(check)].slice(-100);
       if (!result?.endedByGameOver) describeCurrentRoom();
@@ -10164,6 +10529,55 @@
       return [`${who} échoue dans sa tentative : ${lowered}.`,
         message || 'La tentative n’aboutit pas.',
         'Cette approche ne peut plus être rejouée dans cette scène; une autre reste possible, ou le Clan peut poursuivre sa route.'];
+    }
+
+    // Journal des décisions du Clan : chaque choix pris, par qui, avec quelle issue, rangé par chapitre.
+    // Il suit les checkpoints (un retour efface la décision annulée) et la sauvegarde.
+    function recordDecision(option, roomId, won) {
+      if (!option?.label || /^(navigation-|point-|report-|dice-)/.test(option.id)) return;
+      const raw = PRESENTATION.choices[option.id]?.title ?? option.label;
+      const kind = /^What If/.test(raw) ? 'etsi' : /^Option absurde/.test(raw) || String(option.onSelect).startsWith('silly_') ? 'chaos' : option.id.startsWith('repos-') ? 'repos' : 'normal';
+      const title = raw.replace(CHOICE_TAG, '').replace(/^(Option|Mission|Décision|Scène \d+)\s*[–—-]\s*/, '').slice(0, 140);
+      gameState.decisions = [...(gameState.decisions ?? []), { room: roomId, chapter: rooms[roomId]?.chapter ?? 0, id: option.id, title, actor: option.characterId ?? '',
+        won: option.resolution || option.check ? Boolean(won) : null, kind }].slice(-200);
+    }
+
+    function decisionTags(entry) {
+      return [entry.kind === 'etsi' ? 'Et si…' : entry.kind === 'chaos' ? 'Provocation' : entry.kind === 'repos' ? 'Repos' : '', entry.won === true ? '✓ Réussi' : entry.won === false ? '✗ Échoué' : ''].filter(Boolean);
+    }
+
+    function decisionChip(entry) {
+      const chip = document.createElement('button'); chip.type = 'button'; chip.className = 'decision-chip'; chip.dataset.kind = entry.kind;
+      if (entry.actor && characters[entry.actor]) chip.appendChild(portraitImage(entry.actor));
+      const text = document.createElement('span'); text.textContent = entry.title; chip.appendChild(text);
+      decisionTags(entry).forEach(tag => { const mark = document.createElement('small'); mark.textContent = tag; chip.appendChild(mark); });
+      chip.addEventListener('click', () => openJournal('decisions'));
+      return chip;
+    }
+
+    // Les trois derniers choix du groupe restent visibles au-dessus des propositions.
+    function renderDecisionStrip() {
+      const strip = document.getElementById('decisionStrip'); strip.replaceChildren();
+      const recent = (gameState.decisions ?? []).slice(-3);
+      strip.hidden = !recent.length || Boolean(gameState.lastReport) || ['title_screen', 'credits'].includes(gameState.roomId);
+      if (strip.hidden) return;
+      const label = document.createElement('span'); label.className = 'decision-strip-label'; label.textContent = 'Le Clan a choisi'; strip.appendChild(label);
+      recent.forEach(entry => strip.appendChild(decisionChip(entry)));
+    }
+
+    function renderDecisions() {
+      const panel = document.getElementById('decisionsPanel'); panel.replaceChildren();
+      const all = gameState.decisions ?? [], count = kind => all.filter(entry => entry.kind === kind).length;
+      const summary = document.createElement('p'); summary.className = 'decisions-summary';
+      summary.textContent = all.length ? `${all.length} décisions · ${count('etsi')} choix « Et si… » (parcours alternatif) · ${count('chaos')} provocations · ${count('repos')} repos` : 'Aucune décision prise pour le moment. Les choix du Clan apparaîtront ici, chapitre par chapitre.';
+      panel.appendChild(summary);
+      const chapters = [...new Set(all.map(entry => entry.chapter))];
+      chapters.forEach(chapter => {
+        const heading = document.createElement('h3'); heading.textContent = chapter ? `Chapitre ${CHRONICLE_CHAPTERS[chapter - 1]?.title ?? chapter}` : 'Avant la chronique'; panel.appendChild(heading);
+        const list = document.createElement('ol'); list.className = 'decisions-list';
+        all.filter(entry => entry.chapter === chapter).forEach(entry => { const item = document.createElement('li'); item.appendChild(decisionChip(entry)); list.appendChild(item); });
+        panel.appendChild(list);
+      });
     }
 
     function buildActionReport(option, roomId, result, before, message) {
@@ -12215,6 +12629,7 @@
       onClick('adventureButton', () => document.getElementById('context').scrollIntoView({ behavior: uiState.reducedMotion ? 'instant' : 'smooth' }));
       onClick('chronicleTab', () => openJournal('chronicle'));
       onClick('historyTab', () => openJournal('history'));
+      onClick('decisionsTab', () => openJournal('decisions'));
       onClick('undoButton', () => dispatchCommand('undo'));
       onClick('titleButton', () => { document.getElementById('saveMenu').open = false; gameState.lastReport=null; handleSpecialSelection('return_title'); refreshInterface(); });
       onClick('restartButton', () => { document.getElementById('saveMenu').open = false; handleSpecialSelection('restart_campaign'); refreshInterface(); });

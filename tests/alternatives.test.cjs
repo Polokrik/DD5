@@ -3,12 +3,14 @@ const assert = require('node:assert/strict');
 const { boot, choose, continueReport, settle } = require('./support.cjs');
 
 const ROOMS = {
-  cult_trail: ['piste-betes'],
-  cult_camp_exterior: ['glisser-entre-rondes', 'couvert-vegetal'],
-  hatchery_entry: ['entree-magie', 'entree-epaule'],
-  fungal_chamber: ['fonges-reconnaitre', 'fonges-eclaireur'],
+  cult_trail: ['piste-betes', 'piste-faux-feu', 'piste-eau-blesse'],
+  cult_camp_exterior: ['glisser-entre-rondes', 'couvert-vegetal', 'camp-mirage-releve', 'camp-bras-de-fer'],
+  hatchery_entry: ['entree-magie', 'entree-epaule', 'entree-chauves-souris', 'entree-priere'],
+  fungal_chamber: ['fonges-reconnaitre', 'fonges-eclaireur', 'fonges-epee', 'fonges-lueur'],
   egg_chamber: ['detruire-oeufs-drekthar', 'laisser-oeufs-ellyjobell'],
-  naerytar_swamp: ['naerytar-piste'],
+  naerytar_swamp: ['naerytar-piste', 'naerytar-heron'],
+  castle_naerytar: ['naerytar-pelerins', 'naerytar-betes'],
+  northern_road: ['caravane-spectacle'],
   old_tunnel: ['tunnel-epaule', 'tunnel-crochetage'],
   dragon_assault: ['dragon-brouillard', 'dragon-magie']
 };
@@ -46,7 +48,7 @@ test('si Bjolnir est capturé, les abords du camp offrent encore des approches',
   const g = boot();
   enter(g, 'cult_camp_exterior');
   g.run(`characters.bjolnir.state = 'captured'; prepareCurrentRoom(); refreshInterface();`);
-  assert.deepEqual(realChoices(g).sort(), ['couvert-vegetal', 'glisser-entre-rondes']);
+  assert.deepEqual(realChoices(g).sort(), ['camp-bras-de-fer', 'camp-mirage-releve', 'couvert-vegetal', 'glisser-entre-rondes']);
 });
 
 test('détruire ou laisser les œufs par un autre compagnon applique les mêmes drapeaux', () => {
