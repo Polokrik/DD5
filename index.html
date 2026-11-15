@@ -165,6 +165,17 @@
     .scene-observation[data-read='true'] summary::after { content: ' · consulté'; font-size: 10px; color: #7d7769; }
     .scene-observation p { font: 16px/1.95 Georgia,serif; margin: 14px 0 6px; }
     .report-changes.failure { background: #ead9cf; }
+    .decision-strip { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin: 0 0 16px; }
+    .decision-strip-label { font-size: 10px; letter-spacing: .08em; text-transform: uppercase; color: #6f756c; }
+    .decision-chip { display: inline-flex; align-items: center; gap: 8px; max-width: 100%; padding: 5px 11px 5px 6px; border: 1px solid #d6cebf; border-radius: 20px; background: #f4efe3; color: #2e3a3c; font-size: 12px; text-align: left; cursor: pointer; }
+    .decision-chip img { width: 20px; height: 30px; flex: none; }
+    .decision-chip small { font-size: 10px; font-weight: 600; letter-spacing: .03em; color: #7a5a2a; white-space: nowrap; }
+    .decision-chip[data-kind='etsi'] { border-color: #b89868; }
+    .decision-chip[data-kind='chaos'] { border-style: dashed; }
+    .decisions-panel { padding: 8px 30px 30px; overflow-y: auto; max-height: 68dvh; }
+    .decisions-summary { font-size: 13px; color: #5b6258; line-height: 1.7; }
+    .decisions-panel h3 { margin: 22px 0 8px; font: 17px/1.4 Georgia,serif; }
+    .decisions-list { list-style: none; margin: 0; padding: 0; display: grid; gap: 6px; }
     .report-effects { display: flex; flex-wrap: wrap; gap: 10px; margin: 24px 0 0; }
     .fx { display: inline-flex; align-items: baseline; gap: 8px; padding: 7px 14px; border-radius: 6px; font-size: 15px; font-weight: 700; line-height: 1.3; }
     .fx small { font-size: 11px; font-weight: 500; letter-spacing: .03em; text-transform: uppercase; opacity: .85; }
@@ -278,16 +289,16 @@
       <div class="chapter-rule eyebrow"><span class="page-number" id="pageNumber">I</span><span id="chapterLabel">Le commencement d’une chronique</span></div>
       <div class="story-grid">
         <article><h2 id="sceneTitle">Sur la route de Verdure</h2><section id="checkPanel" class="check-panel" aria-label="Résultat de l’épreuve" hidden><div class="check-heading"><strong id="checkActor"></strong><span id="checkKind"></span></div><div class="check-main"><div id="d20Die" class="d20-die" aria-hidden="true"><svg viewBox="0 0 80 86"><path d="M40 3 74 24v38L40 83 6 62V24Z M6 24l34-7 34 7-17 35-17 24-17-24L6 24Zm17 35h34L40 17 23 59Z"/></svg><span id="d20Value">20</span></div><div id="checkSummary" class="check-summary" role="status"></div></div><p id="checkBreakdown" class="check-breakdown"></p></section><figure id="actionScene" class="action-scene" hidden><canvas id="actionCanvas" width="320" height="200" aria-label="Illustration du résultat de votre action"></canvas><figcaption><span id="actionCaption"></span><button id="replayActionButton" type="button">Revoir l’action ↻</button></figcaption></figure><div id="sceneNarrative" class="prose"></div><aside id="sceneMemories" class="scene-memories" aria-label="Conséquences de vos décisions" hidden></aside><section id="observationPanel" class="observation-panel" aria-label="Observer les lieux" hidden></section><div id="reportEffects" class="report-effects" hidden></div><ul id="reportChanges" class="report-changes" hidden></ul><div id="feedback" class="feedback" role="status" hidden></div></article>
-        <section aria-labelledby="decisionTitle"><h3 id="decisionTitle" class="decision-title eyebrow">Votre prochaine aventure</h3><div id="choiceList" class="choice-list"></div><p class="choice-hint">Cliquez sur un choix ou utilisez les touches <kbd>1</kbd>, <kbd>2</kbd>, <kbd>3</kbd>.</p></section>
+        <section aria-labelledby="decisionTitle"><h3 id="decisionTitle" class="decision-title eyebrow">Votre prochaine aventure</h3><div id="decisionStrip" class="decision-strip" hidden></div><div id="choiceList" class="choice-list"></div><p class="choice-hint">Cliquez sur un choix ou utilisez les touches <kbd>1</kbd>, <kbd>2</kbd>, <kbd>3</kbd>.</p></section>
       </div>
       <div class="sheet-footer"><div id="statusStrip" aria-live="polite"></div><button id="undoButton" class="quiet-button">↶ Revenir sur ma décision</button></div>
       <details class="command-panel" id="commandPanel"><summary>Commandes clavier et outils</summary><form id="promptLine"><input id="commandInput" type="text" aria-label="Commande de jeu" autocomplete="off" placeholder="Un numéro, une direction ou une commande…" /><button class="command-submit" type="submit">Envoyer</button></form></details>
     </section>
     <footer class="game-footer"><span id="campaignNote">Chronique du Clan d’Estain</span></footer>
   </main>
-  <dialog id="journalDialog" aria-labelledby="journalTitle"><div class="dialog-header"><h2 id="journalTitle">Les chroniques du Clan</h2><button class="close-dialog" data-close="journalDialog" aria-label="Fermer le journal">×</button></div><div class="journal-tabs"><button id="chronicleTab" aria-pressed="true">La campagne · 18 chapitres</button><button id="historyTab" aria-pressed="false">Votre aventure</button></div><div id="chroniclePanel" class="chronicle-layout"><nav id="chapterList" class="chapter-list" aria-label="Chapitres de la chronique"></nav><article id="chapterReader" class="chapter-reader"></article></div><div id="eventLog" hidden></div></dialog>
+  <dialog id="journalDialog" aria-labelledby="journalTitle"><div class="dialog-header"><h2 id="journalTitle">Les chroniques du Clan</h2><button class="close-dialog" data-close="journalDialog" aria-label="Fermer le journal">×</button></div><div class="journal-tabs"><button id="chronicleTab" aria-pressed="true">La campagne · 18 chapitres</button><button id="decisionsTab" aria-pressed="false">Décisions du Clan</button><button id="historyTab" aria-pressed="false">Votre aventure</button></div><div id="chroniclePanel" class="chronicle-layout"><nav id="chapterList" class="chapter-list" aria-label="Chapitres de la chronique"></nav><article id="chapterReader" class="chapter-reader"></article></div><div id="decisionsPanel" class="decisions-panel" hidden></div><div id="eventLog" hidden></div></dialog>
   <dialog id="companyDialog" aria-labelledby="companyTitle"><div class="dialog-header"><h2 id="companyTitle">La compagnie</h2><button class="close-dialog" data-close="companyDialog" aria-label="Fermer la compagnie">×</button></div><div class="company-layout"><nav id="companyRoster" class="company-roster" aria-label="Choisir un personnage"></nav><article id="companyDetails" class="party-detail-list"></article></div></dialog>
-  <dialog id="ambianceDialog" aria-labelledby="ambianceTitle"><div class="dialog-header"><h2 id="ambianceTitle">L’ambiance du récit</h2><button class="close-dialog" data-close="ambianceDialog" aria-label="Fermer les réglages d’ambiance">×</button></div><div class="ambiance-body"><p>Les illustrations accompagnent les gestes des compagnons. Vous pouvez garder une lecture calme ou ajouter une ambiance sonore discrète.</p><label class="ambiance-setting" for="diceSetting">Animer les jets de D20<input id="diceSetting" type="checkbox" /></label><label class="ambiance-setting" for="effectsSetting">Effets liés aux actions<input id="effectsSetting" type="checkbox" /></label><label class="ambiance-setting" for="motionSetting">Mouvements<select id="motionSetting"><option value="auto">Selon l’appareil</option><option value="reduced">Réduits</option></select></label><p class="ambiance-notice" id="motionNotice"></p><label class="ambiance-setting" for="soundSetting">Sons d’ambiance et d’action<input id="soundSetting" type="checkbox" /></label><label class="ambiance-setting" for="volumeSetting">Volume<input id="volumeSetting" type="range" min="0" max="100" step="5" aria-valuetext="25 %" /></label><p id="soundNotice" class="ambiance-notice" role="status">Le son est désactivé au départ. Le récit reste entièrement compréhensible sans lui.</p></div></dialog>
+  <dialog id="ambianceDialog" aria-labelledby="ambianceTitle"><div class="dialog-header"><h2 id="ambianceTitle">L’ambiance du récit</h2><button class="close-dialog" data-close="ambianceDialog" aria-label="Fermer les réglages d’ambiance">×</button></div><div class="ambiance-body"><p>Les illustrations accompagnent les gestes des compagnons. Vous pouvez garder une lecture calme ou ajouter une ambiance sonore discrète.</p><label class="ambiance-setting" for="diceSetting">Animer les jets de D20<input id="diceSetting" type="checkbox" /></label><label class="ambiance-setting" for="effectsSetting">Effets liés aux actions<input id="effectsSetting" type="checkbox" /></label><label class="ambiance-setting" for="partySetting">Compagnie visible à l’écran<input id="partySetting" type="checkbox" /></label><label class="ambiance-setting" for="motionSetting">Mouvements<select id="motionSetting"><option value="auto">Selon l’appareil</option><option value="reduced">Réduits</option></select></label><p class="ambiance-notice" id="motionNotice"></p><label class="ambiance-setting" for="soundSetting">Sons d’ambiance et d’action<input id="soundSetting" type="checkbox" /></label><label class="ambiance-setting" for="volumeSetting">Volume<input id="volumeSetting" type="range" min="0" max="100" step="5" aria-valuetext="25 %" /></label><p id="soundNotice" class="ambiance-notice" role="status">Le son est désactivé au départ. Le récit reste entièrement compréhensible sans lui.</p></div></dialog>
   <dialog id="importDialog" aria-labelledby="importTitle"><div class="dialog-header"><h2 id="importTitle">Reprendre une autre chronique</h2><button class="close-dialog" data-close="importDialog" aria-label="Fermer l’import">×</button></div><div class="import-body"><p>Collez le contenu de votre sauvegarde exportée. Votre partie actuelle sera remplacée uniquement si cette sauvegarde est valide.</p><label for="importPayload" class="eyebrow">Votre sauvegarde</label><textarea id="importPayload" spellcheck="false"></textarea><p id="importResult" role="status"></p><button id="importButton" class="choice-card primary">Importer et reprendre l’aventure <span aria-hidden="true">→</span></button></div></dialog>
 
   <script>
@@ -5371,7 +5382,350 @@
       { roomId: 'mill_approach', option: { id: 'chaos-farine', label: 'Option absurde — Drek’Thar: Charger en criant « Pour la farine ! »', onSelect: 'silly_flour_charge',
         intent: 'Un cri de guerre inattendu.', riskText: 'Choix chaotique : sans gravité, mais il peut attirer l’attention.' } },
       { roomId: 'old_tunnel', option: { id: 'chaos-rat', label: 'Option absurde — Ellyjobell: Nommer un rat éclaireur officiel', onSelect: 'silly_rat_scout',
-        intent: 'Les rats méritent des égards.', riskText: 'Choix chaotique : sans gravité, mais il peut attirer l’attention.' } }
+        intent: 'Les rats méritent des égards.', riskText: 'Choix chaotique : sans gravité, mais il peut attirer l’attention.' } },
+      {
+        "roomId": "cult_trail",
+        "option": {
+          "id": "piste-faux-feu",
+          "label": "What If — Darrin: Faire naître un faux feu de camp à l’écart de la piste",
+          "characterId": "darrin",
+          "skill": "arcana",
+          "resolution": {
+            "difficulty": 3,
+            "skill": "arcana",
+            "risk": "cost",
+            "deathType": "replaceable"
+          },
+          "effects": {
+            "chaos": -1,
+            "moraleGroupe": 1,
+            "message": "Darrin fait naître un feu de camp qui n’existe pas. Deux traînards s’y précipitent, et le Clan avance sans bruit pendant qu’ils cherchent la braise."
+          },
+          "onFailure": {
+            "variableDelta": {
+              "chaos": 1
+            },
+            "message": "L’illusion crépite beaucoup trop fort. Une sentinelle se retourne, perplexe, puis hausse les épaules; la tension monte quand même."
+          },
+          "intent": "Darrin crée l’illusion d’un feu de camp loin de la piste. Réussite: les traînards s’y précipitent et le Clan passe sans bruit. Échec: l’illusion crépite trop fort et attire l’attention.",
+          "riskText": "Approche prudente : un échec augmente seulement l’alerte.",
+          "source": "Variante de jeu proposée; événement non attesté dans la campagne jouée."
+        }
+      },
+      {
+        "roomId": "cult_trail",
+        "option": {
+          "id": "piste-eau-blesse",
+          "label": "What If — Bjolnir: Offrir de l’eau à un pillard blessé laissé en arrière",
+          "characterId": "bjolnir",
+          "skill": "diplomacy",
+          "resolution": {
+            "difficulty": 3,
+            "skill": "diplomacy",
+            "risk": "cost",
+            "deathType": "replaceable"
+          },
+          "effects": {
+            "chaos": -1,
+            "moraleGroupe": 1,
+            "message": "Surpris par tant de douceur, le pillard blessé confirme que le camp est au sud, près des falaises, puis s’endort sans résister. Le Clan repart plus léger."
+          },
+          "onFailure": {
+            "variableDelta": {
+              "chaos": 1
+            },
+            "message": "Le blessé crie au secours avant que Bjolnir ait pu le calmer. L’alerte se répand dans les collines."
+          },
+          "intent": "Bjolnir refuse de laisser un blessé sans soin et lui tend sa gourde. Réussite: le pillard confirme le camp au sud, près des falaises, et le Clan reprend confiance. Échec: le blessé appelle à l’aide.",
+          "riskText": "Approche prudente : un échec augmente seulement l’alerte.",
+          "source": "Variante de jeu proposée; événement non attesté dans la campagne jouée."
+        }
+      },
+      {
+        "roomId": "cult_camp_exterior",
+        "option": {
+          "id": "camp-mirage-releve",
+          "label": "What If — Darrin: Projeter l’image d’une relève qui s’éloigne",
+          "characterId": "darrin",
+          "skill": "arcana",
+          "resolution": {
+            "difficulty": 4,
+            "skill": "arcana",
+            "risk": "cost",
+            "deathType": "replaceable"
+          },
+          "effects": {
+            "chaos": -1,
+            "message": "Une relève fantôme s’éloigne au fond du chemin. Les sentinelles quittent leur poste pour l’inspecter, et le Clan se rapproche à couvert."
+          },
+          "onFailure": {
+            "variableDelta": {
+              "chaos": 1
+            },
+            "message": "L’image se déchire au milieu du chemin. Les sentinelles se regardent, resserrent leur garde et font signe aux autres."
+          },
+          "intent": "Darrin projette une relève fantôme au fond du chemin. Réussite: les sentinelles quittent leur poste pour l’inspecter. Échec: l’image vacille et les rend méfiantes.",
+          "riskText": "Approche prudente : un échec augmente seulement l’alerte.",
+          "source": "Variante de jeu proposée; événement non attesté dans la campagne jouée."
+        }
+      },
+      {
+        "roomId": "cult_camp_exterior",
+        "option": {
+          "id": "camp-bras-de-fer",
+          "label": "What If — Drek’Thar: Défier une sentinelle à un bras de fer silencieux",
+          "characterId": "drekthar",
+          "skill": "might",
+          "resolution": {
+            "difficulty": 4,
+            "skill": "might",
+            "risk": "injury",
+            "deathType": "replaceable"
+          },
+          "effects": {
+            "moraleGroupe": 1,
+            "chaos": 1,
+            "message": "Sur un tronc couché, Drek’Thar plaque le bras de la sentinelle sans que personne prononce un mot. Elle s’incline, beau joueur, et les compagnons reprennent confiance."
+          },
+          "onFailure": {
+            "variableDelta": {
+              "chaos": 1
+            },
+            "message": "Le tronc craque et Drek’Thar se tord l’épaule en perdant. La sentinelle ricane trop fort : l’alerte monte."
+          },
+          "intent": "Drek’Thar défie une sentinelle à un bras de fer, sans un mot. Réussite: il l’emporte et le Clan reprend confiance, au prix d’un peu de bruit. Échec: il se blesse.",
+          "riskText": "Un échec peut blesser l’intervenant.",
+          "source": "Variante de jeu proposée; événement non attesté dans la campagne jouée."
+        }
+      },
+      {
+        "roomId": "hatchery_entry",
+        "option": {
+          "id": "entree-chauves-souris",
+          "label": "What If — Ellyjobell: Demander aux chauves-souris du seuil de les guider",
+          "characterId": "ellyjobell",
+          "skill": "nature",
+          "resolution": {
+            "difficulty": 4,
+            "skill": "nature",
+            "risk": "cost",
+            "deathType": "replaceable"
+          },
+          "effects": {
+            "chaos": -1,
+            "message": "Ellyjobell siffle, et les chauves-souris s’envolent en une spirale qui masque l’ouverture. Le Clan se glisse dans leur ombre."
+          },
+          "onFailure": {
+            "variableDelta": {
+              "chaos": 1
+            },
+            "message": "Les chauves-souris s’égaillent en criant, et leur envol trahit la présence du groupe à l’entrée."
+          },
+          "intent": "Ellyjobell siffle aux chauves-souris du seuil. Réussite: elles s’envolent en spirale et masquent l’entrée du Clan. Échec: elles s’égaillent en criant.",
+          "riskText": "Approche prudente : un échec augmente seulement l’alerte.",
+          "source": "Variante de jeu proposée; événement non attesté dans la campagne jouée."
+        }
+      },
+      {
+        "roomId": "hatchery_entry",
+        "option": {
+          "id": "entree-priere",
+          "label": "What If — Bjolnir: Prier Eldath avant de descendre",
+          "characterId": "bjolnir",
+          "skill": "redemption",
+          "resolution": {
+            "difficulty": 4,
+            "skill": "redemption",
+            "risk": "cost",
+            "deathType": "replaceable"
+          },
+          "effects": {
+            "moraleGroupe": 1,
+            "message": "Bjolnir s’agenouille et prie Eldath pour que la paix accompagne ceux qui descendent. Le Clan avance, plus serein."
+          },
+          "onFailure": {
+            "variableDelta": {
+              "moraleGroupe": -1
+            },
+            "message": "Sa prière résonne trop fort dans la grotte. Chacun se demande qui d’autre l’a entendue."
+          },
+          "intent": "Bjolnir s’agenouille devant l’entrée et prie Eldath pour que la paix accompagne ceux qui descendent. Réussite: le moral du Clan se renforce. Échec: la prière résonne trop fort dans la grotte.",
+          "riskText": "Approche prudente : un échec n’affecte que le moral.",
+          "source": "Variante de jeu proposée; événement non attesté dans la campagne jouée."
+        }
+      },
+      {
+        "roomId": "fungal_chamber",
+        "option": {
+          "id": "fonges-epee",
+          "label": "What If — Drek’Thar: Tailler la voie à grands coups d’épée dans les fonges",
+          "characterId": "drekthar",
+          "skill": "might",
+          "resolution": {
+            "difficulty": 5,
+            "skill": "might",
+            "risk": "injury",
+            "deathType": "replaceable"
+          },
+          "effects": {
+            "moraleGroupe": 1,
+            "chaos": 1,
+            "message": "Les fonges tombent sous l’épée de Drek’Thar dans un nuage de spores violettes. Le couloir s’ouvre, et le Clan avance en toussant."
+          },
+          "onFailure": {
+            "variableDelta": {
+              "chaos": 1
+            },
+            "message": "Un nuage de spores lui saute au visage. Drek’Thar titube, et le bruit de sa quinte résonne dans la salle."
+          },
+          "intent": "Drek’Thar tranche les fonges à grands coups d’épée. Réussite: un couloir s’ouvre et le Clan reprend confiance, mais les spores donnent l’alerte. Échec: il se blesse dans le nuage.",
+          "riskText": "Un échec peut blesser l’intervenant.",
+          "source": "Variante de jeu proposée; événement non attesté dans la campagne jouée."
+        }
+      },
+      {
+        "roomId": "fungal_chamber",
+        "option": {
+          "id": "fonges-lueur",
+          "label": "What If — Darrin: Allumer une lueur froide qui fait reculer les spores",
+          "characterId": "darrin",
+          "skill": "arcana",
+          "resolution": {
+            "difficulty": 4,
+            "skill": "arcana",
+            "risk": "cost",
+            "deathType": "replaceable"
+          },
+          "effects": {
+            "chaos": -1,
+            "message": "Une lueur froide jaillit du focalisateur de Darrin. Les nappes de spores reculent d’un pas, et le passage se dégage sans un bruit."
+          },
+          "onFailure": {
+            "variableDelta": {
+              "chaos": 1
+            },
+            "message": "La lueur fait gonfler les champignons au lieu de les repousser. Un grondement sourd court sous la voûte."
+          },
+          "intent": "Darrin allume une lueur froide au bout de son focalisateur. Réussite: les nappes de spores reculent et le passage se dégage sans bruit. Échec: la lueur attire les champignons.",
+          "riskText": "Approche prudente : un échec augmente seulement l’alerte.",
+          "source": "Variante de jeu proposée; événement non attesté dans la campagne jouée."
+        }
+      },
+      {
+        "roomId": "naerytar_swamp",
+        "option": {
+          "id": "naerytar-heron",
+          "label": "What If — Ellyjobell: Charmer un héron pour qu’il guette les rondes",
+          "characterId": "ellyjobell",
+          "skill": "nature",
+          "resolution": {
+            "difficulty": 3,
+            "skill": "nature",
+            "risk": "cost",
+            "deathType": "replaceable"
+          },
+          "effects": {
+            "castleAlertLevel": -1,
+            "message": "Le héron, perché sur une souche, bat des ailes à l’approche de chaque patrouille. Ellyjobell n’a plus qu’à regarder l’oiseau."
+          },
+          "onFailure": {
+            "variableDelta": {
+              "castleAlertLevel": 1
+            },
+            "message": "Le héron s’envole en criant. Une lanterne se tourne lentement vers les roseaux."
+          },
+          "intent": "Ellyjobell charme un héron pour qu’il guette les rondes. Réussite: il bat des ailes dès qu’une patrouille approche, l’alerte du château baisse. Échec: il s’envole en criant.",
+          "riskText": "Approche prudente : un échec augmente seulement l’alerte du château.",
+          "source": "Variante de jeu proposée; événement non attesté dans la campagne jouée."
+        }
+      },
+      {
+        "roomId": "castle_naerytar",
+        "option": {
+          "id": "naerytar-pelerins",
+          "label": "What If — Bjolnir: Faire passer le Clan pour des pèlerins d’Eldath égarés",
+          "characterId": "bjolnir",
+          "skill": "diplomacy",
+          "resolution": {
+            "difficulty": 5,
+            "skill": "diplomacy",
+            "risk": "cost",
+            "deathType": "replaceable"
+          },
+          "effects": {
+            "castleAlertLevel": -1,
+            "message": "Bjolnir bénit les gardes d’un geste large et les remercie de leur accueil. Gênés, ils détournent le regard et laissent passer le groupe."
+          },
+          "onFailure": {
+            "variableDelta": {
+              "castleAlertLevel": 2,
+              "moraleGroupe": -1
+            },
+            "message": "Personne n’est dupe : la bénédiction sonne faux dans une cour de brutes. Les gardes se resserrent et le Clan perd de sa superbe."
+          },
+          "intent": "Bjolnir présente le Clan comme des pèlerins égarés de la déesse de la paix. Réussite: les gardes détournent le regard et l’alerte baisse. Échec: personne n’est dupe, l’alerte monte et le moral souffre.",
+          "riskText": "Le Clan avance dans les deux cas; un échec coûte de l’alerte et du moral.",
+          "source": "Variante de jeu proposée; événement non attesté dans la campagne jouée."
+        }
+      },
+      {
+        "roomId": "castle_naerytar",
+        "option": {
+          "id": "naerytar-betes",
+          "label": "What If — Ellyjobell: Libérer les bêtes de somme pour semer le désordre",
+          "characterId": "ellyjobell",
+          "skill": "nature",
+          "resolution": {
+            "difficulty": 5,
+            "skill": "nature",
+            "risk": "cost",
+            "deathType": "replaceable"
+          },
+          "effects": {
+            "castleAlertLevel": 1,
+            "moraleGroupe": 1,
+            "message": "La cour se remplit de cris, de poussière et de bêtes affolées. Le Clan se faufile dans le tumulte, avec le sourire."
+          },
+          "onFailure": {
+            "variableDelta": {
+              "castleAlertLevel": 2
+            },
+            "message": "Les bêtes affolées se ruent droit sur le Clan. Les gardes accourent, et l’alerte grimpe d’un cran de plus."
+          },
+          "intent": "Ellyjobell ouvre les enclos des bêtes de somme. Réussite: la cour se remplit de cris et de poussière, le Clan rit sous cape, mais l’alerte monte un peu. Échec: les bêtes se ruent vers le Clan.",
+          "riskText": "Désordre assumé : même en cas de succès, l’alerte du château monte.",
+          "source": "Variante de jeu proposée; événement non attesté dans la campagne jouée."
+        }
+      },
+      {
+        "roomId": "northern_road",
+        "option": {
+          "id": "caravane-spectacle",
+          "label": "What If — Darrin: Offrir un spectacle d’étincelles aux marchands",
+          "characterId": "darrin",
+          "skill": "arcana",
+          "resolution": {
+            "difficulty": 3,
+            "skill": "arcana",
+            "risk": "cost",
+            "deathType": "replaceable"
+          },
+          "effects": {
+            "moraleGroupe": 1,
+            "chaos": -1,
+            "message": "Darrin tire de ses doigts des gerbes d’étincelles colorées. Les marchands applaudissent, parlent à voix haute, et le Clan glane quelques ragots."
+          },
+          "onFailure": {
+            "variableDelta": {
+              "chaos": 1
+            },
+            "message": "Une étincelle égarée met le feu à une bâche. On l’éteint à grands cris, et plusieurs regards se tournent vers le groupe."
+          },
+          "intent": "Darrin amuse les marchands d’étincelles colorées pendant que les autres écoutent. Réussite: on parle volontiers et la route paraît plus légère. Échec: une étincelle met le feu à une bâche.",
+          "riskText": "Approche prudente : un échec augmente seulement l’alerte.",
+          "source": "Variante de jeu proposée; événement non attesté dans la campagne jouée."
+        }
+      }
     ];
     EXTRA_APPROACHES.forEach(({roomId,option}) => rooms[roomId].options.push(option));
 
@@ -8342,6 +8696,7 @@
       adventureLevel: 1,
       rollHistory: [],
       observations: [],
+      decisions: [],
       debugMode: URL_PARAMS.get('debug') === '1'
     };
 
@@ -8357,13 +8712,13 @@
     uiState.reducedMotion = uiState.systemReducedMotion || uiState.preferences.motion === 'reduced';
 
     function readPreferences() {
-      const defaults = { effects: true, motion: 'auto', sound: false, volume: 0.25, diceAnimation: true };
+      const defaults = { effects: true, motion: 'auto', sound: false, volume: 0.25, diceAnimation: true, party: true };
       try {
         const saved = JSON.parse(localStorage.getItem(PREFERENCES_KEY));
         if (!saved || typeof saved !== 'object') return defaults;
         return { effects: typeof saved.effects === 'boolean' ? saved.effects : true,
           motion: saved.motion === 'reduced' ? 'reduced' : 'auto', sound: saved.sound === true,
-          diceAnimation: saved.diceAnimation !== false,
+          diceAnimation: saved.diceAnimation !== false, party: saved.party !== false,
           volume: typeof saved.volume === 'number' && Number.isFinite(saved.volume) ? Math.max(0, Math.min(1,saved.volume)) : 0.25 };
       } catch { return defaults; }
     }
@@ -8428,6 +8783,8 @@
         if (!record(state) || !Object.hasOwn(rooms, state.roomId)) return false;
         if (!strings(state.inventory) || !strings(state.commandHistory) || !strings(state.timelineApplied)) return false;
         if (state.resolvedOptions !== undefined && !strings(state.resolvedOptions)) return false;
+        if (state.decisions !== undefined && (!Array.isArray(state.decisions) || state.decisions.length > 300 || !state.decisions.every(entry => record(entry)
+          && ['room', 'id', 'title', 'actor', 'kind'].every(key => typeof entry[key] === 'string') && Number.isInteger(entry.chapter) && (entry.won === null || typeof entry.won === 'boolean')))) return false;
         if (state.observations !== undefined && (!strings(state.observations) || state.observations.length > 300
           || !state.observations.every(key => {
             const [roomId,id] = key.split(':');
@@ -8500,6 +8857,7 @@
       gameState.adventureLevel = 1;
       gameState.rollHistory = [];
       gameState.observations = [];
+      gameState.decisions = [];
     }
 
     function exportSaveToClipboard() {
@@ -8729,6 +9087,7 @@
 
 
     function renderChoices() {
+      renderDecisionStrip();
       const list = document.getElementById('choiceList'); list.replaceChildren();
       getPresentedChoices().forEach((choice, slot) => {
         const { option } = choice;
@@ -8902,12 +9261,15 @@
     function showDialog(id) { const dialog = document.getElementById(id); if (!dialog.open) dialog.showModal(); }
 
     function openJournal(tab = 'history') {
-      const chronicle = tab === 'chronicle';
+      const chronicle = tab === 'chronicle', decisions = tab === 'decisions';
       document.getElementById('chroniclePanel').hidden = !chronicle;
-      document.getElementById('eventLog').hidden = chronicle;
+      document.getElementById('decisionsPanel').hidden = !decisions;
+      document.getElementById('eventLog').hidden = chronicle || decisions;
       document.getElementById('chronicleTab').setAttribute('aria-pressed', String(chronicle));
-      document.getElementById('historyTab').setAttribute('aria-pressed', String(!chronicle));
+      document.getElementById('decisionsTab').setAttribute('aria-pressed', String(decisions));
+      document.getElementById('historyTab').setAttribute('aria-pressed', String(!chronicle && !decisions));
       if (chronicle) renderChapter(uiState.chapter);
+      if (decisions) renderDecisions();
       showDialog('journalDialog');
     }
 
@@ -9358,6 +9720,7 @@
         gameState.timelineApplied = restoredGameState.timelineApplied ?? [];
         gameState.rollHistory = restoredGameState.rollHistory ?? [];
         gameState.observations = restoredGameState.observations ?? [];
+        gameState.decisions = restoredGameState.decisions ?? [];
         gameState.resolvedOptions = restoredGameState.resolvedOptions ?? [];
         gameState.lastReport = restoredGameState.lastReport ?? null;
         uiState.effect = null;
@@ -9440,6 +9803,7 @@
       gameState.timelineApplied = restoredGameState.timelineApplied || [];
       gameState.rollHistory = restoredGameState.rollHistory || [];
       gameState.observations = restoredGameState.observations || [];
+      gameState.decisions = restoredGameState.decisions || [];
       gameState.resolvedOptions = restoredGameState.resolvedOptions || [];
       gameState.lastReport = null;
       uiState.effect = null;
@@ -10142,6 +10506,7 @@
       const before = { characters: safeClone(characters), flags: safeClone(flags), morale: variables.moraleGroupe, chaos: variables.chaos, reputation: safeClone(variables.councilReputation), trust: safeClone(variables.factionTrust), castleAlert: variables.castleAlertLevel ?? 0, publicTrust: variables.publicTrust };
       if (!menu) createCheckpoint(`Avant décision: ${option.id}`);
       const result = applyOptionEffects(option,check), message = result?.message ?? uiState.feedback;
+      if (!menu && !result?.endedByGameOver) recordDecision(option, origin, check ? check.success : Boolean(result?.success));
       if (!menu && !option.repeatable && !result?.endedByGameOver && (result?.success || option.resolution)) gameState.resolvedOptions.push(`${origin}:${option.id}`);
       if (check) gameState.rollHistory = [...(gameState.rollHistory ?? []),safeClone(check)].slice(-100);
       if (!result?.endedByGameOver) describeCurrentRoom();
@@ -10164,6 +10529,55 @@
       return [`${who} échoue dans sa tentative : ${lowered}.`,
         message || 'La tentative n’aboutit pas.',
         'Cette approche ne peut plus être rejouée dans cette scène; une autre reste possible, ou le Clan peut poursuivre sa route.'];
+    }
+
+    // Journal des décisions du Clan : chaque choix pris, par qui, avec quelle issue, rangé par chapitre.
+    // Il suit les checkpoints (un retour efface la décision annulée) et la sauvegarde.
+    function recordDecision(option, roomId, won) {
+      if (!option?.label || /^(navigation-|point-|report-|dice-)/.test(option.id)) return;
+      const raw = PRESENTATION.choices[option.id]?.title ?? option.label;
+      const kind = /^What If/.test(raw) ? 'etsi' : /^Option absurde/.test(raw) || String(option.onSelect).startsWith('silly_') ? 'chaos' : option.id.startsWith('repos-') ? 'repos' : 'normal';
+      const title = raw.replace(CHOICE_TAG, '').replace(/^(Option|Mission|Décision|Scène \d+)\s*[–—-]\s*/, '').slice(0, 140);
+      gameState.decisions = [...(gameState.decisions ?? []), { room: roomId, chapter: rooms[roomId]?.chapter ?? 0, id: option.id, title, actor: option.characterId ?? '',
+        won: option.resolution || option.check ? Boolean(won) : null, kind }].slice(-200);
+    }
+
+    function decisionTags(entry) {
+      return [entry.kind === 'etsi' ? 'Et si…' : entry.kind === 'chaos' ? 'Provocation' : entry.kind === 'repos' ? 'Repos' : '', entry.won === true ? '✓ Réussi' : entry.won === false ? '✗ Échoué' : ''].filter(Boolean);
+    }
+
+    function decisionChip(entry) {
+      const chip = document.createElement('button'); chip.type = 'button'; chip.className = 'decision-chip'; chip.dataset.kind = entry.kind;
+      if (entry.actor && characters[entry.actor]) chip.appendChild(portraitImage(entry.actor));
+      const text = document.createElement('span'); text.textContent = entry.title; chip.appendChild(text);
+      decisionTags(entry).forEach(tag => { const mark = document.createElement('small'); mark.textContent = tag; chip.appendChild(mark); });
+      chip.addEventListener('click', () => openJournal('decisions'));
+      return chip;
+    }
+
+    // Les trois derniers choix du groupe restent visibles au-dessus des propositions.
+    function renderDecisionStrip() {
+      const strip = document.getElementById('decisionStrip'); strip.replaceChildren();
+      const recent = (gameState.decisions ?? []).slice(-3);
+      strip.hidden = !recent.length || Boolean(gameState.lastReport) || ['title_screen', 'credits'].includes(gameState.roomId);
+      if (strip.hidden) return;
+      const label = document.createElement('span'); label.className = 'decision-strip-label'; label.textContent = 'Le Clan a choisi'; strip.appendChild(label);
+      recent.forEach(entry => strip.appendChild(decisionChip(entry)));
+    }
+
+    function renderDecisions() {
+      const panel = document.getElementById('decisionsPanel'); panel.replaceChildren();
+      const all = gameState.decisions ?? [], count = kind => all.filter(entry => entry.kind === kind).length;
+      const summary = document.createElement('p'); summary.className = 'decisions-summary';
+      summary.textContent = all.length ? `${all.length} décisions · ${count('etsi')} choix « Et si… » (parcours alternatif) · ${count('chaos')} provocations · ${count('repos')} repos` : 'Aucune décision prise pour le moment. Les choix du Clan apparaîtront ici, chapitre par chapitre.';
+      panel.appendChild(summary);
+      const chapters = [...new Set(all.map(entry => entry.chapter))];
+      chapters.forEach(chapter => {
+        const heading = document.createElement('h3'); heading.textContent = chapter ? `Chapitre ${CHRONICLE_CHAPTERS[chapter - 1]?.title ?? chapter}` : 'Avant la chronique'; panel.appendChild(heading);
+        const list = document.createElement('ol'); list.className = 'decisions-list';
+        all.filter(entry => entry.chapter === chapter).forEach(entry => { const item = document.createElement('li'); item.appendChild(decisionChip(entry)); list.appendChild(item); });
+        panel.appendChild(list);
+      });
     }
 
     function buildActionReport(option, roomId, result, before, message) {
@@ -11276,18 +11690,32 @@
       }
     }
 
+    // Étincelle d'impact : croix claire de trois images, au point de contact des armes.
+    function drawImpactSpark(g, x, y, step) {
+      const arms = [2, 4, 3][step % 3];
+      paint(g, ART.hot, x - 1, y - 1, 3, 3); paint(g, SB.white, x, y, 1, 1);
+      [[-1, 0], [1, 0], [0, -1], [0, 1]].forEach(([dx, dy]) => paint(g, ART.flame, x + dx * arms, y + dy * arms, 1, 1));
+      [[-1, -1], [1, -1], [-1, 1], [1, 1]].forEach(([dx, dy]) => paint(g, ART.hot, x + dx * (arms - 1), y + dy * (arms - 1), 1, 1));
+    }
+
     function drawDuelActors(g, direction, progress, reversed = false) {
       const t = uiState.reducedMotion ? 0 : gameState.tick, finished = direction?.kind === 'duel' && progress > .55;
       const fallen = finished ? direction.fallen : null, dueling = direction?.kind === 'duel' && !finished;
-      const heroScale = reversed ? 1.12 : 1, foeScale = reversed ? .62 : .78;
+      const heroScale = reversed ? .86 : .7, foeScale = reversed ? .62 : .78;
       const heroX = reversed ? 207 : 182, foeX = reversed ? 258 : 250, baseY = reversed ? 174 : 172;
-      const heroStrike = dueling ? strikeAt(progress, [.1, .28, .46]) : 0, foeStrike = dueling ? strikeAt(progress, [.19, .37]) : 0;
+      // Deux coups de Drek’Thar encadrent la riposte de Langdedrosa : anticipation, frappe, impact, récupération.
+      const heroFrame = dueling ? attackFrameAt(progress, .03, .17) ?? attackFrameAt(progress, .36, .17) : null;
+      const foeFrame = dueling ? attackFrameAt(progress, .19, .15) : null;
+      const foeStrike = foeFrame ? { anticipation: -.4, frappe: 1, impact: 1, 'récupération': .35 }[foeFrame.name] : 0;
+      let tip = null;
       if (['active','injured'].includes(characters.drekthar.state) || direction?.actor === 'drekthar') {
         if (fallen === 'hero' || characters.drekthar.state === 'dead') drawFallenFigure(g, heroX, baseY, 'hero');
-        else drawDrekthar(g, heroX, baseY, t, heroStrike, heroScale);
+        else tip = drawProtagonist(g, 'drekthar', heroX, baseY, { t, frame: heroFrame, guard: Boolean(foeFrame && (foeFrame.name === 'frappe' || foeFrame.impact)), scale: heroScale });
       }
       if (fallen === 'enemy') drawFallenFigure(g, foeX - 18, baseY + 2, 'foe');
       else drawLangdedrosa(g, foeX, baseY, t, foeStrike, foeScale);
+      const impact = (heroFrame?.impact && tip) ? tip : foeFrame?.impact ? { x: heroX + Math.round(34 * heroScale), y: baseY - Math.round(50 * heroScale) } : null;
+      if (impact) drawImpactSpark(g, impact.x, impact.y, Math.floor(t / 3));
     }
 
     // Ville encore fumante à l'aube : colonnes lentes derrière l'enceinte, spectateurs en anneau.
@@ -11303,8 +11731,13 @@
       if (!direction) return;
       const {kind,actor} = direction, step = Math.floor(progress * 20), moving = progress < 1;
       if (actor && kind !== 'duel') {
-        const x = ['fog','door'].includes(kind) ? 225 : 176 + Math.min(12,step);
-        drawSmallPerson(g,actor,x,169,['down','dead'].includes(characters[actor]?.state));
+        const x = ['fog','door'].includes(kind) ? 225 : 176 + Math.min(12,step), t = uiState.reducedMotion ? 0 : gameState.tick;
+        if (!SPRITE_MODELS[actor] || ['down','dead'].includes(characters[actor]?.state)) drawSmallPerson(g,actor,x,169,['down','dead'].includes(characters[actor]?.state));
+        else {
+          const frame = ['clash','hammer','magic'].includes(kind) && moving ? attackFrameAt(progress, .08, .72) : null;
+          const tip = drawProtagonist(g, actor, x, 169, { t, frame, guard: kind === 'retreat' && moving, scale: .5 });
+          if (frame?.impact && tip) drawImpactSpark(g, tip.x + 4, tip.y, Math.floor(t / 3));
+        }
       }
       if (kind === 'fog') {
         for (let i=0;i<4;i++) drawSmallPerson(g,'civilian',245-i*12-Math.min(42,step*2),160+i%2*3);
@@ -11486,6 +11919,138 @@
       pixelLine(g, ox + Math.round(x1 * scale) * (flip ? -1 : 1), oy + Math.round(y1 * scale), ox + Math.round(x2 * scale) * (flip ? -1 : 1), oy + Math.round(y2 * scale), color);
     }
 
+    // ───────────────────────── Sprites des protagonistes (référence : Character Sprite Bible, grille 64×96) ─────────────────────────
+    // Chaque personnage garde son centre de gravité et son ancrage de silhouette. Le modèle canonique fait 64×96;
+    // en scène il est réduit par un facteur d'échelle appliqué aux coordonnées (arêtes arrondies, jamais d'interpolation).
+    const SB = { ink: '#172c3d', deep: '#282330', skin: '#a77759', skin2: '#d0a075', steel: '#637980', steel2: '#aabfc0', white: '#e9e3d4', leather: '#66432d', leather2: '#9a6240',
+      gold: '#c59a43', gold2: '#f0cf72', red: '#7d3338', red2: '#b9564f', green: '#526d44', green2: '#80a25b', blue: '#354d78', blue2: '#6685b7', purple: '#452756', purple2: '#78418a',
+      ice2: '#bde5e5', acid: '#83b94e', black: '#26242c', brown: '#4b3228' };
+
+    function spriteOps(g, ox, oy, s) {
+      const X = v => Math.round(ox + v * s), Y = v => Math.round(oy + v * s);
+      const P = (color, x, y, w = 1, h = 1) => { const x0 = X(x), y0 = Y(y); paint(g, color, x0, y0, Math.max(1, X(x + w) - x0), Math.max(1, Y(y + h) - y0)); };
+      const poly = (color, pts) => pixelPolygon(g, pts.map(([px, py]) => [X(px), Y(py)]), color);
+      const line = (color, x1, y1, x2, y2, w = 2) => {
+        const half = Math.max(1, Math.round(w * s)), horizontal = Math.abs(x2 - x1) >= Math.abs(y2 - y1);
+        for (let k = 0; k < half; k++) { const d = k - Math.floor((half - 1) / 2); pixelLine(g, X(x1) + (horizontal ? 0 : d), Y(y1) + (horizontal ? d : 0), X(x2) + (horizontal ? 0 : d), Y(y2) + (horizontal ? d : 0), color); }
+      };
+      return { P, poly, line };
+    }
+
+    // Amplitude de chaque coup (unités du modèle 64×96) et garde, d'après la bible.
+    const SPRITE_REACH = { bjolnir: 6, drekthar: 5, ellyjobell: 6, darrin: 6, sislay: 8, kairon: 5, malar: 9 };
+    const SPRITE_GUARD = { bjolnir: 3, drekthar: 5, ellyjobell: 4, darrin: 5, sislay: 3, kairon: 2, malar: 2 };
+
+    // Chaque modèle reçoit une pose explicite : b = souffle, s = mouvement secondaire (barbe, étoffe, manche), a = élan de l'arme,
+    // g = garde, r = action rare. Aucune valeur continue : la pose est une image.
+    const SPRITE_MODELS = {
+      bjolnir(o, p) {
+        const { P, poly, line } = o, b = p.b, g = p.g, atk = p.a;
+        P(SB.ink, 20, 69, 12, 22); P(SB.ink, 37, 69, 12, 22); P(SB.leather, 22, 70, 9, 18); P(SB.leather, 39, 70, 9, 18); P(SB.ink, 18, 87, 16, 6); P(SB.ink, 36, 87, 16, 6);
+        P(SB.ink, 15, 30 + b, 37, 43); P(SB.steel, 18, 33 + b, 31, 37); P(SB.steel2, 20, 35 + b, 27, 6); P(SB.skin, 24, 17 + b, 21, 17); P(SB.ink, 22, 15 + b, 25, 7);
+        P(SB.gold, 27, 29 + b, 15, 17); P(SB.gold2, 29, 31 + b, 11, 4); P(SB.brown, 25 + p.s, 36 + b, 19, 14); P(SB.skin2, 27, 22 + b, 4, 3); P(SB.skin2, 39, 22 + b, 4, 3);
+        P(SB.ink, 7 - g, 38 + b, 22, 34); poly(SB.blue, [[10 - g, 40 + b], [27 - g, 40 + b], [27 - g, 65 + b], [18 - g, 71 + b], [10 - g, 65 + b]]);
+        P(SB.steel2, 16 - g, 47 + b, 5, 16); P(SB.steel2, 11 - g, 53 + b, 16, 5);
+        line(SB.ink, 47 + atk, 44 + b, 55 + atk, 18 + b, 6); P(SB.ink, 47 + atk, 10 + b, 16, 13); P(SB.steel, 49 + atk, 12 + b, 12, 9); P(SB.steel2, 50 + atk, 13 + b, 10, 3);
+        if (p.r) P(SB.skin2, 45 + atk, 43 + b, 4, 3);
+      },
+      drekthar(o, p) {
+        const { P, poly, line } = o, b = p.b, g = p.g, atk = p.a;
+        P(SB.ink, 18, 71, 12, 21); P(SB.ink, 38, 71, 12, 21); P(SB.leather, 20, 72, 9, 17); P(SB.leather, 40, 72, 9, 17); P(SB.ink, 16, 88, 17, 5); P(SB.ink, 36, 88, 17, 5);
+        P(SB.ink, 13, 30 + b, 39, 44); P(SB.steel, 16, 33 + b, 33, 38);
+        for (let y = 36; y < 65; y += 6) line(SB.steel2, 18, y + b, 47, y + b, 2);
+        P(SB.green, 23, 14 + b, 22, 19); P(SB.ink, 20, 12 + b, 27, 6); P(SB.ink, 20, 20 + b, 5, 7); P(SB.green2, 27, 20 + b, 4, 3); P(SB.green2, 39, 20 + b, 4, 3);
+        P(SB.red, 12 + p.s, 35 + b + p.r, 9, 28); P(SB.leather2, 45, 36 + b + p.r, 8, 27);
+        const len = 42 + atk, sx = 44 - g, sy = 51 + b + Math.max(0, atk);
+        line(SB.ink, sx, sy, sx + len * .5, sy - len, 6); line(SB.steel2, sx, sy, sx + len * .5, sy - len, 3); line(SB.gold, sx - 5, sy + 1, sx + 5, sy - 4, 3);
+      },
+      ellyjobell(o, p) {
+        const { P, poly, line } = o, b = p.b, glow = p.a > 0 ? SB.gold2 : SB.green2;
+        P(SB.ink, 23, 70, 9, 20); P(SB.ink, 36, 70, 9, 20); P(SB.leather, 24, 72, 7, 16); P(SB.leather, 37, 72, 7, 16); P(SB.ink, 21, 87, 13, 5); P(SB.ink, 35, 87, 13, 5);
+        P(SB.ink, 17, 36 + b, 32, 38); P(SB.green, 20, 39 + b, 26, 33);
+        poly(SB.green2, [[16, 38 + b], [24, 31 + b], [31, 37 + b], [38, 30 + b], [49, 39 + b], [43, 47 + b], [22, 46 + b]]);
+        P(SB.skin, 25, 20 + b, 17, 16); poly(SB.green, [[22, 24 + b], [29, 13 + b], [45, 24 + b], [42, 31 + b], [24, 31 + b]]); P(SB.skin2, 28, 25 + b, 3, 3); P(SB.skin2, 38, 25 + b, 3, 3);
+        const sx = 11 + (p.g ? 4 : 0) + p.s;
+        line(SB.brown, sx, 82, sx + 2, 15, 4); P(SB.gold2, sx, 12, 5, 5); P(glow, 10, 11, 6, 6); P(glow, 7, 15, 3, 3);
+        if (p.r) { P(SB.green2, 7, 6 + b, 2, 2); P(SB.gold2, 14, 3, 2, 2); }
+      },
+      darrin(o, p) {
+        const { P, poly, line } = o, b = p.b, spread = p.g ? 2 : 7, atk = p.a;
+        P(SB.ink, 22, 70, 9, 21); P(SB.ink, 36, 70, 9, 21); P(SB.leather, 23, 72, 7, 17); P(SB.leather, 37, 72, 7, 17); P(SB.ink, 20, 88, 14, 5); P(SB.ink, 34, 88, 14, 5);
+        P(SB.ink, 17, 32 + b, 32, 42); P(SB.purple, 20, 35 + b, 26, 36); P(SB.purple2, 21, 37 + b, 24, 5); P(SB.purple, 20 + p.s, 71, 26, 1);
+        P(SB.skin, 25, 16 + b, 17, 17); P(SB.brown, 23, 13 + b, 21, 8); P(SB.skin2, 29, 23 + b, 3, 3); P(SB.skin2, 39, 23 + b, 3, 3);
+        line(SB.purple2, 20, 41 + b, 12 - spread, 51 + b - atk, 6); line(SB.purple2, 46, 41 + b, 54 + spread, 48 + b + atk, 6);
+        P(SB.skin2, 7 - spread, 48 + b - atk, 6, 6); P(SB.skin2, 53 + spread, 45 + b + atk, 6, 6);
+        P(SB.gold2, 4 - spread, 42 + b - atk - (p.r ? 3 : 0), 4, 4); P(SB.ice2, 58 + spread, 39 + b + atk, 4, 4);
+      },
+      sislay(o, p) {
+        const { P, poly, line } = o, b = p.b, atk = p.a;
+        P(SB.ink, 18, 70, 10, 21); P(SB.ink, 38, 68, 10, 23); P(SB.leather, 20, 71, 7, 17); P(SB.leather, 40, 70, 7, 19); P(SB.ink, 16, 88, 15, 5); P(SB.ink, 36, 88, 15, 5);
+        P(SB.ink, 16, 31 + b, 34, 41); P(SB.leather, 19, 34 + b, 28, 36); P(SB.green, 22, 36 + b, 22, 10);
+        const hx = p.r ? 2 : 0;
+        P(SB.green, 24 + hx, 16 + b, 20, 17); P(SB.ink, 21 + hx, 13 + b, 25, 7); P(SB.green2, 29 + hx, 23 + b, 3, 3); P(SB.green2, 39 + hx, 23 + b, 3, 3);
+        const bx = 12 - (p.g ? 2 : 0) + p.s;
+        line(SB.brown, bx, 29 + b, bx - 5, 72 + b, 3); line(SB.brown, bx - 5, 72 + b, bx - 8, 50 + b, 2); line(SB.brown, bx - 8, 50 + b, bx, 29 + b, 2);
+        line(SB.steel2, 43, 49 + b, 60 + atk, 58 + b, 3);
+      },
+      kairon(o, p) {
+        const { P, poly, line } = o, b = p.b, atk = p.a;
+        P(SB.ink, 21, 69, 10, 22); P(SB.ink, 38, 69, 10, 22); P(SB.black, 23, 71, 7, 18); P(SB.black, 40, 71, 7, 18); P(SB.ink, 19, 88, 15, 5); P(SB.ink, 36, 88, 15, 5);
+        P(SB.ink, 15, 31 + b, 35, 44); P(SB.purple, 18, 34 + b, 29, 38);
+        poly(SB.purple2, [[18, 54 + b], [31, 49 + b], [30 + p.s, 78 + b], [21 + p.s, 72 + b]]); poly(SB.purple, [[47, 54 + b], [34, 49 + b], [35 - p.s, 78 + b], [44 - p.s, 72 + b]]);
+        P(SB.red, 24, 16 + b, 20, 17); poly(SB.ink, [[24, 19 + b], [17, 7 + b], [28, 14 + b]]); poly(SB.ink, [[42, 19 + b], [49, 7 + b], [38, 14 + b]]);
+        if (p.r) { P(SB.white, 18, 8 + b, 2, 2); P(SB.white, 47, 8 + b, 2, 2); }
+        P(SB.gold2, 29, 23 + b, 3, 3); P(SB.gold2, 39, 23 + b, 3, 3);
+        const sx = 53 + atk - (p.g ? 6 : 0);
+        line(SB.brown, sx, 84, sx + 2, 15, 4); P(SB.gold2, sx, 12, 5, 5); P(p.a > 0 ? SB.acid : SB.purple2, 52 + atk - (p.g ? 6 : 0), 10, 7, 7);
+        line(SB.red2, 19, 42 + b, 10 - atk, 53 + b, 5);
+      },
+      malar(o, p) {
+        const { P, poly, line } = o, bob = p.b, low = p.g ? 2 : 0, atk = p.a;
+        P(SB.ink, 17, 70 + low, 11, 20); P(SB.ink, 39, 68 + low, 10, 22); P(SB.black, 19, 72 + low, 8, 16); P(SB.black, 41, 70 + low, 7, 18); P(SB.ink, 15, 87 + low, 16, 5); P(SB.ink, 37, 87 + low, 16, 5);
+        P(SB.ink, 15, 32 + bob + low, 35, 40); P(SB.black, 18, 35 + bob + low, 29, 34);
+        poly(SB.blue, [[17, 38 + bob + low], [28, 35 + bob + low], [25 - p.s, 68 + bob + low], [14 - p.s, 63 + bob + low]]);
+        P(SB.skin, 25, 17 + bob + low, 18, 16); P(SB.brown, 22, 14 + bob + low, 23, 8); P(SB.skin2, 29, 24 + bob + low, 3, 3); P(SB.skin2, 39, 24 + bob + low, 3, 3);
+        line(SB.ink, 42, 50 + bob + low, 61 + atk, 46 + bob + low, 6); line(SB.steel2, 43, 49 + bob + low, 61 + atk, 45 + bob + low, 3); P(SB.gold, 41, 47 + bob + low, 5, 5);
+        if (p.r) { P(SB.steel2, 34, 62 + bob + low, 5, 2); P(SB.white, 38, 61 + bob + low, 1, 1); }
+      }
+    };
+    const SPRITE_IDS = Object.keys(SPRITE_MODELS);
+
+    // Images explicites d'un coup : anticipation → frappe → impact → récupération. Le facteur multiplie la portée du personnage.
+    const ATTACK_FRAMES = [
+      { name: 'anticipation', reach: -1.3, lean: -2, share: .32 },
+      { name: 'frappe', reach: 2.2, lean: 3, share: .16 },
+      { name: 'impact', reach: 2.2, lean: 3, share: .2, impact: true },
+      { name: 'récupération', reach: .8, lean: 1, share: .32 }
+    ];
+    // progress ∈ [start, start + length] : renvoie l'image du coup, ou null hors du coup.
+    function attackFrameAt(progress, start, length) {
+      if (progress < start || progress >= start + length) return null;
+      let local = (progress - start) / length;
+      for (const frame of ATTACK_FRAMES) { if (local < frame.share) return frame; local -= frame.share; }
+      return ATTACK_FRAMES[ATTACK_FRAMES.length - 1];
+    }
+
+    // Pose de repos : souffle sur deux images, mouvement secondaire décalé, une action rare toutes les 10 s environ.
+    function spritePose(id, t, frame = null, guard = false) {
+      const phase = SPRITE_IDS.indexOf(id) * 37, k = Math.floor((t + phase) / 24) % 4;
+      const pose = { b: [0, 1, 2, 1][k], s: [0, 0, 1, 1][Math.floor((t + phase) / 41) % 4], x: [0, 1, 1, 0, 0, -1, -1, 0][Math.floor((t + phase * 3) / 70) % 8], g: guard ? SPRITE_GUARD[id] : 0, a: 0, r: ((t + phase * 5) % 620) < 44 ? 1 : 0 };
+      if (frame) { pose.a = Math.round(SPRITE_REACH[id] * frame.reach); pose.r = 0; }
+      return pose;
+    }
+
+    // Dessine un protagoniste. (x, y) : centre des pieds; scale : réduction du modèle 64×96 (0,5 à 1). Retourne la position approximative de l'arme.
+    function drawProtagonist(g, id, x, y, options = {}) {
+      const model = SPRITE_MODELS[id]; if (!model) return null;
+      const { t = 0, frame = null, guard = false, scale = .7 } = options, pose = spritePose(id, t, frame, guard);
+      const lean = frame ? frame.lean : pose.x * 2;
+      model(spriteOps(g, x - 32 * scale + lean * scale, y - 93 * scale, scale), pose);
+      return { x: x + Math.round((SPRITE_TIP[id][0] - 32 + pose.a) * scale), y: y + Math.round((SPRITE_TIP[id][1] - 93) * scale) };
+    }
+    // Pointe de l'arme (modèle 64×96) : sert à placer l'étincelle d'impact.
+    const SPRITE_TIP = { bjolnir: [56, 18], drekthar: [66, 9], ellyjobell: [13, 12], darrin: [62, 41], sislay: [62, 58], kairon: [59, 12], malar: [62, 46] };
+
     // Palette de Langdedrosa : violet, or et bleu d'écailles, avec un contour noir sélectif sur la silhouette extérieure.
     const LD = { k: '#0c0c0c', p0: '#2e0c40', p1: '#4c155f', p2: '#762c7c', p3: '#92457f', p4: '#bf6784', b1: '#4b4f7e', b2: '#606493', b3: '#7590a4',
       g1: '#cf9478', g2: '#dbd3a2', t: '#9ebeb2', steel: '#9aa3b4' };
@@ -11569,49 +12134,6 @@
       }
     }
 
-    // Palette de Drek’Thar : demi-orc vert-gris, mailles d'acier, cuir brun, écharpe rouge, éclat d'or.
-    const DK = { skin: '#6f8f5a', skinLight: '#93b073', skinDark: '#4a6a45', mail: '#5c6b73', mailMid: '#7d8c89', mailLight: '#aab8b2', leather: '#5a3d2e', leatherLight: '#7a5a3e',
-      scarf: '#8c3b33', scarfLight: '#b5523f', tusk: '#e5c79d', steel: '#b6c0c4', steelLight: '#e3ebe8', gold: '#cf9478' };
-
-    // Drek’Thar, demi-orc guerrier, épée à deux mains levée devant lui. Regarde vers la droite. Origine : centre des pieds.
-    function drawDrekthar(g, x, y, t, strike = 0, scale = 1) {
-      const up = [0, 0, -1, -1][Math.floor(t / 20) % 4], sway = [0, -1, -2, -1, 1, 0][Math.floor(t / 34) % 6], flap = Math.floor(t / 17) % 3;
-      const lunge = Math.round(strike * 12 * scale), tilt = Math.round(strike * 10), S = [];
-      // écharpe rouge qui flotte derrière l'épaule
-      S.push({ pts: [[-5, -50 + up], [-17, -46 + flap * 2], [-27, -36 + flap * 3], [-24, -31 + flap * 2], [-14, -37 + flap], [-4, -42 + up]], color: DK.scarf });
-      S.push({ pts: [[-12, -45 + up + flap], [-22, -38 + flap * 2], [-19, -35 + flap * 2], [-10, -41 + up]], color: DK.scarfLight, noOutline: true });
-      // épée à deux mains : lame longue vers le haut, garde, pommeau (derrière le buste)
-      const tx = 30 + tilt, ty = -80 + sway;
-      S.push({ pts: [[7, -40], [13, -38], [tx + 2, ty], [tx - 2, ty + 3]], color: DK.steel }, { line: [10, -38, tx, ty + 2], color: DK.steelLight }, { pts: [[3, -43], [17, -37], [16, -34], [2, -40]], color: DK.leatherLight });
-      S.push({ pts: [[tx - 2, ty + 3], [tx + 2, ty - 1], [tx + 1, ty + 4]], color: DK.steelLight, noOutline: true });
-      // jambes et bottes
-      S.push({ pts: [[-8, -22], [-1, -22], [-1, -5], [-9, -5]], color: DK.leather }, { pts: [[1, -22], [8, -22], [9, -5], [1, -5]], color: DK.leatherLight });
-      S.push({ pts: [[-11, 0], [-9, -7], [0, -7], [0, 0]], color: DK.leatherLight }, { pts: [[1, 0], [1, -7], [10, -7], [12, 0]], color: DK.leather });
-      // jupe de mailles, ceinture à boucle dorée
-      S.push({ pts: [[-12, -24], [12, -24], [14, -14], [-14, -14]], color: DK.mail }, { line: [-13, -15, 13, -15], color: DK.mailLight });
-      S.push({ pts: [[-11, -27], [11, -27], [11, -24], [-11, -24]], color: DK.leather }, { pts: [[-2, -28], [2, -28], [2, -23], [-2, -23]], color: DK.gold, noOutline: true });
-      // buste de mailles, fines lignes de reflet
-      S.push({ pts: [[-11, -27], [-14, -45 + up], [-8, -53 + up], [8, -53 + up], [14, -45 + up], [11, -27]], color: DK.mailMid });
-      [-46, -41, -36, -31].forEach((py, i) => S.push({ line: [-9, py + (py < -34 ? up : 0), 9, py + (py < -34 ? up : 0)], color: i % 2 ? DK.mail : DK.mailLight, noOutline: true }));
-      // épaulières d'acier
-      S.push({ pts: [[-18, -46 + up], [-13, -55 + up], [-6, -53 + up], [-8, -44 + up], [-16, -41 + up]], color: DK.mailLight });
-      S.push({ pts: [[6, -53 + up], [13, -56 + up], [19, -46 + up], [16, -41 + up], [8, -44 + up]], color: DK.mailLight });
-      S.push({ line: [-18, -46 + up, -13, -55 + up], color: DK.steelLight }, { line: [13, -56 + up, 19, -46 + up], color: DK.steelLight });
-      // bras vers la poignée, gantelets
-      S.push({ pts: [[6, -48 + up], [13, -45 + up], [13, -35], [6, -33]], color: DK.mail }, { pts: [[6, -39], [14, -37], [14, -31], [6, -31]], color: DK.leather });
-      S.push({ pts: [[2, -43 + up], [8, -43 + up], [8, -35], [2, -35]], color: DK.leatherLight });
-      // tête de demi-orc : crâne, mâchoire lourde, défenses, chignon sombre, regard jaune
-      S.push({ pts: [[-5, -54 + up], [5, -54 + up], [6, -57 + up], [-6, -57 + up]], color: DK.skinDark });
-      S.push({ pts: [[-7, -57 + up], [7, -57 + up], [8, -62 + up], [5, -67 + up], [-5, -67 + up], [-8, -62 + up]], color: DK.skin });
-      S.push({ pts: [[-7, -58 + up], [7, -58 + up], [6, -53 + up], [3, -51 + up], [-3, -51 + up], [-6, -53 + up]], color: DK.skin });
-      S.push({ pts: [[-4, -70 + up], [4, -70 + up], [5, -65 + up], [-5, -65 + up]], color: DK.leather });
-      S.push({ pts: [[-7, -63 + up], [7, -63 + up], [7, -61 + up], [-7, -61 + up]], color: DK.skinDark, noOutline: true });
-      S.push({ pts: [[2, -62 + up], [5, -62 + up], [5, -60 + up], [2, -60 + up]], color: DK.tusk, noOutline: true });
-      S.push({ pts: [[3, -58 + up], [5, -58 + up], [5, -52 + up], [4, -51 + up], [3, -53 + up]], color: DK.tusk, noOutline: true }, { pts: [[-6, -58 + up], [-4, -58 + up], [-4, -53 + up], [-5, -51 + up], [-6, -52 + up]], color: DK.tusk, noOutline: true });
-      S.push({ pts: [[-4, -60 + up], [-1, -60 + up], [-1, -58 + up], [-4, -58 + up]], color: DK.skinLight, noOutline: true });
-      drawShapeSet(g, x + lunge, y, scale, S, LD.k, 0);
-    }
-
     // Berserker du Culte : torse nu, casque à cornes, hache lourde. Souffle et arme décalés par la position.
     function drawBerserker(g, x, y, t, fallen = false, facing = 1) {
       if (fallen) { paint(g, ART.roofLight, x - 10, y - 6, 20, 6); paint(g, ART.pathLight, x + 10 * facing, y - 7, 6, 6); pixelLine(g, x - 14, y - 1, x - 24, y - 2, ART.stoneLight); return; }
@@ -11633,6 +12155,157 @@
         paint(g, ART.shadow, x, hy + 5, 6, tall - 4 + sway); pixelDisc(g, x + 3, hy + 3, 3, ART.shadow);
         if (i % 3 === 0) { pixelLine(g, x + 7, y - tall + 6, x + 8, y - tall - 6, ART.stoneDark); }
         paint(g, i % 2 ? ART.roofDark : ART.cloak, x + 1, hy + 8, 4, 2);
+      });
+    }
+
+    // ───────────────────────── Kit d'ambiance réutilisable ─────────────────────────
+    // Chaque élément est une petite fonction déterministe (le temps vient du tick, jamais du hasard) réutilisée par plusieurs décors.
+    // SCENE_LIFE dit, décor par décor, quels éléments placer et où : aucun code ni image propres à une scène.
+    const SINE16 = [0, 1, 2, 3, 3, 3, 2, 1, 0, -1, -2, -3, -3, -3, -2, -1];
+    const LIFE = {
+      fire(g, t, i, x, y, scale = 1) { drawFlame(g, x, y, t, i, scale); drawEmbers(g, x, y, t, i); },
+      torch(g, t, i, x, y) { drawFlame(g, x, y, t + i * 11, i + 3, .55); },
+      smoke(g, t, i, x, y, speed = 1) { drawSmokeColumns(g, t + i * 40, [[x, y, speed]]); },
+      // Bandes de brume qui dérivent à des vitesses différentes (trame clairsemée, comme les halos).
+      fog(g, t, i, y, h, speed = 1, color = 'fog') {
+        for (let band = 0; band < h; band += 6) for (let seg = 0; seg < 4; seg++) {
+          const len = 40 + ((seg * 17 + band * 7) % 40), x = ((seg * 101 + band * 31 + Math.floor(t * speed / 9)) % (360 + len)) - len;
+          ditherRect(g, ART[color], x, y + band, len, 4);
+        }
+      },
+      snow(g, t, i, count = 40, speed = 1) {
+        for (let k = 0; k < count; k++) {
+          const x = (k * 53 + Math.floor(t / 11) * (1 + k % 2) + SINE16[(Math.floor(t / 9) + k) % 16]) % 320, y = (k * 37 + Math.floor(t * speed / 3) * (1 + k % 3)) % 200;
+          paint(g, k % 5 ? ART.blueLight : ART.moon, x, y, 1, 1);
+        }
+      },
+      drips(g, t, i, x, y0, y1, period = 150) {
+        const p = (Math.floor(t / 2) + i * 41) % period, fall = Math.floor((y1 - y0) / 3);
+        if (p < fall) paint(g, ART.blueLight, x, y0 + p * 3, 1, 2);
+        else if (p < fall + 5) { const r = p - fall; paint(g, ART.waterLight, x - r, y1, 1, 1); paint(g, ART.waterLight, x + r, y1, 1, 1); }
+      },
+      ripples(g, t, i, x, y, spread = 12) {
+        [0, 6].forEach(offset => {
+          const r = (Math.floor(t / 7) + i * 5 + offset) % 12, w = Math.max(1, Math.round(r * spread / 12));
+          if (r < 11) { paint(g, ART.waterLight, x - w, y, 2, 1); paint(g, ART.waterLight, x + w - 1, y, 2, 1); if (r > 3) paint(g, ART.blueLight, x - 1, y + 1, 3, 1); }
+        });
+      },
+      birds(g, t, i, y, period = 900, direction = 1) {
+        const run = (Math.floor(t / 2) + i * 211) % period, x = direction > 0 ? run * 3 - 30 : 350 - run * 3;
+        if (x < -20 || x > 340) return;
+        const wing = Math.floor(t / 6) % 2, by = y + SINE16[Math.floor(run / 5) % 16] + (i % 2);
+        pixelLine(g, x - 3, by + (wing ? 0 : 2), x, by + 1, ART.shadow); pixelLine(g, x, by + 1, x + 3, by + (wing ? 0 : 2), ART.shadow);
+      },
+      pennant(g, t, i, x, y, length = 8, color = 'cloak') {
+        for (let k = 0; k < length; k++) paint(g, ART[color], x + k, y + [0, 0, 1, 1, 0, -1, -1, 0][(k + Math.floor(t / 5) + i * 3) % 8], 1, Math.max(1, 3 - Math.floor(k / 3)));
+      },
+      // Étoiles qui scintillent : on repeint le ciel sur quelques-unes, une à la fois.
+      stars(g, t, i, list) { list.forEach(([x, y], k) => { if ((Math.floor(t / 24) + k * 5) % 7 === 0) paint(g, ART.night, x, y, 1, 1); }); },
+      clouds(g, t, i, y, count = 3, speed = 1, color = 'haze') {
+        for (let k = 0; k < count; k++) {
+          const x = ((k * 131 + Math.floor(t * speed / 14)) % 420) - 50, cy = y + (k % 2) * 7 - k * 3;
+          pixelDisc(g, x, cy, 7, ART[color]); pixelDisc(g, x + 9, cy + 1, 9, ART[color]); pixelDisc(g, x + 20, cy + 2, 6, ART[color]); paint(g, ART[color], x - 5, cy + 2, 30, 5);
+        }
+      },
+      // Lueur de fenêtre ou de braise : la trame change de teinte par à-coups, sans changer la forme.
+      glow(g, t, i, x, y, w, h, color = 'window') { ditherRect(g, (Math.floor(t / 8) + i * 5) % 9 < 2 ? ART.hot : ART[color], x, y, w, h); },
+      fireflies(g, t, i, cx, cy, rx, ry, count = 3) {
+        for (let k = 0; k < count; k++) {
+          const a = SINE16[(Math.floor(t / 6) + k * 5 + i * 3) % 16], b = SINE16[(Math.floor(t / 7) + k * 7 + 4) % 16];
+          if ((Math.floor(t / 14) + k * 3 + i) % 6 < 4) { paint(g, ART.hot, cx + Math.round(a * rx / 3) + k * 9, cy + Math.round(b * ry / 3) - k * 4, 1, 1); paint(g, ART.flame, cx + Math.round(a * rx / 3) + k * 9 + 1, cy + Math.round(b * ry / 3) - k * 4, 1, 1); }
+        }
+      },
+      motes(g, t, i, x, y, w, h, count = 10) {
+        for (let k = 0; k < count; k++) paint(g, ART.accent, x + (k * 37 + Math.floor(t / 22) + SINE16[(k + Math.floor(t / 40)) % 16]) % w, y + (k * 23 + Math.floor(t / 38) * (k % 2 ? 1 : 2)) % h, 1, 1);
+      },
+      leaves(g, t, i, count = 10) {
+        for (let k = 0; k < count; k++) {
+          const x = (k * 61 + SINE16[(Math.floor(t / 8) + k * 3) % 16] * 2 + Math.floor(t / 16)) % 320, y = (k * 41 + Math.floor(t / 4)) % 200;
+          paint(g, k % 3 ? ART.grassLight : ART.roofLight, x, y, 2, 1);
+        }
+      },
+      pulse(g, t, i, x, y, rx, ry) {
+        const r = (Math.floor(t / 6) + i * 8) % 16, f = r / 15, w = Math.round(rx * f), h = Math.max(1, Math.round(ry * f));
+        const color = r < 6 ? VOLT.core : r < 11 ? VOLT.mid : VOLT.deep;
+        for (let a = 0; a < 16; a++) { const px = Math.round(Math.sin(a / 16 * Math.PI * 2) * w), py = Math.round(Math.cos(a / 16 * Math.PI * 2) * h); paint(g, color, x + px, y + py, 1, 1); }
+      },
+      glint(g, t, i, x, y, period = 80) {
+        const p = (Math.floor(t / 3) + i * 29) % period;
+        if (p < 4) { paint(g, VOLT.core, x, y, 1, 1); if (p > 0 && p < 3) { paint(g, VOLT.core, x - 1, y, 3, 1); paint(g, VOLT.core, x, y - 1, 1, 3); } }
+      },
+      bats(g, t, i, y, period = 1200) {
+        const run = (Math.floor(t / 2) + i * 307) % period, x = 340 - run * 2;
+        if (x < -10 || x > 340) return;
+        const by = y + SINE16[(Math.floor(run / 3)) % 16] * 2, wing = Math.floor(t / 4) % 2;
+        paint(g, ART.shadow, x, by, 3, 1); paint(g, ART.shadow, x - 2, by - (wing ? 2 : 0), 2, 1); paint(g, ART.shadow, x + 3, by - (wing ? 2 : 0), 2, 1);
+      },
+      // Vaguelettes : tirets de lumière qui glissent à vitesses différentes selon la rangée.
+      waves(g, t, i, y0, y1, color = 'waterLight') {
+        for (let row = y0, n = 0; row < y1; row += 5, n++) {
+          const len = 6 + (n * 5) % 9, x = ((n * 67 + Math.floor(t * (1 + n % 3) / 18)) % 360) - 20;
+          paint(g, ART[color], x, row, len, 1);
+        }
+      },
+      dust(g, t, i, x, y) {
+        for (let k = 0; k < 5; k++) { const life = (Math.floor(t / 4) + k * 6 + i * 9) % 30; paint(g, ART.pathLight, x - life + k, y - Math.floor(life / 5), 1 + (life < 10 ? 1 : 0), 1); }
+      }
+    };
+
+    // Éléments par décor. (x, y) dans le repère 320×200 du décor.
+    const SCENE_LIFE = {
+      cult_camp: [['fire', 197, 156, .9], ['smoke', 197, 150, 1], ['pennant', 183, 106, 9, 'roofLight'], ['pennant', 256, 84, 9, 'cloak'], ['pennant', 131, 127, 7, 'accent'], ['pennant', 298, 122, 7, 'roofLight'],
+        ['stars', [[40, 18], [74, 27], [131, 13], [193, 24], [245, 16], [306, 29]]], ['birds', 36, 1000, 1], ['fog', 160, 12, 2]],
+      hatchery: [['torch', 178, 106], ['drips', 150, 70, 150, 160], ['drips', 232, 60, 146, 210], ['ripples', 226, 146, 12], ['fog', 164, 14, 1], ['bats', 40, 1300]],
+      caravan: [['clouds', 34, 3, 2], ['dust', 150, 176], ['dust', 206, 174], ['birds', 48, 1100, 1], ['birds', 70, 1500, -1]],
+      carnath: [['glow', 204, 66, 26, 22], ['motes', 20, 60, 280, 110, 10], ['fog', 168, 14, 1]],
+      marsh: [['fog', 132, 22, 1], ['fog', 166, 18, 2], ['fireflies', 60, 150, 40, 20, 3], ['fireflies', 240, 140, 40, 20, 3], ['ripples', 120, 176, 10], ['ripples', 210, 186, 12], ['birds', 50, 1400, 1]],
+      portal: [['torch', 152, 114], ['torch', 279, 114], ['pulse', 232, 147, 40, 12], ['pulse', 232, 147, 40, 12], ['motes', 120, 60, 160, 100, 8]],
+      lodge: [['snow', 0, 46, 1], ['glow', 170, 118, 12, 10], ['glow', 229, 118, 12, 10], ['glow', 265, 118, 12, 10], ['smoke', 268, 52, .6], ['stars', [[40, 18], [74, 27], [131, 13], [193, 24], [245, 16], [306, 29]]]],
+      skyreach: [['clouds', 150, 4, 3, 'waterLight'], ['pennant', 226, 24, 8, 'cloak'], ['glint', 214, 70, 90], ['glint', 262, 66, 130], ['birds', 40, 1500, 1]],
+      ice_cave: [['snow', 0, 24, .5], ['glint', 96, 138, 70], ['glint', 232, 150, 110], ['glint', 288, 124, 90], ['fog', 168, 14, 1, 'blueLight']],
+      council: [['motes', 60, 60, 200, 90, 14], ['glow', 132, 48, 16, 34, 'blueLight'], ['glow', 182, 48, 16, 34, 'blueLight'], ['glow', 232, 48, 16, 34, 'blueLight']],
+      tomb: [['fog', 150, 22, 1], ['motes', 60, 80, 200, 90, 10], ['birds', 40, 1700, -1], ['clouds', 30, 2, 1]],
+      ice_sea: [['waves', 100, 190], ['snow', 0, 30, .6], ['glint', 240, 80, 60], ['glint', 262, 96, 90], ['birds', 40, 1200, 1], ['clouds', 26, 3, 1]],
+      dragon_audience: [['motes', 70, 60, 180, 110, 16], ['glow', 105, 46, 18, 40, 'blueLight'], ['glow', 150, 46, 18, 40, 'blueLight'], ['glow', 200, 46, 18, 40, 'blueLight'], ['glint', 150, 120, 100], ['glint', 214, 126, 140]],
+      forest: [['leaves', 14], ['fireflies', 70, 150, 40, 20, 4], ['fireflies', 250, 160, 30, 20, 3], ['motes', 40, 40, 240, 120, 12], ['fog', 150, 24, 1]],
+      street: [['smoke', 31, 92, 1], ['smoke', 284, 92, 1], ['smoke', 66, 110, 1]],
+      tunnel: [['drips', 100, 40, 150, 130], ['motes', 60, 60, 200, 100, 8]],
+      temple: [['smoke', 283, 140, 1]],
+      mill: [['ripples', 240, 172, 12], ['ripples', 286, 184, 14]],
+      keep: [['stars', [[40, 18], [74, 27], [131, 13], [193, 24], [245, 16], [306, 29]]], ['clouds', 40, 3, 2, 'haze'], ['pennant', 190, 76, 8, 'cloak'], ['pennant', 274, 76, 8, 'cloak'], ['birds', 46, 1300, 1]],
+      wall: [['stars', [[40, 18], [74, 27], [131, 13], [193, 24], [245, 16], [306, 29]]], ['clouds', 40, 3, 2, 'haze'], ['pennant', 190, 76, 8, 'cloak'], ['pennant', 274, 76, 8, 'cloak']]
+    };
+
+    function drawSceneLife(g, key, t) {
+      (SCENE_LIFE[key] ?? []).forEach(([type, ...args], i) => LIFE[type]?.(g, t, i, ...args));
+    }
+
+    // Compagnie à l'écran : les sprites des protagonistes présents, en petit au premier plan, avec leur souffle et leur report de poids.
+    // Un blessé se tient en garde, plus bas; un compagnon à terre est couché. Même code et mêmes modèles que les duels.
+    const PARTY_SCALE = .36;
+    // En petit, la compagnie prend les couleurs du décor : chaque teinte de sprite devient la teinte de ART la plus proche.
+    let partyPalette = null;
+    function getPartyPalette() {
+      if (partyPalette) return partyPalette;
+      const rgb = hex => [1, 3, 5].map(i => parseInt(hex.slice(i, i + 2), 16)), artColors = Object.values(ART);
+      partyPalette = Object.fromEntries(Object.entries(SB).map(([name, hex]) => {
+        const [r, g, b] = rgb(hex); let best = artColors[0], bestDistance = Infinity;
+        artColors.forEach(candidate => { const [cr, cg, cb] = rgb(candidate), d = (r - cr) ** 2 + (g - cg) ** 2 + (b - cb) ** 2; if (d < bestDistance) { bestDistance = d; best = candidate; } });
+        return [name, best];
+      }));
+      return partyPalette;
+    }
+    function drawPartyPresence(g, t) {
+      const original = { ...SB };
+      try { Object.assign(SB, getPartyPalette()); drawPartyRow(g, t); } finally { Object.assign(SB, original); }
+    }
+    function drawPartyRow(g, t) {
+      const present = Object.entries(characters).filter(([id, c]) => SPRITE_MODELS[id] && ['active', 'injured', 'down'].includes(c.state));
+      present.forEach(([id, c], i) => {
+        const x = 20 + i * 21, y = 197;
+        paint(g, ART.shadow, x - 6, y - 1, 13, 2);
+        if (c.state === 'down') { paint(g, ART.shadow, x - 7, y - 5, 14, 5); paint(g, ART.armor, x - 6, y - 4, 10, 3); paint(g, ART.pathLight, x + 4, y - 5, 3, 3); return; }
+        drawProtagonist(g, id, x, y + (c.state === 'injured' ? 1 : 0), { t, guard: c.state === 'injured', scale: PARTY_SCALE });
       });
     }
 
@@ -11669,6 +12342,8 @@
       if (shownRoom === 'egg_chamber' && !flags.eggsStolen && !flags.eggsDestroyed) drawHatcheryEggs(ctx);
       if (key === 'portal' && flags.portalDamaged) drawPortalDamage(ctx);
       drawBookAmbience(ctx,key,phase);
+      if (key !== 'verdure') drawSceneLife(ctx, key, uiState.reducedMotion ? 0 : gameState.tick);
+      if (uiState.preferences.party && !['duel', 'cave_duel'].includes(key) && !direction && !['title_screen', 'credits'].includes(shownRoom)) drawPartyPresence(ctx, uiState.reducedMotion ? 0 : gameState.tick);
       if (key === 'verdure') drawVerdureLife(ctx, uiState.reducedMotion ? 0 : gameState.tick);
       else if (SCENE_DIRECTIONS.scenes[key]?.dragon) {
         if (direction?.kind === 'dragon') {
@@ -11720,6 +12395,7 @@
     function syncAmbianceControls() {
       document.getElementById('diceSetting').checked=uiState.preferences.diceAnimation;
       document.getElementById('effectsSetting').checked=uiState.preferences.effects;
+      document.getElementById('partySetting').checked=uiState.preferences.party;
       document.getElementById('motionSetting').value=uiState.preferences.motion;
       document.getElementById('soundSetting').checked=uiState.preferences.sound;
       const volume=document.getElementById('volumeSetting');volume.value=Math.round(uiState.preferences.volume*100);
@@ -11943,6 +12619,7 @@
       document.getElementById('diceSetting').addEventListener('change',event=>{uiState.preferences.diceAnimation=event.target.checked;applyAmbiancePreferences();});
       onClick('replayActionButton',()=>{startSceneEffect();document.getElementById('actionScene').scrollIntoView?.({block:'center',behavior:'auto'});});
       document.getElementById('effectsSetting').addEventListener('change',event=>{uiState.preferences.effects=event.target.checked;applyAmbiancePreferences();});
+      document.getElementById('partySetting').addEventListener('change',event=>{uiState.preferences.party=event.target.checked;applyAmbiancePreferences();});
       document.getElementById('motionSetting').addEventListener('change',event=>{uiState.preferences.motion=event.target.value==='reduced'?'reduced':'auto';applyAmbiancePreferences();});
       document.getElementById('soundSetting').addEventListener('change',event=>{uiState.preferences.sound=event.target.checked;storePreferences();activateSound();});
       document.getElementById('volumeSetting').addEventListener('input',event=>{uiState.preferences.volume=Math.max(0,Math.min(1,Number(event.target.value)/100));soundscape.setVolume(uiState.preferences.volume);storePreferences();syncAmbianceControls();});
@@ -11952,6 +12629,7 @@
       onClick('adventureButton', () => document.getElementById('context').scrollIntoView({ behavior: uiState.reducedMotion ? 'instant' : 'smooth' }));
       onClick('chronicleTab', () => openJournal('chronicle'));
       onClick('historyTab', () => openJournal('history'));
+      onClick('decisionsTab', () => openJournal('decisions'));
       onClick('undoButton', () => dispatchCommand('undo'));
       onClick('titleButton', () => { document.getElementById('saveMenu').open = false; gameState.lastReport=null; handleSpecialSelection('return_title'); refreshInterface(); });
       onClick('restartButton', () => { document.getElementById('saveMenu').open = false; handleSpecialSelection('restart_campaign'); refreshInterface(); });

@@ -9,8 +9,9 @@ contrôle du groupe, morts permanentes et restauration des checkpoints.
   campagne jouée. Citer la source et laisser les informations inconnues ouvertes.
 - Maintenir les variantes « What If » distinctes des faits attestés.
 - Travailler sur une branche dédiée, sans modifier directement `main`.
-- Les outils de test et les rapports peuvent être séparés ; le jeu reste dans
-  `index.html` et fonctionne sans installation.
+- Le jeu livré reste un `index.html` autonome qui fonctionne sans installation, mais il est
+  **assemblé depuis `src/`** (`node tools/build.cjs`). Modifier `src/`, jamais `index.html`.
+  Voir `docs/DEVELOPPEMENT.md`. Les outils de test et les rapports peuvent être séparés.
 - `paris-guide/` est une autre application. Préserver son contenu ; aucune
   modification fonctionnelle ni suppression lors des travaux DD5. Sa migration
   nécessite une validation séparée avant tout retrait de ce dépôt.

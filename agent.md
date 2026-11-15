@@ -18,7 +18,7 @@ The game must:
 
 ## 1️⃣ Technical Constraints (NON-NEGOTIABLE)
 
-- Single HTML file only.
+- Delivered as a single self-contained HTML file (`index.html`), assembled from `src/` by `node tools/build.cjs` (edit `src/`, never `index.html`).
 - No external libraries.
 - Canvas-based rendering.
 - Pixel art style.

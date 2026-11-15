@@ -134,14 +134,56 @@ au runtime. La CI lance automatiquement les quatre suites Node.
 - **Langdedrosa II** : rapports inversés (Drek'Thar plus grand, Langdedrosa plus petit) et berserkers redessinés.
 - **Atelier de sprites** (`tools/sprite-lab.cjs`) : dessine un personnage sur fond neutre en couleur, en niveaux
   de gris (étude de valeurs) et en silhouette, agrandi 4×. Usage : `node tools/sprite-lab.cjs sortie.png langdedrosa drekthar`.
-- **Langdedrosa et Drek'Thar redessinés** d'après la référence fournie par le MJ (silhouette, violet/or/bleu pour
-  Langdedrosa; demi-orc en mailles pour Drek'Thar), avec contour noir sélectif. Pas de reprise pixel pour pixel.
-  Langdedrosa : ~78 px de haut dans la scène, Drek'Thar ~66 px; au second duel, les tailles s'inversent.
+- **Sprites des sept protagonistes** portés depuis la *Character Sprite Bible* (grille 64×96, `SPRITE_MODELS`) :
+  Bjolnir, Drek'Thar, Ellyjobell, Darrin, Sislay, Kairon, Malar. Même centre de gravité et même ancrage de silhouette
+  que la bible (marteau + bouclier, diagonale de l'épée, bâton courbe, mains ouvertes, arc + rapière, cornes + bâton,
+  corps bas + rapière). Rasterisation en pixels entiers (arêtes arrondies, aucun lissage ni rotation CSS) à l'échelle
+  de la scène (×0,5 en action, ×0,7 au duel, ×0,86 au second duel).
+- **Poses explicites** au lieu des décalages d'aperçu : souffle (2 images), mouvement secondaire, action rare par
+  personnage (prise du marteau, roulement d'épaule, spore, étincelle, regard, éclat de corne, dague), garde, puis
+  `ATTACK_FRAMES` : anticipation → frappe → impact (étincelle) → récupération. Au duel, la garde de Drek'Thar répond à
+  la frappe de Langdedrosa.
+- Langdedrosa (non protagoniste) reste ma version : violet/or/bleu, queue, lance à lame en croissant.
+- Atelier : `node tools/sprite-lab.cjs sortie.png [--mode color|value|shape] bjolnir drekthar ...` (planches de sept images).
+- 102 tests Node (dont `tests/sprites.test.cjs`), parcours Chromium inchangés.
+- **Kit d'ambiance réutilisable** (`LIFE` + `SCENE_LIFE`) : une quinzaine d'éléments déterministes (feu, torche, fumée,
+  brume, neige, gouttes, ondulations, oiseaux, fanions, étoiles, nuages, lueur de fenêtre, lucioles, poussières, feuilles,
+  pulsation, éclat, chauves-souris, vaguelettes) et une table par décor. Aucun code ni image propre à une scène;
+  pour animer un décor, on ajoute une ligne dans `SCENE_LIFE`. Les décors gardent leur composition.
+- **Mouvement de repos des sprites** partagé : souffle sur 4 images, report de poids d'un pied sur l'autre toutes les
+  ~1 s, mouvement secondaire décalé par personnage.
+- **Compagnie à l'écran** (réglage « Compagnie visible à l'écran » dans Ambiance, activé par défaut) : les protagonistes
+  présents apparaissent en petit (×0,36) au premier plan de chaque scène, avec leur souffle et leur report de poids.
+  Un blessé se tient en garde, plus bas; un compagnon à terre est couché; absents et morts ne sont pas dessinés.
+  Elle prend les couleurs du décor (couleur de ART la plus proche), donc aucune couleur ajoutée. Masquée pendant les
+  duels et les scènes d'action (où le protagoniste est déjà dessiné en grand).
 - Mouvement réduit : image fixe complète, sans éclair. Aucun hasard : tout dépend du tick.
 - Aperçus : `docs/previews/pixel-*.png`.
 - Prochains décors (§9 du brief) : camp des pillards, salle des œufs, caravane, marais, Naerytar.
 - Easter egg à garder en tête : Boule et Bill, à cacher quelque part.
 - Soulèvement des hommes-lézards à Naerytar : provoqué par les aventuriers (confirmé par le MJ).
+
+## Décisions du Clan et nouvelles options
+
+- **Décisions mises en avant** : chaque choix est consigné (auteur, issue ✓/✗, nature « Et si… », « Provocation », « Repos »)
+  dans `gameState.decisions`, qui suit les checkpoints (un retour efface la décision annulée), la sauvegarde et la
+  validation d'import. Bandeau « Le Clan a choisi » (trois derniers choix) au-dessus des propositions, et onglet
+  « Décisions du Clan » du journal, rangé par chapitre, avec le décompte des choix « Et si… » (parcours alternatif).
+- **11 nouvelles options « Et si… »** à la personnalité des compagnons : faux feu de Darrin, eau offerte à un pillard blessé
+  (Bjolnir), mirage de relève, bras de fer de Drek'Thar, chauves-souris d'Ellyjobell, prière à Eldath, héron guetteur,
+  pèlerins d'Eldath à Naerytar, bêtes de somme libérées, spectacle d'étincelles. Effets chiffrés en %.
+- 111 tests Node.
+
+## Format du projet (maintenance)
+
+- Le jeu reste un `index.html` autonome, mais il est **assemblé depuis `src/`** (33 fichiers JS thématiques,
+  `styles.css`, `index.template.html`) par `tools/build.cjs`. La première construction est identique octet pour octet
+  à l'ancien fichier; `tests/build.test.cjs` échoue si `index.html` n'est pas à jour.
+- Lanceurs : `Jouer.bat` ouvre le jeu dans sa propre fenêtre (Edge ou Chrome en mode application, sinon le navigateur),
+  `Jouer.sh` ailleurs. `Construire.bat` assemble sans Node.js (PowerShell, `tools/build.ps1`). Seul `Tester.bat`
+  demande Node.js. **Non testés sur Windows depuis cet environnement** : à vérifier au premier lancement.
+  Pas d'`.exe` : il faudrait embarquer un navigateur (plus de 100 Mo dans le dépôt).
+- `package.json` (`npm run build | check | test`), CI mise à jour, guide : `docs/DEVELOPPEMENT.md`.
 
 ## À reprendre plus tard
 

@@ -1,0 +1,91 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Clan d’Estain — Chronique interactive</title>
+  <style>
+/*@@STYLES@@*/
+  </style>
+</head>
+<body>
+  <main class="game-shell">
+    <header class="masthead">
+      <div class="brand">
+        <svg class="crest" viewBox="0 0 40 48" fill="none" aria-hidden="true"><path d="M20 2 36 8v19L20 45 4 27V8Z" stroke="currentColor"/><path d="m20 8 10 4v13L20 37 10 25V12Z" stroke="currentColor" opacity=".4"/><path d="m20 13-7 13h14l-7-13Zm0 0v18m-7-5 7-4 7 4" stroke="currentColor"/></svg>
+        <div><div class="brand-name">Le Clan d’Estain</div><div class="eyebrow">Chronique interactive</div></div>
+      </div>
+      <nav class="top-nav" aria-label="Navigation principale">
+        <button class="nav-button current" id="adventureButton">L’aventure</button>
+        <button class="nav-button" id="journalButton" aria-label="Ouvrir le journal"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5c-3-2-6-2-9-1v15c3-1 6-1 9 1 3-2 6-2 9-1V4c-3-1-6-1-9 1Zm0 0v15"/></svg><span>Le journal</span></button>
+        <button class="nav-button" id="companyButton" aria-label="Voir la compagnie"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="9" cy="7" r="3"/><path d="M3 20v-4a6 6 0 0 1 12 0v4m1-16a3 3 0 0 1 0 6m2 4a5 5 0 0 1 3 5"/></svg><span>La compagnie</span></button>
+        <button class="nav-button" id="ambianceButton" aria-label="Régler l’ambiance et les mouvements"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 8v8h4l5 4V4L8 8H4Zm13 1a5 5 0 0 1 0 6m3-9a9 9 0 0 1 0 12"/></svg><span>Ambiance</span></button>
+        <details class="save-menu" id="saveMenu"><summary>Sauvegarde <span aria-hidden="true">⌄</span></summary><div class="save-options">
+          <button data-command="save">Enregistrer ma progression</button><button data-command="load">Reprendre la sauvegarde</button>
+          <button data-command="export">Exporter la sauvegarde</button><button id="openImportButton">Importer une sauvegarde</button>
+          <button data-command="clear">Effacer la sauvegarde</button><button id="titleButton">Revenir à l’écran titre</button><button id="restartButton">Recommencer depuis le début</button>
+        </div></details>
+      </nav>
+    </header>
+    <section class="stage" aria-label="Illustration de la scène">
+      <canvas id="gameCanvas" width="320" height="200" aria-label="Verdure en flammes, sous la silhouette d’un dragon bleu"></canvas>
+      <div class="hero-copy"><div class="eyebrow" id="heroEyebrow">Tyranny of Dragons</div><h1 id="heroTitle">Le Clan<br>d’Estain</h1><p class="hero-tagline" id="heroTagline" hidden></p></div>
+      <div class="scene-coordinate" id="sceneCoordinate">Verdure · La nuit du raid</div><div class="stage-caption">Tyranny of Dragons · D&amp;D 5e</div>
+    </section>
+    <section class="company-rail" aria-label="Membres présents dans la compagnie"><div class="company-label eyebrow">La compagnie<span id="partyCount"></span></div><div id="partyList" class="party-list"></div></section>
+    <section class="journal-sheet" id="context" aria-label="Récit et décisions">
+      <div class="chapter-rule eyebrow"><span class="page-number" id="pageNumber">I</span><span id="chapterLabel">Le commencement d’une chronique</span></div>
+      <div class="story-grid">
+        <article><h2 id="sceneTitle">Sur la route de Verdure</h2><section id="checkPanel" class="check-panel" aria-label="Résultat de l’épreuve" hidden><div class="check-heading"><strong id="checkActor"></strong><span id="checkKind"></span></div><div class="check-main"><div id="d20Die" class="d20-die" aria-hidden="true"><svg viewBox="0 0 80 86"><path d="M40 3 74 24v38L40 83 6 62V24Z M6 24l34-7 34 7-17 35-17 24-17-24L6 24Zm17 35h34L40 17 23 59Z"/></svg><span id="d20Value">20</span></div><div id="checkSummary" class="check-summary" role="status"></div></div><p id="checkBreakdown" class="check-breakdown"></p></section><figure id="actionScene" class="action-scene" hidden><canvas id="actionCanvas" width="320" height="200" aria-label="Illustration du résultat de votre action"></canvas><figcaption><span id="actionCaption"></span><button id="replayActionButton" type="button">Revoir l’action ↻</button></figcaption></figure><div id="sceneNarrative" class="prose"></div><aside id="sceneMemories" class="scene-memories" aria-label="Conséquences de vos décisions" hidden></aside><section id="observationPanel" class="observation-panel" aria-label="Observer les lieux" hidden></section><div id="reportEffects" class="report-effects" hidden></div><ul id="reportChanges" class="report-changes" hidden></ul><div id="feedback" class="feedback" role="status" hidden></div></article>
+        <section aria-labelledby="decisionTitle"><h3 id="decisionTitle" class="decision-title eyebrow">Votre prochaine aventure</h3><div id="decisionStrip" class="decision-strip" hidden></div><div id="choiceList" class="choice-list"></div><p class="choice-hint">Cliquez sur un choix ou utilisez les touches <kbd>1</kbd>, <kbd>2</kbd>, <kbd>3</kbd>.</p></section>
+      </div>
+      <div class="sheet-footer"><div id="statusStrip" aria-live="polite"></div><button id="undoButton" class="quiet-button">↶ Revenir sur ma décision</button></div>
+      <details class="command-panel" id="commandPanel"><summary>Commandes clavier et outils</summary><form id="promptLine"><input id="commandInput" type="text" aria-label="Commande de jeu" autocomplete="off" placeholder="Un numéro, une direction ou une commande…" /><button class="command-submit" type="submit">Envoyer</button></form></details>
+    </section>
+    <footer class="game-footer"><span id="campaignNote">Chronique du Clan d’Estain</span></footer>
+  </main>
+  <dialog id="journalDialog" aria-labelledby="journalTitle"><div class="dialog-header"><h2 id="journalTitle">Les chroniques du Clan</h2><button class="close-dialog" data-close="journalDialog" aria-label="Fermer le journal">×</button></div><div class="journal-tabs"><button id="chronicleTab" aria-pressed="true">La campagne · 18 chapitres</button><button id="decisionsTab" aria-pressed="false">Décisions du Clan</button><button id="historyTab" aria-pressed="false">Votre aventure</button></div><div id="chroniclePanel" class="chronicle-layout"><nav id="chapterList" class="chapter-list" aria-label="Chapitres de la chronique"></nav><article id="chapterReader" class="chapter-reader"></article></div><div id="decisionsPanel" class="decisions-panel" hidden></div><div id="eventLog" hidden></div></dialog>
+  <dialog id="companyDialog" aria-labelledby="companyTitle"><div class="dialog-header"><h2 id="companyTitle">La compagnie</h2><button class="close-dialog" data-close="companyDialog" aria-label="Fermer la compagnie">×</button></div><div class="company-layout"><nav id="companyRoster" class="company-roster" aria-label="Choisir un personnage"></nav><article id="companyDetails" class="party-detail-list"></article></div></dialog>
+  <dialog id="ambianceDialog" aria-labelledby="ambianceTitle"><div class="dialog-header"><h2 id="ambianceTitle">L’ambiance du récit</h2><button class="close-dialog" data-close="ambianceDialog" aria-label="Fermer les réglages d’ambiance">×</button></div><div class="ambiance-body"><p>Les illustrations accompagnent les gestes des compagnons. Vous pouvez garder une lecture calme ou ajouter une ambiance sonore discrète.</p><label class="ambiance-setting" for="diceSetting">Animer les jets de D20<input id="diceSetting" type="checkbox" /></label><label class="ambiance-setting" for="effectsSetting">Effets liés aux actions<input id="effectsSetting" type="checkbox" /></label><label class="ambiance-setting" for="partySetting">Compagnie visible à l’écran<input id="partySetting" type="checkbox" /></label><label class="ambiance-setting" for="motionSetting">Mouvements<select id="motionSetting"><option value="auto">Selon l’appareil</option><option value="reduced">Réduits</option></select></label><p class="ambiance-notice" id="motionNotice"></p><label class="ambiance-setting" for="soundSetting">Sons d’ambiance et d’action<input id="soundSetting" type="checkbox" /></label><label class="ambiance-setting" for="volumeSetting">Volume<input id="volumeSetting" type="range" min="0" max="100" step="5" aria-valuetext="25 %" /></label><p id="soundNotice" class="ambiance-notice" role="status">Le son est désactivé au départ. Le récit reste entièrement compréhensible sans lui.</p></div></dialog>
+  <dialog id="importDialog" aria-labelledby="importTitle"><div class="dialog-header"><h2 id="importTitle">Reprendre une autre chronique</h2><button class="close-dialog" data-close="importDialog" aria-label="Fermer l’import">×</button></div><div class="import-body"><p>Collez le contenu de votre sauvegarde exportée. Votre partie actuelle sera remplacée uniquement si cette sauvegarde est valide.</p><label for="importPayload" class="eyebrow">Votre sauvegarde</label><textarea id="importPayload" spellcheck="false"></textarea><p id="importResult" role="status"></p><button id="importButton" class="choice-card primary">Importer et reprendre l’aventure <span aria-hidden="true">→</span></button></div></dialog>
+
+  <script>
+/*@@SCRIPTS@@*/
+  </script>
+
+  <!--
+  MANUAL QA CHECKLIST
+  [ ] Le canvas précède le récit, les cartes de choix et le panneau de commandes.
+  [ ] Le texte narratif n'apparaît que dans CONTEXT.
+  [ ] Nouvelle partie au clic ou avec 1; Reprendre désactivé sans sauvegarde.
+  [ ] La chronique permet de lire les 18 chapitres, sans connexion.
+  [ ] Après un choix, le récit du résultat reste affiché avant de poursuivre.
+  [ ] Recharger pendant ce résultat conserve le texte sans rejouer l'action.
+  [ ] Une approche risquée échouée ne valide pas le sauvetage; une issue avec coût l'explique.
+  [ ] Chaque scène et résultat propose deux choix utilisables, même sans compagnon apte.
+  [ ] Le retour du moulin restaure une décision praticable et efface ses checkpoints descendants.
+  [ ] Le rituel s'arrête après trois actions; sans acteur apte, sa conclusion reste disponible.
+  [ ] L'aperçu annonce acteur, niveau, bonus, DD/CA et coût; le résultat explique le calcul.
+  [ ] Un D20 par épreuve; passer, désactiver, revoir et recharger ne relancent jamais le dé.
+  [ ] Le déplacement par commande attend la lecture du résultat et ne contourne pas le D20.
+  [ ] Les scores PDF restent distincts des projections; la maîtrise et l'aura suivent le niveau.
+  [ ] Sans checkpoint, un échec laisse accéder à l'accueil.
+  [ ] Les sept fiches restent accessibles sur mobile, sans défilement horizontal.
+  [ ] Revoir l'action ne change ni états, ni objectifs, ni checkpoints, ni sauvegarde.
+  [ ] Brouillard, combat et repli correspondent au résultat réellement obtenu.
+  [ ] Le son attend une activation volontaire; muet coupe aussi les effets en cours.
+  [ ] Les réglages d'ambiance persistent sans modifier la progression.
+  [ ] Les choix et les touches 1–9 correspondent, y compris « choose 1 ».
+  [ ] Le clavier n'active aucun choix derrière une fenêtre ou pendant une saisie.
+  [ ] Sur mobile 320–390 px, aucun débordement horizontal; cartes faciles à toucher.
+  [ ] La préférence de réduction du mouvement arrête les animations.
+  [ ] Commandes reconnues: help, look, inventory, choose 1, undo, go nord, n/s/e/w.
+  [ ] Historique clavier: ↑/↓ fonctionne; Tab propose/complète; Échap vide la saisie.
+  [ ] Les options de groupe respectent l'état des personnages.
+  [ ] triggerGameOver(...) restaure le dernier checkpoint (go dragon + option Lennithon).
+  [ ] Aucun Math.random dans la boucle d'animation.
+  [ ] Les secousses restent dans l'illustration; texte et choix ne bougent pas.
+  [ ] imageSmoothingEnabled reste désactivé.
+  -->
+</body>
+</html>

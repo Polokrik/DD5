@@ -1,0 +1,11 @@
+{
+  "name": "clan-destain",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Le Clan d’Estain — chronique interactive (jeu autonome dans index.html, assemblé depuis src/).",
+  "scripts": {
+    "build": "node tools/build.cjs",
+    "check": "node tools/build.cjs --check",
+    "test": "node tools/tests.cjs"
+  }
+}

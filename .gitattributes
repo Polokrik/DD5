@@ -1,0 +1,8 @@
+# Les sources et le jeu assemblé gardent des fins de ligne LF sur toutes les machines (sinon l'assemblage diffère).
+* text=auto eol=lf
+*.bat text eol=crlf
+*.ps1 text eol=crlf
+*.pdf binary
+*.png binary
+*.docx binary
+*.xlsx binary

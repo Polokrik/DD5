@@ -1,7 +1,18 @@
 # Clan d’Estain — Chronique interactive
 
-Jeu narratif autonome en français, dans `index.html`. Aucun paquet à installer
-pour jouer: HTML, CSS et JavaScript intégrés, canvas 320×200 et rendu déterministe.
+Jeu narratif autonome en français. Rien à installer pour jouer : HTML, CSS et JavaScript intégrés,
+canvas 320×200 et rendu déterministe.
+
+## Jouer
+
+- **Windows** : double-cliquer sur `Jouer.bat`.
+- **macOS / Linux** : `Jouer.sh`, ou ouvrir `index.html` dans le navigateur.
+
+## Modifier le jeu
+
+Le jeu est assemblé depuis `src/` en un seul `index.html`. Après une modification :
+`Construire.bat` (ou `node tools/build.cjs`), puis `Tester.bat` (ou `node tools/tests.cjs`).
+Voir [docs/DEVELOPPEMENT.md](docs/DEVELOPPEMENT.md) pour savoir où se trouve chaque chose.
 
 Le suivi du chantier, les limites connues et les prochaines étapes sont dans
 [progress.md](progress.md).
