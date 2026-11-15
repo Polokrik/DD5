@@ -1,6 +1,7 @@
     // ───────────────────────── Kit d'ambiance réutilisable ─────────────────────────
     // Chaque élément est une petite fonction déterministe (le temps vient du tick, jamais du hasard) réutilisée par plusieurs décors.
     // SCENE_LIFE dit, décor par décor, quels éléments placer et où : aucun code ni image propres à une scène.
+    const lifeColor = color => ART[color] ?? color;
     const SINE16 = [0, 1, 2, 3, 3, 3, 2, 1, 0, -1, -2, -3, -3, -3, -2, -1];
     const LIFE = {
       fire(g, t, i, x, y, scale = 1) { drawFlame(g, x, y, t, i, scale); drawEmbers(g, x, y, t, i); },
@@ -10,7 +11,7 @@
       fog(g, t, i, y, h, speed = 1, color = 'fog') {
         for (let band = 0; band < h; band += 6) for (let seg = 0; seg < 4; seg++) {
           const len = 40 + ((seg * 17 + band * 7) % 40), x = ((seg * 101 + band * 31 + Math.floor(t * speed / 9)) % (360 + len)) - len;
-          ditherRect(g, ART[color], x, y + band, len, 4);
+          ditherRect(g, lifeColor(color), x, y + band, len, 4);
         }
       },
       snow(g, t, i, count = 40, speed = 1) {
@@ -37,18 +38,18 @@
         pixelLine(g, x - 3, by + (wing ? 0 : 2), x, by + 1, ART.shadow); pixelLine(g, x, by + 1, x + 3, by + (wing ? 0 : 2), ART.shadow);
       },
       pennant(g, t, i, x, y, length = 8, color = 'cloak') {
-        for (let k = 0; k < length; k++) paint(g, ART[color], x + k, y + [0, 0, 1, 1, 0, -1, -1, 0][(k + Math.floor(t / 5) + i * 3) % 8], 1, Math.max(1, 3 - Math.floor(k / 3)));
+        for (let k = 0; k < length; k++) paint(g, lifeColor(color), x + k, y + [0, 0, 1, 1, 0, -1, -1, 0][(k + Math.floor(t / 5) + i * 3) % 8], 1, Math.max(1, 3 - Math.floor(k / 3)));
       },
       // Étoiles qui scintillent : on repeint le ciel sur quelques-unes, une à la fois.
       stars(g, t, i, list) { list.forEach(([x, y], k) => { if ((Math.floor(t / 24) + k * 5) % 7 === 0) paint(g, ART.night, x, y, 1, 1); }); },
       clouds(g, t, i, y, count = 3, speed = 1, color = 'haze') {
         for (let k = 0; k < count; k++) {
           const x = ((k * 131 + Math.floor(t * speed / 14)) % 420) - 50, cy = y + (k % 2) * 7 - k * 3;
-          pixelDisc(g, x, cy, 7, ART[color]); pixelDisc(g, x + 9, cy + 1, 9, ART[color]); pixelDisc(g, x + 20, cy + 2, 6, ART[color]); paint(g, ART[color], x - 5, cy + 2, 30, 5);
+          pixelDisc(g, x, cy, 7, lifeColor(color)); pixelDisc(g, x + 9, cy + 1, 9, lifeColor(color)); pixelDisc(g, x + 20, cy + 2, 6, lifeColor(color)); paint(g, lifeColor(color), x - 5, cy + 2, 30, 5);
         }
       },
       // Lueur de fenêtre ou de braise : la trame change de teinte par à-coups, sans changer la forme.
-      glow(g, t, i, x, y, w, h, color = 'window') { ditherRect(g, (Math.floor(t / 8) + i * 5) % 9 < 2 ? ART.hot : ART[color], x, y, w, h); },
+      glow(g, t, i, x, y, w, h, color = 'window') { ditherRect(g, (Math.floor(t / 8) + i * 5) % 9 < 2 ? ART.hot : lifeColor(color), x, y, w, h); },
       fireflies(g, t, i, cx, cy, rx, ry, count = 3) {
         for (let k = 0; k < count; k++) {
           const a = SINE16[(Math.floor(t / 6) + k * 5 + i * 3) % 16], b = SINE16[(Math.floor(t / 7) + k * 7 + 4) % 16];
@@ -83,7 +84,14 @@
       waves(g, t, i, y0, y1, color = 'waterLight') {
         for (let row = y0, n = 0; row < y1; row += 5, n++) {
           const len = 6 + (n * 5) % 9, x = ((n * 67 + Math.floor(t * (1 + n % 3) / 18)) % 360) - 20;
-          paint(g, ART[color], x, row, len, 1);
+          paint(g, lifeColor(color), x, row, len, 1);
+        }
+      },
+      // Petites silhouettes lointaines qui vont et viennent entre deux points : la vie d'un camp ou d'une cour, sans détail.
+      walkers(g, t, i, x0, x1, y, count = 2) {
+        for (let k = 0; k < count; k++) {
+          const span = Math.max(1, x1 - x0), run = (Math.floor(t / (9 + k * 4)) + k * 37 + i * 11) % (span * 2), x = x0 + (run < span ? run : span * 2 - run);
+          paint(g, ART.shadow, x, y - 4 + (k % 2), 2, 4); paint(g, ART.pathLight, x, y - 5 + (k % 2), 2, 1);
         }
       },
       dust(g, t, i, x, y) {
@@ -93,10 +101,10 @@
 
     // Éléments par décor. (x, y) dans le repère 320×200 du décor.
     const SCENE_LIFE = {
-      cult_camp: [['fire', 197, 156, .9], ['smoke', 197, 150, 1], ['pennant', 183, 106, 9, 'roofLight'], ['pennant', 256, 84, 9, 'cloak'], ['pennant', 131, 127, 7, 'accent'], ['pennant', 298, 122, 7, 'roofLight'],
+      cult_camp: [['fire', 197, 156, .9], ['smoke', 197, 150, 1], ['pennant', 183, 106, 9, '#78418a'], ['pennant', 256, 84, 9, '#78418a'], ['pennant', 131, 127, 7, '#452756'], ['pennant', 298, 122, 7, '#78418a'], ['walkers', 150, 176, 149, 2], ['walkers', 226, 286, 141, 2],
         ['stars', [[40, 18], [74, 27], [131, 13], [193, 24], [245, 16], [306, 29]]], ['birds', 36, 1000, 1], ['fog', 160, 12, 2]],
       hatchery: [['torch', 178, 106], ['drips', 150, 70, 150, 160], ['drips', 232, 60, 146, 210], ['ripples', 226, 146, 12], ['fog', 164, 14, 1], ['bats', 40, 1300]],
-      caravan: [['clouds', 34, 3, 2], ['dust', 150, 176], ['dust', 206, 174], ['birds', 48, 1100, 1], ['birds', 70, 1500, -1]],
+      caravan: [['clouds', 34, 3, 2], ['walkers', 232, 262, 136, 1], ['dust', 150, 176], ['dust', 206, 174], ['birds', 48, 1100, 1], ['birds', 70, 1500, -1]],
       carnath: [['glow', 204, 66, 26, 22], ['motes', 20, 60, 280, 110, 10], ['fog', 168, 14, 1]],
       marsh: [['fog', 132, 22, 1], ['fog', 166, 18, 2], ['fireflies', 60, 150, 40, 20, 3], ['fireflies', 240, 140, 40, 20, 3], ['ripples', 120, 176, 10], ['ripples', 210, 186, 12], ['birds', 50, 1400, 1]],
       portal: [['torch', 152, 114], ['torch', 279, 114], ['pulse', 232, 147, 40, 12], ['pulse', 232, 147, 40, 12], ['motes', 120, 60, 160, 100, 8]],

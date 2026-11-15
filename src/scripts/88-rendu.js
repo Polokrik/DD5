@@ -28,7 +28,8 @@
       const lightning = key === 'verdure' && !uiState.reducedMotion ? lightningLevel(gameState.tick) : 0;
       ctx.drawImage(lightning ? getLitScene(key, lightning) : getSceneArt(key),0,0);
       const shownRoom = gameState.lastReport?.roomId ?? gameState.roomId;
-      if (shownRoom === 'egg_chamber' && !flags.eggsStolen && !flags.eggsDestroyed) drawHatcheryEggs(ctx);
+      if (shownRoom === 'egg_chamber' && !flags.eggsStolen && !flags.eggsDestroyed) drawHatcheryEggs(ctx, uiState.reducedMotion ? 0 : gameState.tick);
+      if (key === 'caravan' && flags.dragonetsHatched && !uiState.reducedMotion) drawWyrmlingPeek(ctx, gameState.tick);
       if (key === 'portal' && flags.portalDamaged) drawPortalDamage(ctx);
       drawBookAmbience(ctx,key,phase);
       if (key !== 'verdure') drawSceneLife(ctx, key, uiState.reducedMotion ? 0 : gameState.tick);

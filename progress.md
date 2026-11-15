@@ -185,6 +185,21 @@ au runtime. La CI lance automatiquement les quatre suites Node.
   Pas d'`.exe` : il faudrait embarquer un navigateur (plus de 100 Mo dans le dépôt).
 - `package.json` (`npm run build | check | test`), CI mise à jour, guide : `docs/DEVELOPPEMENT.md`.
 
+## Sauvetage et suite du pixel art
+
+- **Mission de sauvetage** (`src/scripts/76-sauvetage.js`) : tant qu'un compagnon est capturé, chaque scène propose
+  « Partir à la rescousse de … ». Une seule salle réutilisée (`rescue_mission`, décor et chapitre de la scène quittée),
+  trois approches assignées au meilleur compagnon disponible (discrétion DD 13, force DD 14, parlementer DD 15 sans
+  blessure), échec coûteux et approche épuisée, « remettre à plus tard » puis nouvelle tentative possible.
+  Réussite : le compagnon revient blessé et le Clan retourne à la scène quittée. Règle de jeu, pas un épisode attesté.
+- **Pixel art** : bannières violettes du Culte et silhouettes qui vont et viennent au camp (élément `walkers` du kit),
+  œufs noirs aux reflets verts avec un très rare frémissement, couleurs hexadécimales acceptées par le kit.
+- **Clin d'œil caché** : une fois les œufs éclos (Boule et Bill), deux petites têtes noires dépassent parfois du
+  chariot sur la route (`drawWyrmlingPeek`). Non annoncé dans l'interface.
+- 118 tests Node.
+- Reste du brief à traiter : soulèvement des hommes-lézards à Naerytar, rencontre Talis/Ellyjobell au pavillon,
+  Rezmir et Glazael à Cumulus.
+
 ## À reprendre plus tard
 
 - Découper les épisodes encore condensés en situations et décisions distinctes,

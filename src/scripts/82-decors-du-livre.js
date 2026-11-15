@@ -250,11 +250,28 @@
 
     // Couche optionnelle: appeler après le décor hatchery, seulement si les œufs
     // sont encore présents dans l'état courant. Jamais dans getSceneArt/cache.
-    function drawHatcheryEggs(g) {
-      [[234,149],[251,151]].forEach(([x,y])=>{
+    // Œufs de dragon noir : immobiles presque tout le temps. De loin en loin, l'un d'eux frémit d'un pixel, puis plus rien.
+    function drawHatcheryEggs(g, t = 0) {
+      [[234,149],[251,151]].forEach(([bx,y],i)=>{
+        const cycle = (Math.floor(t / 6) + i * 53) % 110, x = bx + (cycle === 3 || cycle === 5 ? 1 : cycle === 4 ? -1 : 0);
+        ditherRect(g, SB.acid, bx - 9, y + 6, 18, 4);
         pixelPolygon(g,[[x-5,y+8],[x-7,y+3],[x-6,y-4],[x-2,y-11],[x+2,y-12],[x+6,y-5],[x+7,y+3],[x+4,y+8]],ART.shadow);
         pixelPolygon(g,[[x-4,y+5],[x-5,y],[x-3,y-7],[x,y-9],[x+1,y-2],[x-1,y+4]],ART.stoneDark);
         paint(g,ART.blueDark,x-2,y-6,2,3);
+        paint(g,SB.acid,x+3,y-3,1,2);
+        if (cycle >= 3 && cycle <= 8) { paint(g,SB.acid,x-1,y-10,1,1); paint(g,SB.acid,x,y-8,1,2); }
+      });
+    }
+
+    // Clin d'œil caché : une fois les œufs éclos, deux petits dragons noirs passent parfois la tête hors du chariot.
+    function drawWyrmlingPeek(g, t) {
+      const cycle = Math.floor(t / 6) % 150;
+      [[152, 160, 6, 0], [158, 157, 12, 1]].forEach(([x, y, start, slim]) => {
+        const p = cycle - start; if (p < 0 || p > 16) return;
+        const rise = p < 3 ? p : p > 13 ? 16 - p : 3, tilt = slim && p > 6 && p < 11 ? 1 : 0;
+        paint(g, ART.shadow, x + tilt, y - rise, slim ? 4 : 5, 3); paint(g, ART.shadow, x + 1 + tilt, y - rise + 3, slim ? 2 : 3, rise);
+        paint(g, ART.shadow, x + tilt, y - rise - (slim ? 2 : 1), 1, slim ? 2 : 1); paint(g, ART.shadow, x + (slim ? 3 : 4) + tilt, y - rise - (slim ? 2 : 1), 1, slim ? 2 : 1);
+        if (p % 9 !== 4) paint(g, SB.acid, x + 1 + tilt, y - rise + 1, 1, 1);
       });
     }
 
