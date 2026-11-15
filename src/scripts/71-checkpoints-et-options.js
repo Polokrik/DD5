@@ -110,7 +110,7 @@
         if (option.requiresTrust && !Object.entries(option.requiresTrust).every(([faction, threshold]) => (variables.factionTrust?.[faction] ?? 0) >= threshold)) return false;
         return true;
       });
-      return withSafeNavigationOptions(roomId, available);
+      return withSafeNavigationOptions(roomId, [...available, ...rescueEntryOptions(roomId)]);
     }
 
     function addCharacterToParty(characterId) {
@@ -215,6 +215,7 @@
         gameState.rollHistory = restoredGameState.rollHistory ?? [];
         gameState.observations = restoredGameState.observations ?? [];
         gameState.decisions = restoredGameState.decisions ?? [];
+        gameState.rescue = restoredGameState.rescue ?? null;
         gameState.resolvedOptions = restoredGameState.resolvedOptions ?? [];
         gameState.lastReport = restoredGameState.lastReport ?? null;
         uiState.effect = null;
@@ -298,6 +299,7 @@
       gameState.rollHistory = restoredGameState.rollHistory || [];
       gameState.observations = restoredGameState.observations || [];
       gameState.decisions = restoredGameState.decisions || [];
+      gameState.rescue = restoredGameState.rescue || null;
       gameState.resolvedOptions = restoredGameState.resolvedOptions || [];
       gameState.lastReport = null;
       uiState.effect = null;

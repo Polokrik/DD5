@@ -13,6 +13,7 @@
       rollHistory: [],
       observations: [],
       decisions: [],
+      rescue: null,
       debugMode: URL_PARAMS.get('debug') === '1'
     };
 
@@ -99,6 +100,8 @@
         if (!record(state) || !Object.hasOwn(rooms, state.roomId)) return false;
         if (!strings(state.inventory) || !strings(state.commandHistory) || !strings(state.timelineApplied)) return false;
         if (state.resolvedOptions !== undefined && !strings(state.resolvedOptions)) return false;
+        if (state.rescue != null && !(record(state.rescue) && Object.hasOwn(INITIAL_CHARACTERS, state.rescue.id) && Object.hasOwn(rooms, state.rescue.from) && state.rescue.from !== 'rescue_mission')) return false;
+        if (state.roomId === 'rescue_mission' && state.rescue == null) return false;
         if (state.decisions !== undefined && (!Array.isArray(state.decisions) || state.decisions.length > 300 || !state.decisions.every(entry => record(entry)
           && ['room', 'id', 'title', 'actor', 'kind'].every(key => typeof entry[key] === 'string') && Number.isInteger(entry.chapter) && (entry.won === null || typeof entry.won === 'boolean')))) return false;
         if (state.observations !== undefined && (!strings(state.observations) || state.observations.length > 300
@@ -174,6 +177,7 @@
       gameState.rollHistory = [];
       gameState.observations = [];
       gameState.decisions = [];
+      gameState.rescue = null;
     }
 
     function exportSaveToClipboard() {

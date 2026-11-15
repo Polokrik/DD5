@@ -104,6 +104,7 @@
       const room = getCurrentRoom();
       if (!room) return;
       updateAdventureLevel();
+      if (room.id === 'rescue_mission') prepareRescueRoom();
       const actId = Object.keys(DATA.actRooms).find(id => DATA.actRooms[id].includes(room.id));
       if (actId) acts.current = actId;
       if (actId === 'ACT_V' && !flags.finalBattleInitialized) computeFinalBattleBaseline();
