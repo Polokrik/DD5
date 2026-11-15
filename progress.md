@@ -179,8 +179,10 @@ au runtime. La CI lance automatiquement les quatre suites Node.
 - Le jeu reste un `index.html` autonome, mais il est **assemblé depuis `src/`** (33 fichiers JS thématiques,
   `styles.css`, `index.template.html`) par `tools/build.cjs`. La première construction est identique octet pour octet
   à l'ancien fichier; `tests/build.test.cjs` échoue si `index.html` n'est pas à jour.
-- Lanceurs : `Jouer.bat` (Windows), `Jouer.sh`; `Construire.bat` et `Tester.bat` demandent Node.js. Pas d'`.exe` :
-  il ne simplifierait rien (il faudrait empaqueter un navigateur) et `Jouer.bat` suffit.
+- Lanceurs : `Jouer.bat` ouvre le jeu dans sa propre fenêtre (Edge ou Chrome en mode application, sinon le navigateur),
+  `Jouer.sh` ailleurs. `Construire.bat` assemble sans Node.js (PowerShell, `tools/build.ps1`). Seul `Tester.bat`
+  demande Node.js. **Non testés sur Windows depuis cet environnement** : à vérifier au premier lancement.
+  Pas d'`.exe` : il faudrait embarquer un navigateur (plus de 100 Mo dans le dépôt).
 - `package.json` (`npm run build | check | test`), CI mise à jour, guide : `docs/DEVELOPPEMENT.md`.
 
 ## À reprendre plus tard

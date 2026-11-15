@@ -1,11 +1,6 @@
 @echo off
 rem A lancer apres avoir modifie un fichier de src\ : assemble index.html.
+rem Rien a installer : utilise PowerShell, fourni avec Windows.
 cd /d "%~dp0"
-where node >nul 2>nul
-if errorlevel 1 (
-  echo Node.js est requis pour assembler le jeu : https://nodejs.org
-  pause
-  exit /b 1
-)
-node tools\build.cjs
+powershell -NoProfile -ExecutionPolicy Bypass -File "tools\build.ps1"
 pause

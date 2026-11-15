@@ -3,11 +3,13 @@
 Le jeu livré est **un seul fichier autonome**, `index.html`, qui s'ouvre sans installation.
 Il est **assemblé** à partir de `src/` : on modifie les sources, puis on régénère le fichier.
 
-```sh
-node tools/build.cjs          # écrit index.html  (Windows : Construire.bat)
-node tools/build.cjs --check  # vérifie qu'il est à jour
-node tools/tests.cjs          # lance les tests    (Windows : Tester.bat)
-```
+| Besoin | Windows | Autre | Ce qu'il faut |
+| --- | --- | --- | --- |
+| Jouer | `Jouer.bat` | `Jouer.sh` | rien (fenêtre propre via Edge ou Chrome, sinon le navigateur) |
+| Assembler après une modification | `Construire.bat` | `node tools/build.cjs` | rien sous Windows (PowerShell fourni avec le système) |
+| Tester | `Tester.bat` | `node tools/tests.cjs` | Node.js (seulement pour les tests) |
+
+`tools/build.ps1` et `tools/build.cjs` font le même assemblage; les tests vérifient que `index.html` est à jour.
 
 Ne jamais modifier `index.html` à la main : la prochaine construction écraserait la modification,
 et le test `tests/build.test.cjs` échoue tant qu'il n'est pas à jour.
