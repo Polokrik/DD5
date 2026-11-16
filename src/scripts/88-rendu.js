@@ -52,7 +52,7 @@
         if(key==='cave_duel') [148,294].forEach((x,i)=>drawBerserker(ctx,x,175,uiState.reducedMotion ? 0 : gameState.tick,direction?.kind==='duel' && progress>.55,i ? -1 : 1));
       }
       if (key==='temple' && (!gameState.lastReport || gameState.lastReport.failed)) for(let i=0;i<3;i++) {
-        paint(ctx,ART.wall,243+i*4,135+i%2,2,2);paint(ctx,ART.cloak,242+i*4,137+i%2,4,9);
+        drawVillager(ctx,240+i*7,147+i%2,uiState.reducedMotion ? 0 : gameState.tick,i,.2);
       }
       if (!direction || !uiState.preferences.effects) return;
       if (!uiState.actionFrame) { uiState.actionFrame=document.createElement('canvas'); uiState.actionFrame.width=320;uiState.actionFrame.height=200; }

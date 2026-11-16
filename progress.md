@@ -200,6 +200,16 @@ au runtime. La CI lance automatiquement les quatre suites Node.
 - Reste du brief à traiter : soulèvement des hommes-lézards à Naerytar, rencontre Talis/Ellyjobell au pavillon,
   Rezmir et Glazael à Cumulus.
 
+## Vitesse d'animation et harmonisation
+
+- **Vitesse** : l'animation suivait la fréquence de l'écran (un cran par image), donc deux fois trop vite à 120 Hz.
+  Elle suit maintenant le temps réel : 60 crans par seconde de 30 à 240 Hz (`animationLoop`, `tests/animation.test.cjs`),
+  avec un rattrapage limité après un onglet en veille.
+- **Harmonisation des sprites** : volume partagé dans `spriteOps` (liseré clair en haut, sombre à droite et en bas, pris
+  dans la rampe de chaque teinte, aucune couleur ajoutée), même trait de contour pour les protagonistes et Langdedrosa,
+  villageois redessinés avec le même système (`drawVillager`) à la place des derniers bonshommes en rectangles.
+- 121 tests Node.
+
 ## À reprendre plus tard
 
 - Découper les épisodes encore condensés en situations et décisions distinctes,
