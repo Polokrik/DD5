@@ -12498,10 +12498,24 @@
       uiState.framePending=true;requestAnimationFrame(animationLoop);
     }
 
-    function animationLoop() {
+    // L'animation suit le temps réel : 60 crans par seconde quel que soit l'écran (60, 120 ou 144 Hz), au lieu d'un cran par image.
+    const TICK_MS = 1000 / 60;
+    function animationLoop(now) {
       uiState.framePending=false;
-      if (!uiState.reducedMotion) gameState.tick+=1;
-      if (gameState.tick%3===0 || uiState.reducedMotion) render();
+      if (uiState.reducedMotion) { render(); return; }
+      let steps = 1;
+      if (typeof now === 'number') {
+        const last = uiState.lastFrameTime ?? now;
+        uiState.lastFrameTime = now;
+        // Après un onglet en veille, on ne rattrape qu'un dixième de seconde.
+        uiState.frameDebt = Math.min(100, (uiState.frameDebt ?? 0) + Math.max(0, now - last));
+        steps = Math.floor(uiState.frameDebt / TICK_MS);
+        uiState.frameDebt -= steps * TICK_MS;
+      }
+      if (steps > 0) {
+        const before = gameState.tick; gameState.tick += steps;
+        if (Math.floor(before / 3) !== Math.floor(gameState.tick / 3)) render();
+      }
       scheduleAnimation();
     }
 
