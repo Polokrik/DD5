@@ -65,17 +65,6 @@
       drawPine(g, 80, 185, 54); drawPine(g, 29, 189, 69);
     }
 
-    function drawDragon(g, phase) {
-      const rise = [0, 1, 2, 1, 0, -1, -2, -1][phase % 8];
-      pixelPolygon(g, [[237,74],[219,63],[192,39+rise],[196,60],[201,56],[210,71],[218,67],[229,81]], ART.blueDark);
-      pixelPolygon(g, [[236,76],[252,56],[288,41-rise],[280,57],[272,55],[263,70],[254,66],[242,83]], ART.blueDark);
-      pixelLine(g, 237, 75, 218, 62, ART.blue); pixelLine(g, 218, 62, 192, 39+rise, ART.blue);
-      pixelLine(g, 240, 77, 254, 57, ART.blue); pixelLine(g, 254, 57, 288, 41-rise, ART.blue);
-      pixelPolygon(g, [[226,82],[234,70],[241,72],[245,83],[250,90],[245,93],[238,86],[234,91],[229,88],[221,98],[205,97],[218,93]], ART.blue);
-      pixelPolygon(g, [[235,74],[239,65],[247,61],[255,63],[251,66],[244,66],[243,76]], ART.blue);
-      pixelLine(g, 246, 61, 244, 56, ART.blueLight); pixelLine(g, 241, 64, 238, 60, ART.blueLight);
-      paint(g, ART.hot, 249, 63, 1, 1);
-    }
 
     // Décors fixes: géométrie entière et couleurs prises exclusivement dans ART.
     function drawTunnel(g) {

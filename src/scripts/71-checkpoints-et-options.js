@@ -166,9 +166,6 @@
       }
     }
 
-    function peekCheckpoint() {
-      return gameState.checkpoints.length > 0 ? gameState.checkpoints[gameState.checkpoints.length - 1] : null;
-    }
 
     function saveGame() {
       try {

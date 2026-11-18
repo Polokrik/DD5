@@ -66,7 +66,6 @@
     }
 
     // Coups : élans brefs et décalés pendant la durée du duel (0 hors des élans).
-    const strikeAt = (progress, centers) => Math.max(0, ...centers.map(c => 1 - Math.abs((progress - c) / .05)));
     function drawFallenFigure(g, x, y, kind) {
       if (kind === 'hero') {
         paint(g, ART.armor, x - 14, y - 7, 24, 7); paint(g, ART.stoneDark, x - 14, y - 2, 24, 2); paint(g, ART.grassLight, x + 10, y - 8, 7, 7);

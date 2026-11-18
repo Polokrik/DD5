@@ -1,28 +1,6 @@
-    function drawBookAmbience(g,key,phase) {
-      if (key === 'marsh') {
-        for (let i=0;i<8;i++) {
-          const x=26+i*37%270,y=173+i*11%24;
-          paint(g,ART.waterLight,x+phase%4,y,8+i%4,1);
-        }
-      }
-      if (['ice_sea','ice_cave'].includes(key)) {
-        for (let i=0;i<18;i++) {
-          const x=(173+i*37+phase*2)%320,y=(79+i*23+phase)%200;
-          paint(g,ART.blueLight,x,y,1,1);
-        }
-      }
-      if (key === 'skyreach') {
-        for (let i=0;i<4;i++) {
-          const x=(196+i*61+phase)%360-20,y=176+i%2*11;
-          paint(g,ART.blueLight,x,y,34,1);paint(g,ART.waterLight,x+9,y+2,26,1);
-        }
-      }
-    }
-
     function render() {
       renderD20();
       const key = PRESENTATION.scenes[gameState.lastReport?.roomId ?? gameState.roomId]?.art ?? 'keep';
-      const phase = uiState.reducedMotion ? 0 : Math.floor(Math.max(0,gameState.tick) / 14);
       const direction=getActionDirection(), progress=effectProgress();
       ctx.imageSmoothingEnabled=false;
       const lightning = key === 'verdure' && !uiState.reducedMotion ? lightningLevel(gameState.tick) : 0;
@@ -31,7 +9,6 @@
       if (shownRoom === 'egg_chamber' && !flags.eggsStolen && !flags.eggsDestroyed) drawHatcheryEggs(ctx, uiState.reducedMotion ? 0 : gameState.tick);
       if (key === 'caravan' && flags.dragonetsHatched && !uiState.reducedMotion) drawWyrmlingPeek(ctx, gameState.tick);
       if (key === 'portal' && flags.portalDamaged) drawPortalDamage(ctx);
-      drawBookAmbience(ctx,key,phase);
       if (key !== 'verdure') drawSceneLife(ctx, key, uiState.reducedMotion ? 0 : gameState.tick);
       if (uiState.preferences.party && !['duel', 'cave_duel'].includes(key) && !direction && !['title_screen', 'credits'].includes(shownRoom)) drawPartyPresence(ctx, uiState.reducedMotion ? 0 : gameState.tick);
       if (key === 'verdure') drawVerdureLife(ctx, uiState.reducedMotion ? 0 : gameState.tick);
