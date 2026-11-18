@@ -1,36 +1,14 @@
-    function drawBookAmbience(g,key,phase) {
-      if (key === 'marsh') {
-        for (let i=0;i<8;i++) {
-          const x=26+i*37%270,y=173+i*11%24;
-          paint(g,ART.waterLight,x+phase%4,y,8+i%4,1);
-        }
-      }
-      if (['ice_sea','ice_cave'].includes(key)) {
-        for (let i=0;i<18;i++) {
-          const x=(173+i*37+phase*2)%320,y=(79+i*23+phase)%200;
-          paint(g,ART.blueLight,x,y,1,1);
-        }
-      }
-      if (key === 'skyreach') {
-        for (let i=0;i<4;i++) {
-          const x=(196+i*61+phase)%360-20,y=176+i%2*11;
-          paint(g,ART.blueLight,x,y,34,1);paint(g,ART.waterLight,x+9,y+2,26,1);
-        }
-      }
-    }
-
     function render() {
       renderD20();
       const key = PRESENTATION.scenes[gameState.lastReport?.roomId ?? gameState.roomId]?.art ?? 'keep';
-      const phase = uiState.reducedMotion ? 0 : Math.floor(Math.max(0,gameState.tick) / 14);
       const direction=getActionDirection(), progress=effectProgress();
       ctx.imageSmoothingEnabled=false;
       const lightning = key === 'verdure' && !uiState.reducedMotion ? lightningLevel(gameState.tick) : 0;
       ctx.drawImage(lightning ? getLitScene(key, lightning) : getSceneArt(key),0,0);
       const shownRoom = gameState.lastReport?.roomId ?? gameState.roomId;
-      if (shownRoom === 'egg_chamber' && !flags.eggsStolen && !flags.eggsDestroyed) drawHatcheryEggs(ctx);
+      if (shownRoom === 'egg_chamber' && !flags.eggsStolen && !flags.eggsDestroyed) drawHatcheryEggs(ctx, uiState.reducedMotion ? 0 : gameState.tick);
+      if (key === 'caravan' && flags.dragonetsHatched && !uiState.reducedMotion) drawWyrmlingPeek(ctx, gameState.tick);
       if (key === 'portal' && flags.portalDamaged) drawPortalDamage(ctx);
-      drawBookAmbience(ctx,key,phase);
       if (key !== 'verdure') drawSceneLife(ctx, key, uiState.reducedMotion ? 0 : gameState.tick);
       if (uiState.preferences.party && !['duel', 'cave_duel'].includes(key) && !direction && !['title_screen', 'credits'].includes(shownRoom)) drawPartyPresence(ctx, uiState.reducedMotion ? 0 : gameState.tick);
       if (key === 'verdure') drawVerdureLife(ctx, uiState.reducedMotion ? 0 : gameState.tick);
@@ -51,7 +29,7 @@
         if(key==='cave_duel') [148,294].forEach((x,i)=>drawBerserker(ctx,x,175,uiState.reducedMotion ? 0 : gameState.tick,direction?.kind==='duel' && progress>.55,i ? -1 : 1));
       }
       if (key==='temple' && (!gameState.lastReport || gameState.lastReport.failed)) for(let i=0;i<3;i++) {
-        paint(ctx,ART.wall,243+i*4,135+i%2,2,2);paint(ctx,ART.cloak,242+i*4,137+i%2,4,9);
+        drawVillager(ctx,240+i*7,147+i%2,uiState.reducedMotion ? 0 : gameState.tick,i,.2);
       }
       if (!direction || !uiState.preferences.effects) return;
       if (!uiState.actionFrame) { uiState.actionFrame=document.createElement('canvas'); uiState.actionFrame.width=320;uiState.actionFrame.height=200; }
@@ -67,10 +45,24 @@
       uiState.framePending=true;requestAnimationFrame(animationLoop);
     }
 
-    function animationLoop() {
+    // L'animation suit le temps réel : 60 crans par seconde quel que soit l'écran (60, 120 ou 144 Hz), au lieu d'un cran par image.
+    const TICK_MS = 1000 / 60;
+    function animationLoop(now) {
       uiState.framePending=false;
-      if (!uiState.reducedMotion) gameState.tick+=1;
-      if (gameState.tick%3===0 || uiState.reducedMotion) render();
+      if (uiState.reducedMotion) { render(); return; }
+      let steps = 1;
+      if (typeof now === 'number') {
+        const last = uiState.lastFrameTime ?? now;
+        uiState.lastFrameTime = now;
+        // Après un onglet en veille, on ne rattrape qu'un dixième de seconde.
+        uiState.frameDebt = Math.min(100, (uiState.frameDebt ?? 0) + Math.max(0, now - last));
+        steps = Math.floor(uiState.frameDebt / TICK_MS);
+        uiState.frameDebt -= steps * TICK_MS;
+      }
+      if (steps > 0) {
+        const before = gameState.tick; gameState.tick += steps;
+        if (Math.floor(before / 3) !== Math.floor(gameState.tick / 3)) render();
+      }
       scheduleAnimation();
     }
 

@@ -66,7 +66,6 @@
     }
 
     // Coups : élans brefs et décalés pendant la durée du duel (0 hors des élans).
-    const strikeAt = (progress, centers) => Math.max(0, ...centers.map(c => 1 - Math.abs((progress - c) / .05)));
     function drawFallenFigure(g, x, y, kind) {
       if (kind === 'hero') {
         paint(g, ART.armor, x - 14, y - 7, 24, 7); paint(g, ART.stoneDark, x - 14, y - 2, 24, 2); paint(g, ART.grassLight, x + 10, y - 8, 7, 7);
@@ -127,7 +126,7 @@
         }
       }
       if (kind === 'fog') {
-        for (let i=0;i<4;i++) drawSmallPerson(g,'civilian',245-i*12-Math.min(42,step*2),160+i%2*3);
+        for (let i=0;i<4;i++) drawVillager(g,247-i*13-Math.min(42,step*2),171+i%2*3,uiState.reducedMotion ? 0 : gameState.tick,i,.36);
         for (let band=0;band<4;band++) for (let col=0;col<49;col++) {
           const x=126+col*4,y=140+band*10+[2,1,0,0,1,2,3,3][(col+step+band*3)%8];
           paint(g,band%2?ART.blueLight:ART.waterLight,x,y,4,5);

@@ -21,7 +21,10 @@
       silly_shout_stop: { text: 'Vous criez STOP. Le portail répond par un écho moqueur.', chaos: 1 }
     };
 
-    function handleSpecialSelection(selectionKey) {
+    function handleSpecialSelection(selectionKey, option = null) {
+      if (selectionKey === 'start_rescue') return startRescue(option);
+      if (selectionKey === 'rescue_success') return endRescue(true);
+      if (selectionKey === 'rescue_abandon') return endRescue(false);
       if (selectionKey === 'rest_company') return restCompany();
       if (['recover_checkpoint','decision_back'].includes(selectionKey)) {
         restoreDecisionCheckpoint();
@@ -116,7 +119,7 @@
         return { endedByGameOver: false, success: false };
       }
       if (option.onSelect) {
-        const special = handleSpecialSelection(option.onSelect);
+        const special = handleSpecialSelection(option.onSelect, option);
         if (special.handled) {
           if (!special.endedByGameOver) prepareCurrentRoom();
           return { endedByGameOver: special.endedByGameOver, success: !special.endedByGameOver };

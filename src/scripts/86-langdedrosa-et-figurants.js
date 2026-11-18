@@ -1,5 +1,5 @@
     // Palette de Langdedrosa : violet, or et bleu d'écailles, avec un contour noir sélectif sur la silhouette extérieure.
-    const LD = { k: '#0c0c0c', p0: '#2e0c40', p1: '#4c155f', p2: '#762c7c', p3: '#92457f', p4: '#bf6784', b1: '#4b4f7e', b2: '#606493', b3: '#7590a4',
+    const LD = { k: '#172c3d', p0: '#2e0c40', p1: '#4c155f', p2: '#762c7c', p3: '#92457f', p4: '#bf6784', b1: '#4b4f7e', b2: '#606493', b3: '#7590a4',
       g1: '#cf9478', g2: '#dbd3a2', t: '#9ebeb2', steel: '#9aa3b4' };
 
     // Ruban d'épaisseur variable le long d'une courbe (queue) : renvoie une liste de polygones.

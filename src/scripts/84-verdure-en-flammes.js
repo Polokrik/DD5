@@ -120,7 +120,6 @@
       return uiState.art[id];
     }
 
-    const REFUGEE_SHAPES = [[0, 8, 5, 2], [1, 6, 4, 0], [0, 7, 3, 1]];
     // Premier plan : silhouettes d'une charrette brisée, de réfugiés et de pillards à la torche (cache).
     function drawVerdureForeground(g) {
       pixelPolygon(g, [[4, 200], [8, 186], [30, 182], [56, 186], [64, 200]], ART.shadow);

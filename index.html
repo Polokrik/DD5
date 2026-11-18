@@ -8697,6 +8697,7 @@
       rollHistory: [],
       observations: [],
       decisions: [],
+      rescue: null,
       debugMode: URL_PARAMS.get('debug') === '1'
     };
 
@@ -8783,6 +8784,8 @@
         if (!record(state) || !Object.hasOwn(rooms, state.roomId)) return false;
         if (!strings(state.inventory) || !strings(state.commandHistory) || !strings(state.timelineApplied)) return false;
         if (state.resolvedOptions !== undefined && !strings(state.resolvedOptions)) return false;
+        if (state.rescue != null && !(record(state.rescue) && Object.hasOwn(INITIAL_CHARACTERS, state.rescue.id) && Object.hasOwn(rooms, state.rescue.from) && state.rescue.from !== 'rescue_mission')) return false;
+        if (state.roomId === 'rescue_mission' && state.rescue == null) return false;
         if (state.decisions !== undefined && (!Array.isArray(state.decisions) || state.decisions.length > 300 || !state.decisions.every(entry => record(entry)
           && ['room', 'id', 'title', 'actor', 'kind'].every(key => typeof entry[key] === 'string') && Number.isInteger(entry.chapter) && (entry.won === null || typeof entry.won === 'boolean')))) return false;
         if (state.observations !== undefined && (!strings(state.observations) || state.observations.length > 300
@@ -8858,6 +8861,7 @@
       gameState.rollHistory = [];
       gameState.observations = [];
       gameState.decisions = [];
+      gameState.rescue = null;
     }
 
     function exportSaveToClipboard() {
@@ -9616,7 +9620,7 @@
         if (option.requiresTrust && !Object.entries(option.requiresTrust).every(([faction, threshold]) => (variables.factionTrust?.[faction] ?? 0) >= threshold)) return false;
         return true;
       });
-      return withSafeNavigationOptions(roomId, available);
+      return withSafeNavigationOptions(roomId, [...available, ...rescueEntryOptions(roomId)]);
     }
 
     function addCharacterToParty(characterId) {
@@ -9672,9 +9676,6 @@
       }
     }
 
-    function peekCheckpoint() {
-      return gameState.checkpoints.length > 0 ? gameState.checkpoints[gameState.checkpoints.length - 1] : null;
-    }
 
     function saveGame() {
       try {
@@ -9721,6 +9722,7 @@
         gameState.rollHistory = restoredGameState.rollHistory ?? [];
         gameState.observations = restoredGameState.observations ?? [];
         gameState.decisions = restoredGameState.decisions ?? [];
+        gameState.rescue = restoredGameState.rescue ?? null;
         gameState.resolvedOptions = restoredGameState.resolvedOptions ?? [];
         gameState.lastReport = restoredGameState.lastReport ?? null;
         uiState.effect = null;
@@ -9804,6 +9806,7 @@
       gameState.rollHistory = restoredGameState.rollHistory || [];
       gameState.observations = restoredGameState.observations || [];
       gameState.decisions = restoredGameState.decisions || [];
+      gameState.rescue = restoredGameState.rescue || null;
       gameState.resolvedOptions = restoredGameState.resolvedOptions || [];
       gameState.lastReport = null;
       uiState.effect = null;
@@ -9930,6 +9933,7 @@
       const room = getCurrentRoom();
       if (!room) return;
       updateAdventureLevel();
+      if (room.id === 'rescue_mission') prepareRescueRoom();
       const actId = Object.keys(DATA.actRooms).find(id => DATA.actRooms[id].includes(room.id));
       if (actId) acts.current = actId;
       if (actId === 'ACT_V' && !flags.finalBattleInitialized) computeFinalBattleBaseline();
@@ -10337,7 +10341,10 @@
       silly_shout_stop: { text: 'Vous criez STOP. Le portail répond par un écho moqueur.', chaos: 1 }
     };
 
-    function handleSpecialSelection(selectionKey) {
+    function handleSpecialSelection(selectionKey, option = null) {
+      if (selectionKey === 'start_rescue') return startRescue(option);
+      if (selectionKey === 'rescue_success') return endRescue(true);
+      if (selectionKey === 'rescue_abandon') return endRescue(false);
       if (selectionKey === 'rest_company') return restCompany();
       if (['recover_checkpoint','decision_back'].includes(selectionKey)) {
         restoreDecisionCheckpoint();
@@ -10432,7 +10439,7 @@
         return { endedByGameOver: false, success: false };
       }
       if (option.onSelect) {
-        const special = handleSpecialSelection(option.onSelect);
+        const special = handleSpecialSelection(option.onSelect, option);
         if (special.handled) {
           if (!special.endedByGameOver) prepareCurrentRoom();
           return { endedByGameOver: special.endedByGameOver, success: !special.endedByGameOver };
@@ -10804,6 +10811,90 @@
 
     }
 
+    // ───────────────────────── Mission de sauvetage ─────────────────────────
+    // Un compagnon capturé n'est pas perdu : tant qu'il est retenu, chaque scène propose de partir à sa rescousse.
+    // La mission est un embranchement générique (une seule salle, réutilisée) : trois approches, un échec qui coûte,
+    // puis retour à la scène quittée. C'est une règle de jeu, pas un épisode de la campagne.
+    rooms.rescue_mission = {
+      id: 'rescue_mission', title: 'Au secours d’un compagnon', chapter: 0, exits: {}, objects: ['Les geôliers', 'Les liens du captif'],
+      description: 'Un compagnon est retenu par le Culte. Le Clan cherche comment le délivrer.',
+      source: 'Règle de jeu : sauvetage d’un compagnon capturé. Aucun épisode de la campagne jouée n’est décrit ici.',
+      options: [
+        { id: 'rescue-stealth', label: 'What If — Se glisser jusqu’au captif à la faveur de l’ombre', groupAction: true, requiresAnyAvailableCharacter: true, skill: 'stealth',
+          resolution: { difficulty: 4, skill: 'stealth', risk: 'injury', deathType: 'replaceable', dc: 13 },
+          check: { ability: 'dex', skillKey: 'stealth', kind: 'ability', label: 'Discrétion', dc: 13 },
+          onSuccess: { onSelect: 'rescue_success', variableDelta: { chaos: -1 } }, onFailure: { variableDelta: { chaos: 1 } },
+          riskText: 'Un échec blesse celui qui s’y risque et resserre la garde.' },
+        { id: 'rescue-force', label: 'What If — Forcer le passage jusqu’au captif', groupAction: true, requiresAnyAvailableCharacter: true, skill: 'might',
+          resolution: { difficulty: 5, skill: 'might', risk: 'injury', deathType: 'replaceable', dc: 14 },
+          check: { ability: 'str', skillKey: 'athletics', kind: 'ability', label: 'Athlétisme', dc: 14 },
+          onSuccess: { onSelect: 'rescue_success', variableDelta: { chaos: 1, moraleGroupe: 1 } }, onFailure: { variableDelta: { chaos: 2 } },
+          riskText: 'Un échec blesse celui qui s’y risque et donne l’alerte. Même réussie, la force fait du bruit.' },
+        { id: 'rescue-parley', label: 'What If — Parlementer avec les geôliers', groupAction: true, requiresAnyAvailableCharacter: true, skill: 'diplomacy',
+          resolution: { difficulty: 5, skill: 'diplomacy', risk: 'cost', deathType: 'replaceable', dc: 15 },
+          check: { ability: 'cha', skillKey: 'persuasion', kind: 'ability', label: 'Persuasion', dc: 15 },
+          onSuccess: { onSelect: 'rescue_success', variableDelta: { moraleGroupe: 1 } }, onFailure: { variableDelta: { moraleGroupe: -1 } },
+          riskText: 'Épreuve difficile, mais sans blessure : un échec n’entame que le moral.' },
+        { id: 'rescue-later', label: 'Remettre le sauvetage à plus tard', onSelect: 'rescue_abandon', repeatable: true,
+          intent: 'Revenir à la scène quittée. Le compagnon reste captif; une nouvelle tentative restera possible.' }
+      ]
+    };
+    PRESENTATION.scenes.rescue_mission = { art: 'keep', heading: 'Au secours d’un compagnon', paragraphs: [rooms.rescue_mission.description] };
+
+    const captiveIds = () => Object.keys(characters).filter(id => characters[id].state === 'captured');
+
+    // Texte et décor de la mission, d'après le compagnon retenu et la scène quittée.
+    function prepareRescueRoom() {
+      const rescue = gameState.rescue, captive = characters[rescue?.id], room = rooms.rescue_mission;
+      if (!captive) return;
+      const name = PRESENTATION.people[rescue.id]?.short ?? captive.name, f = (m, fem) => agree(rescue.id, m, fem), origin = rooms[rescue.from];
+      room.title = `Au secours de ${name}`; room.chapter = origin?.chapter ?? 0;
+      const paragraphs = [
+        `${name} a été ${f('pris', 'prise')} par les hommes du Culte, qui ${f('le', 'la')} retiennent à l’écart, sous bonne garde. Le Clan n’a pas l’intention de ${f('le', 'la')} laisser entre leurs mains.`,
+        'Trois approches se présentent : se glisser dans l’ombre jusqu’aux liens, forcer le passage, ou parlementer avec les geôliers. Chaque tentative manquée resserre la garde, et celui qui s’y risque peut y laisser des plumes.'
+      ];
+      room.description = paragraphs.join('\n\n'); room.paragraphs = paragraphs;
+      PRESENTATION.scenes.rescue_mission = { ...PRESENTATION.scenes[rescue.from], heading: room.title, paragraphs, tagline: '', hero: `Au secours\nde ${name}`, chapterNumber: room.chapter };
+      const texts = {
+        'rescue-stealth': ['Un compagnon profite de l’ombre pour atteindre les liens.', `${name} est ${f('délivré', 'délivrée')} sans un bruit. Le Clan se replie avant que les geôliers ne s’en aperçoivent; ${f('il', 'elle')} est ${f('éprouvé', 'éprouvée')}, mais libre.`, 'Un geôlier se retourne au mauvais moment. Il faut rompre le contact, et la garde se resserre.'],
+        'rescue-force': ['Le Clan charge les geôliers pour ouvrir un chemin.', `Les geôliers reculent sous le choc et ${name} est ${f('arraché', 'arrachée')} à ses liens. Le vacarme a porté loin, mais ${f('il', 'elle')} est libre.`, 'Les geôliers tiennent bon et donnent l’alerte. Le Clan doit reculer.'],
+        'rescue-parley': ['Un compagnon s’avance, mains ouvertes, pour négocier la libération.', `Les geôliers hésitent, puis s’écartent. ${name} rejoint le Clan sans qu’une arme ait été tirée.`, 'Les geôliers rient au nez du négociateur. Le Clan repart, la mine basse.']
+      };
+      room.options.forEach(option => {
+        const text = texts[option.id]; if (!text) return;
+        option.intent = `${text[0]} Réussite : ${name} est libre, ${f('blessé', 'blessée')} mais de retour dans le groupe. Échec : ${f('il', 'elle')} reste ${f('captif', 'captive')}; une autre approche reste possible.`;
+        option.onSuccess.message = text[1]; option.onFailure.message = text[2];
+      });
+    }
+
+    // Proposition ajoutée à chaque scène tant qu'un compagnon est retenu.
+    function rescueEntryOptions(roomId) {
+      if (['title_screen', 'credits', 'rescue_mission', 'campaign_end', 'campaign_frontier'].includes(roomId)) return [];
+      if (!Object.values(characters).some(c => ['active', 'injured'].includes(c.state))) return [];
+      return captiveIds().map(id => {
+        const name = PRESENTATION.people[id]?.short ?? characters[id].name;
+        return { id: `rescue-start-${id}`, label: `Partir à la rescousse de ${name}`, onSelect: 'start_rescue', rescueId: id, repeatable: true,
+          intent: `${name} est ${agree(id, 'retenu', 'retenue')} par le Culte. Quitter cette scène pour tenter de ${agree(id, 'le', 'la')} délivrer : trois approches, et retour ici ensuite.`,
+          riskText: 'Un échec peut blesser celui qui s’y risque.' };
+      });
+    }
+
+    function startRescue(option) {
+      if (!characters[option?.rescueId] || characters[option.rescueId].state !== 'captured') return { endedByGameOver: false, handled: true };
+      gameState.rescue = { id: option.rescueId, from: gameState.roomId };
+      gameState.resolvedOptions = gameState.resolvedOptions.filter(key => !key.startsWith('rescue_mission:'));
+      gameState.roomId = 'rescue_mission';
+      prepareRescueRoom();
+      return { endedByGameOver: false, handled: true };
+    }
+
+    function endRescue(freed) {
+      const rescue = gameState.rescue, captive = characters[rescue?.id];
+      if (freed && captive?.state === 'captured') { captive.state = 'injured'; captive.deathSaves = { s: 0, f: 0 }; }
+      gameState.roomId = rooms[rescue?.from] ? rescue.from : 'greenest_keep';
+      gameState.rescue = null;
+      return { endedByGameOver: false, handled: true };
+    }
     // Palette fixe ; scanlines entières pour éviter l'anticrénelage du pixel art.
     const ART = {
       night: '#162333', sky: '#293747', dusk: '#414553', haze: '#66505a', glow: '#a06556',
@@ -10943,17 +11034,6 @@
       drawPine(g, 80, 185, 54); drawPine(g, 29, 189, 69);
     }
 
-    function drawDragon(g, phase) {
-      const rise = [0, 1, 2, 1, 0, -1, -2, -1][phase % 8];
-      pixelPolygon(g, [[237,74],[219,63],[192,39+rise],[196,60],[201,56],[210,71],[218,67],[229,81]], ART.blueDark);
-      pixelPolygon(g, [[236,76],[252,56],[288,41-rise],[280,57],[272,55],[263,70],[254,66],[242,83]], ART.blueDark);
-      pixelLine(g, 237, 75, 218, 62, ART.blue); pixelLine(g, 218, 62, 192, 39+rise, ART.blue);
-      pixelLine(g, 240, 77, 254, 57, ART.blue); pixelLine(g, 254, 57, 288, 41-rise, ART.blue);
-      pixelPolygon(g, [[226,82],[234,70],[241,72],[245,83],[250,90],[245,93],[238,86],[234,91],[229,88],[221,98],[205,97],[218,93]], ART.blue);
-      pixelPolygon(g, [[235,74],[239,65],[247,61],[255,63],[251,66],[244,66],[243,76]], ART.blue);
-      pixelLine(g, 246, 61, 244, 56, ART.blueLight); pixelLine(g, 241, 64, 238, 60, ART.blueLight);
-      paint(g, ART.hot, 249, 63, 1, 1);
-    }
 
     // Décors fixes: géométrie entière et couleurs prises exclusivement dans ART.
     function drawTunnel(g) {
@@ -11365,11 +11445,28 @@
 
     // Couche optionnelle: appeler après le décor hatchery, seulement si les œufs
     // sont encore présents dans l'état courant. Jamais dans getSceneArt/cache.
-    function drawHatcheryEggs(g) {
-      [[234,149],[251,151]].forEach(([x,y])=>{
+    // Œufs de dragon noir : immobiles presque tout le temps. De loin en loin, l'un d'eux frémit d'un pixel, puis plus rien.
+    function drawHatcheryEggs(g, t = 0) {
+      [[234,149],[251,151]].forEach(([bx,y],i)=>{
+        const cycle = (Math.floor(t / 6) + i * 53) % 110, x = bx + (cycle === 3 || cycle === 5 ? 1 : cycle === 4 ? -1 : 0);
+        ditherRect(g, SB.acid, bx - 9, y + 6, 18, 4);
         pixelPolygon(g,[[x-5,y+8],[x-7,y+3],[x-6,y-4],[x-2,y-11],[x+2,y-12],[x+6,y-5],[x+7,y+3],[x+4,y+8]],ART.shadow);
         pixelPolygon(g,[[x-4,y+5],[x-5,y],[x-3,y-7],[x,y-9],[x+1,y-2],[x-1,y+4]],ART.stoneDark);
         paint(g,ART.blueDark,x-2,y-6,2,3);
+        paint(g,SB.acid,x+3,y-3,1,2);
+        if (cycle >= 3 && cycle <= 8) { paint(g,SB.acid,x-1,y-10,1,1); paint(g,SB.acid,x,y-8,1,2); }
+      });
+    }
+
+    // Clin d'œil caché : une fois les œufs éclos, deux petits dragons noirs passent parfois la tête hors du chariot.
+    function drawWyrmlingPeek(g, t) {
+      const cycle = Math.floor(t / 6) % 150;
+      [[152, 160, 6, 0], [158, 157, 12, 1]].forEach(([x, y, start, slim]) => {
+        const p = cycle - start; if (p < 0 || p > 16) return;
+        const rise = p < 3 ? p : p > 13 ? 16 - p : 3, tilt = slim && p > 6 && p < 11 ? 1 : 0;
+        paint(g, ART.shadow, x + tilt, y - rise, slim ? 4 : 5, 3); paint(g, ART.shadow, x + 1 + tilt, y - rise + 3, slim ? 2 : 3, rise);
+        paint(g, ART.shadow, x + tilt, y - rise - (slim ? 2 : 1), 1, slim ? 2 : 1); paint(g, ART.shadow, x + (slim ? 3 : 4) + tilt, y - rise - (slim ? 2 : 1), 1, slim ? 2 : 1);
+        if (p % 9 !== 4) paint(g, SB.acid, x + 1 + tilt, y - rise + 1, 1, 1);
       });
     }
 
@@ -11679,7 +11776,6 @@
     }
 
     // Coups : élans brefs et décalés pendant la durée du duel (0 hors des élans).
-    const strikeAt = (progress, centers) => Math.max(0, ...centers.map(c => 1 - Math.abs((progress - c) / .05)));
     function drawFallenFigure(g, x, y, kind) {
       if (kind === 'hero') {
         paint(g, ART.armor, x - 14, y - 7, 24, 7); paint(g, ART.stoneDark, x - 14, y - 2, 24, 2); paint(g, ART.grassLight, x + 10, y - 8, 7, 7);
@@ -11740,7 +11836,7 @@
         }
       }
       if (kind === 'fog') {
-        for (let i=0;i<4;i++) drawSmallPerson(g,'civilian',245-i*12-Math.min(42,step*2),160+i%2*3);
+        for (let i=0;i<4;i++) drawVillager(g,247-i*13-Math.min(42,step*2),171+i%2*3,uiState.reducedMotion ? 0 : gameState.tick,i,.36);
         for (let band=0;band<4;band++) for (let col=0;col<49;col++) {
           const x=126+col*4,y=140+band*10+[2,1,0,0,1,2,3,3][(col+step+band*3)%8];
           paint(g,band%2?ART.blueLight:ART.waterLight,x,y,4,5);
@@ -11881,7 +11977,6 @@
       return uiState.art[id];
     }
 
-    const REFUGEE_SHAPES = [[0, 8, 5, 2], [1, 6, 4, 0], [0, 7, 3, 1]];
     // Premier plan : silhouettes d'une charrette brisée, de réfugiés et de pillards à la torche (cache).
     function drawVerdureForeground(g) {
       pixelPolygon(g, [[4, 200], [8, 186], [30, 182], [56, 186], [64, 200]], ART.shadow);
@@ -11926,9 +12021,31 @@
       gold: '#c59a43', gold2: '#f0cf72', red: '#7d3338', red2: '#b9564f', green: '#526d44', green2: '#80a25b', blue: '#354d78', blue2: '#6685b7', purple: '#452756', purple2: '#78418a',
       ice2: '#bde5e5', acid: '#83b94e', black: '#26242c', brown: '#4b3228' };
 
+    // Rampes de couleur des sprites : pour chaque teinte, sa voisine claire et sa voisine sombre dans la même palette.
+    const SPRITE_RAMP_LIGHT = { skin: 'skin2', steel: 'steel2', leather: 'leather2', gold: 'gold2', red: 'red2', green: 'green2', blue: 'blue2', purple: 'purple2', black: 'deep', brown: 'leather' };
+    const SPRITE_RAMP_DARK = { skin2: 'skin', steel2: 'steel', leather2: 'leather', gold2: 'gold', red2: 'red', green2: 'green', blue2: 'blue', purple2: 'purple',
+      skin: 'leather', steel: 'deep', leather: 'brown', gold: 'leather2', red: 'deep', green: 'deep', blue: 'deep', purple: 'deep', brown: 'deep', white: 'steel2' };
+    let spriteRampCache = null;
+    function spriteRamps() {
+      if (spriteRampCache?.ink === SB.ink && spriteRampCache?.skin === SB.skin) return spriteRampCache;
+      const byHex = map => Object.fromEntries(Object.entries(map).map(([from, to]) => [SB[from], SB[to]]));
+      spriteRampCache = { ink: SB.ink, skin: SB.skin, light: byHex(SPRITE_RAMP_LIGHT), dark: byHex(SPRITE_RAMP_DARK) };
+      return spriteRampCache;
+    }
+
     function spriteOps(g, ox, oy, s) {
       const X = v => Math.round(ox + v * s), Y = v => Math.round(oy + v * s);
-      const P = (color, x, y, w = 1, h = 1) => { const x0 = X(x), y0 = Y(y); paint(g, color, x0, y0, Math.max(1, X(x + w) - x0), Math.max(1, Y(y + h) - y0)); };
+      // Volume partagé : chaque aplat assez grand reçoit un liseré clair en haut et un liseré sombre à droite et en bas,
+      // pris dans la rampe de sa propre couleur (aucune teinte ajoutée). Tous les sprites y gagnent, sans les redessiner.
+      const shade = s >= .5 ? spriteRamps() : null;
+      const P = (color, x, y, w = 1, h = 1) => {
+        const x0 = X(x), y0 = Y(y), pw = Math.max(1, X(x + w) - x0), ph = Math.max(1, Y(y + h) - y0);
+        paint(g, color, x0, y0, pw, ph);
+        if (!shade || pw < 5 || ph < 5) return;
+        const light = shade.light[color], dark = shade.dark[color];
+        if (light) paint(g, light, x0, y0, pw - 1, 1);
+        if (dark) { paint(g, dark, x0 + pw - 1, y0, 1, ph); paint(g, dark, x0, y0 + ph - 1, pw, 1); }
+      };
       const poly = (color, pts) => pixelPolygon(g, pts.map(([px, py]) => [X(px), Y(py)]), color);
       const line = (color, x1, y1, x2, y2, w = 2) => {
         const half = Math.max(1, Math.round(w * s)), horizontal = Math.abs(x2 - x1) >= Math.abs(y2 - y1);
@@ -12017,6 +12134,19 @@
     };
     const SPRITE_IDS = Object.keys(SPRITE_MODELS);
 
+    // Villageois et figurants : même grille 64×96 et même trait que les protagonistes, en plus simple.
+    // variant change la couleur de l'habit et la coiffe; ils respirent avec un décalage propre à chacun.
+    function drawVillager(g, x, y, t, variant = 0, scale = .4) {
+      const { P, poly } = spriteOps(g, x - 32 * scale, y - 93 * scale, scale), b = [0, 0, 2, 2][Math.floor((t + variant * 29) / 26) % 4];
+      const cloth = [SB.leather2, SB.blue, SB.green, SB.red][variant % 4], hood = variant % 2 === 0;
+      P(SB.ink, 22, 70, 9, 21); P(SB.ink, 35, 70, 9, 21); P(SB.leather, 23, 72, 7, 17); P(SB.leather, 36, 72, 7, 17); P(SB.ink, 20, 88, 13, 5); P(SB.ink, 34, 88, 13, 5);
+      P(SB.ink, 17, 34 + b, 31, 40); P(cloth, 20, 37 + b, 25, 34);
+      P(SB.skin, 25, 18 + b, 16, 17); P(SB.skin2, 28, 25 + b, 3, 3); P(SB.skin2, 37, 25 + b, 3, 3);
+      if (hood) poly(cloth, [[22, 24 + b], [28, 13 + b], [42, 14 + b], [45, 25 + b], [41, 20 + b], [26, 20 + b]]);
+      else P(SB.brown, 23, 14 + b, 20, 7);
+      if (variant % 3 === 1) P(SB.white, 14, 46 + b, 7, 9);
+    }
+
     // Images explicites d'un coup : anticipation → frappe → impact → récupération. Le facteur multiplie la portée du personnage.
     const ATTACK_FRAMES = [
       { name: 'anticipation', reach: -1.3, lean: -2, share: .32 },
@@ -12052,7 +12182,7 @@
     const SPRITE_TIP = { bjolnir: [56, 18], drekthar: [66, 9], ellyjobell: [13, 12], darrin: [62, 41], sislay: [62, 58], kairon: [59, 12], malar: [62, 46] };
 
     // Palette de Langdedrosa : violet, or et bleu d'écailles, avec un contour noir sélectif sur la silhouette extérieure.
-    const LD = { k: '#0c0c0c', p0: '#2e0c40', p1: '#4c155f', p2: '#762c7c', p3: '#92457f', p4: '#bf6784', b1: '#4b4f7e', b2: '#606493', b3: '#7590a4',
+    const LD = { k: '#172c3d', p0: '#2e0c40', p1: '#4c155f', p2: '#762c7c', p3: '#92457f', p4: '#bf6784', b1: '#4b4f7e', b2: '#606493', b3: '#7590a4',
       g1: '#cf9478', g2: '#dbd3a2', t: '#9ebeb2', steel: '#9aa3b4' };
 
     // Ruban d'épaisseur variable le long d'une courbe (queue) : renvoie une liste de polygones.
@@ -12161,6 +12291,7 @@
     // ───────────────────────── Kit d'ambiance réutilisable ─────────────────────────
     // Chaque élément est une petite fonction déterministe (le temps vient du tick, jamais du hasard) réutilisée par plusieurs décors.
     // SCENE_LIFE dit, décor par décor, quels éléments placer et où : aucun code ni image propres à une scène.
+    const lifeColor = color => ART[color] ?? color;
     const SINE16 = [0, 1, 2, 3, 3, 3, 2, 1, 0, -1, -2, -3, -3, -3, -2, -1];
     const LIFE = {
       fire(g, t, i, x, y, scale = 1) { drawFlame(g, x, y, t, i, scale); drawEmbers(g, x, y, t, i); },
@@ -12170,7 +12301,7 @@
       fog(g, t, i, y, h, speed = 1, color = 'fog') {
         for (let band = 0; band < h; band += 6) for (let seg = 0; seg < 4; seg++) {
           const len = 40 + ((seg * 17 + band * 7) % 40), x = ((seg * 101 + band * 31 + Math.floor(t * speed / 9)) % (360 + len)) - len;
-          ditherRect(g, ART[color], x, y + band, len, 4);
+          ditherRect(g, lifeColor(color), x, y + band, len, 4);
         }
       },
       snow(g, t, i, count = 40, speed = 1) {
@@ -12197,18 +12328,18 @@
         pixelLine(g, x - 3, by + (wing ? 0 : 2), x, by + 1, ART.shadow); pixelLine(g, x, by + 1, x + 3, by + (wing ? 0 : 2), ART.shadow);
       },
       pennant(g, t, i, x, y, length = 8, color = 'cloak') {
-        for (let k = 0; k < length; k++) paint(g, ART[color], x + k, y + [0, 0, 1, 1, 0, -1, -1, 0][(k + Math.floor(t / 5) + i * 3) % 8], 1, Math.max(1, 3 - Math.floor(k / 3)));
+        for (let k = 0; k < length; k++) paint(g, lifeColor(color), x + k, y + [0, 0, 1, 1, 0, -1, -1, 0][(k + Math.floor(t / 5) + i * 3) % 8], 1, Math.max(1, 3 - Math.floor(k / 3)));
       },
       // Étoiles qui scintillent : on repeint le ciel sur quelques-unes, une à la fois.
       stars(g, t, i, list) { list.forEach(([x, y], k) => { if ((Math.floor(t / 24) + k * 5) % 7 === 0) paint(g, ART.night, x, y, 1, 1); }); },
       clouds(g, t, i, y, count = 3, speed = 1, color = 'haze') {
         for (let k = 0; k < count; k++) {
           const x = ((k * 131 + Math.floor(t * speed / 14)) % 420) - 50, cy = y + (k % 2) * 7 - k * 3;
-          pixelDisc(g, x, cy, 7, ART[color]); pixelDisc(g, x + 9, cy + 1, 9, ART[color]); pixelDisc(g, x + 20, cy + 2, 6, ART[color]); paint(g, ART[color], x - 5, cy + 2, 30, 5);
+          pixelDisc(g, x, cy, 7, lifeColor(color)); pixelDisc(g, x + 9, cy + 1, 9, lifeColor(color)); pixelDisc(g, x + 20, cy + 2, 6, lifeColor(color)); paint(g, lifeColor(color), x - 5, cy + 2, 30, 5);
         }
       },
       // Lueur de fenêtre ou de braise : la trame change de teinte par à-coups, sans changer la forme.
-      glow(g, t, i, x, y, w, h, color = 'window') { ditherRect(g, (Math.floor(t / 8) + i * 5) % 9 < 2 ? ART.hot : ART[color], x, y, w, h); },
+      glow(g, t, i, x, y, w, h, color = 'window') { ditherRect(g, (Math.floor(t / 8) + i * 5) % 9 < 2 ? ART.hot : lifeColor(color), x, y, w, h); },
       fireflies(g, t, i, cx, cy, rx, ry, count = 3) {
         for (let k = 0; k < count; k++) {
           const a = SINE16[(Math.floor(t / 6) + k * 5 + i * 3) % 16], b = SINE16[(Math.floor(t / 7) + k * 7 + 4) % 16];
@@ -12243,7 +12374,14 @@
       waves(g, t, i, y0, y1, color = 'waterLight') {
         for (let row = y0, n = 0; row < y1; row += 5, n++) {
           const len = 6 + (n * 5) % 9, x = ((n * 67 + Math.floor(t * (1 + n % 3) / 18)) % 360) - 20;
-          paint(g, ART[color], x, row, len, 1);
+          paint(g, lifeColor(color), x, row, len, 1);
+        }
+      },
+      // Petites silhouettes lointaines qui vont et viennent entre deux points : la vie d'un camp ou d'une cour, sans détail.
+      walkers(g, t, i, x0, x1, y, count = 2) {
+        for (let k = 0; k < count; k++) {
+          const span = Math.max(1, x1 - x0), run = (Math.floor(t / (9 + k * 4)) + k * 37 + i * 11) % (span * 2), x = x0 + (run < span ? run : span * 2 - run);
+          paint(g, ART.shadow, x, y - 4 + (k % 2), 2, 4); paint(g, ART.pathLight, x, y - 5 + (k % 2), 2, 1);
         }
       },
       dust(g, t, i, x, y) {
@@ -12253,10 +12391,10 @@
 
     // Éléments par décor. (x, y) dans le repère 320×200 du décor.
     const SCENE_LIFE = {
-      cult_camp: [['fire', 197, 156, .9], ['smoke', 197, 150, 1], ['pennant', 183, 106, 9, 'roofLight'], ['pennant', 256, 84, 9, 'cloak'], ['pennant', 131, 127, 7, 'accent'], ['pennant', 298, 122, 7, 'roofLight'],
+      cult_camp: [['fire', 197, 156, .9], ['smoke', 197, 150, 1], ['pennant', 183, 106, 9, '#78418a'], ['pennant', 256, 84, 9, '#78418a'], ['pennant', 131, 127, 7, '#452756'], ['pennant', 298, 122, 7, '#78418a'], ['walkers', 150, 176, 149, 2], ['walkers', 226, 286, 141, 2],
         ['stars', [[40, 18], [74, 27], [131, 13], [193, 24], [245, 16], [306, 29]]], ['birds', 36, 1000, 1], ['fog', 160, 12, 2]],
       hatchery: [['torch', 178, 106], ['drips', 150, 70, 150, 160], ['drips', 232, 60, 146, 210], ['ripples', 226, 146, 12], ['fog', 164, 14, 1], ['bats', 40, 1300]],
-      caravan: [['clouds', 34, 3, 2], ['dust', 150, 176], ['dust', 206, 174], ['birds', 48, 1100, 1], ['birds', 70, 1500, -1]],
+      caravan: [['clouds', 34, 3, 2], ['walkers', 232, 262, 136, 1], ['dust', 150, 176], ['dust', 206, 174], ['birds', 48, 1100, 1], ['birds', 70, 1500, -1]],
       carnath: [['glow', 204, 66, 26, 22], ['motes', 20, 60, 280, 110, 10], ['fog', 168, 14, 1]],
       marsh: [['fog', 132, 22, 1], ['fog', 166, 18, 2], ['fireflies', 60, 150, 40, 20, 3], ['fireflies', 240, 140, 40, 20, 3], ['ripples', 120, 176, 10], ['ripples', 210, 186, 12], ['birds', 50, 1400, 1]],
       portal: [['torch', 152, 114], ['torch', 279, 114], ['pulse', 232, 147, 40, 12], ['pulse', 232, 147, 40, 12], ['motes', 120, 60, 160, 100, 8]],
@@ -12309,39 +12447,17 @@
       });
     }
 
-    function drawBookAmbience(g,key,phase) {
-      if (key === 'marsh') {
-        for (let i=0;i<8;i++) {
-          const x=26+i*37%270,y=173+i*11%24;
-          paint(g,ART.waterLight,x+phase%4,y,8+i%4,1);
-        }
-      }
-      if (['ice_sea','ice_cave'].includes(key)) {
-        for (let i=0;i<18;i++) {
-          const x=(173+i*37+phase*2)%320,y=(79+i*23+phase)%200;
-          paint(g,ART.blueLight,x,y,1,1);
-        }
-      }
-      if (key === 'skyreach') {
-        for (let i=0;i<4;i++) {
-          const x=(196+i*61+phase)%360-20,y=176+i%2*11;
-          paint(g,ART.blueLight,x,y,34,1);paint(g,ART.waterLight,x+9,y+2,26,1);
-        }
-      }
-    }
-
     function render() {
       renderD20();
       const key = PRESENTATION.scenes[gameState.lastReport?.roomId ?? gameState.roomId]?.art ?? 'keep';
-      const phase = uiState.reducedMotion ? 0 : Math.floor(Math.max(0,gameState.tick) / 14);
       const direction=getActionDirection(), progress=effectProgress();
       ctx.imageSmoothingEnabled=false;
       const lightning = key === 'verdure' && !uiState.reducedMotion ? lightningLevel(gameState.tick) : 0;
       ctx.drawImage(lightning ? getLitScene(key, lightning) : getSceneArt(key),0,0);
       const shownRoom = gameState.lastReport?.roomId ?? gameState.roomId;
-      if (shownRoom === 'egg_chamber' && !flags.eggsStolen && !flags.eggsDestroyed) drawHatcheryEggs(ctx);
+      if (shownRoom === 'egg_chamber' && !flags.eggsStolen && !flags.eggsDestroyed) drawHatcheryEggs(ctx, uiState.reducedMotion ? 0 : gameState.tick);
+      if (key === 'caravan' && flags.dragonetsHatched && !uiState.reducedMotion) drawWyrmlingPeek(ctx, gameState.tick);
       if (key === 'portal' && flags.portalDamaged) drawPortalDamage(ctx);
-      drawBookAmbience(ctx,key,phase);
       if (key !== 'verdure') drawSceneLife(ctx, key, uiState.reducedMotion ? 0 : gameState.tick);
       if (uiState.preferences.party && !['duel', 'cave_duel'].includes(key) && !direction && !['title_screen', 'credits'].includes(shownRoom)) drawPartyPresence(ctx, uiState.reducedMotion ? 0 : gameState.tick);
       if (key === 'verdure') drawVerdureLife(ctx, uiState.reducedMotion ? 0 : gameState.tick);
@@ -12362,7 +12478,7 @@
         if(key==='cave_duel') [148,294].forEach((x,i)=>drawBerserker(ctx,x,175,uiState.reducedMotion ? 0 : gameState.tick,direction?.kind==='duel' && progress>.55,i ? -1 : 1));
       }
       if (key==='temple' && (!gameState.lastReport || gameState.lastReport.failed)) for(let i=0;i<3;i++) {
-        paint(ctx,ART.wall,243+i*4,135+i%2,2,2);paint(ctx,ART.cloak,242+i*4,137+i%2,4,9);
+        drawVillager(ctx,240+i*7,147+i%2,uiState.reducedMotion ? 0 : gameState.tick,i,.2);
       }
       if (!direction || !uiState.preferences.effects) return;
       if (!uiState.actionFrame) { uiState.actionFrame=document.createElement('canvas'); uiState.actionFrame.width=320;uiState.actionFrame.height=200; }
@@ -12378,10 +12494,24 @@
       uiState.framePending=true;requestAnimationFrame(animationLoop);
     }
 
-    function animationLoop() {
+    // L'animation suit le temps réel : 60 crans par seconde quel que soit l'écran (60, 120 ou 144 Hz), au lieu d'un cran par image.
+    const TICK_MS = 1000 / 60;
+    function animationLoop(now) {
       uiState.framePending=false;
-      if (!uiState.reducedMotion) gameState.tick+=1;
-      if (gameState.tick%3===0 || uiState.reducedMotion) render();
+      if (uiState.reducedMotion) { render(); return; }
+      let steps = 1;
+      if (typeof now === 'number') {
+        const last = uiState.lastFrameTime ?? now;
+        uiState.lastFrameTime = now;
+        // Après un onglet en veille, on ne rattrape qu'un dixième de seconde.
+        uiState.frameDebt = Math.min(100, (uiState.frameDebt ?? 0) + Math.max(0, now - last));
+        steps = Math.floor(uiState.frameDebt / TICK_MS);
+        uiState.frameDebt -= steps * TICK_MS;
+      }
+      if (steps > 0) {
+        const before = gameState.tick; gameState.tick += steps;
+        if (Math.floor(before / 3) !== Math.floor(gameState.tick / 3)) render();
+      }
       scheduleAnimation();
     }
 

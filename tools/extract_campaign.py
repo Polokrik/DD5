@@ -12,7 +12,7 @@ from pypdf import PdfReader
 
 root = Path(__file__).resolve().parents[1]
 sources = {}
-for path in sorted(root.iterdir()):
+for path in sorted((root / 'sources').iterdir()):
     records = []
     if path.suffix == '.xlsx':
         book = load_workbook(path, read_only=True, data_only=True)

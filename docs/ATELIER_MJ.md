@@ -108,7 +108,7 @@ inventer un second sort.
 
 ### Mise en scène: proposition et prototype
 
-Le prototype est maintenant décrit dans [VERDURE_VIVANTE.md](VERDURE_VIVANTE.md).
+Ce prototype est intégré au jeu (scène du temple, décors de Verdure).
 Il utilise l’attribution du journal pour le brouillard, sans trancher le souvenir
 distinct concernant Darrin. Les nappes visuelles, vignettes et sons synthétiques
 sont intégrés; les voix humaines enregistrées et les pas détaillés ci-dessous
