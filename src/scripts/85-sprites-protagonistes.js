@@ -34,7 +34,9 @@
       const shade = s >= .5 ? spriteRamps() : null;
       const P = (color, x, y, w = 1, h = 1) => {
         const x0 = X(x), y0 = Y(y), pw = Math.max(1, X(x + w) - x0), ph = Math.max(1, Y(y + h) - y0);
-        paint(g, color, x0, y0, pw, ph);
+        // Les contours épais ont des coins adoucis : la silhouette perd son aspect de bloc.
+        if (color === SB.ink && pw >= 6 && ph >= 6) { paint(g, color, x0 + 1, y0, pw - 2, ph); paint(g, color, x0, y0 + 1, 1, ph - 2); paint(g, color, x0 + pw - 1, y0 + 1, 1, ph - 2); }
+        else paint(g, color, x0, y0, pw, ph);
         if (!shade || pw < 5 || ph < 5) return;
         const light = shade.light[color], dark = shade.dark[color];
         if (light) paint(g, light, x0, y0, pw - 1, 1);
@@ -126,6 +128,64 @@
         if (p.r) { P(SB.steel2, 34, 62 + bob + low, 5, 2); P(SB.white, 38, 61 + bob + low, 1, 1); }
       }
     };
+    // Passe de détail par personnage, dessinée par-dessus le modèle de la bible : mêmes ancrages, mêmes poses.
+    // Visages, barbe, casques, ceintures, bordures et accessoires qui rapprochent les sept du niveau de Langdedrosa.
+    const SPRITE_DETAILS = {
+      bjolnir({ P, line }, p) {
+        const b = p.b, g = p.g, atk = p.a, s = p.s;
+        P(SB.steel, 23, 13 + b, 23, 5); P(SB.steel2, 25, 13 + b, 13, 1); P(SB.steel2, 33, 18 + b, 2, 6);
+        P(SB.ink, 28, 23 + b, 2, 2); P(SB.ink, 40, 23 + b, 2, 2);
+        [27, 33, 39].forEach(x => P(SB.leather2, x + s, 38 + b, 2, 11)); P(SB.brown, 29 + s, 50 + b, 12, 3);
+        P(SB.leather, 18, 63 + b, 31, 3); P(SB.gold2, 31, 63 + b, 5, 3);
+        line(SB.gold, 10 - g, 40 + b, 27 - g, 40 + b, 1); line(SB.gold, 10 - g, 65 + b, 18 - g, 71 + b, 1); line(SB.gold, 27 - g, 65 + b, 18 - g, 71 + b, 1); P(SB.gold2, 17 - g, 54 + b, 3, 3);
+        line(SB.leather2, 48 + atk, 42 + b, 54 + atk, 22 + b, 1); P(SB.gold, 49 + atk, 17 + b, 12, 1);
+        P(SB.leather2, 22, 86, 9, 1); P(SB.leather2, 39, 86, 9, 1);
+      },
+      drekthar({ P, line }, p) {
+        const b = p.b, g = p.g, atk = p.a, s = p.s;
+        P(SB.ink, 11, 29 + b + p.r, 13, 7); P(SB.steel2, 12, 30 + b + p.r, 11, 4); P(SB.ink, 41, 29 + b + p.r, 13, 7); P(SB.steel2, 42, 30 + b + p.r, 11, 4);
+        P(SB.ink, 30, 8 + b, 8, 5); P(SB.ink, 24, 18 + b, 20, 2); P(SB.gold2, 28, 21 + b, 2, 1); P(SB.gold2, 40, 21 + b, 2, 1);
+        P(SB.white, 27, 28 + b, 2, 3); P(SB.white, 39, 28 + b, 2, 3);
+        P(SB.red2, 14 + s, 38 + b, 2, 22); P(SB.leather, 16, 62 + b, 33, 4); P(SB.gold, 31, 62 + b, 4, 4);
+        const len = 42 + atk, sx = 44 - g, sy = 51 + b + Math.max(0, atk);
+        line(SB.white, sx + 1, sy - 3, sx + len * .5 - 1, sy - len + 2, 1);
+      },
+      ellyjobell({ P, line }, p) {
+        const b = p.b, s = p.s, sx = 11 + (p.g ? 4 : 0) + s;
+        P(SB.ink, 29, 26 + b, 1, 2); P(SB.ink, 39, 26 + b, 1, 2); P(SB.red2, 27, 30 + b, 2, 1); P(SB.red2, 40, 30 + b, 2, 1);
+        line(SB.green2, 22, 24 + b, 29, 13 + b, 1); line(SB.green2, 29, 13 + b, 45, 24 + b, 1);
+        [22, 30, 38].forEach((x, i) => P(i % 2 ? SB.green : SB.green2, x, 46 + b + i % 2, 5, 2));
+        P(SB.leather2, 38, 56 + b, 6, 6); P(SB.leather, 38, 56 + b, 6, 1);
+        P(SB.leather2, sx + 1, 40, 2, 2); P(SB.leather2, sx + 1, 62, 2, 2);
+      },
+      darrin({ P }, p) {
+        const b = p.b, spread = p.g ? 2 : 7, atk = p.a;
+        P(SB.ink, 30, 24 + b, 2, 2); P(SB.ink, 40, 24 + b, 2, 2); P(SB.brown, 22, 12 + b, 4, 4); P(SB.brown, 41, 11 + b, 4, 4);
+        P(SB.purple2, 32, 42 + b, 2, 29); P(SB.gold, 20, 70, 26, 1); P(SB.gold, 20, 42 + b, 26, 1);
+        if (Math.abs(p.s) || p.r) { P(SB.gold2, 2 - spread, 51 + b - atk, 1, 1); P(SB.ice2, 61 + spread, 44 + b + atk, 1, 1); }
+      },
+      sislay({ P, line }, p) {
+        const b = p.b, hx = p.r ? 2 : 0;
+        P(SB.ink, 44, 25 + b, 7, 20); P(SB.leather2, 45, 26 + b, 5, 18); P(SB.red2, 45, 22 + b, 1, 4); P(SB.red2, 48, 22 + b, 1, 4);
+        P(SB.white, 29 + hx, 29 + b, 1, 2); P(SB.white, 39 + hx, 29 + b, 1, 2);
+        line(SB.leather2, 20, 36 + b, 45, 64 + b, 2); P(SB.brown, 19, 60 + b, 28, 3); P(SB.gold, 31, 60 + b, 3, 3);
+      },
+      kairon({ P, line }, p) {
+        const b = p.b;
+        line(SB.ink, 44, 66 + b, 54, 80, 3); line(SB.red, 44, 66 + b, 53, 79, 2); P(SB.red, 52, 78, 4, 3);
+        P(SB.ink, 30, 29 + b, 8, 1);
+        [40, 47, 54, 61].forEach(y => { P(SB.gold, 21, y + b, 1, 1); P(SB.gold, 44, y + b, 1, 1); });
+        line(SB.red2, 32, 49 + b, 32, 70 + b, 1);
+      },
+      malar({ P, line }, p) {
+        const low = p.g ? 2 : 0, bob = p.b;
+        P(SB.ink, 30, 24 + bob + low, 2, 2); P(SB.ink, 40, 24 + bob + low, 2, 2);
+        line(SB.blue2, 17, 38 + bob + low, 28, 35 + bob + low, 1); line(SB.blue2, 17, 38 + bob + low, 14 - p.s, 63 + bob + low, 1);
+        line(SB.leather, 20, 40 + bob + low, 46, 62 + bob + low, 2); P(SB.brown, 18, 60 + bob + low, 29, 3);
+        P(SB.leather2, 19, 87 + low, 8, 1); P(SB.leather2, 41, 87 + low, 7, 1);
+      }
+    };
+
     const SPRITE_IDS = Object.keys(SPRITE_MODELS);
 
     // Villageois et figurants : même grille 64×96 et même trait que les protagonistes, en plus simple.
@@ -169,7 +229,8 @@
       const model = SPRITE_MODELS[id]; if (!model) return null;
       const { t = 0, frame = null, guard = false, scale = .7 } = options, pose = spritePose(id, t, frame, guard);
       const lean = frame ? frame.lean : pose.x * 2;
-      model(spriteOps(g, x - 32 * scale + lean * scale, y - 93 * scale, scale), pose);
+      const ops = spriteOps(g, x - 32 * scale + lean * scale, y - 93 * scale, scale);
+      model(ops, pose); SPRITE_DETAILS[id]?.(ops, pose);
       return { x: x + Math.round((SPRITE_TIP[id][0] - 32 + pose.a) * scale), y: y + Math.round((SPRITE_TIP[id][1] - 93) * scale) };
     }
     // Pointe de l'arme (modèle 64×96) : sert à placer l'étincelle d'impact.

@@ -81,5 +81,7 @@ de fonctionnalité ou de règle. Les instructions de travail sont dans [AGENTS.m
 ## Limites connues
 
 - Plusieurs scènes de chronique restent linéaires (un choix principal plus repos et « faire le point »).
-- Les sprites des protagonistes sont plus simples que celui de Langdedrosa.
+- Les sprites des protagonistes ont reçu une passe de détail (`SPRITE_DETAILS` : casque et barbe tressée de
+  Bjolnir, épaulières et défenses de Drek'Thar, carquois de Sislay, queue de Kairon, liserés de Malar, coins
+  de contour adoucis) mais restent moins fins que Langdedrosa; les décors sont encore inégaux entre eux.
 - Les lanceurs Windows et Mac ne sont pas testés automatiquement : à vérifier sur chaque système.
