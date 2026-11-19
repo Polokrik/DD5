@@ -61,8 +61,29 @@
 
     // Les marques de méthode (« What If », « Chronique ») deviennent un repère discret plutôt qu'un préfixe du titre.
     const CHOICE_TAG = /^(Option absurde|What If|Chronique)\s*[–—-]\s*/;
-    const CHOICE_BADGES = { 'What If': 'Et si…', 'Option absurde': 'Provocation' };
+    const CHOICE_BADGES = { 'What If': 'Et si…' };
     const EXIT_LABELS = { nord: 'Continuer vers le nord', sud: 'Revenir vers le sud', est: 'Aller vers l’est', ouest: 'Aller vers l’ouest' };
+
+    function choiceGroup(choice) {
+      const option = choice.option, id = option.id;
+      if (choice.direction) return choice.forward ? 1 : 6;
+      if (STORY_CHOICES.has(id)) return 0;
+      if (/^navigation-/.test(id)) return 7;
+      if (/^(repos-|point-)/.test(id)) return 5;
+      if (String(option.onSelect).startsWith('silly_')) return 4;
+      if (/^rescue-start-/.test(id)) return 3;
+      return 2;
+    }
+
+    // Une sortie avance si elle mène à une scène plus loin dans l'ordre de la campagne.
+    let roomOrderCache = null;
+    function isForwardRoom(from, to) {
+      if (!roomOrderCache) {
+        const order = ['ACT_I', 'ACT_II', 'ACT_III', 'ACT_IV', 'ACT_V'].flatMap(act => DATA.actRooms[act] ?? []);
+        roomOrderCache = new Map(order.map((id, index) => [id, index]));
+      }
+      return (roomOrderCache.get(to) ?? -1) > (roomOrderCache.get(from) ?? Infinity);
+    }
 
     function getPresentedChoices() {
       if (gameState.lastReport) {
@@ -74,13 +95,18 @@
       }
       const options = getAvailableOptions(gameState.roomId);
       if (gameState.roomId !== 'title_screen') {
-        const choices = options.map((option,index) => ({ option,index,shortcut:index+1 }));
+        const choices = options.map((option,index) => ({ option,index }));
         const canTravel = Object.values(characters).some(c => ['active', 'injured'].includes(c.state));
-        Object.keys(canTravel ? getCurrentRoom()?.exits ?? {} : {}).forEach(direction => choices.push({
-          direction, index: -2, shortcut: choices.length + 1,
-          option: { id: `exit-${direction}`, label: EXIT_LABELS[direction] ?? `Aller vers ${direction}`,
-            intent: direction === 'sud' ? 'Quitter la scène et revenir sur ses pas. Rien n’est perdu.' : 'Quitter la scène et poursuivre le chemin, sans autre épreuve.' } }));
-        return choices;
+        Object.entries(canTravel ? getCurrentRoom()?.exits ?? {} : {}).forEach(([direction, destination]) => {
+          const forward = isForwardRoom(gameState.roomId, destination);
+          choices.push({ direction, forward, index: -2,
+            option: { id: `exit-${direction}`, label: EXIT_LABELS[direction] ?? `Aller vers ${direction}`,
+              intent: forward ? 'Quitter la scène et poursuivre le chemin, sans autre épreuve.' : 'Quitter la scène et revenir sur ses pas. Rien n’est perdu.' } });
+        });
+        // Le choix joué dans la campagne d'abord, puis la sortie qui fait avancer, puis les autres approches.
+        return choices.map((choice, position) => ({ choice, position, group: choiceGroup(choice) }))
+          .sort((a, b) => a.group - b.group || a.position - b.position)
+          .map(({ choice, group }, slot) => ({ ...choice, story: group <= 1, shortcut: slot + 1 }));
       }
       return [
         { option: { id:'title-new',label:'Commencer l’aventure' },index:options.findIndex(o=>o.id==='title-new'),shortcut:1 },
@@ -192,7 +218,7 @@
       const list = document.getElementById('choiceList'); list.replaceChildren();
       getPresentedChoices().forEach((choice, slot) => {
         const { option } = choice;
-        const card = document.createElement('button'); card.type = 'button'; card.className = `choice-card${slot === 0 && (gameState.roomId === 'title_screen' || gameState.lastReport) ? ' primary' : ''}`;
+        const card = document.createElement('button'); card.type = 'button'; card.className = `choice-card${slot === 0 && (gameState.roomId === 'title_screen' || gameState.lastReport) ? ' primary' : ''}${choice.story ? ' story' : ''}`;
         card.dataset.choice = option.id; card.dataset.shortcut = choice.shortcut; card.disabled = choice.index === -1;
         if (choice.direction) card.dataset.direction = choice.direction;
         const number = document.createElement('span'); number.className = 'choice-number'; number.textContent = String(choice.shortcut).padStart(2, '0');
@@ -270,7 +296,7 @@
         details.dataset.read = String(gameState.observations.includes(`${gameState.roomId}:${entry.id}`));
         summary.textContent = entry.title; details.appendChild(summary);
         entry.paragraphs.forEach(paragraph => {
-          const p = document.createElement('p'); p.textContent = paragraph; details.appendChild(p);
+          details.appendChild(richParagraph(paragraph));
         });
         details.addEventListener('toggle',() => {
           if (details.open && gameState.roomId === roomId && observeScene(entry.id)) details.dataset.read = 'true';
@@ -291,7 +317,7 @@
       const entries = gameState.lastReport ? [] : getSceneMemories();
       panel.hidden = !entries.length;
       entries.forEach(entry => entry.paragraphs.forEach(paragraph => {
-        const p = document.createElement('p'); p.textContent = paragraph; panel.appendChild(p);
+        panel.appendChild(richParagraph(paragraph));
       }));
     }
 
@@ -340,7 +366,7 @@
       text('pageNumber', chapter ? String(chapter).padStart(2,'0') : '◇');
       text('decisionTitle', pending ? 'Le D20 roule…' : report ? 'La suite' : room.id === 'title_screen' ? 'Ouvrir le récit' : 'Que faites-vous ?');
       const narrative = document.getElementById('sceneNarrative'); narrative.replaceChildren();
-      (pending ? [`${characters[report.check.actorId]?.name ?? 'Le compagnon'} tente cette épreuve. Le résultat et ses conséquences apparaîtront dès que le dé sera arrêté.`] : report?.paragraphs ?? view?.paragraphs ?? room.paragraphs ?? [room.description]).forEach(paragraph => { const p = document.createElement('p'); p.textContent = paragraph; narrative.appendChild(p); });
+      (pending ? [`${characters[report.check.actorId]?.name ?? 'Le compagnon'} tente cette épreuve. Le résultat et ses conséquences apparaîtront dès que le dé sera arrêté.`] : report?.paragraphs ?? view?.paragraphs ?? room.paragraphs ?? [room.description]).forEach(paragraph => narrative.appendChild(richParagraph(paragraph)));
       const effectsBox = document.getElementById('reportEffects'); effectsBox.replaceChildren();
       (report?.effects ?? []).forEach(chip => effectsBox.appendChild(chipElement(chip)));
       effectsBox.hidden = !report || pending || !(report.effects ?? []).length;
@@ -362,16 +388,45 @@
     function showDialog(id) { const dialog = document.getElementById(id); if (!dialog.open) dialog.showModal(); }
 
     function openJournal(tab = 'history') {
-      const chronicle = tab === 'chronicle', decisions = tab === 'decisions';
+      const chronicle = tab === 'chronicle', decisions = tab === 'decisions', cast = tab === 'cast';
       document.getElementById('chroniclePanel').hidden = !chronicle;
       document.getElementById('decisionsPanel').hidden = !decisions;
-      document.getElementById('eventLog').hidden = chronicle || decisions;
+      document.getElementById('castPanel').hidden = !cast;
+      document.getElementById('eventLog').hidden = chronicle || decisions || cast;
       document.getElementById('chronicleTab').setAttribute('aria-pressed', String(chronicle));
       document.getElementById('decisionsTab').setAttribute('aria-pressed', String(decisions));
-      document.getElementById('historyTab').setAttribute('aria-pressed', String(!chronicle && !decisions));
+      document.getElementById('castTab').setAttribute('aria-pressed', String(cast));
+      document.getElementById('historyTab').setAttribute('aria-pressed', String(!chronicle && !decisions && !cast));
       if (chronicle) renderChapter(uiState.chapter);
       if (decisions) renderDecisions();
+      if (cast) renderCast();
       showDialog('journalDialog');
+    }
+
+    // Onglet « Personnages » : la compagnie, puis les personnages déjà rencontrés (aucune fiche au-delà du chapitre atteint).
+    function renderCast() {
+      const panel = document.getElementById('castPanel'); panel.replaceChildren();
+      const card = (title, role, text, portrait, note) => {
+        const article = document.createElement('article'); article.className = 'cast-card';
+        if (portrait) article.appendChild(portrait);
+        const body = document.createElement('div'), name = document.createElement('h4'), meta = document.createElement('p');
+        name.textContent = title; meta.className = 'cast-role'; meta.textContent = role;
+        body.append(name, meta, richParagraph(text));
+        if (note) { const small = document.createElement('p'); small.className = 'cast-note'; small.textContent = note; body.appendChild(small); }
+        article.appendChild(body); return article;
+      };
+      const heading = text => { const h = document.createElement('h3'); h.textContent = text; panel.appendChild(h); };
+      heading('La compagnie');
+      Object.entries(characters).filter(([, c]) => c.state !== 'absent' || c.departed).forEach(([id, c]) => {
+        const person = PRESENTATION.people[id];
+        const left = c.departed && c.state === 'absent';
+        panel.appendChild(card(person?.name ?? c.name, `${person?.race ?? ''} · ${person?.role ?? ''}${left ? '' : ` · ${stateLabel(id, c.state)}`}`, person?.personality ?? '', portraitImage(id),
+          left ? 'A quitté le Clan.' : ''));
+      });
+      const reached = reachedChapter(), met = NPC_SHEETS.map(sheet => ({ ...sheet, chapter: npcChapter(sheet) })).filter(sheet => sheet.chapter <= reached).sort((a, b) => a.chapter - b.chapter);
+      heading('Rencontres');
+      if (!met.length) { const p = document.createElement('p'); p.className = 'cast-note'; p.textContent = 'Les personnages rencontrés apparaîtront ici au fil de l’aventure.'; panel.appendChild(p); }
+      met.forEach(sheet => panel.appendChild(card(sheet.name, sheet.role, sheet.text, null, `Rencontré au chapitre ${CHRONICLE_CHAPTERS[sheet.chapter - 1]?.title ?? sheet.chapter}`)));
     }
 
     function renderChapter(index) {
@@ -383,7 +438,7 @@
       });
       const reader = document.getElementById('chapterReader'); reader.replaceChildren();
       const heading = document.createElement('h3'); heading.textContent = CHRONICLE_CHAPTERS[index].title; reader.appendChild(heading);
-      CHRONICLE_CHAPTERS[index].paragraphs.forEach(text => { const p = document.createElement('p'); p.textContent = text; reader.appendChild(p); });
+      CHRONICLE_CHAPTERS[index].paragraphs.forEach(text => reader.appendChild(richParagraph(text)));
       reader.scrollTop = 0;
     }
 

@@ -177,6 +177,7 @@
     // obliger à revenir en arrière. Il reprend les observations sourcées de la scène.
     Object.values(rooms).forEach(room => room.options.filter(option => String(option.onSelect).startsWith('silly_')).forEach(option => {
       option.effects = { ...option.effects, message: 'Un choix pour le moins inattendu.' };
+      delete option.riskText; // les joueurs comprennent seuls que le choix est farfelu
       ACTION_NARRATION[option.id] = { successTitle: 'Un choix pour le moins inattendu' };
     }));
     const POINT_ROOMS = ['leosin_return','mondath_chamber','hatchery_exit','elturel_road','elturel_tournament','carnath_roadhouse',

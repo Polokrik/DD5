@@ -43,6 +43,9 @@ Le public est **les joueurs de cette campagne** : fidélité au récit vécu, pa
 - Checkpoints : tout état (personnages, drapeaux, variables, décisions, sauvetage) doit être
   restauré par un retour en arrière et validé à l'import d'une sauvegarde.
 - Morts permanentes. Game over seulement quand tous les compagnons présents sont morts.
+- Le choix joué dans la campagne est toujours présenté en premier et en bleu (`STORY_CHOICES`), avec la
+  sortie qui fait avancer l'histoire. Un nouveau personnage nommé dans la chronique reçoit une fiche dans
+  `NPC_SHEETS` et son nom rejoint `HIGHLIGHT_TERMS` (`src/scripts/45-fil-et-personnages.js`).
 - La bataille finale hypothétique reste dans le code mais n'est pas proposée (`?whatif=1` pour la tester).
 
 ### Rendu

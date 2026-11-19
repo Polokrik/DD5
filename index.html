@@ -173,6 +173,17 @@
     .decision-chip[data-kind='etsi'] { border-color: #b89868; }
     .decision-chip[data-kind='chaos'] { border-style: dashed; }
     .decisions-panel { padding: 8px 30px 30px; overflow-y: auto; max-height: 68dvh; }
+    .cast-panel h3 { margin: 22px 0 10px; font: 17px/1.4 Georgia,serif; }
+    .cast-card { display: flex; gap: 14px; align-items: flex-start; padding: 12px 0; border-bottom: 1px solid #e0d8c8; }
+    .cast-card img { width: 32px; height: 48px; flex: none; image-rendering: pixelated; }
+    .cast-card h4 { margin: 0; font: 600 14px/1.4 inherit; }
+    .cast-card p { margin: 4px 0 0; font-size: 13px; line-height: 1.65; color: #3d4643; }
+    .cast-card .cast-role { color: #7a5a2a; font-size: 12px; }
+    .cast-note { color: #7d7769 !important; font-size: 11px !important; }
+    .choice-card.story { background: #eef3fa; border-color: #8fa9cc; border-left: 4px solid #3f6aa1; }
+    .choice-card.story .choice-number { color: #3f6aa1; font-weight: 700; }
+    .choice-card.story:hover { background: #e3ecf8; }
+    .prose strong, .chapter-reader strong, .scene-observation strong, .scene-memories strong, .cast-card strong { font-weight: 700; color: #22313a; }
     .decisions-summary { font-size: 13px; color: #5b6258; line-height: 1.7; }
     .decisions-panel h3 { margin: 22px 0 8px; font: 17px/1.4 Georgia,serif; }
     .decisions-list { list-style: none; margin: 0; padding: 0; display: grid; gap: 6px; }
@@ -296,7 +307,7 @@
     </section>
     <footer class="game-footer"><span id="campaignNote">Chronique du Clan d’Estain</span></footer>
   </main>
-  <dialog id="journalDialog" aria-labelledby="journalTitle"><div class="dialog-header"><h2 id="journalTitle">Les chroniques du Clan</h2><button class="close-dialog" data-close="journalDialog" aria-label="Fermer le journal">×</button></div><div class="journal-tabs"><button id="chronicleTab" aria-pressed="true">La campagne · 18 chapitres</button><button id="decisionsTab" aria-pressed="false">Décisions du Clan</button><button id="historyTab" aria-pressed="false">Votre aventure</button></div><div id="chroniclePanel" class="chronicle-layout"><nav id="chapterList" class="chapter-list" aria-label="Chapitres de la chronique"></nav><article id="chapterReader" class="chapter-reader"></article></div><div id="decisionsPanel" class="decisions-panel" hidden></div><div id="eventLog" hidden></div></dialog>
+  <dialog id="journalDialog" aria-labelledby="journalTitle"><div class="dialog-header"><h2 id="journalTitle">Les chroniques du Clan</h2><button class="close-dialog" data-close="journalDialog" aria-label="Fermer le journal">×</button></div><div class="journal-tabs"><button id="chronicleTab" aria-pressed="true">La campagne · 18 chapitres</button><button id="decisionsTab" aria-pressed="false">Décisions du Clan</button><button id="castTab" aria-pressed="false">Personnages</button><button id="historyTab" aria-pressed="false">Votre aventure</button></div><div id="chroniclePanel" class="chronicle-layout"><nav id="chapterList" class="chapter-list" aria-label="Chapitres de la chronique"></nav><article id="chapterReader" class="chapter-reader"></article></div><div id="decisionsPanel" class="decisions-panel" hidden></div><div id="castPanel" class="decisions-panel cast-panel" hidden></div><div id="eventLog" hidden></div></dialog>
   <dialog id="companyDialog" aria-labelledby="companyTitle"><div class="dialog-header"><h2 id="companyTitle">La compagnie</h2><button class="close-dialog" data-close="companyDialog" aria-label="Fermer la compagnie">×</button></div><div class="company-layout"><nav id="companyRoster" class="company-roster" aria-label="Choisir un personnage"></nav><article id="companyDetails" class="party-detail-list"></article></div></dialog>
   <dialog id="ambianceDialog" aria-labelledby="ambianceTitle"><div class="dialog-header"><h2 id="ambianceTitle">L’ambiance du récit</h2><button class="close-dialog" data-close="ambianceDialog" aria-label="Fermer les réglages d’ambiance">×</button></div><div class="ambiance-body"><p>Les illustrations accompagnent les gestes des compagnons. Vous pouvez garder une lecture calme ou ajouter une ambiance sonore discrète.</p><label class="ambiance-setting" for="diceSetting">Animer les jets de D20<input id="diceSetting" type="checkbox" /></label><label class="ambiance-setting" for="effectsSetting">Effets liés aux actions<input id="effectsSetting" type="checkbox" /></label><label class="ambiance-setting" for="partySetting">Compagnie visible à l’écran<input id="partySetting" type="checkbox" /></label><label class="ambiance-setting" for="motionSetting">Mouvements<select id="motionSetting"><option value="auto">Selon l’appareil</option><option value="reduced">Réduits</option></select></label><p class="ambiance-notice" id="motionNotice"></p><label class="ambiance-setting" for="soundSetting">Sons d’ambiance et d’action<input id="soundSetting" type="checkbox" /></label><label class="ambiance-setting" for="volumeSetting">Volume<input id="volumeSetting" type="range" min="0" max="100" step="5" aria-valuetext="25 %" /></label><p id="soundNotice" class="ambiance-notice" role="status">Le son est désactivé au départ. Le récit reste entièrement compréhensible sans lui.</p></div></dialog>
   <dialog id="importDialog" aria-labelledby="importTitle"><div class="dialog-header"><h2 id="importTitle">Reprendre une autre chronique</h2><button class="close-dialog" data-close="importDialog" aria-label="Fermer l’import">×</button></div><div class="import-body"><p>Collez le contenu de votre sauvegarde exportée. Votre partie actuelle sera remplacée uniquement si cette sauvegarde est valide.</p><label for="importPayload" class="eyebrow">Votre sauvegarde</label><textarea id="importPayload" spellcheck="false"></textarea><p id="importResult" role="status"></p><button id="importButton" class="choice-card primary">Importer et reprendre l’aventure <span aria-hidden="true">→</span></button></div></dialog>
@@ -8290,6 +8301,7 @@
     // obliger à revenir en arrière. Il reprend les observations sourcées de la scène.
     Object.values(rooms).forEach(room => room.options.filter(option => String(option.onSelect).startsWith('silly_')).forEach(option => {
       option.effects = { ...option.effects, message: 'Un choix pour le moins inattendu.' };
+      delete option.riskText; // les joueurs comprennent seuls que le choix est farfelu
       ACTION_NARRATION[option.id] = { successTitle: 'Un choix pour le moins inattendu' };
     }));
     const POINT_ROOMS = ['leosin_return','mondath_chamber','hatchery_exit','elturel_road','elturel_tournament','carnath_roadhouse',
@@ -8538,6 +8550,87 @@
   "campaign_end": 14
 };
 
+    // ───────────────────────── Fil de l'histoire et personnages rencontrés ─────────────────────────
+    // Choix qui suivent la campagne jouée, dans l'ordre du journal (même liste que tests/campaign-path.cjs).
+    // Ils sont présentés en premier et en bleu, avec les sorties qui font avancer l'histoire.
+    const STORY_CHOICES = new Set([
+      'charge-civils', 'swift-diplomatie', 'mission-sanctuaire', 'tunnel-temple', 'temple-evacuation', 'mission-moulin', 'moulin-assaut',
+      'repousser-dragon', 'dragon-defendre', 'vers-duel', 'duel-campagne', 'fin-acte', 'depart-camp',
+      'camp-liberation', 'retour-grotte', 'revanche-drekthar', 'voler-oeufs', 'oeufs-suite', 'mondath-retour', 'act2-end', 'elturel-arrivee', 'tournoi-caravane',
+      'caravane-marchands', 'caravane-arrivee', 'carnath-marais', 'naerytar-entree', 'naerytar-portal', 'portal-traverse', 'lodge-reunion',
+      'skyreach-reunion', 'skyreach-return', 'skyreach-convaincre', 'skyreach-rezmir', 'skyreach-proteger', 'act3-end', 'act5-muster',
+      'council-open-session', 'defense-honnete', 'strategy-metallic', 'diderius-retour', 'glace-explorer', 'glace-victoire', 'conseil-dragons',
+      'dragons-conditions', 'foret-temple', 'foret-affrontement', 'foret-retour', 'thay-conseil', 'resolve-council-session'
+    ]);
+
+    // Personnages rencontrés : uniquement ce que la chronique rapporte. Une fiche apparaît dans le journal
+    // quand le Clan atteint le chapitre où le personnage entre dans l'histoire (pas de spoiler).
+    const NPC_SHEETS = [
+      { name: 'Le gouverneur Nighthill', match: 'Nighthill', role: 'Gouverneur de Verdure', text: 'Il accueille le Clan malgré ses blessures pendant l’attaque, puis lui confie la mission de retrouver le camp des assaillants et ce qui a été volé à la ville.' },
+      { name: 'Escobert le Rouge', match: 'Escobert', role: 'Second du gouverneur', text: 'Nain des montagnes, il veille à la défense de la forteresse de Verdure, dont chaque porte semble pouvoir céder.' },
+      { name: 'Linan', match: 'Linan', role: 'Habitant de Verdure', text: 'Le Clan le prend sous sa protection, lui et les siens, au cœur de l’attaque.' },
+      { name: 'Langdedrosa Cyanwrath', match: 'Cyanwrath', role: 'Demi-dragon bleu, champion du Culte', text: 'Il défie le Clan au matin de l’attaque de Verdure; Drek’Thar l’affronte pour obtenir la libération des prisonniers. Leur rivalité se poursuit dans la grotte du Culte.' },
+      { name: 'Frulam Mondath', match: 'Mondath', role: 'Cheffe des pillards du Culte', text: 'Le Culte recherche des œufs de dragon et agit sous son commandement autour de Verdure.' },
+      { name: 'Leosin Erlanthar', match: 'Leosin', role: 'Moine', text: 'Prisonnier des cultistes, il est libéré par le Clan; il l’envoie ensuite rejoindre à Elturel Ontharr Frume.' },
+      { name: 'Ontharr Frume', match: 'Ontharr', role: 'Paladin de Torm', text: 'À Elturel, avec Leosin, il présente l’alliance qui se dessine entre le Gantelet, les Ménestrels et l’Enclave d’Émeraude.' },
+      { name: 'Ackyn Sélébon', match: 'Ackyn', role: 'Équipementier de Baldur’s Gate', text: 'Il fait engager le Clan dans une caravane de onze chariots.' },
+      { name: 'Jamna Gleamsilver', match: 'Jamna', role: 'Gnome', text: 'Arrivée au vingt-sixième jour de la caravane, sa présence ne passe pas inaperçue; elle reste avec le Clan.' },
+      { name: 'Azbara Jos', match: 'Azbara', role: 'Mage rouge', text: 'Il rejoint la caravane en même temps que Jamna.' },
+      { name: 'Pressegueule', match: 'Pressegueule', role: 'Homme-lézard', text: 'Captif interrogé au relais de Carnath, il devient le guide du Clan à travers les marais.' },
+      { name: 'Talis', match: 'Talis', role: 'Cherchée par Ellyjobell depuis Verdure', text: 'Retrouvée au pavillon de chasse, Talis occupe une place importante auprès des cultistes mais accepte de les trahir : renseignements, bannière à cinq bandes et deux mots de passe.' },
+      { name: 'Le capitaine Othelstan', match: 'Othelstan', role: 'Capitaine à Parnast', text: 'Le Clan le rencontre avant d’entrer dans le château volant, qui se prépare au départ.' },
+      { name: 'Blagothkus', match: 'Blagothkus', role: 'Géant des nuages, maître de Cumulus', text: 'Il soutient d’abord le retour de Tiamat pour la vaincre ensuite; convaincu par Bjolnir et par Eskarotha, il se retourne contre le Culte.' },
+      { name: 'Eskarotha', match: 'Eskarotha', role: 'Esprit de l’épouse de Blagothkus', text: 'Son esprit habite les runes naines qui font voler Cumulus; elle aide le Clan.' },
+      { name: 'Rezmir', match: 'Rezmir', role: 'Demi-dragon noir, Dragophone', text: 'Le Clan l’affronte et la capture à bord de Cumulus; elle ne livre rien.' },
+      { name: 'Glazael', match: 'Glazael', role: 'Dragon blanc', text: 'Il dort sur son trésor au fond de Cumulus; les hommes de Blagothkus le capturent.' },
+      { name: 'Severin le Rouge', match: 'Severin', role: 'Chef des Dragophones', text: 'Talis révèle qu’il dirige les Dragophones et le projet du Culte.' },
+      { name: 'Varam le Blanc', match: 'Varam', role: 'Dragophone de l’Hiver et du Froid', text: 'Le Conseil de Waterdeep lance le Clan sur sa piste.' },
+      { name: 'Laeral Silverhand', match: 'Laeral', role: 'À la tête de Waterdeep', text: 'Elle a remplacé Dagult Neverember à la direction de la cité.' },
+      { name: 'Lerustah Half-Face', match: 'Lerustah', role: 'Capitaine du Frostskimmr', text: 'Il conduit le Clan vers les glaces du nord et lui accorde une semaine pour donner des nouvelles.' },
+      { name: 'Maccath l’Écarlate', match: 'Maccath', role: 'Confrérie de l’Arcane', text: 'Disparue depuis trois ans, le Clan la retrouve dans l’iceberg; elle accepte de l’aider contre Arauthator.' },
+      { name: 'Marfulb', match: 'Marfulb', role: 'Meneur des crapauds des glaces', text: 'Ses talents d’organisation deviennent une arme contre le maître de l’iceberg.' },
+      { name: 'Arauthator', match: 'Arauthator', role: 'Dragon de l’iceberg', text: 'Les kobolds et les crapauds des glaces le servent; le Clan l’affronte avec les alliés réunis dans l’iceberg.' },
+      { name: 'Cœur-d’Orc', match: 'Cœur-d’Orc', role: 'Chasseur des glaces', text: 'Il bat Bjolnir en duel, mais le combat laisse place à une estime réciproque.' },
+      { name: 'Elia', match: 'Elia', role: 'Représentante des dragons métalliques', text: 'Elle porte le Clan jusqu’au conseil des dragons métalliques.' },
+      { name: 'Galin', match: 'Galin', role: 'Gardien d’Altorn', text: 'Il a perdu sa femme dans l’attaque de son village par un dragon vert; il guide le Clan dans la Forêt Brumeuse.' },
+      { name: 'Neronvein', match: 'Neronvein', role: 'Dragophone, ancien prince elfe', text: 'Il commande le temple de la Forêt Brumeuse; son masque a quitté les lieux.' },
+      { name: 'Islabus Gloomward', match: 'Islabus', role: 'Mage rouge, ancien maître de Darrin', text: 'Il porte au Clan l’invitation à Thay et l’inquiétude de Szass Tam face à Tiamat.' }
+    ];
+
+    // Chapitre d'entrée de chaque personnage, lu dans la chronique.
+    function npcChapter(sheet) {
+      const index = CHRONICLE_CHAPTERS.findIndex(chapter => chapter.paragraphs.some(paragraph => paragraph.includes(sheet.match)));
+      return index < 0 ? 99 : index + 1;
+    }
+    function reachedChapter() {
+      return Math.max(rooms[gameState.roomId]?.chapter ?? 0, ...(gameState.decisions ?? []).map(entry => entry.chapter || 0));
+    }
+
+    // Noms et lieux mis en gras dans le récit (première occurrence de chaque paragraphe).
+    const HIGHLIGHT_TERMS = ['Bjolnir', 'Drek’Thar', 'Drek\'Thar', 'Ellyjobell', 'Darrin', 'Sislay', 'Kairon', 'Malar', 'Langdedrosa', 'Cyanwrath', 'Nighthill', 'Escobert', 'Linan',
+      'Leosin', 'Frulam Mondath', 'Mondath', 'Ontharr', 'Ackyn Sélébon', 'Jamna', 'Azbara', 'Pressegueule', 'Talis', 'Othelstan', 'Blagothkus', 'Eskarotha', 'Rezmir', 'Glazael',
+      'Severin', 'Varam', 'Laeral Silverhand', 'Lerustah', 'Maccath', 'Marfulb', 'Arauthator', 'Cœur-d’Orc', 'Galin', 'Neronvein', 'Islabus', 'Boule', 'Bill',
+      'Verdure', 'Elturel', 'Baldur’s Gate', 'Waterdeep', 'Carnath', 'Naerytar', 'Parnast', 'Cumulus', 'Secomber', 'Altorn', 'Forêt Brumeuse', 'Thay',
+      'Reine des Dragons', 'Tiamat', 'Dragophones', 'Dragophone', 'Derrière la Porte de Fer'];
+    let highlightPattern = null;
+    function appendRichText(parent, text) {
+      if (!highlightPattern) {
+        const terms = [...new Set(HIGHLIGHT_TERMS)].sort((a, b) => b.length - a.length).map(term => term.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'));
+        highlightPattern = new RegExp(`(?<![\\p{L}])(${terms.join('|')})(?![\\p{L}])`, 'gu');
+      }
+      const plain = value => { if (value) parent.appendChild(document.createTextNode ? document.createTextNode(value) : Object.assign(document.createElement('span'), { textContent: value })); };
+      const seen = new Set(); let last = 0;
+      for (const match of String(text).matchAll(highlightPattern)) {
+        const key = match[0].replace('\'', '’');
+        if (seen.has(key)) continue;
+        seen.add(key); plain(text.slice(last, match.index));
+        const strong = document.createElement('strong'); strong.textContent = match[0]; parent.appendChild(strong);
+        last = match.index + match[0].length;
+      }
+      plain(String(text).slice(last));
+      return parent;
+    }
+    function richParagraph(text) { return appendRichText(document.createElement('p'), text); }
     // Instantanés PDF réels; les valeurs calculées ci-dessous sont une projection de jeu explicite.
     const CHARACTER_SHEETS = {
       bjolnir: {"name":"Bjolnir HautMarteau","level":10,"classKey":"paladin","subclass":"Rédemption","hitDie":10,"abilities":{"str":19,"dex":10,"con":16,"int":8,"wis":12,"cha":16},"armorClass":21,"hitPoints":85,"proficiency":4,"skills":{"acrobatics":{"bonus":0,"rank":0,"ability":"dex"},"animalHandling":{"bonus":1,"rank":0,"ability":"wis"},"arcana":{"bonus":-1,"rank":0,"ability":"int"},"athletics":{"bonus":8,"rank":1,"ability":"str"},"deception":{"bonus":3,"rank":0,"ability":"cha"},"history":{"bonus":-1,"rank":0,"ability":"int"},"insight":{"bonus":5,"rank":1,"ability":"wis"},"intimidation":{"bonus":3,"rank":0,"ability":"cha"},"investigation":{"bonus":-1,"rank":0,"ability":"int"},"medicine":{"bonus":1,"rank":0,"ability":"wis"},"nature":{"bonus":-1,"rank":0,"ability":"int"},"perception":{"bonus":1,"rank":0,"ability":"wis"},"performance":{"bonus":3,"rank":0,"ability":"cha"},"persuasion":{"bonus":7,"rank":1,"ability":"cha"},"religion":{"bonus":3,"rank":1,"ability":"int"},"sleightOfHand":{"bonus":0,"rank":0,"ability":"dex"},"stealth":{"bonus":0,"rank":0,"ability":"dex"},"survival":{"bonus":1,"rank":0,"ability":"wis"}},"saves":{"str":{"bonus":7,"rank":0,"ability":"str"},"dex":{"bonus":3,"rank":0,"ability":"dex"},"con":{"bonus":6,"rank":0,"ability":"con"},"int":{"bonus":2,"rank":0,"ability":"int"},"wis":{"bonus":8,"rank":1,"ability":"wis"},"cha":{"bonus":10,"rank":1,"ability":"cha"}},"spellAbility":"cha","referenceAttacks":[{"name":"Marteau de frappe précise (1 main)","attackBonus":9,"damage":"1d8+5 contondants"},{"name":"Marteau de frappe précise (2 mains)","attackBonus":9,"damage":"1d10+5 contondants"},{"name":"Masse","attackBonus":8,"damage":"1d6+4 contondants"}],"sources":["Bjolnir.pdf:page1 (caractéristiques, niveau, CA, PV, maîtrise, compétences, sauvegardes)","Bjolnir.pdf:page3 (incantation)"],"cautions":["FOR19 et gantelets d’ogre présents; on ne connaît pas la FOR naturelle antérieure.","Les sauvegardes imprimées incluent +3 d’Aura de protection. À niveau inférieur à6, ce bonus ne doit pas être appliqué."],"aura":{"level":6,"ability":"cha","printedBonus":3},"strengthReconstruction":{"base":17,"itemScore":19,"restoreAtLevel":10,"source":"Choix du MJ dans cette conversation: 16/17 minimum, valeur17 retenue pour la reconstitution.","status":"gmReconstruction"}},
@@ -8964,8 +9057,29 @@
 
     // Les marques de méthode (« What If », « Chronique ») deviennent un repère discret plutôt qu'un préfixe du titre.
     const CHOICE_TAG = /^(Option absurde|What If|Chronique)\s*[–—-]\s*/;
-    const CHOICE_BADGES = { 'What If': 'Et si…', 'Option absurde': 'Provocation' };
+    const CHOICE_BADGES = { 'What If': 'Et si…' };
     const EXIT_LABELS = { nord: 'Continuer vers le nord', sud: 'Revenir vers le sud', est: 'Aller vers l’est', ouest: 'Aller vers l’ouest' };
+
+    function choiceGroup(choice) {
+      const option = choice.option, id = option.id;
+      if (choice.direction) return choice.forward ? 1 : 6;
+      if (STORY_CHOICES.has(id)) return 0;
+      if (/^navigation-/.test(id)) return 7;
+      if (/^(repos-|point-)/.test(id)) return 5;
+      if (String(option.onSelect).startsWith('silly_')) return 4;
+      if (/^rescue-start-/.test(id)) return 3;
+      return 2;
+    }
+
+    // Une sortie avance si elle mène à une scène plus loin dans l'ordre de la campagne.
+    let roomOrderCache = null;
+    function isForwardRoom(from, to) {
+      if (!roomOrderCache) {
+        const order = ['ACT_I', 'ACT_II', 'ACT_III', 'ACT_IV', 'ACT_V'].flatMap(act => DATA.actRooms[act] ?? []);
+        roomOrderCache = new Map(order.map((id, index) => [id, index]));
+      }
+      return (roomOrderCache.get(to) ?? -1) > (roomOrderCache.get(from) ?? Infinity);
+    }
 
     function getPresentedChoices() {
       if (gameState.lastReport) {
@@ -8977,13 +9091,18 @@
       }
       const options = getAvailableOptions(gameState.roomId);
       if (gameState.roomId !== 'title_screen') {
-        const choices = options.map((option,index) => ({ option,index,shortcut:index+1 }));
+        const choices = options.map((option,index) => ({ option,index }));
         const canTravel = Object.values(characters).some(c => ['active', 'injured'].includes(c.state));
-        Object.keys(canTravel ? getCurrentRoom()?.exits ?? {} : {}).forEach(direction => choices.push({
-          direction, index: -2, shortcut: choices.length + 1,
-          option: { id: `exit-${direction}`, label: EXIT_LABELS[direction] ?? `Aller vers ${direction}`,
-            intent: direction === 'sud' ? 'Quitter la scène et revenir sur ses pas. Rien n’est perdu.' : 'Quitter la scène et poursuivre le chemin, sans autre épreuve.' } }));
-        return choices;
+        Object.entries(canTravel ? getCurrentRoom()?.exits ?? {} : {}).forEach(([direction, destination]) => {
+          const forward = isForwardRoom(gameState.roomId, destination);
+          choices.push({ direction, forward, index: -2,
+            option: { id: `exit-${direction}`, label: EXIT_LABELS[direction] ?? `Aller vers ${direction}`,
+              intent: forward ? 'Quitter la scène et poursuivre le chemin, sans autre épreuve.' : 'Quitter la scène et revenir sur ses pas. Rien n’est perdu.' } });
+        });
+        // Le choix joué dans la campagne d'abord, puis la sortie qui fait avancer, puis les autres approches.
+        return choices.map((choice, position) => ({ choice, position, group: choiceGroup(choice) }))
+          .sort((a, b) => a.group - b.group || a.position - b.position)
+          .map(({ choice, group }, slot) => ({ ...choice, story: group <= 1, shortcut: slot + 1 }));
       }
       return [
         { option: { id:'title-new',label:'Commencer l’aventure' },index:options.findIndex(o=>o.id==='title-new'),shortcut:1 },
@@ -9095,7 +9214,7 @@
       const list = document.getElementById('choiceList'); list.replaceChildren();
       getPresentedChoices().forEach((choice, slot) => {
         const { option } = choice;
-        const card = document.createElement('button'); card.type = 'button'; card.className = `choice-card${slot === 0 && (gameState.roomId === 'title_screen' || gameState.lastReport) ? ' primary' : ''}`;
+        const card = document.createElement('button'); card.type = 'button'; card.className = `choice-card${slot === 0 && (gameState.roomId === 'title_screen' || gameState.lastReport) ? ' primary' : ''}${choice.story ? ' story' : ''}`;
         card.dataset.choice = option.id; card.dataset.shortcut = choice.shortcut; card.disabled = choice.index === -1;
         if (choice.direction) card.dataset.direction = choice.direction;
         const number = document.createElement('span'); number.className = 'choice-number'; number.textContent = String(choice.shortcut).padStart(2, '0');
@@ -9173,7 +9292,7 @@
         details.dataset.read = String(gameState.observations.includes(`${gameState.roomId}:${entry.id}`));
         summary.textContent = entry.title; details.appendChild(summary);
         entry.paragraphs.forEach(paragraph => {
-          const p = document.createElement('p'); p.textContent = paragraph; details.appendChild(p);
+          details.appendChild(richParagraph(paragraph));
         });
         details.addEventListener('toggle',() => {
           if (details.open && gameState.roomId === roomId && observeScene(entry.id)) details.dataset.read = 'true';
@@ -9194,7 +9313,7 @@
       const entries = gameState.lastReport ? [] : getSceneMemories();
       panel.hidden = !entries.length;
       entries.forEach(entry => entry.paragraphs.forEach(paragraph => {
-        const p = document.createElement('p'); p.textContent = paragraph; panel.appendChild(p);
+        panel.appendChild(richParagraph(paragraph));
       }));
     }
 
@@ -9243,7 +9362,7 @@
       text('pageNumber', chapter ? String(chapter).padStart(2,'0') : '◇');
       text('decisionTitle', pending ? 'Le D20 roule…' : report ? 'La suite' : room.id === 'title_screen' ? 'Ouvrir le récit' : 'Que faites-vous ?');
       const narrative = document.getElementById('sceneNarrative'); narrative.replaceChildren();
-      (pending ? [`${characters[report.check.actorId]?.name ?? 'Le compagnon'} tente cette épreuve. Le résultat et ses conséquences apparaîtront dès que le dé sera arrêté.`] : report?.paragraphs ?? view?.paragraphs ?? room.paragraphs ?? [room.description]).forEach(paragraph => { const p = document.createElement('p'); p.textContent = paragraph; narrative.appendChild(p); });
+      (pending ? [`${characters[report.check.actorId]?.name ?? 'Le compagnon'} tente cette épreuve. Le résultat et ses conséquences apparaîtront dès que le dé sera arrêté.`] : report?.paragraphs ?? view?.paragraphs ?? room.paragraphs ?? [room.description]).forEach(paragraph => narrative.appendChild(richParagraph(paragraph)));
       const effectsBox = document.getElementById('reportEffects'); effectsBox.replaceChildren();
       (report?.effects ?? []).forEach(chip => effectsBox.appendChild(chipElement(chip)));
       effectsBox.hidden = !report || pending || !(report.effects ?? []).length;
@@ -9265,16 +9384,45 @@
     function showDialog(id) { const dialog = document.getElementById(id); if (!dialog.open) dialog.showModal(); }
 
     function openJournal(tab = 'history') {
-      const chronicle = tab === 'chronicle', decisions = tab === 'decisions';
+      const chronicle = tab === 'chronicle', decisions = tab === 'decisions', cast = tab === 'cast';
       document.getElementById('chroniclePanel').hidden = !chronicle;
       document.getElementById('decisionsPanel').hidden = !decisions;
-      document.getElementById('eventLog').hidden = chronicle || decisions;
+      document.getElementById('castPanel').hidden = !cast;
+      document.getElementById('eventLog').hidden = chronicle || decisions || cast;
       document.getElementById('chronicleTab').setAttribute('aria-pressed', String(chronicle));
       document.getElementById('decisionsTab').setAttribute('aria-pressed', String(decisions));
-      document.getElementById('historyTab').setAttribute('aria-pressed', String(!chronicle && !decisions));
+      document.getElementById('castTab').setAttribute('aria-pressed', String(cast));
+      document.getElementById('historyTab').setAttribute('aria-pressed', String(!chronicle && !decisions && !cast));
       if (chronicle) renderChapter(uiState.chapter);
       if (decisions) renderDecisions();
+      if (cast) renderCast();
       showDialog('journalDialog');
+    }
+
+    // Onglet « Personnages » : la compagnie, puis les personnages déjà rencontrés (aucune fiche au-delà du chapitre atteint).
+    function renderCast() {
+      const panel = document.getElementById('castPanel'); panel.replaceChildren();
+      const card = (title, role, text, portrait, note) => {
+        const article = document.createElement('article'); article.className = 'cast-card';
+        if (portrait) article.appendChild(portrait);
+        const body = document.createElement('div'), name = document.createElement('h4'), meta = document.createElement('p');
+        name.textContent = title; meta.className = 'cast-role'; meta.textContent = role;
+        body.append(name, meta, richParagraph(text));
+        if (note) { const small = document.createElement('p'); small.className = 'cast-note'; small.textContent = note; body.appendChild(small); }
+        article.appendChild(body); return article;
+      };
+      const heading = text => { const h = document.createElement('h3'); h.textContent = text; panel.appendChild(h); };
+      heading('La compagnie');
+      Object.entries(characters).filter(([, c]) => c.state !== 'absent' || c.departed).forEach(([id, c]) => {
+        const person = PRESENTATION.people[id];
+        const left = c.departed && c.state === 'absent';
+        panel.appendChild(card(person?.name ?? c.name, `${person?.race ?? ''} · ${person?.role ?? ''}${left ? '' : ` · ${stateLabel(id, c.state)}`}`, person?.personality ?? '', portraitImage(id),
+          left ? 'A quitté le Clan.' : ''));
+      });
+      const reached = reachedChapter(), met = NPC_SHEETS.map(sheet => ({ ...sheet, chapter: npcChapter(sheet) })).filter(sheet => sheet.chapter <= reached).sort((a, b) => a.chapter - b.chapter);
+      heading('Rencontres');
+      if (!met.length) { const p = document.createElement('p'); p.className = 'cast-note'; p.textContent = 'Les personnages rencontrés apparaîtront ici au fil de l’aventure.'; panel.appendChild(p); }
+      met.forEach(sheet => panel.appendChild(card(sheet.name, sheet.role, sheet.text, null, `Rencontré au chapitre ${CHRONICLE_CHAPTERS[sheet.chapter - 1]?.title ?? sheet.chapter}`)));
     }
 
     function renderChapter(index) {
@@ -9286,7 +9434,7 @@
       });
       const reader = document.getElementById('chapterReader'); reader.replaceChildren();
       const heading = document.createElement('h3'); heading.textContent = CHRONICLE_CHAPTERS[index].title; reader.appendChild(heading);
-      CHRONICLE_CHAPTERS[index].paragraphs.forEach(text => { const p = document.createElement('p'); p.textContent = text; reader.appendChild(p); });
+      CHRONICLE_CHAPTERS[index].paragraphs.forEach(text => reader.appendChild(richParagraph(text)));
       reader.scrollTop = 0;
     }
 
@@ -10550,7 +10698,7 @@
     }
 
     function decisionTags(entry) {
-      return [entry.kind === 'etsi' ? 'Et si…' : entry.kind === 'chaos' ? 'Provocation' : entry.kind === 'repos' ? 'Repos' : '', entry.won === true ? '✓ Réussi' : entry.won === false ? '✗ Échoué' : ''].filter(Boolean);
+      return [entry.kind === 'etsi' ? 'Et si…' : entry.kind === 'repos' ? 'Repos' : '', entry.won === true ? '✓ Réussi' : entry.won === false ? '✗ Échoué' : ''].filter(Boolean);
     }
 
     function decisionChip(entry) {
@@ -10576,7 +10724,7 @@
       const panel = document.getElementById('decisionsPanel'); panel.replaceChildren();
       const all = gameState.decisions ?? [], count = kind => all.filter(entry => entry.kind === kind).length;
       const summary = document.createElement('p'); summary.className = 'decisions-summary';
-      summary.textContent = all.length ? `${all.length} décisions · ${count('etsi')} choix « Et si… » (parcours alternatif) · ${count('chaos')} provocations · ${count('repos')} repos` : 'Aucune décision prise pour le moment. Les choix du Clan apparaîtront ici, chapitre par chapitre.';
+      summary.textContent = all.length ? `${all.length} décisions · ${count('etsi')} choix « Et si… » (parcours alternatif) · ${count('repos')} repos` : 'Aucune décision prise pour le moment. Les choix du Clan apparaîtront ici, chapitre par chapitre.';
       panel.appendChild(summary);
       const chapters = [...new Set(all.map(entry => entry.chapter))];
       chapters.forEach(chapter => {
@@ -12760,6 +12908,7 @@
       onClick('chronicleTab', () => openJournal('chronicle'));
       onClick('historyTab', () => openJournal('history'));
       onClick('decisionsTab', () => openJournal('decisions'));
+      onClick('castTab', () => openJournal('cast'));
       onClick('undoButton', () => dispatchCommand('undo'));
       onClick('titleButton', () => { document.getElementById('saveMenu').open = false; gameState.lastReport=null; handleSpecialSelection('return_title'); refreshInterface(); });
       onClick('restartButton', () => { document.getElementById('saveMenu').open = false; handleSpecialSelection('restart_campaign'); refreshInterface(); });

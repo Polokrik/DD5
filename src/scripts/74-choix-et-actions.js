@@ -230,7 +230,7 @@
     }
 
     function decisionTags(entry) {
-      return [entry.kind === 'etsi' ? 'Et si…' : entry.kind === 'chaos' ? 'Provocation' : entry.kind === 'repos' ? 'Repos' : '', entry.won === true ? '✓ Réussi' : entry.won === false ? '✗ Échoué' : ''].filter(Boolean);
+      return [entry.kind === 'etsi' ? 'Et si…' : entry.kind === 'repos' ? 'Repos' : '', entry.won === true ? '✓ Réussi' : entry.won === false ? '✗ Échoué' : ''].filter(Boolean);
     }
 
     function decisionChip(entry) {
@@ -256,7 +256,7 @@
       const panel = document.getElementById('decisionsPanel'); panel.replaceChildren();
       const all = gameState.decisions ?? [], count = kind => all.filter(entry => entry.kind === kind).length;
       const summary = document.createElement('p'); summary.className = 'decisions-summary';
-      summary.textContent = all.length ? `${all.length} décisions · ${count('etsi')} choix « Et si… » (parcours alternatif) · ${count('chaos')} provocations · ${count('repos')} repos` : 'Aucune décision prise pour le moment. Les choix du Clan apparaîtront ici, chapitre par chapitre.';
+      summary.textContent = all.length ? `${all.length} décisions · ${count('etsi')} choix « Et si… » (parcours alternatif) · ${count('repos')} repos` : 'Aucune décision prise pour le moment. Les choix du Clan apparaîtront ici, chapitre par chapitre.';
       panel.appendChild(summary);
       const chapters = [...new Set(all.map(entry => entry.chapter))];
       chapters.forEach(chapter => {

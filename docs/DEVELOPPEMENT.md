@@ -23,7 +23,7 @@ Les trois assemblages (`build.cjs`, `build.ps1`, `build.sh`) produisent le même
 | `20-personnages`, `22-etat-initial` | compagnons, arrivées et départs, drapeaux, variables, actes |
 | `21-donnees-acte-ii`, `30-salles` | les salles et leurs options (données) |
 | `40-alternatives-securisees`, `41-approches-supplementaires` | variantes « Et si… », approches de remplacement, provocations |
-| `42-epreuves-de-chronique`, `43-expansion-du-livre`, `44-cumulus-et-reperes` | épreuves des scènes jouées, scènes étoffées et observations, Cumulus, repos et « faire le point » |
+| `42-epreuves-de-chronique`, `43-expansion-du-livre`, `44-cumulus-et-reperes`, `45-fil-et-personnages` | épreuves des scènes jouées, scènes étoffées et observations, Cumulus, repos et « faire le point », choix joués, fiches des personnages, mots en gras |
 | `50-fiches-et-niveaux`, `51-etat-et-sauvegarde` | statistiques D&D 5e, état de partie, sauvegarde et validation d'import |
 | `60-interface-et-choix` | cartes de choix, effets en %, compagnie, fiches |
 | `70`–`76` | règles : D20, checkpoints, salles, pertes et repos, résolution, décisions, commandes, sauvetage |

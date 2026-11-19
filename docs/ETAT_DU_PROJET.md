@@ -33,6 +33,12 @@ de fonctionnalité ou de règle. Les instructions de travail sont dans [AGENTS.m
   compagnon parti du groupe revient (le plus proche en caractéristiques, pondéré par la classe).
 - **Game over** seulement si tous les compagnons présents sont morts; il ramène au dernier choix.
 - **Décisions du Clan** : bandeau des trois derniers choix et onglet du journal par chapitre.
+- **Ordre et couleur des choix** : le choix joué dans la campagne (`STORY_CHOICES`, ordre du journal) est
+  toujours le n° 1, en bleu; puis la sortie qui fait avancer (bleue aussi), les autres approches, les
+  « Et si… », les choix farfelus (non signalés comme tels), le repos, et en dernier les retours.
+- **Personnages** (onglet du journal) : la compagnie, puis les personnages rencontrés (`NPC_SHEETS`, faits de
+  la chronique uniquement), débloqués au chapitre où ils entrent dans l'histoire. Noms, lieux et éléments
+  clés en gras dans le récit (`HIGHLIGHT_TERMS`, première occurrence par paragraphe).
 
 ## Rendu
 

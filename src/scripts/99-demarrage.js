@@ -17,6 +17,7 @@
       onClick('chronicleTab', () => openJournal('chronicle'));
       onClick('historyTab', () => openJournal('history'));
       onClick('decisionsTab', () => openJournal('decisions'));
+      onClick('castTab', () => openJournal('cast'));
       onClick('undoButton', () => dispatchCommand('undo'));
       onClick('titleButton', () => { document.getElementById('saveMenu').open = false; gameState.lastReport=null; handleSpecialSelection('return_title'); refreshInterface(); });
       onClick('restartButton', () => { document.getElementById('saveMenu').open = false; handleSpecialSelection('restart_campaign'); refreshInterface(); });
