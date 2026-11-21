@@ -14,9 +14,9 @@ et le découpage**. Le **style visuel n'est pas arrêté** : il se décide penda
 | Durée | **1 min 30 maximum** (cible 1:28, 2 s de marge) |
 | Format | 16:9, 1920×1080, 24 ou 25 i/s. Une déclinaison 9:16 est un bonus, pas un besoin |
 | Langue | Français |
-| Voix | **Aucune voix off dans cette version.** Une voix de synthèse sera ajoutée plus tard sur le texte des sous-titres (§6) |
+| Voix | **Aucune voix off dans cette version.** Une voix de synthèse sera ajoutée plus tard sur le texte des intertitres (§6) |
 | Son | Musique et ambiances seulement (§5). Pas de dialogue |
-| Sous-titres | Incrustés et soignés, ce sont eux qui racontent. Fournir aussi un fichier `.srt` séparé |
+| Texte | **Façon prologue de film / teaser** : peu de mots, au passé simple, en grands intertitres centrés (§6). Pas de sous-titres en bas d'écran. Fournir aussi un `.srt` du texte |
 
 ## 2. Règles à respecter absolument
 
@@ -28,7 +28,7 @@ et le découpage**. Le **style visuel n'est pas arrêté** : il se décide penda
   ou Wizards of the Coast. Tout est créé pour la vidéo.
 - **Pas de gore** : la décapitation de Langdedrosa est suggérée (coupe, ombre, son), jamais montrée.
 - **Boule et Bill** (deux dragonnets noirs) sont un clin d'œil discret : une seconde à l'image au plus,
-  sans sous-titre. Ce n'est pas un moment du récit.
+  sans texte. Ce n'est pas un moment du récit.
 - **Genre de Rezmir et de Talis** : ne pas l'afficher (pas de pronom, pas de plan rapproché du visage).
   Le point n'est pas tranché dans les notes de campagne.
 
@@ -83,46 +83,46 @@ Fil visuel conseillé, quelle que soit la piste : **une couleur par acte**.
 - Musique orchestrale ou médiévale sombre, qui monte en trois temps : Verdure (tension), la route et les
   alliances (élan), et le final (suspendu, sans résolution).
 - Ambiances ponctuelles : feu qui crépite, rugissement, choc d'épées, vent glacé, craquement de glace.
-- Laisser de la place à une voix ajoutée plus tard : pas de pic musical sous les sous-titres longs.
+- Laisser de la place à une voix ajoutée plus tard : pas de pic musical sous les phrases.
 - Les sons du projet seront peut-être fournis : prévoir une piste musicale remplaçable.
 
-## 6. Sous-titres
+## 6. Le texte : façon prologue
 
-- Au plus **2 lignes**, environ 40 caractères par ligne, et au moins 1,5 s à l'écran.
-- Typographie française : espace insécable avant `: ; ! ?`, guillemets « ».
-- Police lisible à empattements ou pixel lisible (selon la piste), blanc cassé avec contour ou ombre
-  sombre, centrée en bas, hors des visages.
-- **Le texte sert deux fois** : sous-titres maintenant, script de la voix de synthèse plus tard. Garder
-  ce texte exact et ces débuts de plans, pour que la voix se cale sans remontage.
+Le ton est celui d'une **légende racontée** : un prologue de film épique ou un teaser, pas un résumé.
+- **Peu de mots** (environ 120 en tout), au **passé simple**, puis au présent pour la fin. On pose une
+  image, on suggère, on ne liste pas.
+- **Intertitres**, pas de sous-titres : grands, centrés, en police à empattements ou calligraphiée,
+  couleur crème. Ils apparaissent en fondu, **par groupes de mots**, sur l'image assombrie ou sur un noir
+  entre deux plans. On peut les découper en papier, dans le style de la vidéo.
+- Laisser respirer : 1 à 2 s de silence avant et après chaque phrase.
+- **Voix plus tard** : ce texte est le futur texte de la voix de synthèse (voix grave, lente). Les débuts
+  de phrase ci-dessous sont les repères pour la caler.
+- « Tomber », pour les dragons, veut bien dire mourir : Arauthator et le dragon vert ont été tués.
 
 ## 7. Découpage
 
-Durée totale : 1:28. Les sous-titres sont le texte définitif. Les plans sont des intentions, adaptables
-au style choisi.
+Durée totale : 1:28. Le texte est définitif; les plans sont des intentions.
 
-| # | Temps | Image | Sous-titre |
+| # | Temps | Image | Texte |
 | --- | --- | --- | --- |
-| 1 | 0:00–0:05 | Noir. Une colonne de fumée monte à l'horizon, vue d'une colline. Un convoi s'arrête. | *(aucun)* |
-| 2 | 0:05–0:12 | Verdure en flammes, la nuit. Le dragon bleu passe au-dessus des toits, la foudre frappe. Des silhouettes fuient vers la forteresse. | Verdure brûle. Un dragon bleu assiège la ville. |
-| 3 | 0:12–0:19 | Bjolnir s'avance seul, bouclier levé, face à des kobolds armés. Ils baissent leurs lances un à un. Le Clan escorte une famille vers les remparts. | Bjolnir refuse de tuer. Les kobolds déposent les armes. |
-| 4 | 0:19–0:27 | À l'aube, un cercle de spectateurs. Drek'Thar face à Langdedrosa, bien plus grand. Échange de coups; Drek'Thar s'effondre. Ses compagnons le relèvent. | À l'aube, Drek'Thar défie Langdedrosa Cyanwrath… et tombe. |
-| 5 | 0:27–0:34 | Une grotte, des torches. Second duel, cadrage serré, les deux silhouettes à égalité. Coup final hors champ : une ombre, un bruit sourd. | Sous la montagne, il prend sa revanche. |
-| 6 | 0:34–0:41 | Montage rapide : chariots sur la route; foule d'un tournoi à Elturel; caravane de onze chariots. *Clin d'œil : deux petites têtes de dragon noir dépassent d'un chariot, une seconde.* | D'Elturel à Waterdeep, le Clan suit le trésor du Culte. |
-| 7 | 0:41–0:48 | Marais de nuit. Des caisses de trésor entrent dans le château de Naerytar; un couvercle se soulève. Les hommes-lézards se dressent, armes en main. | À Naerytar, cachés dans le butin, ils soulèvent les hommes-lézards. |
-| 8 | 0:48–0:55 | Pavillon de chasse dans la neige. Talis remet une bannière à cinq bandes. Drek'Thar et Sislay s'éloignent dans la neige; Kairon apparaît sur le seuil. | Au pavillon, Talis trahit le Culte. Deux compagnons partent, Kairon arrive. |
-| 9 | 0:55–1:04 | Un château de glace s'élève au-dessus des nuages. Malar sort de l'ombre. Bjolnir lit des runes naines lumineuses qui se déplacent; le géant Blagothkus baisse les yeux vers elles. | À bord de Cumulus, Bjolnir lit les runes… et retourne un géant contre le Culte. |
-| 10 | 1:04–1:10 | Waterdeep. Une onde traverse la ville, des oiseaux s'envolent. Une grande table où siègent les factions. | Le Draakhorn sonne. Waterdeep réunit son Conseil. |
-| 11 | 1:10–1:18 | Montage en trois plans : une crypte et un bassin de sang (Diderius); un iceberg et un dragon blanc qui s'abat; une forêt de brume et un dragon vert qui s'écrase. | Une crypte. Un iceberg. Une forêt. Deux dragons tombent. |
-| 12 | 1:18–1:24 | Un sceau pourpre sur une lettre. Une silhouette de mage rouge tend l'invitation. Le Clan, de dos, regarde vers l'est. | Thay les invite. Même Szass Tam craint Tiamat. |
-| 13 | 1:24–1:28 | Fondu au noir. Titre. | **Le Clan d'Estain** — L'histoire reste à écrire. |
-
-Fichier `.srt` attendu, avec ces mêmes débuts et fins. Nombre de caractères vérifiés par plan : moins
-de 17 caractères par seconde partout.
+| 1 | 0:00–0:07 | Noir. Une colonne de fumée monte à l'horizon, vue d'une colline. Un convoi s'arrête. | Tout commença par une fumée à l'horizon. |
+| 2 | 0:07–0:13 | Verdure en flammes, la nuit. Le dragon bleu passe au-dessus des toits, la foudre frappe. Des silhouettes fuient vers la forteresse. | Une ville en flammes. Un dragon bleu dans la nuit. |
+| 3 | 0:13–0:20 | Bjolnir s'avance seul, bouclier levé, face à des kobolds armés. Ils baissent leurs lances un à un. | Certains choisirent l'épée. Lui choisit d'épargner. |
+| 4 | 0:20–0:27 | À l'aube, un cercle de spectateurs. Drek'Thar face à Langdedrosa, bien plus grand. Drek'Thar s'effondre; ses compagnons le relèvent. | À l'aube, un champion du Culte fit plier Drek'Thar. |
+| 5 | 0:27–0:33 | Une grotte, des torches. Second duel, cadrage serré, les deux silhouettes à égalité. Coup final hors champ : une ombre, un bruit sourd. | Sous la montagne, il ne plia pas une seconde fois. |
+| 6 | 0:33–0:40 | Chariots sur la route; foule d'un tournoi à Elturel; caravane de onze chariots. *Clin d'œil : deux petites têtes de dragon noir dépassent d'un chariot, une seconde.* | Ils suivirent l'or volé, de route en route, jusqu'aux marais. |
+| 7 | 0:40–0:47 | Marais de nuit, château de Naerytar. Un couvercle de caisse entrouvert. Les hommes-lézards se dressent, armes levées. | Là, tout un peuple se leva contre ses maîtres. |
+| 8 | 0:47–0:53 | Pavillon de chasse dans la neige. Talis, encapuchonnée, remet une bannière à cinq bandes. Drek'Thar et Sislay s'éloignent; Kairon apparaît sur le seuil. | Une trahison ouvrit la route du ciel. Des compagnons partirent. D'autres vinrent. |
+| 9 | 0:53–1:01 | Un château de glace au-dessus des nuages. Malar sort de l'ombre. Bjolnir devant des runes naines lumineuses; le géant Blagothkus baisse les yeux vers elles. | Dans une forteresse de nuages, un nain parla à une morte… et un géant changea de camp. |
+| 10 | 1:01–1:07 | Waterdeep. Une onde traverse la ville, des oiseaux s'envolent. Une grande table où siègent les factions. | Puis le cor des dragons résonna sur la Côte des Épées. |
+| 11 | 1:07–1:15 | Trois plans : une crypte et un bassin de sang; un iceberg et un dragon blanc qui s'abat; une forêt de brume et un dragon vert qui s'écrase. | Dans la glace et dans la brume, des dragons tombèrent. |
+| 12 | 1:15–1:22 | Un sceau pourpre sur une lettre. Une silhouette de mage rouge tend l'invitation. Le Clan, de dos, regarde vers l'est. | Derrière le Culte, une reine attend son retour. Même Thay s'en inquiète. |
+| 13 | 1:22–1:28 | Silence. Noir. Le titre se découpe. Puis une dernière ligne. | **LE CLAN D'ESTAIN** — L'histoire reste à écrire. |
 
 ## 8. Ce qu'il faut livrer
 
-1. La vidéo finale en 16:9 (MP4, H.264), sous-titres incrustés.
-2. Une version **sans sous-titres** (pour poser plus tard la voix et des sous-titres retouchés).
+1. La vidéo finale en 16:9 (MP4, H.264), intertitres incrustés.
+2. Une version **sans texte** (pour poser plus tard la voix et un texte retouché).
 3. Le fichier `.srt`.
 4. Les images clés de chaque plan, pour validation avant l'animation.
 
@@ -131,7 +131,7 @@ de 17 caractères par seconde partout.
 1. Choisir la piste de style (§4) sur **un seul plan test** : le plan 2, Verdure en flammes.
 2. Valider les silhouettes des sept héros sur une planche, avant tout montage.
 3. Produire les images clés des 13 plans, les valider, puis animer.
-4. Monter avec une musique provisoire; valider la durée (≤ 1:30) et la lisibilité des sous-titres.
+4. Monter avec une musique provisoire; valider la durée (≤ 1:30) et la lisibilité des intertitres.
 
 ## Sources
 
